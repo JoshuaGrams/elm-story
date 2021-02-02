@@ -1,0 +1,17 @@
+{
+  "name": "esg-app",
+  "productName": "Elm Story",
+  "version": "1.0.0",
+  "description": "Front-end application for the Elm Story platform.",
+  "main": "./main.prod.js",
+  "author": {
+    "name": "ritsuke",
+    "email": "ritsuke@gmail.com"
+  },
+  "scripts": {
+    "electron-rebuild": "node -r ../.erb/scripts/BabelRegister.js ../.erb/scripts/ElectronRebuild.js",
+    "postinstall": "yarn electron-rebuild"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {}
+}
