@@ -1,3 +1,3 @@
 import { v4 as uuid } from 'uuid'
 
-export default () => uuid()
+export default (): string => uuid()
