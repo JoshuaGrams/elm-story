@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useProfiles, useSelectedProfile } from '../../hooks'
 
+import Button from '../Button'
 import styles from './styles.scss'
 
 type ProfileListProps = {
@@ -31,30 +32,25 @@ export default ({ className = undefined }: ProfileListProps) => {
           onChange={(event) => setName(event.target.value)}
           value={name}
         />
-        <button
+        <Button
           type="submit"
           onClick={(event) => addProfile(event)}
           disabled={!name}
-          className="primary"
+          primary
         >
           Create Profile
-        </button>
+        </Button>
       </form>
       {profiles.length > 0 ? <hr /> : null}
       <ul>
         {profiles?.map((profile) => (
           <div key={profile.id} className={styles.profileRow}>
-            <button
-              onClick={() => setSelected(profile.id)}
-              className={
-                selected && selected.id === profile.id ? 'primary' : ''
-              }
-            >
-              {profile.name}
-            </button>
-            <button onClick={() => remove(profile.id)} className="remove">
+            <Button onClick={() => setSelected(profile.id)}>
+              {(selected?.id === profile.id ? 'Selected: ' : '') + profile.name}
+            </Button>
+            <Button onClick={() => remove(profile.id)} destroy>
               Remove Profile
-            </button>
+            </Button>
           </div>
         ))}
       </ul>
