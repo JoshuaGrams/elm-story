@@ -3,9 +3,93 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 
-body {
+* {
   margin: 0px;
   padding: 0px;
+  border: 0px;
+  outline: none;
+
+  &:last-child {
+    margin-bottom: 0px !important;
+  }
+}
+
+body {
   background-color: hsl(0, 0%, 0%);
   color: white;
+}
+
+ul {
+  list-style-type: none;
+}
+
+input,
+button {
+  box-sizing: border-box;
+  margin-bottom: 4px;
+  width: 100%;
+  font-size: 12px;
+  border-radius: 2px;
+}
+
+input {
+  height: 44px;
+  padding: 8px;
+  background-color: hsl(0, 0%, 20%);
+  border: 1px solid hsl(0, 0%, 30%);
+  color: white;
+
+  &::placeholder {
+    text-transform: uppercase;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: hsl(0, 0%, 25%);
+  }
+
+  &:focus::placeholder {
+    color: transparent;
+  }
+}
+
+button {
+  height: 32px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.1s, border-color 0.1s;
+  background-color: hsl(180, 0%, 10%);
+  border: 1px solid hsl(180, 0%, 20%);
+
+  &:hover {
+    background-color: hsl(180, 0%, 20%);
+    border: 1px solid hsl(180, 0%, 50%);
+  }
+
+  &.primary {
+    background-color: hsl(180, 100%, 10%);
+    border-color: hsl(180, 100%, 20%);
+
+    &:hover {
+      background-color: hsl(180, 100%, 20%);
+      border-color: hsl(180, 100%, 50%);
+    }
+  }
+
+  &.remove {
+    background-color: hsl(360, 100%, 10%);
+    border-color: hsl(360, 100%, 20%);
+
+    &:hover {
+      background-color: hsl(360, 100%, 20%);
+      border-color: hsl(360, 100%, 50%);
+    }
+  }
+}
+
+hr {
+  height: 1px;
+  background-color: hsl(0, 0%, 15%);
+  margin: 10px 0px;
 }

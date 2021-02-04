@@ -1,12 +1,18 @@
 import React, { useState } from 'react'
 import { useProfiles, useSelectedProfile } from '../../hooks'
 
-export default ({ className = undefined }: { className: string | undefined }) => {
+import styles from './styles.scss'
+
+type ProfileListProps = {
+  className?: string
+}
+
+export default ({ className = undefined }: ProfileListProps) => {
   const [name, setName] = useState('')
   const [selected, setSelected] = useSelectedProfile()
   const { profiles, add, remove } = useProfiles()
 
-  async function create(event: React.MouseEvent) {
+  async function addProfile(event: React.MouseEvent) {
     event.preventDefault()
     if (name) {
       await setSelected(await add({ name }))
@@ -17,34 +23,39 @@ export default ({ className = undefined }: { className: string | undefined }) =>
   }
 
   return (
-    <div className={className}>
-      <h2>Profiles</h2>
-      <div>
-        {selected
-          ? `Active profile: ${selected.name}`
-          : 'Select a profile or create a new profile to start.'}
-      </div>
+    <div className={`${styles.profileList} ${className}`}>
       <form>
         <input
           type="value"
+          placeholder="Profile Name"
           onChange={(event) => setName(event.target.value)}
           value={name}
         />
         <button
           type="submit"
-          onClick={(event) => create(event)}
+          onClick={(event) => addProfile(event)}
           disabled={!name}
+          className="primary"
         >
           Create Profile
         </button>
       </form>
+      {profiles.length > 0 ? <hr /> : null}
       <ul>
         {profiles?.map((profile) => (
-          <li key={profile.id}>
-            {profile.name}{' '}
-            <button onClick={() => setSelected(profile.id)}>Set Active</button>
-            <button onClick={() => remove(profile.id)}>Delete</button>
-          </li>
+          <div key={profile.id} className={styles.profileRow}>
+            <button
+              onClick={() => setSelected(profile.id)}
+              className={
+                selected && selected.id === profile.id ? 'primary' : ''
+              }
+            >
+              {profile.name}
+            </button>
+            <button onClick={() => remove(profile.id)} className="remove">
+              Remove Profile
+            </button>
+          </div>
         ))}
       </ul>
     </div>

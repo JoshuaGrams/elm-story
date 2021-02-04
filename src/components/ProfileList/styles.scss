@@ -1,0 +1,19 @@
+.profileList {
+  max-width: 500px;
+  // background-color: hsl(0, 0%, 0%);
+  padding: 20px;
+  border-radius: 4px;
+  box-sizing: border-box;
+
+  input {
+    text-align: center;
+  }
+
+  .profileRow {
+    margin-bottom: 8px;
+
+    &.selected {
+      border-color: red;
+    }
+  }
+}
