@@ -3,11 +3,34 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(0, 0%, 6%);
+  border: 1px solid hsl(0, 0%, 0%);
+
+  &:hover {
+    background-color: hsl(0, 0%, 8%);
+  }
+
+  &:active {
+    background-color: hsl(0, 0%, 10%);
+  }
+}
+
+::-webkit-scrollbar-track {
+  border-left: 1px solid hsl(0, 0%, 0%);
+}
+
 * {
   margin: 0px;
   padding: 0px;
   border: 0px;
   outline: none;
+  user-select: none;
 
   &:last-child {
     margin-bottom: 0px !important;
@@ -15,8 +38,9 @@
 }
 
 body {
-  background-color: hsl(0, 0%, 0%);
+  background-color: hsl(0, 0%, 4%);
   color: white;
+  margin: 20px;
 }
 
 ul {
@@ -29,14 +53,15 @@ button {
   margin-bottom: 4px;
   width: 100%;
   font-size: 12px;
-  border-radius: 2px;
 }
 
 input {
   height: 44px;
   padding: 8px;
-  background-color: hsl(0, 0%, 20%);
-  border: 1px solid hsl(0, 0%, 30%);
+  background: hsl(0, 0%, 10%);
+  border: 1px solid hsl(0, 0%, 20%);
+  box-sizing: border-box;
+  box-shadow: inset 0px 0px 8px 4px hsl(0, 0%, 6%);
   color: white;
 
   &::placeholder {
@@ -45,7 +70,9 @@ input {
 
   &:hover,
   &:focus {
-    background-color: hsl(0, 0%, 25%);
+    background-color: hsl(0, 0%, 14%);
+    border-color: hsl(0, 0%, 24%);
+    box-shadow: inset 0px 0px 8px 4px hsl(0, 0%, 10%);
   }
 
   &:focus::placeholder {
@@ -58,33 +85,20 @@ button {
   text-transform: uppercase;
   cursor: pointer;
   color: white;
-  transition: background-color 0.1s, border-color 0.1s;
-  background-color: hsl(180, 0%, 10%);
-  border: 1px solid hsl(180, 0%, 20%);
+  transition: background-color 0.2s, box-shadow 0.2s, color 0.2s;
+  background: hsl(0, 0%, 10%);
+  border: 1px solid hsl(0, 0%, 1%);
+  box-sizing: border-box;
+  box-shadow: inset 0px 1px 0px hsl(0, 0%, 20%);
 
   &:hover {
-    background-color: hsl(180, 0%, 20%);
-    border: 1px solid hsl(180, 0%, 50%);
+    background: hsl(0, 0%, 20%);
+    box-shadow: inset 0px 1px 0px hsl(0, 0%, 30%);
   }
 
-  &.primary {
-    background-color: hsl(180, 100%, 10%);
-    border-color: hsl(180, 100%, 20%);
-
-    &:hover {
-      background-color: hsl(180, 100%, 20%);
-      border-color: hsl(180, 100%, 50%);
-    }
-  }
-
-  &.remove {
-    background-color: hsl(360, 100%, 10%);
-    border-color: hsl(360, 100%, 20%);
-
-    &:hover {
-      background-color: hsl(360, 100%, 20%);
-      border-color: hsl(360, 100%, 50%);
-    }
+  &:active {
+    border-width: 2px 2px 2px 2px;
+    font-size: 11px;
   }
 }
 

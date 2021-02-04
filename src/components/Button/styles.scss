@@ -1,0 +1,30 @@
+.primary {
+  background: hsl(280, 100%, 50%);
+  border: 1px solid hsl(0, 0%, 1%);
+  box-sizing: border-box;
+  box-shadow: inset 0px 1px 0px hsl(280, 100%, 70%);
+
+  &:hover {
+    background: hsl(280, 100%, 60%);
+    box-shadow: inset 0px 1px 0px hsl(280, 100%, 80%);
+  }
+}
+
+.destroy {
+  background: hsl(345, 100%, 50%);
+  border: 1px solid hsl(0, 0%, 1%);
+  box-sizing: border-box;
+  box-shadow: inset 0px 1px 0px hsl(345, 100%, 70%);
+
+  &:hover {
+    background: hsl(345, 100%, 60%);
+    box-shadow: inset 0px 1px 0px hsl(345, 100%, 80%);
+  }
+}
+
+.disabled {
+  color: hsl(0, 0%, 30%);
+  cursor: not-allowed;
+  background: hsl(0, 0%, 5%) !important;
+  box-shadow: inset 0px 1px 0px hsl(0, 0%, 15%) !important;
+}
