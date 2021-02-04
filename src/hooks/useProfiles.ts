@@ -21,7 +21,8 @@ export const useSelectedProfile = () => {
  * access to add and remove APIs.
  */
 export default () => {
-  const profiles = useLiveQuery(() => useDatabase().profiles.toArray(), [])
+  const profiles =
+    useLiveQuery(() => useDatabase().profiles.toArray(), []) || []
 
   // sort alphabetical by profile name
   if (profiles) profiles.sort((a, b) => (a.name > b.name ? 1 : -1))
