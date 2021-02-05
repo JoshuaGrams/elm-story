@@ -2,7 +2,7 @@ import React from 'react'
 
 import ProfileList from '../../components/ProfileList'
 
-import styles from './styles.scss'
+import styles from './styles.module.scss'
 
 export default () => {
   return (

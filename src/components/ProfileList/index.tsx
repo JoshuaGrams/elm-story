@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useProfiles, useSelectedProfile } from '../../hooks'
 
 import Button from '../Button'
-import styles from './styles.scss'
+import styles from './styles.module.scss'
 
 type ProfileListProps = {
   className?: string
