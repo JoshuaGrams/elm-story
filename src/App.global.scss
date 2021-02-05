@@ -3,6 +3,11 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 
+@font-face {
+  font-family: 'Fira Mono';
+  src: url(../assets/fonts/FiraMono-Regular.ttf);
+}
+
 ::-webkit-scrollbar {
   width: 14px;
   height: 14px;
@@ -22,7 +27,8 @@
 }
 
 ::-webkit-scrollbar-track {
-  border-left: 1px solid hsl(0, 0%, 0%);
+  border: 1px solid hsl(0, 0%, 0%);
+  background-color: hsl(0, 0%, 4%);
 }
 
 * {
@@ -31,6 +37,7 @@
   border: 0px;
   outline: none;
   user-select: none;
+  font-family: 'Fira Mono';
 
   &:last-child {
     margin-bottom: 0px !important;
