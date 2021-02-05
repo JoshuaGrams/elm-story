@@ -2,13 +2,7 @@ import React from 'react'
 
 import styles from './styles.module.scss'
 
-type ButtonProps = {
-  children: string
-  type?: 'submit' | 'button' | 'reset'
-  title?: string
-  onClick?: (event: React.MouseEvent) => void
-  disabled?: boolean
-  className?: string
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   primary?: boolean
   destroy?: boolean
 }

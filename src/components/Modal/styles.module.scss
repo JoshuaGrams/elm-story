@@ -1,0 +1,16 @@
+.modal {
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.2s;
+  background-color: hsla(0, 0%, 0%, 0.5);
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  top: 0px;
+
+  &.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
