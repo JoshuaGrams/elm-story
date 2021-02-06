@@ -25,8 +25,15 @@ async function save({
 
   try {
     if (existing) {
-      // TODO: Check if existing first.
-      await appDB.profiles.update(id, { name })
+      appDB.transaction('rw', appDB.profiles, async () => {
+        const existingProfile = await appDB.profiles.where({ id }).first()
+
+        if (existingProfile) {
+          await appDB.profiles.update(id, { name })
+        } else {
+          throw new Error('Unable to update existing profile. Does not exist.')
+        }
+      })
     } else {
       await appDB.profiles.add({
         id,
