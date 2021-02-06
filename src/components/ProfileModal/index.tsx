@@ -29,26 +29,33 @@ const SaveProfileLayout = ({
   onHide,
   existing = false
 }: SaveProfileLayoutProps) => {
-  const [name, setName] = useState(existing && profile ? profile.name : '')
+  const [name, setName] = useState('')
   const [, setSelected] = useSelectedProfile()
   const { save } = useProfiles()
   const nameInput = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (show) {
-      if (!existing) setName('')
-      if (nameInput && nameInput.current) nameInput.current.focus()
+      setName(existing && profile ? profile.name : '')
+
+      setTimeout(() => {
+        if (nameInput && nameInput.current) {
+          nameInput.current.focus()
+          nameInput.current.select()
+        }
+      }, 1)
     }
   }, [show])
 
-  async function addProfile(event: React.MouseEvent) {
+  async function saveProfile(event: React.MouseEvent) {
     event.preventDefault()
     if (name) {
-      await setSelected(
-        existing && profile
-          ? await save({ name, existing, id: profile.id })
-          : await save({ name })
-      )
+      if (existing && profile) {
+        await save({ name, existing, id: profile.id })
+      } else {
+        await setSelected(await save({ name }))
+      }
+
       if (onHide) onHide()
     } else {
       throw new Error('Profile name required.')
@@ -68,7 +75,7 @@ const SaveProfileLayout = ({
         />
         <Button
           type="submit"
-          onClick={(event) => addProfile(event)}
+          onClick={(event) => saveProfile(event)}
           disabled={!name}
           primary
         >
