@@ -6,25 +6,34 @@ export const PROFILE = {
 }
 
 /**
- * Creates app profile.
+ * Saves app profile.
  * TODO: Link profiles to cloud accounts.
  * @returns id on promise resolve
  */
-async function add({
+async function save({
   name,
   selected = PROFILE.NOT_SELECTED,
-  id = useUUID()
+  id = useUUID(),
+  existing = false
 }: {
   name: string
   selected?: number
   id?: string
+  existing?: boolean
 }): Promise<string> {
+  const appDB = useDatabase()
+
   try {
-    await useDatabase().profiles.add({
-      id,
-      name,
-      selected
-    })
+    if (existing) {
+      // TODO: Check if existing first.
+      await appDB.profiles.update(id, { name })
+    } else {
+      await appDB.profiles.add({
+        id,
+        name,
+        selected
+      })
+    }
 
     return id
   } catch (error) {
@@ -69,4 +78,4 @@ async function setSelected(id: string) {
   }
 }
 
-export { add, remove, setSelected }
+export { save, remove, setSelected }

@@ -18,7 +18,7 @@ export const useSelectedProfile = () => {
 
 /**
  * Returns object with array of app profiles from DB and
- * access to add and remove APIs.
+ * access to save and remove APIs.
  */
 export default () => {
   const profiles =
@@ -29,7 +29,7 @@ export default () => {
 
   return {
     profiles,
-    add: api().profiles.add,
+    save: api().profiles.save,
     remove: api().profiles.remove
   }
 }
