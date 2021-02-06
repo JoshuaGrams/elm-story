@@ -13,7 +13,7 @@ export default ({
   title,
   onClick,
   disabled = false,
-  className,
+  className = '',
   primary = false,
   destroy = false
 }: ButtonProps) => {

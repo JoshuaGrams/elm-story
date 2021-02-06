@@ -1,16 +1,37 @@
+@import '../../styles/variables';
+
 .modal {
-  z-index: 9999;
-  opacity: 1;
-  transition: opacity 0.2s;
-  background-color: hsla(0, 0%, 0%, 0.5);
-  position: absolute;
+  z-index: $modal-z-index;
+  opacity: 0;
+  transition: opacity 0.1s;
+  background: $modal-opacity;
+  position: fixed;
   left: 0px;
   right: 0px;
   bottom: 0px;
   top: 0px;
+  pointer-events: none;
 
-  &.hide {
-    opacity: 0;
-    pointer-events: none;
+  &.show {
+    opacity: 1;
+    pointer-events: unset;
+  }
+
+  .wrapper {
+    min-width: 320px;
+    max-width: 500px;
+    min-height: 44px;
+    background: hsl(0, 0%, 6%);
+    border: 1px solid black;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px;
+    box-sizing: border-box;
+
+    h3 {
+      text-align: center;
+    }
   }
 }
