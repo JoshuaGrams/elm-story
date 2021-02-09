@@ -1,0 +1,51 @@
+@import '../../styles/variables';
+
+.titleBar {
+  height: $title-bar-height;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: black;
+  -webkit-app-region: drag;
+
+  header {
+    text-align: center;
+    height: 100%;
+    line-height: $title-bar-height;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .titleBarButtonsContainer {
+    position: absolute;
+    left: 10px;
+    height: 100%;
+    display: grid;
+    width: 69px;
+    cursor: pointer !important;
+
+    .titleBarButton {
+      grid-row: 1;
+      width: 23px;
+      height: 100%;
+
+      &.quitButton {
+        background: url('../../../assets/imgs/quit-button.svg');
+      }
+
+      &.minimizeButton {
+        background: url('../../../assets/imgs/minimize-button.svg');
+      }
+
+      &.floatingButton {
+        background: url('../../../assets/imgs/floating-button.svg');
+      }
+
+      &.fullscreenButton {
+        background: url('../../../assets/imgs/fullscreen-button.svg');
+      }
+    }
+  }
+}

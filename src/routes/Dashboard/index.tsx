@@ -7,7 +7,6 @@ import styles from './styles.module.scss'
 export default () => {
   return (
     <div>
-      <h1>Elm Story</h1>
       <ProfileList className={styles.profiles} />
     </div>
   )

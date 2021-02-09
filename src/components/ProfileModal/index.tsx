@@ -1,16 +1,12 @@
 import React from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useProfiles, useSelectedProfile } from '../../hooks'
 
-import type { ModalProps } from '../Modal'
 import type { Profile } from '../../db'
+import type { ModalProps } from '../Modal'
 
 import Modal from '../Modal'
 import Button from '../Button'
-
-import styles from './styles.module.scss'
-import { useState } from 'react'
-import { useProfiles, useSelectedProfile } from '../../hooks'
-import { useEffect } from 'react'
-import { useRef } from 'react'
 
 interface ProfileModalProps extends ModalProps {
   profile?: Profile
@@ -122,7 +118,7 @@ export default ({
   if (edit || remove) create = false
 
   return (
-    <Modal show={show} className={styles.profileModal}>
+    <Modal show={show}>
       {create ? (
         <SaveProfileLayout show={show} onHide={onHide} existing={false} />
       ) : null}

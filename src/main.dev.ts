@@ -11,10 +11,12 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import path from 'path'
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, shell, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import MenuBuilder from './menu'
+
+import { WINDOW_EVENTS } from './lib/events'
 
 export default class AppUpdater {
   constructor() {
@@ -74,7 +76,9 @@ const createWindow = async () => {
     icon: getAssetPath('icon.png'),
     webPreferences: {
       nodeIntegration: true
-    }
+    },
+    frame: false,
+    backgroundColor: 'black'
   })
 
   mainWindow.loadURL(`file://${__dirname}/index.html`)
@@ -91,6 +95,26 @@ const createWindow = async () => {
       mainWindow.show()
       mainWindow.focus()
     }
+
+    mainWindow.webContents.send(
+      mainWindow.fullScreen ? WINDOW_EVENTS.FULLSCREEN : WINDOW_EVENTS.FLOAT
+    )
+
+    mainWindow.on('enter-full-screen', () =>
+      mainWindow?.webContents.send(WINDOW_EVENTS.FULLSCREEN)
+    )
+    mainWindow.on('leave-full-screen', () =>
+      mainWindow?.webContents.send(WINDOW_EVENTS.FLOAT)
+    )
+
+    ipcMain.on(WINDOW_EVENTS.QUIT, () => app.quit())
+    ipcMain.on(WINDOW_EVENTS.MINIMIZE, () => mainWindow?.minimize())
+    ipcMain.on(WINDOW_EVENTS.TOGGLE_FULLSCREEN, ({}, isFullscreen) => {
+      if (isFullscreen && !mainWindow?.fullScreen)
+        mainWindow?.setFullScreen(true)
+      if (!isFullscreen && mainWindow?.fullScreen)
+        mainWindow.setFullScreen(false)
+    })
   })
 
   mainWindow.on('closed', () => {

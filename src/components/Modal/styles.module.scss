@@ -3,7 +3,7 @@
 .modal {
   z-index: $modal-z-index;
   opacity: 0;
-  transition: opacity 0.1s;
+  transition: opacity 0.2s;
   background: $modal-opacity;
   position: fixed;
   left: 0px;
@@ -11,6 +11,7 @@
   bottom: 0px;
   top: 0px;
   pointer-events: none;
+  backdrop-filter: blur(20px);
 
   &.show {
     opacity: 1;
