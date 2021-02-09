@@ -106,16 +106,13 @@ export default class MenuBuilder {
         {
           label: 'Reload',
           accelerator: 'Command+R',
-          click: () => {
-            this.mainWindow.webContents.reload()
-          }
+          click: () => this.mainWindow.webContents.reload()
         },
         {
           label: 'Toggle Full Screen',
           accelerator: 'Ctrl+Command+F',
-          click: () => {
+          click: () =>
             this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen())
-          }
         }
         // {
         //   label: 'Toggle Developer Tools',
@@ -132,16 +129,13 @@ export default class MenuBuilder {
         {
           label: 'Toggle Full Screen',
           accelerator: 'Ctrl+Command+F',
-          click: () => {
+          click: () =>
             this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen())
-          }
         },
         {
           label: 'Toggle Developer Tools',
           accelerator: 'Alt+Command+I',
-          click: () => {
-            this.mainWindow.webContents.toggleDevTools()
-          }
+          click: () => this.mainWindow.webContents.toggleDevTools()
         }
       ]
     }

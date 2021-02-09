@@ -58,19 +58,15 @@ export default () => {
   const isFirstRun = useRef(true)
 
   useEffect(() => {
-    ipcRenderer.on(WINDOW_EVENTS.FULLSCREEN, () => {
-      if (!fullscreen) setFullscreen(true)
-    })
-    ipcRenderer.on(WINDOW_EVENTS.FLOAT, () => {
-      if (fullscreen) setFullscreen(false)
-    })
+    ipcRenderer.on(WINDOW_EVENTS.FULLSCREEN, () => setFullscreen(true))
+    ipcRenderer.on(WINDOW_EVENTS.FLOAT, () => setFullscreen(false))
   }, [])
 
   useEffect(() => {
-    if (!isFirstRun.current) {
-      ipcRenderer.send(WINDOW_EVENTS.TOGGLE_FULLSCREEN, fullscreen)
-    } else {
+    if (isFirstRun.current) {
       isFirstRun.current = false
+    } else {
+      ipcRenderer.send(WINDOW_EVENTS.TOGGLE_FULLSCREEN, fullscreen)
     }
   }, [fullscreen])
 

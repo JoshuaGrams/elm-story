@@ -83,9 +83,7 @@ const createWindow = async () => {
 
   mainWindow.loadURL(`file://${__dirname}/index.html`)
 
-  // @TODO: Use 'ready-to-show' event
-  //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
-  mainWindow.webContents.on('did-finish-load', () => {
+  mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined')
     }
@@ -110,10 +108,12 @@ const createWindow = async () => {
     ipcMain.on(WINDOW_EVENTS.QUIT, () => app.quit())
     ipcMain.on(WINDOW_EVENTS.MINIMIZE, () => mainWindow?.minimize())
     ipcMain.on(WINDOW_EVENTS.TOGGLE_FULLSCREEN, ({}, isFullscreen) => {
-      if (isFullscreen && !mainWindow?.fullScreen)
-        mainWindow?.setFullScreen(true)
-      if (!isFullscreen && mainWindow?.fullScreen)
-        mainWindow.setFullScreen(false)
+      if (mainWindow) {
+        if (isFullscreen && !mainWindow.fullScreen)
+          mainWindow.setFullScreen(true)
+        if (!isFullscreen && mainWindow.fullScreen)
+          mainWindow.setFullScreen(false)
+      }
     })
   })
 
