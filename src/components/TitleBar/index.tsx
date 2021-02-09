@@ -1,7 +1,9 @@
 import { ipcRenderer } from 'electron'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useContext } from 'react'
 
 import { WINDOW_EVENTS } from '../../lib/events'
+
+import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 
 import styles from './styles.module.scss'
 
@@ -50,7 +52,7 @@ const TitleBarButton = ({ onClick, type }: TitleBarButtonProps) => {
 }
 
 export default () => {
-  const [fullscreen, setFullscreen] = useState(false)
+  const { app, appDispatch } = useContext(AppContext)
   /**
    * TODO: this is used to prevent toggling out of full screen
    * on development reload
@@ -58,17 +60,21 @@ export default () => {
   const isFirstRun = useRef(true)
 
   useEffect(() => {
-    ipcRenderer.on(WINDOW_EVENTS.FULLSCREEN, () => setFullscreen(true))
-    ipcRenderer.on(WINDOW_EVENTS.FLOAT, () => setFullscreen(false))
+    ipcRenderer.on(WINDOW_EVENTS.FULLSCREEN, () =>
+      appDispatch({ type: APP_ACTION_TYPE.FULLSCREEN })
+    )
+    ipcRenderer.on(WINDOW_EVENTS.FLOAT, () =>
+      appDispatch({ type: APP_ACTION_TYPE.FLOATING })
+    )
   }, [])
 
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false
     } else {
-      ipcRenderer.send(WINDOW_EVENTS.TOGGLE_FULLSCREEN, fullscreen)
+      ipcRenderer.send(WINDOW_EVENTS.TOGGLE_FULLSCREEN, app.fullscreen)
     }
-  }, [fullscreen])
+  }, [app.fullscreen])
 
   return (
     <div className={styles.titleBar}>
@@ -77,7 +83,7 @@ export default () => {
           type={TITLE_BAR_BUTTON_TYPE.QUIT}
           onClick={() => ipcRenderer.send(WINDOW_EVENTS.QUIT)}
         />
-        {!fullscreen ? (
+        {!app.fullscreen ? (
           <TitleBarButton
             type={TITLE_BAR_BUTTON_TYPE.MINIMIZE}
             onClick={() => ipcRenderer.send(WINDOW_EVENTS.MINIMIZE)}
@@ -85,14 +91,20 @@ export default () => {
         ) : null}
         <TitleBarButton
           type={
-            fullscreen
+            app.fullscreen
               ? TITLE_BAR_BUTTON_TYPE.FLOATING
               : TITLE_BAR_BUTTON_TYPE.FULLSCREEN
           }
-          onClick={() => setFullscreen(!fullscreen)}
+          onClick={() =>
+            appDispatch({
+              type: app.fullscreen
+                ? APP_ACTION_TYPE.FLOATING
+                : APP_ACTION_TYPE.FULLSCREEN
+            })
+          }
         />
       </div>
-      <header>ELM STORY GAMES</header>
+      <header>{app.header}</header>
     </div>
   )
 }
