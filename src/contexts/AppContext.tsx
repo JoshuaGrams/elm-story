@@ -22,7 +22,7 @@ type AppContextType = {
 }
 
 const defaultAppState: AppState = {
-  header: 'Elm Story Games',
+  header: 'Elm Story',
   fullscreen: false
 }
 

@@ -78,7 +78,7 @@ const createWindow = async () => {
       nodeIntegration: true
     },
     frame: false,
-    backgroundColor: 'black'
+    backgroundColor: '#0a0a0a'
   })
 
   mainWindow.loadURL(`file://${__dirname}/index.html`)
