@@ -1,6 +1,6 @@
 @import '../styles/variables';
 
 .router {
-  position: absolute;
-  top: $title-bar-height;
+  position: relative;
+  margin-top: $title-bar-height;
 }

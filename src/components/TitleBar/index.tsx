@@ -80,15 +80,13 @@ export default () => {
         <TitleBarButton
           type={TITLE_BAR_BUTTON_TYPE.QUIT}
           onClick={() => ipcRenderer.send(WINDOW_EVENTS.QUIT)}
-        >
-          C
-        </TitleBarButton>
-        <TitleBarButton
-          type={TITLE_BAR_BUTTON_TYPE.MINIMIZE}
-          onClick={() => ipcRenderer.send(WINDOW_EVENTS.MINIMIZE)}
-        >
-          M
-        </TitleBarButton>
+        />
+        {!fullscreen ? (
+          <TitleBarButton
+            type={TITLE_BAR_BUTTON_TYPE.MINIMIZE}
+            onClick={() => ipcRenderer.send(WINDOW_EVENTS.MINIMIZE)}
+          />
+        ) : null}
         <TitleBarButton
           type={
             fullscreen
@@ -96,9 +94,7 @@ export default () => {
               : TITLE_BAR_BUTTON_TYPE.FULLSCREEN
           }
           onClick={() => setFullscreen(!fullscreen)}
-        >
-          F
-        </TitleBarButton>
+        />
       </div>
       <header>ELM STORY GAMES</header>
     </div>
