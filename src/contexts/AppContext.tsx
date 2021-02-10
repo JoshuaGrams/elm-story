@@ -17,7 +17,7 @@ export enum APP_ACTION_TYPE {
   MODAL_CLOSE = 'MODAL_CLOSE'
 }
 
-type AppAction =
+type AppActionType =
   | { type: APP_ACTION_TYPE.HEADER; header: string }
   | { type: APP_ACTION_TYPE.FULLSCREEN }
   | { type: APP_ACTION_TYPE.FLOATING }
@@ -28,7 +28,7 @@ type AppAction =
 
 type AppContextType = {
   app: AppState
-  appDispatch: React.Dispatch<AppAction>
+  appDispatch: React.Dispatch<AppActionType>
 }
 
 const defaultAppState: AppState = {
@@ -38,7 +38,7 @@ const defaultAppState: AppState = {
   modalOpen: false
 }
 
-const appReducer = (state: AppState, action: AppAction): AppState => {
+const appReducer = (state: AppState, action: AppActionType): AppState => {
   switch (action.type) {
     case APP_ACTION_TYPE.HEADER:
       return { ...state, header: action.header }

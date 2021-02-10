@@ -8,11 +8,15 @@ import type { ModalProps } from '../Modal'
 import Modal from '../Modal'
 import Button from '../Button'
 
+export enum MODAL_TYPE {
+  CREATE = 'CREATE',
+  EDIT = 'EDIT',
+  REMOVE = 'REMOVE'
+}
+
 interface ProfileModalProps extends ModalProps {
   profile?: Profile
-  create?: boolean
-  edit?: boolean
-  remove?: boolean
+  type?: MODAL_TYPE
 }
 
 interface SaveProfileLayoutProps extends ProfileModalProps {
@@ -110,33 +114,33 @@ const RemoveProfileLayout: React.FC<ProfileModalProps> = ({
   )
 }
 
+/**
+ * ProfileModal instance will unmount when
+ * open prop is false.
+ */
 const ProfileModal: React.FC<ProfileModalProps> = ({
   profile,
+  type = MODAL_TYPE.CREATE,
   open = false,
-  create = true,
-  edit = false,
-  remove = false,
   onClose
-}) => {
-  if (edit || remove) create = false
-
-  return (
-    <Modal open={open}>
-      {create && (
-        <SaveProfileLayout open={open} onClose={onClose} existing={false} />
-      )}
-      {edit && (
-        <SaveProfileLayout
-          open={open}
-          profile={profile}
-          onClose={onClose}
-          existing
-        />
-      )}
-      {remove && <RemoveProfileLayout profile={profile} onClose={onClose} />}
-      <Button onClick={onClose}>Cancel</Button>
-    </Modal>
-  )
-}
+}) => (
+  <Modal open={open}>
+    {type === MODAL_TYPE.CREATE && (
+      <SaveProfileLayout open={open} onClose={onClose} existing={false} />
+    )}
+    {type === MODAL_TYPE.EDIT && (
+      <SaveProfileLayout
+        open={open}
+        profile={profile}
+        onClose={onClose}
+        existing
+      />
+    )}
+    {type === MODAL_TYPE.REMOVE && (
+      <RemoveProfileLayout profile={profile} onClose={onClose} />
+    )}
+    <Button onClick={onClose}>Cancel</Button>
+  </Modal>
+)
 
 export default ProfileModal

@@ -1,19 +1,12 @@
 import React, { useState } from 'react'
 import { useProfiles, useSelectedProfile } from '../../hooks'
 
-import Button from '../Button'
-import ProfileModal from '../../components/ProfileModal'
-
-import styles from './styles.module.scss'
 import type { Profile } from '../../db'
 
-export enum MODAL_TYPE {
-  CREATE = 'CREATE',
-  EDIT = 'EDIT',
-  REMOVE = 'REMOVE'
-}
+import Button from '../Button'
+import ProfileModal, { MODAL_TYPE } from '../../components/ProfileModal'
 
-type ModalType = MODAL_TYPE
+import styles from './styles.module.scss'
 
 type ProfileListProps = {
   className?: string
@@ -22,14 +15,14 @@ type ProfileListProps = {
 const ProfileList: React.FC<ProfileListProps> = ({
   className = ''
 }: ProfileListProps) => {
-  const [modalType, setModalType] = useState<ModalType>(MODAL_TYPE.CREATE)
+  const [modalType, setModalType] = useState(MODAL_TYPE.CREATE)
   const [modalProfile, setModalProfile] = useState<Profile>()
   const [modalOpen, setModalOpen] = useState(false)
 
   const [selected, setSelected] = useSelectedProfile()
   const { profiles } = useProfiles()
 
-  function showModal(modalType: ModalType, profile?: Profile) {
+  function openModal(modalType: MODAL_TYPE, profile?: Profile) {
     if (profile) setModalProfile(profile)
     setModalType(modalType)
     setModalOpen(true)
@@ -39,14 +32,12 @@ const ProfileList: React.FC<ProfileListProps> = ({
     <div className={`${styles.profileList} ${className}`}>
       <ProfileModal
         profile={modalProfile}
+        type={modalType}
         open={modalOpen}
-        create={modalType === MODAL_TYPE.CREATE}
-        edit={modalType === MODAL_TYPE.EDIT}
-        remove={modalType === MODAL_TYPE.REMOVE}
         onClose={() => setModalOpen(false)}
       />
 
-      <Button onClick={() => showModal(MODAL_TYPE.CREATE)} primary>
+      <Button onClick={() => openModal(MODAL_TYPE.CREATE)} primary>
         Create Profile
       </Button>
 
@@ -59,11 +50,11 @@ const ProfileList: React.FC<ProfileListProps> = ({
             <Button onClick={() => setSelected(profile.id)}>
               {(selected?.id === profile.id ? 'Selected: ' : '') + profile.name}
             </Button>
-            <Button onClick={() => showModal(MODAL_TYPE.EDIT, profile)}>
+            <Button onClick={() => openModal(MODAL_TYPE.EDIT, profile)}>
               Edit
             </Button>
             <Button
-              onClick={() => showModal(MODAL_TYPE.REMOVE, profile)}
+              onClick={() => openModal(MODAL_TYPE.REMOVE, profile)}
               destroy
             >
               Remove
