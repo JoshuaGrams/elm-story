@@ -12,12 +12,16 @@
   backdrop-filter: $glass-blur;
   border-bottom: 1px solid hsl(0, 0%, 0%);
 
-  header {
-    text-align: center;
-    height: 100%;
-    line-height: $title-bar-height;
-    font-size: 12px;
-    text-transform: uppercase;
+  .appMenu {
+    top: $title-bar-height - 1px;
+
+    &.floating {
+      left: 102px - 23px;
+    }
+
+    &.fullscreen {
+      left: 79px - 23px;
+    }
   }
 
   .titleBarButtonsContainer {
@@ -25,7 +29,7 @@
     left: 10px;
     height: 100%;
     display: grid;
-    width: 69px;
+    width: auto;
     cursor: pointer !important;
 
     .titleBarButton {
@@ -53,5 +57,13 @@
         background: url('../../../assets/imgs/menu-button.svg');
       }
     }
+  }
+
+  header {
+    text-align: center;
+    height: 100%;
+    line-height: $title-bar-height;
+    font-size: 12px;
+    text-transform: uppercase;
   }
 }

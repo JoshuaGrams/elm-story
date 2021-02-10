@@ -3,18 +3,28 @@ import React, { useMemo, createContext, useReducer } from 'react'
 type AppState = {
   header: string
   fullscreen: boolean
+  menuOpen: boolean
+  modalOpen: boolean
 }
 
 export enum APP_ACTION_TYPE {
   HEADER = 'HEADER',
   FULLSCREEN = 'FULLSCREEN',
-  FLOATING = 'FLOATING'
+  FLOATING = 'FLOATING',
+  MENU_OPEN = 'MENU_OPEN',
+  MENU_CLOSE = 'MENU_CLOSE',
+  MODAL_OPEN = 'MODAL_OPEN',
+  MODAL_CLOSE = 'MODAL_CLOSE'
 }
 
 type AppAction =
   | { type: APP_ACTION_TYPE.HEADER; header: string }
   | { type: APP_ACTION_TYPE.FULLSCREEN }
   | { type: APP_ACTION_TYPE.FLOATING }
+  | { type: APP_ACTION_TYPE.MENU_OPEN }
+  | { type: APP_ACTION_TYPE.MENU_CLOSE }
+  | { type: APP_ACTION_TYPE.MODAL_OPEN }
+  | { type: APP_ACTION_TYPE.MODAL_CLOSE }
 
 type AppContextType = {
   app: AppState
@@ -23,7 +33,9 @@ type AppContextType = {
 
 const defaultAppState: AppState = {
   header: 'Elm Story',
-  fullscreen: false
+  fullscreen: false,
+  menuOpen: false,
+  modalOpen: false
 }
 
 const appReducer = (state: AppState, action: AppAction): AppState => {
@@ -34,6 +46,14 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
       return { ...state, fullscreen: true }
     case APP_ACTION_TYPE.FLOATING:
       return { ...state, fullscreen: false }
+    case APP_ACTION_TYPE.MENU_OPEN:
+      return { ...state, menuOpen: true }
+    case APP_ACTION_TYPE.MENU_CLOSE:
+      return { ...state, menuOpen: false }
+    case APP_ACTION_TYPE.MODAL_OPEN:
+      return { ...state, modalOpen: true }
+    case APP_ACTION_TYPE.MODAL_CLOSE:
+      return { ...state, modalOpen: false }
     default:
       return state
   }

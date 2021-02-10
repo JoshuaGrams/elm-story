@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useContext } from 'react'
 
 import { WINDOW_EVENTS } from '../../lib/events'
 
+import AppMenu from '../AppMenu'
+
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 
 import styles from './styles.module.scss'
@@ -83,6 +85,13 @@ export default () => {
 
   return (
     <div className={styles.titleBar}>
+      <AppMenu
+        className={`${styles.appMenu} ${
+          app.fullscreen ? styles.fullscreen : styles.floating
+        }`}
+        open={app.menuOpen}
+      />
+
       <div className={styles.titleBarButtonsContainer}>
         <TitleBarButton
           type={TITLE_BAR_BUTTON_TYPE.QUIT}
@@ -108,8 +117,18 @@ export default () => {
             })
           }
         />
-        <TitleBarButton type={TITLE_BAR_BUTTON_TYPE.MENU} />
+        <TitleBarButton
+          type={TITLE_BAR_BUTTON_TYPE.MENU}
+          onClick={() =>
+            appDispatch({
+              type: app.menuOpen
+                ? APP_ACTION_TYPE.MENU_CLOSE
+                : APP_ACTION_TYPE.MENU_OPEN
+            })
+          }
+        />
       </div>
+
       <header>{app.header}</header>
     </div>
   )

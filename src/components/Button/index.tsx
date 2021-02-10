@@ -2,7 +2,8 @@ import React from 'react'
 
 import styles from './styles.module.scss'
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   primary?: boolean
   destroy?: boolean
 }
