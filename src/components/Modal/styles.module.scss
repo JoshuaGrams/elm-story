@@ -4,14 +4,14 @@
   z-index: $modal-z-index;
   opacity: 0;
   transition: opacity 0.2s;
-  background: $modal-opacity;
+  background: $glass-opacity;
   position: fixed;
   left: 0px;
   right: 0px;
   bottom: 0px;
   top: 0px;
   pointer-events: none;
-  backdrop-filter: blur(20px);
+  backdrop-filter: $glass-blur;
 
   &.show {
     opacity: 1;

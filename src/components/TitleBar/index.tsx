@@ -8,10 +8,11 @@ import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 import styles from './styles.module.scss'
 
 enum TITLE_BAR_BUTTON_TYPE {
-  QUIT = 0,
-  MINIMIZE = 1,
-  FULLSCREEN = 2,
-  FLOATING = 3
+  QUIT = 'QUIT',
+  MINIMIZE = 'MINIMIZE',
+  FULLSCREEN = 'FULLSCREEN',
+  FLOATING = 'FLOATING',
+  MENU = 'MENU'
 }
 
 interface TitleBarButtonProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -37,6 +38,10 @@ const TitleBarButton = ({ onClick, type }: TitleBarButtonProps) => {
     case TITLE_BAR_BUTTON_TYPE.FLOATING:
       buttonStyle = styles.floatingButton
       buttonTitle = 'Exit Fullscreen'
+      break
+    case TITLE_BAR_BUTTON_TYPE.MENU:
+      buttonStyle = styles.menuButton
+      buttonTitle = 'Menu'
       break
     default:
       throw new Error('Unable to generate TitleBarButton. Missing type.')
@@ -103,6 +108,7 @@ export default () => {
             })
           }
         />
+        <TitleBarButton type={TITLE_BAR_BUTTON_TYPE.MENU} />
       </div>
       <header>{app.header}</header>
     </div>

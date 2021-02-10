@@ -7,8 +7,10 @@
   left: 0px;
   width: 100%;
   box-sizing: border-box;
-  background-color: black;
+  background: $glass-opacity;
   -webkit-app-region: drag;
+  backdrop-filter: $glass-blur;
+  border-bottom: 1px solid hsl(0, 0%, 0%);
 
   header {
     text-align: center;
@@ -45,6 +47,10 @@
 
       &.fullscreenButton {
         background: url('../../../assets/imgs/fullscreen-button.svg');
+      }
+
+      &.menuButton {
+        background: url('../../../assets/imgs/menu-button.svg');
       }
     }
   }
