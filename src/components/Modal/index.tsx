@@ -1,29 +1,35 @@
-import React from 'react'
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
+
+import Transition, { TRANSITION_TYPE } from '../Transition'
 
 import styles from './styles.module.scss'
 
-export interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
-  show?: boolean
-  onHide?: () => void
+export interface ModalProps {
+  open?: boolean
+  onClose?: () => void
+  className?: string
 }
 
-export default ({
-  show = false,
-  onHide,
+const Modal: React.FC<ModalProps> = ({
+  open = false,
+  onClose,
   children,
   className = ''
-}: ModalProps) => {
+}) => {
   useEffect(() => {
     // Hide scroll bar when modal is open
-    document.body.style.overflow = show ? 'hidden' : 'unset'
+    document.body.style.overflow = open ? 'hidden' : 'unset'
 
-    if (!show && onHide) onHide()
-  }, [show])
+    if (!open && onClose) onClose()
+  }, [open])
 
   return (
-    <div className={`${styles.modal} ${className} ${show ? styles.show : ''}`}>
-      <div className={styles.wrapper}>{children}</div>
-    </div>
+    <Transition in={open} type={TRANSITION_TYPE.FADE}>
+      <div className={`${styles.modal} ${className}`}>
+        <div className={styles.wrapper}>{children}</div>
+      </div>
+    </Transition>
   )
 }
+
+export default Modal

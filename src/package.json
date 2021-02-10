@@ -14,9 +14,11 @@
   },
   "license": "UNLICENSED",
   "dependencies": {
+    "@types/react-transition-group": "^4.4.0",
     "dexie": "^3.1.0-alpha",
     "dexie-react-hooks": "^1.0.2",
     "react": "^17.0.1",
+    "react-transition-group": "^4.4.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

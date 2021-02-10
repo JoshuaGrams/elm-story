@@ -17,11 +17,11 @@ enum TITLE_BAR_BUTTON_TYPE {
   MENU = 'MENU'
 }
 
-interface TitleBarButtonProps extends React.HTMLAttributes<HTMLDivElement> {
+interface TitleBarButtonProps extends React.HTMLProps<HTMLDivElement> {
   type: TITLE_BAR_BUTTON_TYPE
 }
 
-const TitleBarButton = ({ onClick, type }: TitleBarButtonProps) => {
+const TitleBarButton: React.FC<TitleBarButtonProps> = ({ onClick, type }) => {
   let buttonStyle, buttonTitle
 
   switch (type) {
@@ -58,7 +58,7 @@ const TitleBarButton = ({ onClick, type }: TitleBarButtonProps) => {
   )
 }
 
-export default () => {
+const TitleBar: React.FC = () => {
   const { app, appDispatch } = useContext(AppContext)
   /**
    * TODO: this is used to prevent toggling out of full screen
@@ -97,12 +97,12 @@ export default () => {
           type={TITLE_BAR_BUTTON_TYPE.QUIT}
           onClick={() => ipcRenderer.send(WINDOW_EVENTS.QUIT)}
         />
-        {!app.fullscreen ? (
+        {!app.fullscreen && (
           <TitleBarButton
             type={TITLE_BAR_BUTTON_TYPE.MINIMIZE}
             onClick={() => ipcRenderer.send(WINDOW_EVENTS.MINIMIZE)}
           />
-        ) : null}
+        )}
         <TitleBarButton
           type={
             app.fullscreen
@@ -133,3 +133,5 @@ export default () => {
     </div>
   )
 }
+
+export default TitleBar

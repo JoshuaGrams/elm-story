@@ -2,21 +2,13 @@
 
 .modal {
   z-index: $modal-z-index;
-  opacity: 0;
-  transition: opacity 0.2s;
   background: $glass-opacity;
   position: fixed;
   left: 0px;
   right: 0px;
   bottom: 0px;
   top: 0px;
-  pointer-events: none;
   backdrop-filter: $glass-blur;
-
-  &.show {
-    opacity: 1;
-    pointer-events: unset;
-  }
 
   .wrapper {
     min-width: 320px;

@@ -19,19 +19,19 @@ interface SaveProfileLayoutProps extends ProfileModalProps {
   existing: boolean
 }
 
-const SaveProfileLayout = ({
+const SaveProfileLayout: React.FC<SaveProfileLayoutProps> = ({
   profile,
-  show,
-  onHide,
+  open,
+  onClose,
   existing = false
-}: SaveProfileLayoutProps) => {
+}) => {
   const [name, setName] = useState('')
   const [, setSelected] = useSelectedProfile()
   const { save } = useProfiles()
   const nameInput = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (show) {
+    if (open) {
       setName(existing && profile ? profile.name : '')
 
       setTimeout(() => {
@@ -41,7 +41,7 @@ const SaveProfileLayout = ({
         }
       }, 1)
     }
-  }, [show])
+  }, [open])
 
   async function saveProfile(event: React.MouseEvent) {
     event.preventDefault()
@@ -52,7 +52,7 @@ const SaveProfileLayout = ({
         await setSelected(await save({ name }))
       }
 
-      if (onHide) onHide()
+      if (onClose) onClose()
     } else {
       throw new Error('Profile name required.')
     }
@@ -82,12 +82,15 @@ const SaveProfileLayout = ({
   )
 }
 
-const RemoveProfileLayout = ({ profile, onHide }: ProfileModalProps) => {
+const RemoveProfileLayout: React.FC<ProfileModalProps> = ({
+  profile,
+  onClose
+}) => {
   const { remove } = useProfiles()
 
   async function removeProfile() {
     if (profile) remove(profile.id)
-    if (onHide) onHide()
+    if (onClose) onClose()
   }
 
   if (!profile)
@@ -107,33 +110,33 @@ const RemoveProfileLayout = ({ profile, onHide }: ProfileModalProps) => {
   )
 }
 
-export default ({
+const ProfileModal: React.FC<ProfileModalProps> = ({
   profile,
-  show = false,
+  open = false,
   create = true,
   edit = false,
   remove = false,
-  onHide
-}: ProfileModalProps) => {
+  onClose
+}) => {
   if (edit || remove) create = false
 
   return (
-    <Modal show={show}>
-      {create ? (
-        <SaveProfileLayout show={show} onHide={onHide} existing={false} />
-      ) : null}
-      {edit ? (
+    <Modal open={open}>
+      {create && (
+        <SaveProfileLayout open={open} onClose={onClose} existing={false} />
+      )}
+      {edit && (
         <SaveProfileLayout
-          show={show}
+          open={open}
           profile={profile}
-          onHide={onHide}
+          onClose={onClose}
           existing
         />
-      ) : null}
-      {remove ? (
-        <RemoveProfileLayout profile={profile} onHide={onHide} />
-      ) : null}
-      <Button onClick={onHide}>Cancel</Button>
+      )}
+      {remove && <RemoveProfileLayout profile={profile} onClose={onClose} />}
+      <Button onClick={onClose}>Cancel</Button>
     </Modal>
   )
 }
+
+export default ProfileModal

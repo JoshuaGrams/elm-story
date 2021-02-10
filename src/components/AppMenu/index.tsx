@@ -34,12 +34,12 @@ export default ({ open = false, className }: AppMenuProps) => {
 
   return (
     <>
-      {open ? (
+      {open && (
         <div className={`${styles.appMenu} ${className}`}>
           <MenuRow title="Create Profile..." />
-          {selectedProfile && selectedProfile.name ? (
+          {selectedProfile && selectedProfile.name && (
             <MenuRow title={`Selected profile: ${selectedProfile?.name}`} />
-          ) : null}
+          )}
 
           <MenuRowSpacer />
 
@@ -53,7 +53,7 @@ export default ({ open = false, className }: AppMenuProps) => {
             onClick={() => ipcRenderer.send(WINDOW_EVENTS.QUIT)}
           />
         </div>
-      ) : null}
+      )}
     </>
   )
 }
