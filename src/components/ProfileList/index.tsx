@@ -4,7 +4,11 @@ import { useProfiles, useSelectedProfile } from '../../hooks'
 import type { Profile } from '../../db'
 
 import Button from '../Button'
-import ProfileModal, { MODAL_TYPE } from '../../components/ProfileModal'
+
+import Modal from '../Modal'
+import ProfileModalLayout, {
+  PROFILE_MODAL_LAYOUT_TYPE
+} from '../../layouts/ProfileModal'
 
 import styles from './styles.module.scss'
 
@@ -15,29 +19,34 @@ type ProfileListProps = {
 const ProfileList: React.FC<ProfileListProps> = ({
   className = ''
 }: ProfileListProps) => {
-  const [modalType, setModalType] = useState(MODAL_TYPE.CREATE)
+  const [modalLayoutType, setModalLayoutType] = useState(
+    PROFILE_MODAL_LAYOUT_TYPE.CREATE
+  )
   const [modalProfile, setModalProfile] = useState<Profile>()
   const [modalOpen, setModalOpen] = useState(false)
 
   const [selected, setSelected] = useSelectedProfile()
   const { profiles } = useProfiles()
 
-  function openModal(modalType: MODAL_TYPE, profile?: Profile) {
+  function openModal(
+    modalLayoutType: PROFILE_MODAL_LAYOUT_TYPE,
+    profile?: Profile
+  ) {
     if (profile) setModalProfile(profile)
-    setModalType(modalType)
+    setModalLayoutType(modalLayoutType)
     setModalOpen(true)
   }
 
   return (
     <div className={`${styles.profileList} ${className}`}>
-      <ProfileModal
-        profile={modalProfile}
-        type={modalType}
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-      />
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <ProfileModalLayout profile={modalProfile} type={modalLayoutType} />
+      </Modal>
 
-      <Button onClick={() => openModal(MODAL_TYPE.CREATE)} primary>
+      <Button
+        onClick={() => openModal(PROFILE_MODAL_LAYOUT_TYPE.CREATE)}
+        primary
+      >
         Create Profile
       </Button>
 
@@ -50,11 +59,15 @@ const ProfileList: React.FC<ProfileListProps> = ({
             <Button onClick={() => setSelected(profile.id)}>
               {(selected?.id === profile.id ? 'Selected: ' : '') + profile.name}
             </Button>
-            <Button onClick={() => openModal(MODAL_TYPE.EDIT, profile)}>
+            <Button
+              onClick={() => openModal(PROFILE_MODAL_LAYOUT_TYPE.EDIT, profile)}
+            >
               Edit
             </Button>
             <Button
-              onClick={() => openModal(MODAL_TYPE.REMOVE, profile)}
+              onClick={() =>
+                openModal(PROFILE_MODAL_LAYOUT_TYPE.REMOVE, profile)
+              }
               destroy
             >
               Remove

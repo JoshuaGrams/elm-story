@@ -1,5 +1,7 @@
 import { ipcRenderer } from 'electron'
-import React from 'react'
+import React, { useState, useContext } from 'react'
+
+import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 
 import { useSelectedProfile } from '../../hooks/useProfiles'
 
@@ -9,11 +11,20 @@ import styles from './styles.module.scss'
 
 import Button, { ButtonProps } from '../Button'
 
+import Modal from '../Modal'
+import ProfileModalLayout, {
+  PROFILE_MODAL_LAYOUT_TYPE
+} from '../../layouts/ProfileModal'
+
 interface AppMenuRowProps extends ButtonProps {
   title: string
 }
 
-const MenuRow = ({ title, onClick, destroy = false }: AppMenuRowProps) => {
+const MenuRow: React.FC<AppMenuRowProps> = ({
+  title,
+  onClick,
+  destroy = false
+}) => {
   return (
     <Button className={styles.row} onClick={onClick} destroy={destroy}>
       {title}
@@ -21,22 +32,30 @@ const MenuRow = ({ title, onClick, destroy = false }: AppMenuRowProps) => {
   )
 }
 
-const MenuRowSpacer = () => {
+const MenuRowSpacer: React.FC = () => {
   return <div className={styles.spacer} />
 }
 
-interface AppMenuProps extends React.HTMLAttributes<HTMLDivElement> {
-  open?: boolean
-}
-
-export default ({ open = false, className }: AppMenuProps) => {
+const AppMenu: React.FC<{ className: string }> = ({ className }) => {
+  const { app, appDispatch } = useContext(AppContext)
+  const [profileModelOpen, setProfileModalOpen] = useState(false)
   const [selectedProfile] = useSelectedProfile()
 
   return (
     <>
-      {open && (
+      <Modal open={profileModelOpen} onClose={() => setProfileModalOpen(false)}>
+        <ProfileModalLayout type={PROFILE_MODAL_LAYOUT_TYPE.CREATE} />
+      </Modal>
+
+      {app.menuOpen && (
         <div className={`${styles.appMenu} ${className}`}>
-          <MenuRow title="Create Profile..." />
+          <MenuRow
+            title="Create Profile..."
+            onClick={() => {
+              appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+              setProfileModalOpen(true)
+            }}
+          />
           {selectedProfile && selectedProfile.name && (
             <MenuRow title={`Selected profile: ${selectedProfile?.name}`} />
           )}
@@ -57,3 +76,5 @@ export default ({ open = false, className }: AppMenuProps) => {
     </>
   )
 }
+
+export default AppMenu

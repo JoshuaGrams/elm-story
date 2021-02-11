@@ -10,6 +10,11 @@ export interface ModalProps {
   className?: string
 }
 
+/**
+ * Modal instance will unmount when
+ * open prop is false.
+ * Does not support fragments.
+ */
 const Modal: React.FC<ModalProps> = ({
   open = false,
   onClose,
@@ -26,7 +31,12 @@ const Modal: React.FC<ModalProps> = ({
   return (
     <Transition in={open} type={TRANSITION_TYPE.FADE}>
       <div className={`${styles.modal} ${className}`}>
-        <div className={styles.wrapper}>{children}</div>
+        <div className={styles.wrapper}>
+          {React.cloneElement(children as React.ReactElement, {
+            open,
+            onClose
+          })}
+        </div>
       </div>
     </Transition>
   )

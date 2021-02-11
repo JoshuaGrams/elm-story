@@ -14,17 +14,17 @@ async function save({
   name,
   selected = PROFILE.NOT_SELECTED,
   id = useUUID(),
-  existing = false
+  exists = false
 }: {
   name: string
   selected?: number
   id?: string
-  existing?: boolean
+  exists?: boolean
 }): Promise<string> {
   const appDB = useDatabase()
 
   try {
-    if (existing) {
+    if (exists) {
       appDB.transaction('rw', appDB.profiles, async () => {
         const existingProfile = await appDB.profiles.where({ id }).first()
 

@@ -1,33 +1,27 @@
-import React from 'react'
-import { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useProfiles, useSelectedProfile } from '../../hooks'
 
+import Button from '../../components/Button'
+import type { ModalProps } from '../../components/Modal'
+
 import type { Profile } from '../../db'
-import type { ModalProps } from '../Modal'
 
-import Modal from '../Modal'
-import Button from '../Button'
-
-export enum MODAL_TYPE {
+export enum PROFILE_MODAL_LAYOUT_TYPE {
   CREATE = 'CREATE',
   EDIT = 'EDIT',
   REMOVE = 'REMOVE'
 }
 
-interface ProfileModalProps extends ModalProps {
+interface ProfileModalLayoutProps extends ModalProps {
   profile?: Profile
-  type?: MODAL_TYPE
+  type?: PROFILE_MODAL_LAYOUT_TYPE
+  visible?: boolean
 }
 
-interface SaveProfileLayoutProps extends ProfileModalProps {
-  existing: boolean
-}
-
-const SaveProfileLayout: React.FC<SaveProfileLayoutProps> = ({
+const SaveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
   profile,
-  open,
-  onClose,
-  existing = false
+  visible = false,
+  onClose
 }) => {
   const [name, setName] = useState('')
   const [, setSelected] = useSelectedProfile()
@@ -35,8 +29,8 @@ const SaveProfileLayout: React.FC<SaveProfileLayoutProps> = ({
   const nameInput = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (open) {
-      setName(existing && profile ? profile.name : '')
+    if (visible) {
+      setName(profile ? profile.name : '')
 
       setTimeout(() => {
         if (nameInput && nameInput.current) {
@@ -45,13 +39,13 @@ const SaveProfileLayout: React.FC<SaveProfileLayoutProps> = ({
         }
       }, 1)
     }
-  }, [open])
+  }, [visible])
 
   async function saveProfile(event: React.MouseEvent) {
     event.preventDefault()
     if (name) {
-      if (existing && profile) {
-        await save({ name, existing, id: profile.id })
+      if (profile) {
+        await save({ name, exists: true, id: profile.id })
       } else {
         await setSelected(await save({ name }))
       }
@@ -64,7 +58,7 @@ const SaveProfileLayout: React.FC<SaveProfileLayoutProps> = ({
 
   return (
     <>
-      <h3>{existing && profile ? 'Edit ' : 'New '} Profile</h3>
+      <h3>{profile ? 'Edit ' : 'New '} Profile</h3>
       <form>
         <input
           type="value"
@@ -86,14 +80,14 @@ const SaveProfileLayout: React.FC<SaveProfileLayoutProps> = ({
   )
 }
 
-const RemoveProfileLayout: React.FC<ProfileModalProps> = ({
+const RemoveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
   profile,
   onClose
 }) => {
   const { remove } = useProfiles()
 
   async function removeProfile() {
-    if (profile) remove(profile.id)
+    if (profile) await remove(profile.id)
     if (onClose) onClose()
   }
 
@@ -114,33 +108,26 @@ const RemoveProfileLayout: React.FC<ProfileModalProps> = ({
   )
 }
 
-/**
- * ProfileModal instance will unmount when
- * open prop is false.
- */
-const ProfileModal: React.FC<ProfileModalProps> = ({
+const ProfileModalLayout: React.FC<ProfileModalLayoutProps> = ({
   profile,
-  type = MODAL_TYPE.CREATE,
-  open = false,
+  type,
+  open,
   onClose
-}) => (
-  <Modal open={open}>
-    {type === MODAL_TYPE.CREATE && (
-      <SaveProfileLayout open={open} onClose={onClose} existing={false} />
-    )}
-    {type === MODAL_TYPE.EDIT && (
-      <SaveProfileLayout
-        open={open}
-        profile={profile}
-        onClose={onClose}
-        existing
-      />
-    )}
-    {type === MODAL_TYPE.REMOVE && (
-      <RemoveProfileLayout profile={profile} onClose={onClose} />
-    )}
-    <Button onClick={onClose}>Cancel</Button>
-  </Modal>
-)
+}) => {
+  return (
+    <>
+      {type === PROFILE_MODAL_LAYOUT_TYPE.CREATE && (
+        <SaveProfileLayout visible={open} onClose={onClose} />
+      )}
+      {type === PROFILE_MODAL_LAYOUT_TYPE.EDIT && (
+        <SaveProfileLayout profile={profile} visible={open} onClose={onClose} />
+      )}
+      {type === PROFILE_MODAL_LAYOUT_TYPE.REMOVE && (
+        <RemoveProfileLayout profile={profile} onClose={onClose} />
+      )}
+      <Button onClick={onClose}>Cancel</Button>
+    </>
+  )
+}
 
-export default ProfileModal
+export default ProfileModalLayout
