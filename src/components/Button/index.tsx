@@ -2,7 +2,11 @@ import React from 'react'
 
 import styles from './styles.module.scss'
 
-export interface ButtonProps extends React.HTMLProps<HTMLButtonElement> {
+export interface ButtonProps
+  extends React.DetailedHTMLProps<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  > {
   primary?: boolean
   destroy?: boolean
 }
