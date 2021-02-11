@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron'
 import React, { useState, useContext } from 'react'
 
-import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
+import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
 import { useSelectedProfile } from '../../hooks/useProfiles'
 
@@ -69,7 +69,7 @@ const AppMenu: React.FC<{ className: string }> = ({ className }) => {
           <MenuRow
             title="Quit"
             destroy
-            onClick={() => ipcRenderer.send(WINDOW_EVENTS.QUIT)}
+            onClick={() => ipcRenderer.send(WINDOW_EVENT_TYPE.QUIT)}
           />
         </div>
       )}

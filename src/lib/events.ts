@@ -1,4 +1,4 @@
-export enum WINDOW_EVENTS {
+export enum WINDOW_EVENT_TYPE {
   QUIT = 'QUIT',
   MINIMIZE = 'MINIMIZE',
   FULLSCREEN = 'FULLSCREEN',

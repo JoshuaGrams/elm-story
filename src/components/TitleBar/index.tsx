@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron'
 import React, { useEffect, useRef, useContext } from 'react'
 
-import { WINDOW_EVENTS } from '../../lib/events'
+import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
 import AppMenu from '../AppMenu'
 
@@ -67,10 +67,10 @@ const TitleBar: React.FC = () => {
   const isFirstRun = useRef(true)
 
   useEffect(() => {
-    ipcRenderer.on(WINDOW_EVENTS.FULLSCREEN, () =>
+    ipcRenderer.on(WINDOW_EVENT_TYPE.FULLSCREEN, () =>
       appDispatch({ type: APP_ACTION_TYPE.FULLSCREEN })
     )
-    ipcRenderer.on(WINDOW_EVENTS.FLOAT, () =>
+    ipcRenderer.on(WINDOW_EVENT_TYPE.FLOAT, () =>
       appDispatch({ type: APP_ACTION_TYPE.FLOATING })
     )
   }, [])
@@ -79,7 +79,7 @@ const TitleBar: React.FC = () => {
     if (isFirstRun.current) {
       isFirstRun.current = false
     } else {
-      ipcRenderer.send(WINDOW_EVENTS.TOGGLE_FULLSCREEN, app.fullscreen)
+      ipcRenderer.send(WINDOW_EVENT_TYPE.TOGGLE_FULLSCREEN, app.fullscreen)
     }
   }, [app.fullscreen])
 
@@ -95,12 +95,12 @@ const TitleBar: React.FC = () => {
       <div className={styles.titleBarButtonsContainer}>
         <TitleBarButton
           type={TITLE_BAR_BUTTON_TYPE.QUIT}
-          onClick={() => ipcRenderer.send(WINDOW_EVENTS.QUIT)}
+          onClick={() => ipcRenderer.send(WINDOW_EVENT_TYPE.QUIT)}
         />
         {!app.fullscreen && (
           <TitleBarButton
             type={TITLE_BAR_BUTTON_TYPE.MINIMIZE}
-            onClick={() => ipcRenderer.send(WINDOW_EVENTS.MINIMIZE)}
+            onClick={() => ipcRenderer.send(WINDOW_EVENT_TYPE.MINIMIZE)}
           />
         )}
         <TitleBarButton

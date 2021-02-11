@@ -16,7 +16,7 @@ import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import MenuBuilder from './menu'
 
-import { WINDOW_EVENTS } from './lib/events'
+import { WINDOW_EVENT_TYPE } from './lib/events'
 
 export default class AppUpdater {
   constructor() {
@@ -95,19 +95,21 @@ const createWindow = async () => {
     }
 
     mainWindow.webContents.send(
-      mainWindow.fullScreen ? WINDOW_EVENTS.FULLSCREEN : WINDOW_EVENTS.FLOAT
+      mainWindow.fullScreen
+        ? WINDOW_EVENT_TYPE.FULLSCREEN
+        : WINDOW_EVENT_TYPE.FLOAT
     )
 
     mainWindow.on('enter-full-screen', () =>
-      mainWindow?.webContents.send(WINDOW_EVENTS.FULLSCREEN)
+      mainWindow?.webContents.send(WINDOW_EVENT_TYPE.FULLSCREEN)
     )
     mainWindow.on('leave-full-screen', () =>
-      mainWindow?.webContents.send(WINDOW_EVENTS.FLOAT)
+      mainWindow?.webContents.send(WINDOW_EVENT_TYPE.FLOAT)
     )
 
-    ipcMain.on(WINDOW_EVENTS.QUIT, () => app.quit())
-    ipcMain.on(WINDOW_EVENTS.MINIMIZE, () => mainWindow?.minimize())
-    ipcMain.on(WINDOW_EVENTS.TOGGLE_FULLSCREEN, ({}, isFullscreen) => {
+    ipcMain.on(WINDOW_EVENT_TYPE.QUIT, () => app.quit())
+    ipcMain.on(WINDOW_EVENT_TYPE.MINIMIZE, () => mainWindow?.minimize())
+    ipcMain.on(WINDOW_EVENT_TYPE.TOGGLE_FULLSCREEN, ({}, isFullscreen) => {
       if (mainWindow) {
         if (isFullscreen && !mainWindow.fullScreen)
           mainWindow.setFullScreen(true)
