@@ -1,12 +1,21 @@
 @import '../../styles/variables';
 
 .appMenu {
+  top: $title-bar-height - 1px;
   position: fixed;
   background: $glass-opacity;
   border: 1px solid black;
   backdrop-filter: $glass-blur;
   box-sizing: border-box;
   width: 200px;
+
+  &.floating {
+    left: 102px - 23px;
+  }
+
+  &.fullscreen {
+    left: 79px - 23px;
+  }
 
   .row {
     display: block;

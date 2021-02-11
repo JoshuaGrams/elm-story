@@ -12,18 +12,6 @@
   backdrop-filter: $glass-blur;
   border-bottom: 1px solid hsl(0, 0%, 0%);
 
-  .appMenu {
-    top: $title-bar-height - 1px;
-
-    &.floating {
-      left: 102px - 23px;
-    }
-
-    &.fullscreen {
-      left: 79px - 23px;
-    }
-  }
-
   .titleBarButtonsContainer {
     position: absolute;
     left: 10px;

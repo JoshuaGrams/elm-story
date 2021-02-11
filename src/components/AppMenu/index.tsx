@@ -8,6 +8,7 @@ import { useSelectedProfile } from '../../hooks/useProfiles'
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
 
+import Transition, { TRANSITION_TYPE } from '../Transition'
 import Button, { ButtonProps } from '../Button'
 
 import styles from './styles.module.scss'
@@ -36,65 +37,67 @@ const MenuRowSpacer: React.FC = () => {
   return <div className={styles.spacer} />
 }
 
-const AppMenu: React.FC<{ className: string }> = ({ className }) => {
+const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
   const { app, appDispatch } = useContext(AppContext)
   const { modalDispatch } = useContext(ModalContext)
   const [selectedProfile] = useSelectedProfile()
 
   return (
-    <>
-      {app.menuOpen && (
-        <div className={`${styles.appMenu} ${className}`}>
+    <Transition in={app.menuOpen} type={TRANSITION_TYPE.FADE}>
+      <div
+        className={`${styles.appMenu} ${
+          app.fullscreen ? styles.fullscreen : styles.floating
+        } ${className}`}
+      >
+        <MenuRow
+          title="Create Profile..."
+          onClick={() => {
+            appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+
+            modalDispatch({
+              type: MODAL_ACTION_TYPE.LAYOUT,
+              layout: (
+                <ProfileModalLayout type={PROFILE_MODAL_LAYOUT_TYPE.CREATE} />
+              )
+            })
+
+            modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+          }}
+        />
+        {selectedProfile && selectedProfile.name && (
           <MenuRow
-            title="Create Profile..."
+            title={`Selected profile: ${selectedProfile?.name}`}
             onClick={() => {
               appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
               modalDispatch({
                 type: MODAL_ACTION_TYPE.LAYOUT,
                 layout: (
-                  <ProfileModalLayout type={PROFILE_MODAL_LAYOUT_TYPE.CREATE} />
+                  <ProfileModalLayout
+                    type={PROFILE_MODAL_LAYOUT_TYPE.EDIT}
+                    profile={selectedProfile}
+                  />
                 )
               })
 
               modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
             }}
           />
-          {selectedProfile && selectedProfile.name && (
-            <MenuRow
-              title={`Selected profile: ${selectedProfile?.name}`}
-              onClick={() => {
-                appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+        )}
 
-                modalDispatch({
-                  type: MODAL_ACTION_TYPE.LAYOUT,
-                  layout: (
-                    <ProfileModalLayout
-                      type={PROFILE_MODAL_LAYOUT_TYPE.EDIT}
-                      profile={selectedProfile}
-                    />
-                  )
-                })
+        <MenuRowSpacer />
 
-                modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-              }}
-            />
-          )}
+        <MenuRow title="Create Game..." />
 
-          <MenuRowSpacer />
+        <MenuRowSpacer />
 
-          <MenuRow title="Create Game..." />
-
-          <MenuRowSpacer />
-
-          <MenuRow
-            title="Quit"
-            destroy
-            onClick={() => ipcRenderer.send(WINDOW_EVENT_TYPE.QUIT)}
-          />
-        </div>
-      )}
-    </>
+        <MenuRow
+          title="Quit"
+          destroy
+          onClick={() => ipcRenderer.send(WINDOW_EVENT_TYPE.QUIT)}
+        />
+      </div>
+    </Transition>
   )
 }
 
