@@ -1,10 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react'
+import type { Profile } from '../../db'
+import type { ModalProps } from '../../components/Modal'
+
+import React, { useEffect, useState } from 'react'
+
 import { useProfiles, useSelectedProfile } from '../../hooks'
 
 import Button from '../../components/Button'
-import type { ModalProps } from '../../components/Modal'
-
-import type { Profile } from '../../db'
+import Input from '../../components/Input'
 
 export enum PROFILE_MODAL_LAYOUT_TYPE {
   CREATE = 'CREATE',
@@ -26,23 +28,14 @@ const SaveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
   const [name, setName] = useState('')
   const [, setSelected] = useSelectedProfile()
   const { save } = useProfiles()
-  const nameInput = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (visible) {
-      setName(profile ? profile.name : '')
-
-      setTimeout(() => {
-        if (nameInput && nameInput.current) {
-          nameInput.current.focus()
-          nameInput.current.select()
-        }
-      }, 1)
-    }
+    if (visible) setName(profile ? profile.name : '')
   }, [visible])
 
   async function saveProfile(event: React.MouseEvent) {
     event.preventDefault()
+
     if (name) {
       if (profile) {
         await save({ name, exists: true, id: profile.id })
@@ -60,12 +53,13 @@ const SaveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
     <>
       <h3>{profile ? 'Edit ' : 'New '} Profile</h3>
       <form>
-        <input
+        <Input
           type="value"
           placeholder="Profile Name"
           onChange={(event) => setName(event.target.value)}
           value={name}
-          ref={nameInput}
+          focusOnMount
+          selectOnMount
         />
         <Button
           type="submit"

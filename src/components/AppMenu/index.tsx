@@ -1,17 +1,17 @@
 import { ipcRenderer } from 'electron'
-import React, { useState, useContext } from 'react'
+import React, { useContext } from 'react'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
 import { useSelectedProfile } from '../../hooks/useProfiles'
 
-import { WINDOW_EVENTS } from '../../lib/events'
-
-import styles from './styles.module.scss'
+import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
+import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
 
 import Button, { ButtonProps } from '../Button'
 
-import Modal from '../Modal'
+import styles from './styles.module.scss'
+
 import ProfileModalLayout, {
   PROFILE_MODAL_LAYOUT_TYPE
 } from '../../layouts/ProfileModal'
@@ -38,26 +38,47 @@ const MenuRowSpacer: React.FC = () => {
 
 const AppMenu: React.FC<{ className: string }> = ({ className }) => {
   const { app, appDispatch } = useContext(AppContext)
-  const [profileModelOpen, setProfileModalOpen] = useState(false)
+  const { modalDispatch } = useContext(ModalContext)
   const [selectedProfile] = useSelectedProfile()
 
   return (
     <>
-      <Modal open={profileModelOpen} onClose={() => setProfileModalOpen(false)}>
-        <ProfileModalLayout type={PROFILE_MODAL_LAYOUT_TYPE.CREATE} />
-      </Modal>
-
       {app.menuOpen && (
         <div className={`${styles.appMenu} ${className}`}>
           <MenuRow
             title="Create Profile..."
             onClick={() => {
               appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
-              setProfileModalOpen(true)
+
+              modalDispatch({
+                type: MODAL_ACTION_TYPE.LAYOUT,
+                layout: (
+                  <ProfileModalLayout type={PROFILE_MODAL_LAYOUT_TYPE.CREATE} />
+                )
+              })
+
+              modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
             }}
           />
           {selectedProfile && selectedProfile.name && (
-            <MenuRow title={`Selected profile: ${selectedProfile?.name}`} />
+            <MenuRow
+              title={`Selected profile: ${selectedProfile?.name}`}
+              onClick={() => {
+                appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+
+                modalDispatch({
+                  type: MODAL_ACTION_TYPE.LAYOUT,
+                  layout: (
+                    <ProfileModalLayout
+                      type={PROFILE_MODAL_LAYOUT_TYPE.EDIT}
+                      profile={selectedProfile}
+                    />
+                  )
+                })
+
+                modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+              }}
+            />
           )}
 
           <MenuRowSpacer />

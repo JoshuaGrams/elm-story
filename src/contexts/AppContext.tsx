@@ -26,18 +26,6 @@ type AppActionType =
   | { type: APP_ACTION_TYPE.MODAL_OPEN }
   | { type: APP_ACTION_TYPE.MODAL_CLOSE }
 
-type AppContextType = {
-  app: AppState
-  appDispatch: React.Dispatch<AppActionType>
-}
-
-const defaultAppState: AppState = {
-  header: 'Elm Story',
-  fullscreen: false,
-  menuOpen: false,
-  modalOpen: false
-}
-
 const appReducer = (state: AppState, action: AppActionType): AppState => {
   switch (action.type) {
     case APP_ACTION_TYPE.HEADER:
@@ -59,12 +47,24 @@ const appReducer = (state: AppState, action: AppActionType): AppState => {
   }
 }
 
+type AppContextType = {
+  app: AppState
+  appDispatch: React.Dispatch<AppActionType>
+}
+
+const defaultAppState: AppState = {
+  header: 'Elm Story',
+  fullscreen: false,
+  menuOpen: false,
+  modalOpen: false
+}
+
 export const AppContext = createContext<AppContextType>({
   app: defaultAppState,
   appDispatch: () => {}
 })
 
-export const AppProvider: React.FC<React.ReactNode> = ({ children }) => {
+const AppProvider: React.FC = ({ children }) => {
   const [app, appDispatch] = useReducer(appReducer, defaultAppState)
 
   return (

@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
+
 import { useProfiles, useSelectedProfile } from '../../hooks'
 
-import type { Profile } from '../../db'
+import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
 
 import Button from '../Button'
 
-import Modal from '../Modal'
 import ProfileModalLayout, {
   PROFILE_MODAL_LAYOUT_TYPE
 } from '../../layouts/ProfileModal'
@@ -19,32 +19,25 @@ type ProfileListProps = {
 const ProfileList: React.FC<ProfileListProps> = ({
   className = ''
 }: ProfileListProps) => {
-  const [modalLayoutType, setModalLayoutType] = useState(
-    PROFILE_MODAL_LAYOUT_TYPE.CREATE
-  )
-  const [modalProfile, setModalProfile] = useState<Profile>()
-  const [modalOpen, setModalOpen] = useState(false)
-
   const [selected, setSelected] = useSelectedProfile()
   const { profiles } = useProfiles()
 
-  function openModal(
-    modalLayoutType: PROFILE_MODAL_LAYOUT_TYPE,
-    profile?: Profile
-  ) {
-    if (profile) setModalProfile(profile)
-    setModalLayoutType(modalLayoutType)
-    setModalOpen(true)
-  }
+  const { modalDispatch } = useContext(ModalContext)
 
   return (
     <div className={`${styles.profileList} ${className}`}>
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <ProfileModalLayout profile={modalProfile} type={modalLayoutType} />
-      </Modal>
-
+      {/* Create profile button */}
       <Button
-        onClick={() => openModal(PROFILE_MODAL_LAYOUT_TYPE.CREATE)}
+        onClick={() => {
+          modalDispatch({
+            type: MODAL_ACTION_TYPE.LAYOUT,
+            layout: (
+              <ProfileModalLayout type={PROFILE_MODAL_LAYOUT_TYPE.CREATE} />
+            )
+          })
+
+          modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+        }}
         primary
       >
         Create Profile
@@ -56,18 +49,45 @@ const ProfileList: React.FC<ProfileListProps> = ({
       <ul>
         {profiles?.map((profile) => (
           <div key={profile.id} className={styles.profileRow}>
+            {/* Select profile button */}
             <Button onClick={() => setSelected(profile.id)}>
               {(selected?.id === profile.id ? 'Selected: ' : '') + profile.name}
             </Button>
+
+            {/* Edit profile button */}
             <Button
-              onClick={() => openModal(PROFILE_MODAL_LAYOUT_TYPE.EDIT, profile)}
+              onClick={() => {
+                modalDispatch({
+                  type: MODAL_ACTION_TYPE.LAYOUT,
+                  layout: (
+                    <ProfileModalLayout
+                      type={PROFILE_MODAL_LAYOUT_TYPE.EDIT}
+                      profile={profile}
+                    />
+                  )
+                })
+
+                modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+              }}
             >
               Edit
             </Button>
+
+            {/* Remove profile button */}
             <Button
-              onClick={() =>
-                openModal(PROFILE_MODAL_LAYOUT_TYPE.REMOVE, profile)
-              }
+              onClick={() => {
+                modalDispatch({
+                  type: MODAL_ACTION_TYPE.LAYOUT,
+                  layout: (
+                    <ProfileModalLayout
+                      type={PROFILE_MODAL_LAYOUT_TYPE.REMOVE}
+                      profile={profile}
+                    />
+                  )
+                })
+
+                modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+              }}
               destroy
             >
               Remove
