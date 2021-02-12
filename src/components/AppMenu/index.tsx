@@ -21,19 +21,25 @@ interface AppMenuRowProps extends ButtonProps {
   title: string
 }
 
-const MenuRow: React.FC<AppMenuRowProps> = ({
+const MenuButton: React.FC<AppMenuRowProps> = ({
   title,
   onClick,
-  destroy = false
+  destroy = false,
+  disabled = false
 }) => {
   return (
-    <Button className={styles.row} onClick={onClick} destroy={destroy}>
+    <Button
+      className={styles.row}
+      onClick={onClick}
+      destroy={destroy}
+      disabled={disabled}
+    >
       {title}
     </Button>
   )
 }
 
-const MenuRowSpacer: React.FC = () => {
+const MenuVerticalSpacer: React.FC = () => {
   return <div className={styles.spacer} />
 }
 
@@ -58,7 +64,7 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
             app.fullscreen ? styles.fullscreen : styles.floating
           } ${className}`}
         >
-          <MenuRow
+          <MenuButton
             title="Create Profile..."
             onClick={() => {
               appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
@@ -74,7 +80,7 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
             }}
           />
           {selectedProfile && selectedProfile.name && (
-            <MenuRow
+            <MenuButton
               title={`Selected profile: ${selectedProfile?.name}`}
               onClick={() => {
                 appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
@@ -94,13 +100,13 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
             />
           )}
 
-          <MenuRowSpacer />
+          <MenuVerticalSpacer />
 
-          <MenuRow title="Create Game..." />
+          <MenuButton title="Create Game..." disabled={!selectedProfile} />
 
-          <MenuRowSpacer />
+          <MenuVerticalSpacer />
 
-          <MenuRow
+          <MenuButton
             title="Quit"
             destroy
             onClick={() => ipcRenderer.send(WINDOW_EVENT_TYPE.QUIT)}
