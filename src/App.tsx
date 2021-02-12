@@ -1,7 +1,6 @@
 import React from 'react'
 import Router from './routes'
 
-import AppProvider from './contexts/AppContext'
 import ModalProvider from './contexts/AppModalContext'
 
 import TitleBar from './components/TitleBar'
@@ -12,16 +11,12 @@ import './App.global.scss'
 
 export default () => {
   return (
-    <>
-      <AppProvider>
-        <ModalProvider>
-          <Router />
+    <ModalProvider>
+      <Router />
 
-          <TitleBar />
-          <AppMenu />
-          <AppModal />
-        </ModalProvider>
-      </AppProvider>
-    </>
+      <TitleBar />
+      <AppMenu />
+      <AppModal />
+    </ModalProvider>
   )
 }
