@@ -11,7 +11,7 @@ export interface ButtonProps
   destroy?: boolean
 }
 
-export default ({
+const Button: React.FC<ButtonProps> = ({
   children,
   type = 'button',
   title,
@@ -41,3 +41,5 @@ export default ({
     </button>
   )
 }
+
+export default Button

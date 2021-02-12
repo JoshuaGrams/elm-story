@@ -9,7 +9,7 @@ import AppModal from './components/AppModal'
 
 import './App.global.scss'
 
-export default () => {
+const App: React.FC = () => {
   return (
     <ModalProvider>
       <Router />
@@ -20,3 +20,5 @@ export default () => {
     </ModalProvider>
   )
 }
+
+export default App
