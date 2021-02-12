@@ -1,8 +1,8 @@
 import { useDatabase, useUUID } from '../hooks'
 
-export const PROFILE = {
-  NOT_SELECTED: 0,
-  SELECTED: 1
+export enum PROFILE {
+  NOT_SELECTED = 0,
+  SELECTED = 1
 }
 
 /**
