@@ -4,6 +4,7 @@ import { CSSTransition } from 'react-transition-group'
 import fade from '../../styles/transitions/fade.module.scss'
 
 export enum TRANSITION_TYPE {
+  SNAP = 'SNAP',
   FADE = 'FADE'
 }
 
@@ -12,14 +13,23 @@ interface TransitionProps {
   type: TRANSITION_TYPE
 }
 
+/**
+ * Transitions child.
+ * Mounts on enter and exit.
+ * Does not support fragments.
+ */
 const Transition: React.FC<TransitionProps> = ({
   children,
   in: _in = false,
   type
 }) => {
-  let transitionClassNames
+  let transitionClassNames,
+    snap = type === TRANSITION_TYPE.SNAP
 
   switch (type) {
+    case TRANSITION_TYPE.SNAP:
+      transitionClassNames = ''
+      break
     case TRANSITION_TYPE.FADE:
       transitionClassNames = fade
       break
@@ -32,7 +42,7 @@ const Transition: React.FC<TransitionProps> = ({
       in={_in}
       mountOnEnter
       unmountOnExit
-      timeout={100}
+      timeout={snap ? 0 : 100}
       classNames={transitionClassNames}
     >
       {children}
