@@ -54,7 +54,7 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
       <Transition in={app.menuOpen} type={TRANSITION_TYPE.SNAP}>
         <div
           className={`${styles.blocker} ${app.menuOpen && styles.blocking}`}
-          onClick={() => appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })}
+          onMouseDown={() => appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })}
         />
       </Transition>
 
