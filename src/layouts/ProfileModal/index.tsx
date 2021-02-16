@@ -1,4 +1,4 @@
-import type { Profile } from '../../db'
+import { ProfileDocument } from '../../db/types'
 import type { ModalProps } from '../../components/Modal'
 
 import React, { useEffect, useState } from 'react'
@@ -15,7 +15,7 @@ export enum PROFILE_MODAL_LAYOUT_TYPE {
 }
 
 interface ProfileModalLayoutProps extends ModalProps {
-  profile?: Profile
+  profile?: ProfileDocument
   type?: PROFILE_MODAL_LAYOUT_TYPE
   visible?: boolean
 }
