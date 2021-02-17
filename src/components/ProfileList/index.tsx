@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { useProfiles, useSelectedProfile } from '../../hooks'
+import { useProfiles } from '../../hooks'
 
 import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
 
@@ -19,8 +19,7 @@ type ProfileListProps = {
 const ProfileList: React.FC<ProfileListProps> = ({
   className = ''
 }: ProfileListProps) => {
-  const [selected, setSelected] = useSelectedProfile()
-  const { profiles } = useProfiles()
+  const profiles = useProfiles()
 
   const { modalDispatch } = useContext(ModalContext)
 
@@ -50,8 +49,8 @@ const ProfileList: React.FC<ProfileListProps> = ({
         {profiles?.map((profile) => (
           <div key={profile.id} className={styles.profileRow}>
             {/* Select profile button */}
-            <Button onClick={() => setSelected(profile.id)}>
-              {(selected?.id === profile.id ? 'Selected: ' : '') + profile.name}
+            <Button onClick={() => null}>
+              {profile.title}
             </Button>
 
             {/* Edit profile button */}

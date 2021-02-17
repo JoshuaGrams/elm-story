@@ -1,9 +1,9 @@
-import { ProfileDocument } from '../../db/types'
-import type { ModalProps } from '../../components/Modal'
-
 import React, { useEffect, useState } from 'react'
 
-import { useProfiles, useSelectedProfile } from '../../hooks'
+import { ProfileDocument } from '../../data/types'
+import type { ModalProps } from '../../components/Modal'
+
+import api from '../../api'
 
 import Button from '../../components/Button'
 import Input from '../../components/Input'
@@ -25,27 +25,23 @@ const SaveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
   visible = false,
   onClose
 }) => {
-  const [name, setName] = useState('')
-  const [, setSelected] = useSelectedProfile()
-  const { save } = useProfiles()
+  const [title, setTitle] = useState('')
 
   useEffect(() => {
-    if (visible) setName(profile ? profile.name : '')
+    if (visible) setTitle(profile ? profile.title : '')
   }, [visible])
 
   async function saveProfile(event: React.MouseEvent) {
     event.preventDefault()
 
-    if (name) {
-      if (profile) {
-        await save({ name, exists: true, id: profile.id })
-      } else {
-        await setSelected(await save({ name }))
-      }
+    if (title) {
+      await api().profiles.saveProfile(
+        profile ? { ...profile, title } : { title, tags: [], games: [] }
+      )
 
       if (onClose) onClose()
     } else {
-      throw new Error('Profile name required.')
+      throw new Error('Profile title required.')
     }
   }
 
@@ -55,16 +51,16 @@ const SaveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
       <form>
         <Input
           type="value"
-          placeholder="Profile Name"
-          onChange={(event) => setName(event.target.value)}
-          value={name}
+          placeholder="Profile Title"
+          onChange={(event) => setTitle(event.target.value)}
+          value={title}
           focusOnMount
           selectOnMount
         />
         <Button
           type="submit"
           onClick={(event) => saveProfile(event)}
-          disabled={!name}
+          disabled={!title}
           primary
         >
           Save
@@ -78,10 +74,8 @@ const RemoveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
   profile,
   onClose
 }) => {
-  const { remove } = useProfiles()
-
   async function removeProfile() {
-    if (profile) await remove(profile.id)
+    if (profile && profile.id) await api().profiles.removeProfile(profile.id)
     if (onClose) onClose()
   }
 
@@ -93,7 +87,7 @@ const RemoveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
   return (
     <>
       <h3>Remove Profile</h3>
-      <div>Are you sure you want to remove profile '{profile.name}'?</div>
+      <div>Are you sure you want to remove profile '{profile.title}'?</div>
       <div>All games under this profile will be removed forever.</div>
       <Button onClick={removeProfile} destroy>
         Remove

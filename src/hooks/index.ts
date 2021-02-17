@@ -1,5 +1,4 @@
-import useDatabase from './useDatabase'
-import useProfiles, { useSelectedProfile } from './useProfiles'
-import useUUID from './useUUID'
+import useProfiles from './useProfiles'
+import useGames from './useGames'
 
-export { useDatabase, useProfiles, useSelectedProfile, useUUID }
+export { useProfiles, useGames }

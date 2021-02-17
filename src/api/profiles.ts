@@ -1,8 +1,15 @@
-import { useDatabase, useUUID } from '../hooks'
+import { AppDatabase, LibraryDatabase } from '../db'
+import { DocumentId, ProfileDocument } from '../data/types'
+import { v4 as uuid } from 'uuid'
 
-export enum PROFILE {
-  NOT_SELECTED = 0,
-  SELECTED = 1
+export async function getProfile(
+  profileId: DocumentId
+): Promise<ProfileDocument> {
+  try {
+    return await new AppDatabase().getProfile(profileId)
+  } catch (error) {
+    throw new Error(error)
+  }
 }
 
 /**
@@ -10,79 +17,66 @@ export enum PROFILE {
  * TODO: Link profiles to cloud accounts.
  * @returns id on promise resolve
  */
-async function save({
-  name,
-  selected = PROFILE.NOT_SELECTED,
-  id = useUUID(),
-  exists = false
-}: {
-  name: string
-  selected?: number
-  id?: string
-  exists?: boolean
-}): Promise<string> {
-  const appDB = useDatabase()
+export async function saveProfile(
+  profile: ProfileDocument
+): Promise<DocumentId> {
+  if (!profile.id) profile.id = uuid()
 
-  try {
-    if (exists) {
-      appDB.transaction('rw', appDB.profiles, async () => {
-        const existingProfile = await appDB.profiles.where({ id }).first()
+  profile.updated = Date.now()
 
-        if (existingProfile) {
-          await appDB.profiles.update(id, { name })
-        } else {
-          throw new Error('Unable to update existing profile. Does not exist.')
-        }
-      })
-    } else {
-      await appDB.profiles.add({
-        id,
-        name,
-        selected
-      })
-    }
-
-    return id
-  } catch (error) {
-    throw new Error(error)
-  }
+  return await new AppDatabase().saveProfile(profile)
 }
 
 /**
  * Delete app profile.
  * TODO: How does this affect cloud accounts?
  */
-async function remove(id: string) {
+export async function removeProfile(profileId: DocumentId) {
   try {
-    await useDatabase().profiles.delete(id)
+    await new LibraryDatabase(profileId).delete()
+
+    await new AppDatabase().removeProfile(profileId)
   } catch (error) {
     throw new Error(error)
   }
 }
 
-/**
- * Set selected app profile.
- * TODO: How does this affect cloud accounts?
- */
-async function setSelected(id: string) {
-  const appDB = useDatabase()
-
+export async function saveGameRef(profileId: DocumentId, gameId: DocumentId) {
   try {
-    appDB.transaction('rw', appDB.profiles, async () => {
-      // set selected to not selected
-      await (
-        await appDB.profiles.where({ selected: PROFILE.SELECTED }).toArray()
-      ).map(async (profile) => {
-        await appDB.profiles.update(profile.id, {
-          selected: PROFILE.NOT_SELECTED
-        })
-      })
+    const profile = await getProfile(profileId)
 
-      await appDB.profiles.update(id, { selected: PROFILE.SELECTED })
-    })
+    if (profile) {
+      profile.games = [...profile.games, gameId]
+
+      saveProfile(profile)
+    } else {
+      throw new Error(
+        `Unable to save game with ID: ${gameId}. Profile with ID ${profileId} does not exist.`
+      )
+    }
   } catch (error) {
     throw new Error(error)
   }
 }
 
-export { save, remove, setSelected }
+export async function removeGameRef(profileId: DocumentId, gameId: DocumentId) {
+  try {
+    const profile = await getProfile(profileId)
+
+    if (profile) {
+      const index = profile.games.indexOf(gameId)
+
+      if (index !== -1) {
+        profile.games.splice(index)
+      }
+
+      await saveProfile(profile)
+    } else {
+      throw new Error(
+        `Unable to remove game with ID: ${gameId}. Profile with ID ${profileId} does not exist.`
+      )
+    }
+  } catch (error) {
+    throw new Error(error)
+  }
+}

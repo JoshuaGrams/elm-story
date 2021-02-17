@@ -1,6 +1,6 @@
-export enum DOCUMENT {
+export enum DOC_TYPE {
   PROFILE = 'PROFILE',
-  GAME = 'GAME',
+  GAME = 'game',
   CHAPTER = 'CHAPTER',
   SCENE = 'SCENE',
   PASSAGE = 'PASSAGE',
@@ -22,7 +22,7 @@ export enum VARIABLE {
   IMAGE = 'IMAGE'
 }
 
-export enum COMPARISON_OPERATOR {
+export enum COMPARE_OPERATOR {
   EQ = '===', // equal to
   NE = '!==', // not equal to
   GTE = '>=', // greater than or equal to
@@ -40,72 +40,58 @@ export enum SET_OPERATOR {
   DIVIDE = '/'
 }
 
-export enum DOCUMENT_SELECTED {
-  NOT_SELECTED = 0,
-  SELECTED = 1
-}
-
-type DocumentId = string
+export type DocumentId = string
 type VariableId = string
 
 export interface Document {
-  id: DocumentId | VariableId
-  type: DOCUMENT
-  name: string
+  id?: DocumentId | VariableId
+  title: string
+  tags: string[] | []
+  updated?: number // UTC timestamp
 }
 
 export interface ProfileDocument extends Document {
-  type: DOCUMENT.PROFILE
-  selected: DOCUMENT_SELECTED
+  games: DocumentId[] // references by ID
 }
 
+export interface EditorDocument extends Document {}
+
 export interface GameDocument extends Document {
-  type: DOCUMENT.GAME
   template: GAME_TEMPLATE
   director: string
-  chapters: ChapterDocument[] | []
+  chapters: DocumentId[]
   version: string
   engine: string
 }
 
 export interface ChapterDocument extends Document {
-  type: DOCUMENT.CHAPTER
-  scenes: SceneDocument[] | []
+  scenes: DocumentId[]
 }
 
 export interface SceneDocument extends Document {
-  type: DOCUMENT.SCENE
-  passages: PassageDocument[] | []
+  passages: DocumentId[]
 }
 
 export interface PassageDocument extends Document {
-  type: DOCUMENT.PASSAGE
   content: string
-  actions: ActionDocument[] | []
+  actions: DocumentId[]
 }
 
 export interface ActionDocument extends Document {
-  type: DOCUMENT.ACTION
-  label: string
-  goto: [DOCUMENT.CHAPTER | DOCUMENT.SCENE | DOCUMENT.PASSAGE, DocumentId]
-  conditions: ConditionDocument[] | []
-  effects: EffectDocument[] | []
+  goto: [DOC_TYPE.CHAPTER | DOC_TYPE.SCENE | DOC_TYPE.PASSAGE, DocumentId]
+  conditions: ConditionDocument[] | string[]
+  effects: DocumentId[]
 }
 
 export interface ConditionDocument extends Document {
-  type: DOCUMENT.CONDITION
-  eval: [VariableId, COMPARISON_OPERATOR, VariableId | string]
+  compare: [VariableId, COMPARE_OPERATOR, VariableId | string]
 }
 
 export interface EffectDocument extends Document {
-  type: DOCUMENT.EFFECT
   set: [VariableId, SET_OPERATOR, VariableId | string]
 }
 
 export interface VariableDocument extends Document {
-  type: DOCUMENT.VARIABLE
   var_type: VARIABLE
-  name: string
-  label: string
   default?: string
 }

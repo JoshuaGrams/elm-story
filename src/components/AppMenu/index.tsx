@@ -3,8 +3,6 @@ import React, { useContext } from 'react'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
-import { useSelectedProfile } from '../../hooks/useProfiles'
-
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
 
@@ -46,7 +44,6 @@ const MenuVerticalSpacer: React.FC = () => {
 const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
   const { app, appDispatch } = useContext(AppContext)
   const { modalDispatch } = useContext(ModalContext)
-  const [selectedProfile] = useSelectedProfile()
 
   return (
     <>
@@ -79,30 +76,6 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
               modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
             }}
           />
-          {selectedProfile && selectedProfile.name && (
-            <MenuButton
-              title={`Selected profile: ${selectedProfile?.name}`}
-              onClick={() => {
-                appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
-
-                modalDispatch({
-                  type: MODAL_ACTION_TYPE.LAYOUT,
-                  layout: (
-                    <ProfileModalLayout
-                      type={PROFILE_MODAL_LAYOUT_TYPE.EDIT}
-                      profile={selectedProfile}
-                    />
-                  )
-                })
-
-                modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-              }}
-            />
-          )}
-
-          <MenuVerticalSpacer />
-
-          <MenuButton title="Create Game..." disabled={!selectedProfile} />
 
           <MenuVerticalSpacer />
 

@@ -1,35 +1,15 @@
-import { useDatabase } from '../hooks'
+import { AppDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { ProfileDocument } from '../data/types'
 
-import api from '../api'
-
-/**
- * Returns tuple with selected app profile and
- * method for setting the selected app profile.
- */
-export const useSelectedProfile = () => {
-  const selected = useLiveQuery(
-    () => useDatabase().profiles.where({ selected: 1 }).first(),
-    []
-  )
-
-  return [selected, api().profiles.setSelected] as const
-}
-
-/**
- * Returns object with array of app profiles from DB and
- * access to save and remove APIs.
- */
-export default () => {
+const useProfiles = (): ProfileDocument[] => {
   const profiles =
-    useLiveQuery(() => useDatabase().profiles.toArray(), []) || []
+    useLiveQuery(() => new AppDatabase().profiles.toArray(), []) || []
 
-  // sort alphabetical by profile name
-  if (profiles) profiles.sort((a, b) => (a.name > b.name ? 1 : -1))
+  // sort alphabetical by profile title
+  if (profiles) profiles.sort((a, b) => (a.title > b.title ? 1 : -1))
 
-  return {
-    profiles,
-    save: api().profiles.save,
-    remove: api().profiles.remove
-  }
+  return profiles
 }
+
+export default useProfiles
