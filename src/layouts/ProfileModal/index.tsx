@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { ProfileDocument } from '../../data/types'
+import { DocumentId, ProfileDocument } from '../../data/types'
 import type { ModalProps } from '../../components/Modal'
 
 import api from '../../api'
@@ -18,11 +18,14 @@ interface ProfileModalLayoutProps extends ModalProps {
   profile?: ProfileDocument
   type?: PROFILE_MODAL_LAYOUT_TYPE
   visible?: boolean
+  onCreate?: (profileId: DocumentId) => void
+  onRemove?: () => void
 }
 
 const SaveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
   profile,
   visible = false,
+  onCreate,
   onClose
 }) => {
   const [title, setTitle] = useState('')
@@ -35,10 +38,11 @@ const SaveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
     event.preventDefault()
 
     if (title) {
-      await api().profiles.saveProfile(
+      const profileId = await api().profiles.saveProfile(
         profile ? { ...profile, title } : { title, tags: [], games: [] }
       )
 
+      if (onCreate) onCreate(profileId)
       if (onClose) onClose()
     } else {
       throw new Error('Profile title required.')
@@ -72,10 +76,13 @@ const SaveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
 
 const RemoveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
   profile,
+  onRemove,
   onClose
 }) => {
   async function removeProfile() {
     if (profile && profile.id) await api().profiles.removeProfile(profile.id)
+
+    if (onRemove) onRemove()
     if (onClose) onClose()
   }
 
@@ -100,18 +107,28 @@ const ProfileModalLayout: React.FC<ProfileModalLayoutProps> = ({
   profile,
   type,
   open,
-  onClose
+  onCreate,
+  onRemove,
+  onClose // @BUG: not used properly; see AppModal
 }) => {
   return (
     <>
       {type === PROFILE_MODAL_LAYOUT_TYPE.CREATE && (
-        <SaveProfileLayout visible={open} onClose={onClose} />
+        <SaveProfileLayout
+          visible={open}
+          onCreate={onCreate}
+          onClose={onClose}
+        />
       )}
       {type === PROFILE_MODAL_LAYOUT_TYPE.EDIT && (
         <SaveProfileLayout profile={profile} visible={open} onClose={onClose} />
       )}
       {type === PROFILE_MODAL_LAYOUT_TYPE.REMOVE && (
-        <RemoveProfileLayout profile={profile} onClose={onClose} />
+        <RemoveProfileLayout
+          profile={profile}
+          onRemove={onRemove}
+          onClose={onClose}
+        />
       )}
       <Button onClick={onClose}>Cancel</Button>
     </>

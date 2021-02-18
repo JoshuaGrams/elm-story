@@ -3,6 +3,7 @@ import { useReducer } from 'react'
 
 type ModalState = {
   layout?: JSX.Element
+  onClose?: () => void
   open: boolean
 }
 
@@ -17,7 +18,7 @@ type ModalActionType =
       type: MODAL_ACTION_TYPE.LAYOUT
       layout: JSX.Element
     }
-  | { type: MODAL_ACTION_TYPE.OPEN }
+  | { type: MODAL_ACTION_TYPE.OPEN; onClose?: () => void }
   | { type: MODAL_ACTION_TYPE.CLOSE }
 
 const modalReducer = (
@@ -28,9 +29,9 @@ const modalReducer = (
     case MODAL_ACTION_TYPE.LAYOUT:
       return { ...state, layout: action.layout }
     case MODAL_ACTION_TYPE.OPEN:
-      return { ...state, open: true }
+      return { ...state, open: true, onClose: action.onClose || undefined }
     case MODAL_ACTION_TYPE.CLOSE:
-      return { ...state, open: false }
+      return { ...state, open: false, onClose: undefined }
     default:
       return state
   }
@@ -43,6 +44,7 @@ type ModalContextType = {
 
 const defaultModalState: ModalState = {
   layout: undefined,
+  onClose: undefined,
   open: false
 }
 
