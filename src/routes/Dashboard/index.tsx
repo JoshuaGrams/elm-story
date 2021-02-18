@@ -1,7 +1,9 @@
 import React, { useEffect, useContext } from 'react'
 
-import ProfileSelect from '../../components/ProfileSelect'
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
+
+import GameLibrary from '../../components/GameLibrary'
+import ProfileSelect from '../../components/ProfileSelect'
 
 import styles from './styles.module.scss'
 
@@ -15,7 +17,9 @@ const Dashboard = () => {
   return (
     <div>
       <ProfileSelect className={styles.profiles} />
-      {app.selectedProfileId && <h1>Game Library</h1>}
+      {app.selectedProfileId && (
+        <GameLibrary profileId={app.selectedProfileId} />
+      )}
     </div>
   )
 }

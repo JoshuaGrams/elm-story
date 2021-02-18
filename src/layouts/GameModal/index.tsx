@@ -8,7 +8,7 @@ import api from '../../api'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 
-export enum GAME_MOGAL_LAYOUT_TYPE {
+export enum GAME_MODAL_LAYOUT_TYPE {
   CREATE = 'CREATE',
   EDIT = 'EDIT',
   REMOVE = 'REMOVE'
@@ -17,7 +17,7 @@ export enum GAME_MOGAL_LAYOUT_TYPE {
 interface GameModalLayoutProps extends ModalProps {
   profileId: DocumentId
   game?: GameDocument
-  type?: GAME_MOGAL_LAYOUT_TYPE
+  type?: GAME_MODAL_LAYOUT_TYPE
   visible?: boolean
 }
 
@@ -49,7 +49,7 @@ const SaveGameLayout: React.FC<GameModalLayoutProps> = ({
             ? { ...game, title, director }
             : {
                 title,
-                director: '',
+                director,
                 // @TODO: Enable user-defined once more templates are supported.
                 template: GAME_TEMPLATE.ADVENTURE,
                 tags: [],
@@ -139,7 +139,7 @@ const GameModalLayout: React.FC<GameModalLayoutProps> = ({
 }) => {
   return (
     <>
-      {type === GAME_MOGAL_LAYOUT_TYPE.CREATE && (
+      {type === GAME_MODAL_LAYOUT_TYPE.CREATE && (
         <SaveGameLayout
           profileId={profileId}
           visible={open}
@@ -147,7 +147,7 @@ const GameModalLayout: React.FC<GameModalLayoutProps> = ({
           onClose={onClose}
         />
       )}
-      {type === GAME_MOGAL_LAYOUT_TYPE.EDIT && (
+      {type === GAME_MODAL_LAYOUT_TYPE.EDIT && (
         <SaveGameLayout
           profileId={profileId}
           game={game}
@@ -155,13 +155,15 @@ const GameModalLayout: React.FC<GameModalLayoutProps> = ({
           onClose={onClose}
         />
       )}
-      {type === GAME_MOGAL_LAYOUT_TYPE.REMOVE && (
+      {type === GAME_MODAL_LAYOUT_TYPE.REMOVE && (
         <RemoveGameLayout
           profileId={profileId}
+          game={game}
           onRemove={onRemove}
           onClose={onClose}
         />
       )}
+      <Button onClick={onClose}>Cancel</Button>
     </>
   )
 }

@@ -1,0 +1,51 @@
+.gameBox {
+  width: 160px;
+  height: 256px;
+  align-items: center;
+  background: #0f0f0f;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  position: realtive;
+
+  h4,
+  h5 {
+    text-align: center;
+  }
+
+  .contentWrapper {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    bottom: 10px;
+    right: 10px;
+    box-sizing: border-box;
+
+    h4 {
+      font-size: 14px;
+      text-decoration: underline;
+    }
+
+    .contentBottom {
+      position: absolute;
+      bottom: 0px;
+      width: 100%;
+
+      h5 {
+        font-size: 12px;
+        margin-bottom: 6px;
+        em {
+          font-size: 10px;
+        }
+      }
+
+      .buttonBar {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 50%);
+
+        button {
+          margin-bottom: 00px !important;
+        }
+      }
+    }
+  }
+}
