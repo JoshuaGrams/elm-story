@@ -1,7 +1,8 @@
+// @TODO: Combine common modal layouts.
 import React, { useEffect, useState } from 'react'
 
-import { DocumentId, ProfileDocument } from '../../data/types'
 import type { ModalProps } from '../../components/Modal'
+import { ProfileDocument } from '../../data/types'
 
 import api from '../../api'
 
@@ -18,8 +19,6 @@ interface ProfileModalLayoutProps extends ModalProps {
   profile?: ProfileDocument
   type?: PROFILE_MODAL_LAYOUT_TYPE
   visible?: boolean
-  onCreate?: (profileId: DocumentId) => void
-  onRemove?: () => void
 }
 
 const SaveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
@@ -28,22 +27,26 @@ const SaveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
   onCreate,
   onClose
 }) => {
-  const [title, setTitle] = useState('')
+  const [title, setTitle] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    if (visible) setTitle(profile ? profile.title : '')
+    if (visible) setTitle(profile?.title || undefined)
   }, [visible])
 
   async function saveProfile(event: React.MouseEvent) {
     event.preventDefault()
 
     if (title) {
-      const profileId = await api().profiles.saveProfile(
-        profile ? { ...profile, title } : { title, tags: [], games: [] }
-      )
+      try {
+        const profileId = await api().profiles.saveProfile(
+          profile ? { ...profile, title } : { title, tags: [], games: [] }
+        )
 
-      if (onCreate) onCreate(profileId)
-      if (onClose) onClose()
+        if (onCreate) onCreate(profileId)
+        if (onClose) onClose()
+      } catch (error) {
+        throw new Error(error)
+      }
     } else {
       throw new Error('Profile title required.')
     }
@@ -87,9 +90,7 @@ const RemoveProfileLayout: React.FC<ProfileModalLayoutProps> = ({
   }
 
   if (!profile)
-    throw new Error(
-      'Unable to use remove profile layout. Missing profile data.'
-    )
+    throw new Error('Unable to use RemoveProfileLayout. Missing profile data.')
 
   return (
     <>

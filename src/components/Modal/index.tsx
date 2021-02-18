@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react'
+import { DocumentId } from '../../data/types'
 
 import Transition, { TRANSITION_TYPE } from '../Transition'
 
 import styles from './styles.module.scss'
 
 export interface ModalProps {
-  open?: boolean
+  open?: boolean // is the modal open?
+  onCreate?: (documentId: DocumentId) => void // event callback for modal layout
+  onRemove?: () => void // event callback for modal layout
   onClose?: () => void
   className?: string
 }
