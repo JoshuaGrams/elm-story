@@ -109,6 +109,21 @@ button {
   }
 }
 
+select {
+  height: 50px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: hsl(0, 0%, 10%);
+  color: white;
+  padding: 10px;
+  border: 1px solid hsl(0, 0%, 1%);
+  box-sizing: border-box;
+  box-shadow: inset 0px 1px 0px hsl(0, 0%, 20%);
+  cursor: pointer;
+  appearance: none;
+  text-align-last: center;
+}
+
 hr {
   height: 1px;
   background-color: hsl(0, 0%, 15%);
