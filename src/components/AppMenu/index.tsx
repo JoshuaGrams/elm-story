@@ -69,7 +69,15 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
               modalDispatch({
                 type: MODAL_ACTION_TYPE.LAYOUT,
                 layout: (
-                  <ProfileModalLayout type={PROFILE_MODAL_LAYOUT_TYPE.CREATE} />
+                  <ProfileModalLayout
+                    type={PROFILE_MODAL_LAYOUT_TYPE.CREATE}
+                    onCreate={(profileId) =>
+                      appDispatch({
+                        type: APP_ACTION_TYPE.PROFILE_SELECT,
+                        selectedProfileId: profileId
+                      })
+                    }
+                  />
                 )
               })
 
