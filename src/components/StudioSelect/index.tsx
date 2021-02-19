@@ -26,35 +26,9 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
 
   return (
     <div className={`${styles.studioList} ${className}`}>
-      {/* Create studio button */}
-      <Button
-        onClick={() => {
-          modalDispatch({
-            type: MODAL_ACTION_TYPE.LAYOUT,
-            layout: (
-              <StudioModalLayout
-                type={STUDIO_MODAL_LAYOUT_TYPE.CREATE}
-                onCreate={(studioId) =>
-                  appDispatch({
-                    type: APP_ACTION_TYPE.STUDIO_SELECT,
-                    selectedStudioId: studioId
-                  })
-                }
-              />
-            )
-          })
-
-          modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-        }}
-        primary
-      >
-        Create Studio
-      </Button>
-
+      <h3>Studios</h3>
       {studios.length > 0 && (
         <>
-          <hr />
-
           <select
             onChange={(event) => {
               appDispatch({
@@ -79,58 +53,60 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
             <>
               <hr />
 
-              {/* Edit studio button */}
-              <Button
-                onClick={() => {
-                  modalDispatch({
-                    type: MODAL_ACTION_TYPE.LAYOUT,
-                    layout: (
-                      <StudioModalLayout
-                        type={STUDIO_MODAL_LAYOUT_TYPE.EDIT}
-                        studio={
-                          studios.filter(
-                            (studio) => studio.id === app.selectedStudioId
-                          )[0]
-                        }
-                      />
-                    )
-                  })
+              <div className={styles.buttonBar}>
+                {/* Edit studio button */}
+                <Button
+                  onClick={() => {
+                    modalDispatch({
+                      type: MODAL_ACTION_TYPE.LAYOUT,
+                      layout: (
+                        <StudioModalLayout
+                          type={STUDIO_MODAL_LAYOUT_TYPE.EDIT}
+                          studio={
+                            studios.filter(
+                              (studio) => studio.id === app.selectedStudioId
+                            )[0]
+                          }
+                        />
+                      )
+                    })
 
-                  modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                }}
-              >
-                Edit
-              </Button>
+                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                  }}
+                >
+                  Edit
+                </Button>
 
-              {/* Remove studio button */}
-              <Button
-                onClick={() => {
-                  modalDispatch({
-                    type: MODAL_ACTION_TYPE.LAYOUT,
-                    layout: (
-                      <StudioModalLayout
-                        type={STUDIO_MODAL_LAYOUT_TYPE.REMOVE}
-                        studio={
-                          studios.filter(
-                            (studio) => studio.id === app.selectedStudioId
-                          )[0]
-                        }
-                        onRemove={() =>
-                          appDispatch({
-                            type: APP_ACTION_TYPE.STUDIO_SELECT,
-                            selectedStudioId: undefined
-                          })
-                        }
-                      />
-                    )
-                  })
+                {/* Remove studio button */}
+                <Button
+                  onClick={() => {
+                    modalDispatch({
+                      type: MODAL_ACTION_TYPE.LAYOUT,
+                      layout: (
+                        <StudioModalLayout
+                          type={STUDIO_MODAL_LAYOUT_TYPE.REMOVE}
+                          studio={
+                            studios.filter(
+                              (studio) => studio.id === app.selectedStudioId
+                            )[0]
+                          }
+                          onRemove={() =>
+                            appDispatch({
+                              type: APP_ACTION_TYPE.STUDIO_SELECT,
+                              selectedStudioId: undefined
+                            })
+                          }
+                        />
+                      )
+                    })
 
-                  modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                }}
-                destroy
-              >
-                Remove
-              </Button>
+                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                  }}
+                  destroy
+                >
+                  Remove
+                </Button>
+              </div>
             </>
           )}
         </>

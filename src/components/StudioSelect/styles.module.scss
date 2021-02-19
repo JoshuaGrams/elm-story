@@ -5,11 +5,8 @@
   border-radius: 4px;
   box-sizing: border-box;
 
-  input {
-    text-align: center;
-  }
-
-  .studioRow {
-    margin-bottom: 8px;
+  .buttonBar {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 50%);
   }
 }

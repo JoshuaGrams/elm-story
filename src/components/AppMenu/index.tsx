@@ -14,6 +14,9 @@ import styles from './styles.module.scss'
 import StudioModalLayout, {
   STUDIO_MODAL_LAYOUT_TYPE
 } from '../../layouts/StudioModal'
+import GameModalLayout, {
+  GAME_MODAL_LAYOUT_TYPE
+} from '../../layouts/GameModal'
 
 interface AppMenuRowProps extends ButtonProps {
   title: string
@@ -86,6 +89,34 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
           />
 
           <MenuVerticalSpacer />
+
+          {app.selectedStudioId && (
+            <>
+              <MenuButton
+                title="Create Game..."
+                onClick={() => {
+                  if (app.selectedStudioId) {
+                    appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+
+                    modalDispatch({
+                      type: MODAL_ACTION_TYPE.LAYOUT,
+                      layout: (
+                        <GameModalLayout
+                          studioId={app.selectedStudioId}
+                          type={GAME_MODAL_LAYOUT_TYPE.CREATE}
+                        />
+                      )
+                    })
+
+                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                  }
+                }}
+                primary
+              />
+
+              <MenuVerticalSpacer />
+            </>
+          )}
 
           <MenuButton
             title="Quit"

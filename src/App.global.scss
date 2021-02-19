@@ -52,7 +52,8 @@ body {
 
 a {
   color: white;
-  text-decoration: none;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 ul {
@@ -133,4 +134,9 @@ hr {
   height: 1px;
   background-color: hsl(0, 0%, 15%);
   margin: 10px 0px;
+}
+
+h3 {
+  text-align: center;
+  margin-bottom: 20px;
 }
