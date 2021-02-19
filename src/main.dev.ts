@@ -18,6 +18,8 @@ import MenuBuilder from './menu'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
 
+import logger from './lib/logger'
+
 export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info'
@@ -50,7 +52,7 @@ const installExtensions = async () => {
       extensions.map((name) => installer[name]),
       forceDownload
     )
-    .catch(console.log)
+    .catch(logger.info)
 }
 
 const createWindow = async () => {
@@ -149,7 +151,7 @@ app.on('window-all-closed', () => {
   }
 })
 
-app.whenReady().then(createWindow).catch(console.log)
+app.whenReady().then(createWindow).catch(logger.info)
 
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the

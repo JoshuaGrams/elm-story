@@ -1,3 +1,5 @@
+import logger from '../lib/logger'
+
 import { AppDatabase, LibraryDatabase } from '../db'
 import { DocumentId, ProfileDocument } from '../data/types'
 import { v4 as uuid } from 'uuid'
@@ -48,15 +50,22 @@ export async function removeProfile(profileId: DocumentId) {
 
 export async function saveGameRef(profileId: DocumentId, gameId: DocumentId) {
   try {
-    const profile = await getProfile(profileId)
+    const profile = await getProfile(profileId),
+      exists = profile.games.indexOf(gameId) !== -1
 
-    if (profile) {
-      profile.games = [...profile.games, gameId]
+    if (!exists) {
+      if (profile) {
+        profile.games = [...profile.games, gameId]
 
-      saveProfile(profile)
+        saveProfile(profile)
+      } else {
+        throw new Error(
+          `Unable to save game with ID: ${gameId}. Profile with ID ${profileId} does not exist.`
+        )
+      }
     } else {
-      throw new Error(
-        `Unable to save game with ID: ${gameId}. Profile with ID ${profileId} does not exist.`
+      logger.info(
+        `Unable to add game ref ${gameId} to profile ${profileId}. Already exists. Likely game is being updated.`
       )
     }
   } catch (error) {
