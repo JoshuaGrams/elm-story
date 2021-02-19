@@ -27,10 +27,10 @@ const SaveStudioLayout: React.FC<StudioModalLayoutProps> = ({
   onCreate,
   onClose
 }) => {
-  const [title, setTitle] = useState<string | undefined>(undefined)
+  const [title, setTitle] = useState<string>('')
 
   useEffect(() => {
-    if (visible) setTitle(studio?.title || undefined)
+    if (visible) setTitle(studio?.title || title)
   }, [visible])
 
   async function saveStudio(event: React.MouseEvent) {

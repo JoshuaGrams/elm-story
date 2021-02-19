@@ -28,13 +28,13 @@ const SaveGameLayout: React.FC<GameModalLayoutProps> = ({
   onCreate,
   onClose
 }) => {
-  const [title, setTitle] = useState<string | undefined>(undefined),
-    [director, setDirector] = useState<string | undefined>(undefined)
+  const [title, setTitle] = useState<string>(''),
+    [director, setDirector] = useState<string>('')
 
   useEffect(() => {
     if (visible) {
-      setTitle(game?.title || undefined)
-      setDirector(game?.director || undefined)
+      setTitle(game?.title || title)
+      setDirector(game?.director || director)
     }
   }, [visible])
 
