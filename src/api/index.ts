@@ -1,5 +1,5 @@
 // APP
-import * as profiles from './profiles'
+import * as studios from './studios'
 
 // LIBRARY
 import * as games from './games'
@@ -12,7 +12,7 @@ import * as games from './games'
 // import * as variables from './variables'
 
 export default () => ({
-  profiles,
+  studios,
   games
   // chapters,
   // scenes,

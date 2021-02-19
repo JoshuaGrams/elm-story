@@ -4,25 +4,25 @@ import { v4 as uuid } from 'uuid'
 import api from '../api'
 
 export async function getGame(
-  profileId: DocumentId,
+  studioId: DocumentId,
   gameId: DocumentId
 ): Promise<GameDocument> {
   try {
-    return await new LibraryDatabase(profileId).getGame(gameId)
+    return await new LibraryDatabase(studioId).getGame(gameId)
   } catch (error) {
     throw new Error(error)
   }
 }
 
 export async function getGames(
-  profileId: DocumentId,
+  studioId: DocumentId,
   gameRefs: DocumentId[]
 ): Promise<(GameDocument | undefined)[]> {
-  return await new LibraryDatabase(profileId).games.bulkGet(gameRefs)
+  return await new LibraryDatabase(studioId).games.bulkGet(gameRefs)
 }
 
 export async function saveGame(
-  profileId: DocumentId,
+  studioId: DocumentId,
   game: GameDocument
 ): Promise<DocumentId> {
   if (!game.id) game.id = uuid()
@@ -30,19 +30,19 @@ export async function saveGame(
   game.updated = Date.now()
 
   try {
-    await api().profiles.saveGameRef(profileId, game.id)
+    await api().studios.saveGameRef(studioId, game.id)
 
-    return await new LibraryDatabase(profileId).saveGame(game)
+    return await new LibraryDatabase(studioId).saveGame(game)
   } catch (error) {
     throw new Error(error)
   }
 }
 
-export async function removeGame(profileId: DocumentId, gameId: DocumentId) {
+export async function removeGame(studioId: DocumentId, gameId: DocumentId) {
   try {
-    await api().profiles.removeGameRef(profileId, gameId)
+    await api().studios.removeGameRef(studioId, gameId)
 
-    await new LibraryDatabase(profileId).removeGame(gameId)
+    await new LibraryDatabase(studioId).removeGame(gameId)
   } catch (error) {
     throw new Error(error)
   }

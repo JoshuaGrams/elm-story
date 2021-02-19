@@ -14,11 +14,11 @@ import GameBox from '../GameBox'
 import styles from './styles.module.scss'
 
 interface GameLibraryProps {
-  profileId: DocumentId
+  studioId: DocumentId
 }
 
-const LibraryGrid: React.FC<GameLibraryProps> = ({ profileId }) => {
-  const games = useGames(profileId)
+const LibraryGrid: React.FC<GameLibraryProps> = ({ studioId }) => {
+  const games = useGames(studioId)
   const { modalDispatch } = useContext(ModalContext)
 
   return (
@@ -30,7 +30,7 @@ const LibraryGrid: React.FC<GameLibraryProps> = ({ profileId }) => {
             type: MODAL_ACTION_TYPE.LAYOUT,
             layout: (
               <GameModalLayout
-                profileId={profileId}
+                studioId={studioId}
                 type={GAME_MODAL_LAYOUT_TYPE.CREATE}
               />
             )
@@ -49,7 +49,7 @@ const LibraryGrid: React.FC<GameLibraryProps> = ({ profileId }) => {
           <div className={styles.gameGrid}>
             {games.map((game) =>
               game.id !== undefined ? (
-                <GameBox key={game.id} profileId={profileId} game={game} />
+                <GameBox key={game.id} studioId={studioId} game={game} />
               ) : null
             )}
           </div>

@@ -11,9 +11,9 @@ import Button, { ButtonProps } from '../Button'
 
 import styles from './styles.module.scss'
 
-import ProfileModalLayout, {
-  PROFILE_MODAL_LAYOUT_TYPE
-} from '../../layouts/ProfileModal'
+import StudioModalLayout, {
+  STUDIO_MODAL_LAYOUT_TYPE
+} from '../../layouts/StudioModal'
 
 interface AppMenuRowProps extends ButtonProps {
   title: string
@@ -62,19 +62,19 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
           } ${className}`}
         >
           <MenuButton
-            title="Create Profile..."
+            title="Create Studio..."
             onClick={() => {
               appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
               modalDispatch({
                 type: MODAL_ACTION_TYPE.LAYOUT,
                 layout: (
-                  <ProfileModalLayout
-                    type={PROFILE_MODAL_LAYOUT_TYPE.CREATE}
-                    onCreate={(profileId) =>
+                  <StudioModalLayout
+                    type={STUDIO_MODAL_LAYOUT_TYPE.CREATE}
+                    onCreate={(studioId) =>
                       appDispatch({
-                        type: APP_ACTION_TYPE.PROFILE_SELECT,
-                        selectedProfileId: profileId
+                        type: APP_ACTION_TYPE.STUDIO_SELECT,
+                        selectedStudioId: studioId
                       })
                     }
                   />

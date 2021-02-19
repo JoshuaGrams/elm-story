@@ -14,11 +14,11 @@ import Button from '../Button'
 import styles from './styles.module.scss'
 
 interface GameBoxProps {
-  profileId: DocumentId
+  studioId: DocumentId
   game: GameDocument
 }
 
-const GameBox: React.FC<GameBoxProps> = ({ profileId, game }) => {
+const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
   const { modalDispatch } = useContext(ModalContext)
   return (
     <div className={styles.gameBox}>
@@ -39,7 +39,7 @@ const GameBox: React.FC<GameBoxProps> = ({ profileId, game }) => {
                   type: MODAL_ACTION_TYPE.LAYOUT,
                   layout: (
                     <GameModalLayout
-                      profileId={profileId}
+                      studioId={studioId}
                       game={game}
                       type={GAME_MODAL_LAYOUT_TYPE.EDIT}
                     />
@@ -57,7 +57,7 @@ const GameBox: React.FC<GameBoxProps> = ({ profileId, game }) => {
                   type: MODAL_ACTION_TYPE.LAYOUT,
                   layout: (
                     <GameModalLayout
-                      profileId={profileId}
+                      studioId={studioId}
                       game={game}
                       type={GAME_MODAL_LAYOUT_TYPE.REMOVE}
                     />

@@ -1,5 +1,5 @@
 export enum DOC_TYPE {
-  PROFILE = 'PROFILE',
+  STUDIO = 'STUDIO',
   GAME = 'game',
   CHAPTER = 'CHAPTER',
   SCENE = 'SCENE',
@@ -50,7 +50,7 @@ export interface Document {
   updated?: number // UTC timestamp
 }
 
-export interface ProfileDocument extends Document {
+export interface StudioDocument extends Document {
   games: DocumentId[] // references by ID
 }
 

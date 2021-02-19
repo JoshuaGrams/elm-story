@@ -1,43 +1,43 @@
 import React, { useContext } from 'react'
 
-import { useProfiles } from '../../hooks'
+import { useStudios } from '../../hooks'
 
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
 
 import Button from '../Button'
 
-import ProfileModalLayout, {
-  PROFILE_MODAL_LAYOUT_TYPE
-} from '../../layouts/ProfileModal'
+import StudioModalLayout, {
+  STUDIO_MODAL_LAYOUT_TYPE
+} from '../../layouts/StudioModal'
 
 import styles from './styles.module.scss'
 
-type ProfileSelectProps = {
+type StudioSelectProps = {
   className?: string
 }
 
-const ProfileSelect: React.FC<ProfileSelectProps> = ({
+const StudioSelect: React.FC<StudioSelectProps> = ({
   className = ''
-}: ProfileSelectProps) => {
-  const profiles = useProfiles()
+}: StudioSelectProps) => {
+  const studios = useStudios()
   const { app, appDispatch } = useContext(AppContext)
   const { modalDispatch } = useContext(ModalContext)
 
   return (
-    <div className={`${styles.profileList} ${className}`}>
-      {/* Create profile button */}
+    <div className={`${styles.studioList} ${className}`}>
+      {/* Create studio button */}
       <Button
         onClick={() => {
           modalDispatch({
             type: MODAL_ACTION_TYPE.LAYOUT,
             layout: (
-              <ProfileModalLayout
-                type={PROFILE_MODAL_LAYOUT_TYPE.CREATE}
-                onCreate={(profileId) =>
+              <StudioModalLayout
+                type={STUDIO_MODAL_LAYOUT_TYPE.CREATE}
+                onCreate={(studioId) =>
                   appDispatch({
-                    type: APP_ACTION_TYPE.PROFILE_SELECT,
-                    selectedProfileId: profileId
+                    type: APP_ACTION_TYPE.STUDIO_SELECT,
+                    selectedStudioId: studioId
                   })
                 }
               />
@@ -48,48 +48,48 @@ const ProfileSelect: React.FC<ProfileSelectProps> = ({
         }}
         primary
       >
-        Create Profile
+        Create Studio
       </Button>
 
-      {profiles.length > 0 && (
+      {studios.length > 0 && (
         <>
           <hr />
 
           <select
             onChange={(event) => {
               appDispatch({
-                type: APP_ACTION_TYPE.PROFILE_SELECT,
-                selectedProfileId:
+                type: APP_ACTION_TYPE.STUDIO_SELECT,
+                selectedStudioId:
                   event.target.value === 'undefined'
                     ? undefined
                     : event.target.value
               })
             }}
-            value={app.selectedProfileId || 'undefined'}
+            value={app.selectedStudioId || 'undefined'}
           >
-            <option value="undefined">--- Select Profile ---</option>
-            {profiles.map((profile) => (
-              <option value={profile.id} key={profile.id}>
-                {profile.title} | {profile.games.length} Games
+            <option value="undefined">--- Select Studio ---</option>
+            {studios.map((studio) => (
+              <option value={studio.id} key={studio.id}>
+                {studio.title} | {studio.games.length} Games
               </option>
             ))}
           </select>
 
-          {app.selectedProfileId && (
+          {app.selectedStudioId && (
             <>
               <hr />
 
-              {/* Edit profile button */}
+              {/* Edit studio button */}
               <Button
                 onClick={() => {
                   modalDispatch({
                     type: MODAL_ACTION_TYPE.LAYOUT,
                     layout: (
-                      <ProfileModalLayout
-                        type={PROFILE_MODAL_LAYOUT_TYPE.EDIT}
-                        profile={
-                          profiles.filter(
-                            (profile) => profile.id === app.selectedProfileId
+                      <StudioModalLayout
+                        type={STUDIO_MODAL_LAYOUT_TYPE.EDIT}
+                        studio={
+                          studios.filter(
+                            (studio) => studio.id === app.selectedStudioId
                           )[0]
                         }
                       />
@@ -102,23 +102,23 @@ const ProfileSelect: React.FC<ProfileSelectProps> = ({
                 Edit
               </Button>
 
-              {/* Remove profile button */}
+              {/* Remove studio button */}
               <Button
                 onClick={() => {
                   modalDispatch({
                     type: MODAL_ACTION_TYPE.LAYOUT,
                     layout: (
-                      <ProfileModalLayout
-                        type={PROFILE_MODAL_LAYOUT_TYPE.REMOVE}
-                        profile={
-                          profiles.filter(
-                            (profile) => profile.id === app.selectedProfileId
+                      <StudioModalLayout
+                        type={STUDIO_MODAL_LAYOUT_TYPE.REMOVE}
+                        studio={
+                          studios.filter(
+                            (studio) => studio.id === app.selectedStudioId
                           )[0]
                         }
                         onRemove={() =>
                           appDispatch({
-                            type: APP_ACTION_TYPE.PROFILE_SELECT,
-                            selectedProfileId: undefined
+                            type: APP_ACTION_TYPE.STUDIO_SELECT,
+                            selectedStudioId: undefined
                           })
                         }
                       />
@@ -139,4 +139,4 @@ const ProfileSelect: React.FC<ProfileSelectProps> = ({
   )
 }
 
-export default ProfileSelect
+export default StudioSelect

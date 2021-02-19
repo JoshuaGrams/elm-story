@@ -1,7 +1,7 @@
 import Dexie from 'dexie'
 import {
   DocumentId,
-  ProfileDocument,
+  StudioDocument,
   EditorDocument,
   GameDocument,
   ChapterDocument,
@@ -19,7 +19,7 @@ export enum DATABASE {
 }
 
 export enum APP_TABLE {
-  PROFILES = 'profiles',
+  STUDIOS = 'studios',
   EDITORS = 'editors'
 }
 
@@ -35,18 +35,18 @@ export enum LIBRARY_TABLE {
 }
 
 export class AppDatabase extends Dexie {
-  public profiles: Dexie.Table<ProfileDocument, string>
+  public studios: Dexie.Table<StudioDocument, string>
   public editors: Dexie.Table<EditorDocument, string>
 
   public constructor() {
     super(DATABASE.APP)
 
     this.version(1).stores({
-      profiles: '&id,title,*tags,updated',
+      studios: '&id,title,*tags,updated',
       editors: '&id,updated'
     })
 
-    this.profiles = this.table(APP_TABLE.PROFILES)
+    this.studios = this.table(APP_TABLE.STUDIOS)
     this.editors = this.table(APP_TABLE.EDITORS)
   }
 
@@ -62,15 +62,15 @@ export class AppDatabase extends Dexie {
     return exists
   }
 
-  public async getProfile(profileId: DocumentId): Promise<ProfileDocument> {
+  public async getStudio(studioId: DocumentId): Promise<StudioDocument> {
     try {
-      const profile = await this.profiles.get(profileId)
+      const studio = await this.studios.get(studioId)
 
-      if (profile) {
-        return profile
+      if (studio) {
+        return studio
       } else {
         throw new Error(
-          `Unable to get profile with ID: ${profileId}. Does not exist.`
+          `Unable to get studio with ID: ${studioId}. Does not exist.`
         )
       }
     } catch (error) {
@@ -78,38 +78,38 @@ export class AppDatabase extends Dexie {
     }
   }
 
-  public async saveProfile(profile: ProfileDocument): Promise<DocumentId> {
+  public async saveStudio(studio: StudioDocument): Promise<DocumentId> {
     try {
-      await this.transaction('rw', this.profiles, async () => {
-        if (profile.id) {
-          if (await this.docExists(APP_TABLE.PROFILES, profile.id)) {
-            await this.profiles.update(profile.id, profile)
+      await this.transaction('rw', this.studios, async () => {
+        if (studio.id) {
+          if (await this.docExists(APP_TABLE.STUDIOS, studio.id)) {
+            await this.studios.update(studio.id, studio)
           } else {
-            await this.profiles.add(profile)
+            await this.studios.add(studio)
           }
         } else {
-          throw new Error('Unable to save profile to database. Missing ID.')
+          throw new Error('Unable to save studio to database. Missing ID.')
         }
       })
     } catch (error) {
       throw new Error(error)
     }
 
-    if (profile.id) {
-      return profile.id
+    if (studio.id) {
+      return studio.id
     } else {
-      throw new Error('Unable to save profile to database. Missing ID.')
+      throw new Error('Unable to save studio to database. Missing ID.')
     }
   }
 
-  public async removeProfile(profileId: DocumentId) {
+  public async removeStudio(studioId: DocumentId) {
     try {
-      await this.transaction('rw', this.profiles, async () => {
-        if (await this.docExists(APP_TABLE.PROFILES, profileId)) {
-          await this.profiles.delete(profileId)
+      await this.transaction('rw', this.studios, async () => {
+        if (await this.docExists(APP_TABLE.STUDIOS, studioId)) {
+          await this.studios.delete(studioId)
         } else {
           throw new Error(
-            `Unable to remove profile with ID: '${profileId}'. Does not exist.`
+            `Unable to remove studio with ID: '${studioId}'. Does not exist.`
           )
         }
       })
@@ -129,8 +129,8 @@ export class LibraryDatabase extends Dexie {
   public effects: Dexie.Table<EffectDocument, string>
   public variables: Dexie.Table<VariableDocument, string>
 
-  public constructor(profileId: string) {
-    super(`${DATABASE.LIBRARY}-${profileId}`)
+  public constructor(studioId: string) {
+    super(`${DATABASE.LIBRARY}-${studioId}`)
 
     this.version(2).stores({
       games: '&id,title,*tags,updated,template,director,version,engine',
@@ -172,13 +172,13 @@ export class LibraryDatabase extends Dexie {
 
   public async getGame(gameId: DocumentId): Promise<GameDocument> {
     try {
-      const profile = await this.games.get(gameId)
+      const studio = await this.games.get(gameId)
 
-      if (profile) {
-        return profile
+      if (studio) {
+        return studio
       } else {
         throw new Error(
-          `Unable to get profile with ID: ${gameId}. Does not exist.`
+          `Unable to get studio with ID: ${gameId}. Does not exist.`
         )
       }
     } catch (error) {

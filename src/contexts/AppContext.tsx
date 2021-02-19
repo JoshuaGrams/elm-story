@@ -6,7 +6,7 @@ type AppState = {
   fullscreen: boolean
   menuOpen: boolean
   modalOpen: boolean
-  selectedProfileId?: DocumentId
+  selectedStudioId?: DocumentId
   selectedGameId?: DocumentId
 }
 
@@ -18,7 +18,7 @@ export enum APP_ACTION_TYPE {
   MENU_CLOSE = 'MENU_CLOSE',
   MODAL_OPEN = 'MODAL_OPEN',
   MODAL_CLOSE = 'MODAL_CLOSE',
-  PROFILE_SELECT = 'PROFILE_SELECT',
+  STUDIO_SELECT = 'STUDIO_SELECT',
   GAME_SELECT = 'GAME_SELECT'
 }
 
@@ -30,7 +30,7 @@ type AppActionType =
   | { type: APP_ACTION_TYPE.MENU_CLOSE }
   | { type: APP_ACTION_TYPE.MODAL_OPEN }
   | { type: APP_ACTION_TYPE.MODAL_CLOSE }
-  | { type: APP_ACTION_TYPE.PROFILE_SELECT; selectedProfileId?: DocumentId }
+  | { type: APP_ACTION_TYPE.STUDIO_SELECT; selectedStudioId?: DocumentId }
   | { type: APP_ACTION_TYPE.GAME_SELECT; selectedGameId?: DocumentId }
 
 const appReducer = (state: AppState, action: AppActionType): AppState => {
@@ -52,8 +52,8 @@ const appReducer = (state: AppState, action: AppActionType): AppState => {
       return { ...state, modalOpen: true }
     case APP_ACTION_TYPE.MODAL_CLOSE:
       return { ...state, modalOpen: false }
-    case APP_ACTION_TYPE.PROFILE_SELECT:
-      return { ...state, selectedProfileId: action.selectedProfileId }
+    case APP_ACTION_TYPE.STUDIO_SELECT:
+      return { ...state, selectedStudioId: action.selectedStudioId }
     case APP_ACTION_TYPE.GAME_SELECT:
       return { ...state, selectedGameId: action.selectedGameId }
     default:
@@ -71,7 +71,7 @@ const defaultAppState: AppState = {
   fullscreen: false,
   menuOpen: false,
   modalOpen: false,
-  selectedProfileId: undefined,
+  selectedStudioId: undefined,
   selectedGameId: undefined
 }
 

@@ -1,4 +1,4 @@
-import useProfiles from './useProfiles'
+import useStudios from './useStudios'
 import useGames from './useGames'
 
-export { useProfiles, useGames }
+export { useStudios, useGames }

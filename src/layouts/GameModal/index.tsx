@@ -15,14 +15,14 @@ export enum GAME_MODAL_LAYOUT_TYPE {
 }
 
 interface GameModalLayoutProps extends ModalProps {
-  profileId: DocumentId
+  studioId: DocumentId
   game?: GameDocument
   type?: GAME_MODAL_LAYOUT_TYPE
   visible?: boolean
 }
 
 const SaveGameLayout: React.FC<GameModalLayoutProps> = ({
-  profileId,
+  studioId,
   game,
   visible = false,
   onCreate,
@@ -44,7 +44,7 @@ const SaveGameLayout: React.FC<GameModalLayoutProps> = ({
     if (title && director) {
       try {
         const gameId = await api().games.saveGame(
-          profileId,
+          studioId,
           game
             ? { ...game, title, director }
             : {
@@ -102,13 +102,13 @@ const SaveGameLayout: React.FC<GameModalLayoutProps> = ({
 }
 
 const RemoveGameLayout: React.FC<GameModalLayoutProps> = ({
-  profileId,
+  studioId,
   game,
   onRemove,
   onClose
 }) => {
   async function removeGame() {
-    if (game && game.id) await api().games.removeGame(profileId, game.id)
+    if (game && game.id) await api().games.removeGame(studioId, game.id)
 
     if (onRemove) onRemove()
     if (onClose) onClose()
@@ -129,7 +129,7 @@ const RemoveGameLayout: React.FC<GameModalLayoutProps> = ({
 }
 
 const GameModalLayout: React.FC<GameModalLayoutProps> = ({
-  profileId,
+  studioId,
   game,
   type,
   open,
@@ -141,7 +141,7 @@ const GameModalLayout: React.FC<GameModalLayoutProps> = ({
     <>
       {type === GAME_MODAL_LAYOUT_TYPE.CREATE && (
         <SaveGameLayout
-          profileId={profileId}
+          studioId={studioId}
           visible={open}
           onCreate={onCreate}
           onClose={onClose}
@@ -149,7 +149,7 @@ const GameModalLayout: React.FC<GameModalLayoutProps> = ({
       )}
       {type === GAME_MODAL_LAYOUT_TYPE.EDIT && (
         <SaveGameLayout
-          profileId={profileId}
+          studioId={studioId}
           game={game}
           visible={open}
           onClose={onClose}
@@ -157,7 +157,7 @@ const GameModalLayout: React.FC<GameModalLayoutProps> = ({
       )}
       {type === GAME_MODAL_LAYOUT_TYPE.REMOVE && (
         <RemoveGameLayout
-          profileId={profileId}
+          studioId={studioId}
           game={game}
           onRemove={onRemove}
           onClose={onClose}
