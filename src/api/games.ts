@@ -14,6 +14,13 @@ export async function getGame(
   }
 }
 
+export async function getGames(
+  profileId: DocumentId,
+  gameRefs: DocumentId[]
+): Promise<(GameDocument | undefined)[]> {
+  return await new LibraryDatabase(profileId).games.bulkGet(gameRefs)
+}
+
 export async function saveGame(
   profileId: DocumentId,
   game: GameDocument

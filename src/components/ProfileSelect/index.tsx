@@ -70,7 +70,7 @@ const ProfileSelect: React.FC<ProfileSelectProps> = ({
             <option value="undefined">--- Select Profile ---</option>
             {profiles.map((profile) => (
               <option value={profile.id} key={profile.id}>
-                {profile.title}
+                {profile.title} | {profile.games.length} Games
               </option>
             ))}
           </select>

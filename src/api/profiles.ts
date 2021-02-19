@@ -6,10 +6,15 @@ export async function getProfile(
   profileId: DocumentId
 ): Promise<ProfileDocument> {
   try {
-    return await new AppDatabase().getProfile(profileId)
+    return new AppDatabase().getProfile(profileId)
   } catch (error) {
     throw new Error(error)
   }
+}
+export async function getGameRefs(
+  profileId: DocumentId
+): Promise<DocumentId[]> {
+  return (await getProfile(profileId)).games
 }
 
 /**
