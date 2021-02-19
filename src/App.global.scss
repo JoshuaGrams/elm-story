@@ -2,6 +2,7 @@
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
+@import './styles/variables';
 
 @font-face {
   font-family: 'Fira Mono';
@@ -118,16 +119,21 @@ button {
 select {
   height: 50px;
   width: 100%;
-  box-sizing: border-box;
-  background-color: hsl(0, 0%, 10%);
-  color: white;
-  padding: 10px;
+  background: hsl(0, 0%, 10%);
   border: 1px solid hsl(0, 0%, 1%);
   box-sizing: border-box;
   box-shadow: inset 0px 1px 0px hsl(0, 0%, 20%);
+  color: white;
+  padding: 10px;
   cursor: pointer;
   appearance: none;
   text-align-last: center;
+  @include shadow;
+
+  &:hover {
+    background: hsl(0, 0%, 20%);
+    box-shadow: inset 0px 1px 0px hsl(0, 0%, 30%);
+  }
 }
 
 hr {

@@ -1,9 +1,13 @@
+@import '../../styles/variables';
+
 .gameBox {
   width: 160px;
   height: 256px;
   align-items: center;
   background: #0f0f0f;
   border: 1px solid #000000;
+  box-sizing: border-box;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
   box-sizing: border-box;
   position: realtive;
 
@@ -38,8 +42,11 @@
       }
 
       .buttonBar {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, 50%);
+        background: #0f0f0f;
+        border: 1px solid #000000;
+
+        @include shadow;
+        @include buttonBar(2);
 
         button {
           margin-bottom: 0px !important;

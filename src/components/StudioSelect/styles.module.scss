@@ -1,3 +1,5 @@
+@import '../../styles/variables';
+
 .studioList {
   min-width: 300px;
   max-width: 500px;
@@ -6,7 +8,7 @@
   box-sizing: border-box;
 
   .buttonBar {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 50%);
+    @include buttonBar(2);
+    @include shadow;
   }
 }
