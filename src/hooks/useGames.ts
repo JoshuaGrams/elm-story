@@ -4,7 +4,9 @@ import { DocumentId, GameDocument } from '../data/types'
 
 const useGames = (profileId: DocumentId): GameDocument[] => {
   const games =
-    useLiveQuery(() => new LibraryDatabase(profileId).games.toArray(), []) || []
+    useLiveQuery(() => new LibraryDatabase(profileId).games.toArray(), [
+      profileId
+    ]) || []
 
   // sort alphabetical by profile title
   if (games) games.sort((a, b) => (a.title > b.title ? 1 : -1))
