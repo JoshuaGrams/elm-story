@@ -8,6 +8,7 @@ type AppState = {
   modalOpen: boolean
   selectedStudioId?: DocumentId
   selectedGameId?: DocumentId
+  location: string
 }
 
 export enum APP_ACTION_TYPE {
@@ -19,7 +20,13 @@ export enum APP_ACTION_TYPE {
   MODAL_OPEN = 'MODAL_OPEN',
   MODAL_CLOSE = 'MODAL_CLOSE',
   STUDIO_SELECT = 'STUDIO_SELECT',
-  GAME_SELECT = 'GAME_SELECT'
+  GAME_SELECT = 'GAME_SELECT',
+  LOCATION = 'LOCATION'
+}
+
+export enum LOCATION {
+  DASHBOARD = '/',
+  EDITOR = '/editor'
 }
 
 type AppActionType =
@@ -32,6 +39,7 @@ type AppActionType =
   | { type: APP_ACTION_TYPE.MODAL_CLOSE }
   | { type: APP_ACTION_TYPE.STUDIO_SELECT; selectedStudioId?: DocumentId }
   | { type: APP_ACTION_TYPE.GAME_SELECT; selectedGameId?: DocumentId }
+  | { type: APP_ACTION_TYPE.LOCATION; location: LOCATION }
 
 const appReducer = (state: AppState, action: AppActionType): AppState => {
   switch (action.type) {
@@ -56,6 +64,8 @@ const appReducer = (state: AppState, action: AppActionType): AppState => {
       return { ...state, selectedStudioId: action.selectedStudioId }
     case APP_ACTION_TYPE.GAME_SELECT:
       return { ...state, selectedGameId: action.selectedGameId }
+    case APP_ACTION_TYPE.LOCATION:
+      return { ...state, location: action.location }
     default:
       return state
   }
@@ -72,7 +82,8 @@ const defaultAppState: AppState = {
   menuOpen: false,
   modalOpen: false,
   selectedStudioId: undefined,
-  selectedGameId: undefined
+  selectedGameId: undefined,
+  location: LOCATION.DASHBOARD
 }
 
 export const AppContext = createContext<AppContextType>({

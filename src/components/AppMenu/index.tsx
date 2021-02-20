@@ -7,7 +7,11 @@ import { StudioDocument } from '../../data/types'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
-import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
+import {
+  AppContext,
+  APP_ACTION_TYPE,
+  LOCATION
+} from '../../contexts/AppContext'
 import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
 
 import Transition, { TRANSITION_TYPE } from '../Transition'
@@ -91,112 +95,132 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
             app.fullscreen ? styles.fullscreen : styles.floating
           } ${className}`}
         >
-          <MenuButton
-            title="Create Studio..."
-            onClick={() => {
-              appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
-
-              modalDispatch({
-                type: MODAL_ACTION_TYPE.LAYOUT,
-                layout: (
-                  <StudioModalLayout
-                    type={STUDIO_MODAL_LAYOUT_TYPE.CREATE}
-                    onCreate={(studioId) =>
-                      appDispatch({
-                        type: APP_ACTION_TYPE.STUDIO_SELECT,
-                        selectedStudioId: studioId
-                      })
-                    }
-                  />
-                )
-              })
-
-              modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-            }}
-          />
-
-          {selectedStudio && (
+          {app.location === LOCATION.DASHBOARD && (
             <>
+              <MenuButton
+                title="Create Studio..."
+                onClick={() => {
+                  appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+
+                  modalDispatch({
+                    type: MODAL_ACTION_TYPE.LAYOUT,
+                    layout: (
+                      <StudioModalLayout
+                        type={STUDIO_MODAL_LAYOUT_TYPE.CREATE}
+                        onCreate={(studioId) =>
+                          appDispatch({
+                            type: APP_ACTION_TYPE.STUDIO_SELECT,
+                            selectedStudioId: studioId
+                          })
+                        }
+                      />
+                    )
+                  })
+
+                  modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                }}
+              />
+
+              {selectedStudio && (
+                <>
+                  <MenuVerticalSpacer />
+                  <MenuHeader title={selectedStudio.title} />
+
+                  <div className={styles.buttonBar}>
+                    <MenuButton
+                      title="Edit..."
+                      onClick={() => {
+                        appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+
+                        modalDispatch({
+                          type: MODAL_ACTION_TYPE.LAYOUT,
+                          layout: (
+                            <StudioModalLayout
+                              type={STUDIO_MODAL_LAYOUT_TYPE.EDIT}
+                              studio={selectedStudio}
+                            />
+                          )
+                        })
+
+                        modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                      }}
+                    />
+
+                    <MenuButton
+                      title="Remove..."
+                      onClick={() => {
+                        appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+
+                        modalDispatch({
+                          type: MODAL_ACTION_TYPE.LAYOUT,
+                          layout: (
+                            <StudioModalLayout
+                              type={STUDIO_MODAL_LAYOUT_TYPE.REMOVE}
+                              studio={selectedStudio}
+                              onRemove={() =>
+                                appDispatch({
+                                  type: APP_ACTION_TYPE.STUDIO_SELECT,
+                                  selectedStudioId: undefined
+                                })
+                              }
+                            />
+                          )
+                        })
+
+                        modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+
               <MenuVerticalSpacer />
-              <MenuHeader title={selectedStudio.title} />
 
-              <div className={styles.buttonBar}>
-                <MenuButton
-                  title="Edit..."
-                  onClick={() => {
-                    appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+              {app.selectedStudioId && (
+                <>
+                  <MenuButton
+                    title="Create Game..."
+                    onClick={() => {
+                      if (app.selectedStudioId) {
+                        appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
-                    modalDispatch({
-                      type: MODAL_ACTION_TYPE.LAYOUT,
-                      layout: (
-                        <StudioModalLayout
-                          type={STUDIO_MODAL_LAYOUT_TYPE.EDIT}
-                          studio={selectedStudio}
-                        />
-                      )
-                    })
+                        modalDispatch({
+                          type: MODAL_ACTION_TYPE.LAYOUT,
+                          layout: (
+                            <GameModalLayout
+                              studioId={app.selectedStudioId}
+                              type={GAME_MODAL_LAYOUT_TYPE.CREATE}
+                            />
+                          )
+                        })
 
-                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                  }}
-                />
+                        modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                      }
+                    }}
+                    primary
+                  />
+                </>
+              )}
+            </>
+          )}
 
-                <MenuButton
-                  title="Remove..."
-                  onClick={() => {
-                    appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+          {app.location === LOCATION.EDITOR && (
+            <>
+              <MenuButton
+                title="DASHBOARD"
+                onClick={() => {
+                  appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
-                    modalDispatch({
-                      type: MODAL_ACTION_TYPE.LAYOUT,
-                      layout: (
-                        <StudioModalLayout
-                          type={STUDIO_MODAL_LAYOUT_TYPE.REMOVE}
-                          studio={selectedStudio}
-                          onRemove={() =>
-                            appDispatch({
-                              type: APP_ACTION_TYPE.STUDIO_SELECT,
-                              selectedStudioId: undefined
-                            })
-                          }
-                        />
-                      )
-                    })
-
-                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                  }}
-                />
-              </div>
+                  appDispatch({
+                    type: APP_ACTION_TYPE.LOCATION,
+                    location: LOCATION.DASHBOARD
+                  })
+                }}
+              />
             </>
           )}
 
           <MenuVerticalSpacer />
-
-          {app.selectedStudioId && (
-            <>
-              <MenuButton
-                title="Create Game..."
-                onClick={() => {
-                  if (app.selectedStudioId) {
-                    appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
-
-                    modalDispatch({
-                      type: MODAL_ACTION_TYPE.LAYOUT,
-                      layout: (
-                        <GameModalLayout
-                          studioId={app.selectedStudioId}
-                          type={GAME_MODAL_LAYOUT_TYPE.CREATE}
-                        />
-                      )
-                    })
-
-                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                  }
-                }}
-                primary
-              />
-
-              <MenuVerticalSpacer />
-            </>
-          )}
 
           <MenuButton
             title="Quit"

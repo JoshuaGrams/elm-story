@@ -12,6 +12,11 @@ import GameModalLayout, {
 import Button from '../Button'
 
 import styles from './styles.module.scss'
+import {
+  AppContext,
+  APP_ACTION_TYPE,
+  LOCATION
+} from '../../contexts/AppContext'
 
 interface GameBoxProps {
   studioId: DocumentId
@@ -19,7 +24,9 @@ interface GameBoxProps {
 }
 
 const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
+  const { appDispatch } = useContext(AppContext)
   const { modalDispatch } = useContext(ModalContext)
+
   return (
     <div className={styles.gameBox}>
       {!game && (
@@ -47,7 +54,21 @@ const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
         <>
           <div className={styles.contentWrapper}>
             <h4>
-              <a href="#">{game.title}</a>
+              <a
+                onClick={() => {
+                  appDispatch({
+                    type: APP_ACTION_TYPE.GAME_SELECT,
+                    selectedGameId: game.id
+                  })
+
+                  appDispatch({
+                    type: APP_ACTION_TYPE.LOCATION,
+                    location: LOCATION.EDITOR
+                  })
+                }}
+              >
+                {game.title}
+              </a>
             </h4>
 
             <div className={styles.contentBottom}>
