@@ -1,5 +1,9 @@
 import { ipcRenderer } from 'electron'
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
+
+import { useStudios } from '../../hooks'
+
+import { StudioDocument } from '../../data/types'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
@@ -44,9 +48,32 @@ const MenuVerticalSpacer: React.FC = () => {
   return <div className={styles.spacer} />
 }
 
+interface MenuHeaderProps {
+  title: string
+}
+
+const MenuHeader: React.FC<MenuHeaderProps> = ({ title }) => {
+  return <div className={styles.menuHeader}>{title}</div>
+}
+
 const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
   const { app, appDispatch } = useContext(AppContext)
   const { modalDispatch } = useContext(ModalContext)
+
+  const studios = useStudios([app.selectedStudioId])
+  const [selectedStudio, setSelectedStudio] = useState<
+    StudioDocument | undefined
+  >(undefined)
+
+  useEffect(() => {
+    if (studios) {
+      setSelectedStudio(
+        app.selectedStudioId
+          ? studios.filter((studio) => studio.id === app.selectedStudioId)[0]
+          : undefined
+      )
+    }
+  }, [studios, app.selectedStudioId])
 
   return (
     <>
@@ -87,6 +114,59 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
               modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
             }}
           />
+
+          {selectedStudio && (
+            <>
+              <MenuVerticalSpacer />
+              <MenuHeader title={selectedStudio.title} />
+
+              <div className={styles.buttonBar}>
+                <MenuButton
+                  title="Edit..."
+                  onClick={() => {
+                    appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+
+                    modalDispatch({
+                      type: MODAL_ACTION_TYPE.LAYOUT,
+                      layout: (
+                        <StudioModalLayout
+                          type={STUDIO_MODAL_LAYOUT_TYPE.EDIT}
+                          studio={selectedStudio}
+                        />
+                      )
+                    })
+
+                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                  }}
+                />
+
+                <MenuButton
+                  title="Remove..."
+                  onClick={() => {
+                    appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+
+                    modalDispatch({
+                      type: MODAL_ACTION_TYPE.LAYOUT,
+                      layout: (
+                        <StudioModalLayout
+                          type={STUDIO_MODAL_LAYOUT_TYPE.REMOVE}
+                          studio={selectedStudio}
+                          onRemove={() =>
+                            appDispatch({
+                              type: APP_ACTION_TYPE.STUDIO_SELECT,
+                              selectedStudioId: undefined
+                            })
+                          }
+                        />
+                      )
+                    })
+
+                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                  }}
+                />
+              </div>
+            </>
+          )}
 
           <MenuVerticalSpacer />
 

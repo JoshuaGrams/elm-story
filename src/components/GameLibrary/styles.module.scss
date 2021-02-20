@@ -1,9 +1,19 @@
 .gameLibrary {
-  .gameGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 160px);
-    grid-column-gap: 20px;
-    grid-row-gap: 20px;
-    justify-content: center;
+  padding: 20px;
+
+  .contentWrapper {
+    max-width: 700px;
+    margin: 0px auto;
+
+    .noContent {
+      text-align: center;
+    }
+
+    .gameGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 160px);
+      grid-column-gap: 20px;
+      grid-row-gap: 20px;
+    }
   }
 }

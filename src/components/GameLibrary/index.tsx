@@ -1,9 +1,8 @@
-import React, { useContext } from 'react'
-import { useGames } from '../../hooks'
+import React, { useContext, useState, useEffect } from 'react'
+import { useGames, useStudios } from '../../hooks'
 
-import { DocumentId } from '../../data/types'
+import { DocumentId, StudioDocument } from '../../data/types'
 
-import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
 
 import GameModalLayout, {
@@ -12,61 +11,76 @@ import GameModalLayout, {
 import GameBox from '../GameBox'
 
 import styles from './styles.module.scss'
-
 interface GameLibraryProps {
   studioId: DocumentId
 }
 
 const LibraryGrid: React.FC<GameLibraryProps> = ({ studioId }) => {
-  const games = useGames(studioId)
-  const { app, appDispatch } = useContext(AppContext)
   const { modalDispatch } = useContext(ModalContext)
 
+  const games = useGames(studioId, [studioId])
+  const studios = useStudios([studioId])
+  const [selectedStudio, setSelectedStudio] = useState<
+    StudioDocument | undefined
+  >(undefined)
+
+  useEffect(() => {
+    // @TODO: Move this to hook; see AppMenu duplicate
+    if (studios) {
+      setSelectedStudio(
+        studioId
+          ? studios.filter((studio) => studio.id === studioId)[0]
+          : undefined
+      )
+    }
+  }, [studios, studioId])
+
   return (
-    <div className={styles.gameLibrary}>
-      <h3>Game Library</h3>
+    <>
+      <div className={styles.gameLibrary}>
+        <h3>Game Library</h3>
+        <div className={styles.contentWrapper}>
+          {selectedStudio && games && games.length === 0 && (
+            <div className={styles.noContent}>
+              {selectedStudio.title} has 0 games...{' '}
+              <a
+                onClick={() => {
+                  if (studioId) {
+                    modalDispatch({
+                      type: MODAL_ACTION_TYPE.LAYOUT,
+                      layout: (
+                        <GameModalLayout
+                          studioId={studioId}
+                          type={GAME_MODAL_LAYOUT_TYPE.CREATE}
+                        />
+                      )
+                    })
 
-      <hr />
+                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                  }
+                }}
+              >
+                Create game...
+              </a>
+            </div>
+          )}
 
-      {games && games.length > 0 && (
-        <>
-          <div className={styles.gameGrid}>
-            {games.map((game) =>
-              game.id !== undefined ? (
-                <GameBox key={game.id} studioId={studioId} game={game} />
-              ) : null
-            )}
-          </div>
-        </>
-      )}
-
-      {games && games.length === 0 && (
-        <div>
-          Studio has 0 games...{' '}
-          <a
-            onClick={() => {
-              if (app.selectedStudioId) {
-                appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
-
-                modalDispatch({
-                  type: MODAL_ACTION_TYPE.LAYOUT,
-                  layout: (
-                    <GameModalLayout
-                      studioId={app.selectedStudioId}
-                      type={GAME_MODAL_LAYOUT_TYPE.CREATE}
-                    />
-                  )
-                })
-
-                modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-              }
-            }}
-          >
-            Create game...
-          </a>
+          {games && games.length > 0 && (
+            <>
+              <div className={styles.gameGrid}>
+                {games.map((game) =>
+                  game.id !== undefined ? (
+                    <GameBox key={game.id} studioId={studioId} game={game} />
+                  ) : null
+                )}
+                <GameBox studioId={studioId} />
+              </div>
+            </>
+          )}
         </div>
-      )}
-    </div>
+      </div>
+      <hr />
+    </>
   )
 }
 

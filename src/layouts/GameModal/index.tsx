@@ -8,6 +8,8 @@ import api from '../../api'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 
+import styles from './styles.module.scss'
+
 export enum GAME_MODAL_LAYOUT_TYPE {
   CREATE = 'CREATE',
   EDIT = 'EDIT',
@@ -88,14 +90,17 @@ const SaveGameLayout: React.FC<GameModalLayoutProps> = ({
           onChange={(event) => setDirector(event.target.value)}
           value={director}
         />
-        <Button
-          type="submit"
-          onClick={(event) => saveGame(event)}
-          disabled={!title || !director}
-          primary
-        >
-          Save
-        </Button>
+        <div className={styles.buttonBar}>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button
+            type="submit"
+            onClick={(event) => saveGame(event)}
+            disabled={!title || !director}
+            primary
+          >
+            Save
+          </Button>
+        </div>
       </form>
     </>
   )
@@ -121,9 +126,12 @@ const RemoveGameLayout: React.FC<GameModalLayoutProps> = ({
     <>
       <h3>Remove Game</h3>
       <div>Are you sure you want to remove game '{game.title}'?</div>
-      <Button onClick={removeGame} destroy>
-        Remove
-      </Button>
+      <div className={styles.buttonBar}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={removeGame} destroy>
+          Remove
+        </Button>
+      </div>
     </>
   )
 }
@@ -163,7 +171,6 @@ const GameModalLayout: React.FC<GameModalLayoutProps> = ({
           onClose={onClose}
         />
       )}
-      <Button onClick={onClose}>Cancel</Button>
     </>
   )
 }

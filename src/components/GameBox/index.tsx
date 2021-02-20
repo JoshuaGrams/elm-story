@@ -15,64 +15,88 @@ import styles from './styles.module.scss'
 
 interface GameBoxProps {
   studioId: DocumentId
-  game: GameDocument
+  game?: GameDocument
 }
 
 const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
   const { modalDispatch } = useContext(ModalContext)
   return (
     <div className={styles.gameBox}>
-      <div className={styles.contentWrapper}>
-        <h4>
-          <a href="#">{game.title}</a>
-        </h4>
+      {!game && (
+        <Button
+          className={styles.addGameButton}
+          onClick={() => {
+            modalDispatch({
+              type: MODAL_ACTION_TYPE.LAYOUT,
+              layout: (
+                <GameModalLayout
+                  studioId={studioId}
+                  type={GAME_MODAL_LAYOUT_TYPE.CREATE}
+                />
+              )
+            })
 
-        <div className={styles.contentBottom}>
-          <h5>
-            <em>directed by</em>
-            <br /> {game.director}
-          </h5>
-          <div className={styles.buttonBar}>
-            <Button
-              onClick={() => {
-                modalDispatch({
-                  type: MODAL_ACTION_TYPE.LAYOUT,
-                  layout: (
-                    <GameModalLayout
-                      studioId={studioId}
-                      game={game}
-                      type={GAME_MODAL_LAYOUT_TYPE.EDIT}
-                    />
-                  )
-                })
+            modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+          }}
+        >
+          +
+        </Button>
+      )}
 
-                modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-              }}
-            >
-              Edit
-            </Button>
-            <Button
-              onClick={() => {
-                modalDispatch({
-                  type: MODAL_ACTION_TYPE.LAYOUT,
-                  layout: (
-                    <GameModalLayout
-                      studioId={studioId}
-                      game={game}
-                      type={GAME_MODAL_LAYOUT_TYPE.REMOVE}
-                    />
-                  )
-                })
+      {game && (
+        <>
+          <div className={styles.contentWrapper}>
+            <h4>
+              <a href="#">{game.title}</a>
+            </h4>
 
-                modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-              }}
-              destroy
-            >
-              Remove
-            </Button>
+            <div className={styles.contentBottom}>
+              <h5>
+                <em>directed by</em>
+                <br /> {game.director}
+              </h5>
+              <div className={styles.buttonBar}>
+                <Button
+                  onClick={() => {
+                    modalDispatch({
+                      type: MODAL_ACTION_TYPE.LAYOUT,
+                      layout: (
+                        <GameModalLayout
+                          studioId={studioId}
+                          game={game}
+                          type={GAME_MODAL_LAYOUT_TYPE.EDIT}
+                        />
+                      )
+                    })
+
+                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                  }}
+                >
+                  Edit
+                </Button>
+                <Button
+                  onClick={() => {
+                    modalDispatch({
+                      type: MODAL_ACTION_TYPE.LAYOUT,
+                      layout: (
+                        <GameModalLayout
+                          studioId={studioId}
+                          game={game}
+                          type={GAME_MODAL_LAYOUT_TYPE.REMOVE}
+                        />
+                      )
+                    })
+
+                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                  }}
+                >
+                  Remove
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   )
 }

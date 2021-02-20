@@ -42,4 +42,15 @@
   .spacer {
     height: 4px;
   }
+
+  .menuHeader {
+    font-size: 12px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-top: 1px solid hsl(0, 0%, 20%);
+  }
+
+  .buttonBar {
+    @include buttonBar(2);
+  }
 }

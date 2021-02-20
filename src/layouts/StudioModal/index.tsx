@@ -9,6 +9,8 @@ import api from '../../api'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 
+import styles from './styles.module.scss'
+
 export enum STUDIO_MODAL_LAYOUT_TYPE {
   CREATE = 'CREATE',
   EDIT = 'EDIT',
@@ -64,14 +66,17 @@ const SaveStudioLayout: React.FC<StudioModalLayoutProps> = ({
           focusOnMount
           selectOnMount
         />
-        <Button
-          type="submit"
-          onClick={(event) => saveStudio(event)}
-          disabled={!title}
-          primary
-        >
-          Save
-        </Button>
+        <div className={styles.buttonBar}>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button
+            type="submit"
+            onClick={(event) => saveStudio(event)}
+            disabled={!title}
+            primary
+          >
+            Save
+          </Button>
+        </div>
       </form>
     </>
   )
@@ -97,9 +102,12 @@ const RemoveStudioLayout: React.FC<StudioModalLayoutProps> = ({
       <h3>Remove Studio</h3>
       <div>Are you sure you want to remove studio '{studio.title}'?</div>
       <div>All games under this studio will be removed forever.</div>
-      <Button onClick={removeStudio} destroy>
-        Remove
-      </Button>
+      <div className={styles.buttonBar}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={removeStudio} destroy>
+          Remove
+        </Button>
+      </div>
     </>
   )
 }
@@ -131,7 +139,6 @@ const StudioModalLayout: React.FC<StudioModalLayoutProps> = ({
           onClose={onClose}
         />
       )}
-      <Button onClick={onClose}>Cancel</Button>
     </>
   )
 }
