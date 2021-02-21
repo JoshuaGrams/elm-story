@@ -7,6 +7,9 @@ import TitleBar from './components/TitleBar'
 import AppMenu from './components/AppMenu'
 import AppModal from './components/AppModal'
 
+import { Button, Tooltip } from 'antd'
+import { AccountBookFilled } from '@ant-design/icons'
+
 import './App.global.less'
 
 const App: React.FC = () => {
@@ -17,6 +20,11 @@ const App: React.FC = () => {
       <TitleBar />
       <AppMenu />
       <AppModal />
+      <Tooltip title="hi">
+        <Button>
+          <AccountBookFilled />i
+        </Button>
+      </Tooltip>
     </ModalProvider>
   )
 }

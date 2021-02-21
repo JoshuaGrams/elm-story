@@ -188,10 +188,7 @@ export default merge(baseConfig, {
             options: {
               lessOptions: {
                 javascriptEnabled: true,
-                modifyVars: {
-                  'primary-color': '#ff0000',
-                  'border-radius-base': '20px'
-                }
+                modifyVars: {}
               }
             }
           }
