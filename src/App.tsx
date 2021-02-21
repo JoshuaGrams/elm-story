@@ -7,7 +7,7 @@ import TitleBar from './components/TitleBar'
 import AppMenu from './components/AppMenu'
 import AppModal from './components/AppModal'
 
-import './App.global.scss'
+import './App.global.less'
 
 const App: React.FC = () => {
   return (

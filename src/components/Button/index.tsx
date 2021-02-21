@@ -1,6 +1,6 @@
 import React from 'react'
 
-import styles from './styles.module.scss'
+import styles from './styles.module.less'
 
 export interface ButtonProps
   extends React.DetailedHTMLProps<

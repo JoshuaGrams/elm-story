@@ -1,7 +1,7 @@
 import React from 'react'
 import { CSSTransition } from 'react-transition-group'
 
-import fade from '../../styles/transitions/fade.module.scss'
+import fade from '../../styles/transitions/fade.module.less'
 
 export enum TRANSITION_TYPE {
   SNAP = 'SNAP',

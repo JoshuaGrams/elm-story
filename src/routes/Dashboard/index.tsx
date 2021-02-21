@@ -5,7 +5,7 @@ import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 import GameLibrary from '../../components/GameLibrary'
 import StudioSelect from '../../components/StudioSelect'
 
-import styles from './styles.module.scss'
+import styles from './styles.module.less'
 
 const Dashboard = () => {
   const { app, appDispatch } = useContext(AppContext)

@@ -3,7 +3,7 @@ import { DocumentId } from '../../data/types'
 
 import Transition, { TRANSITION_TYPE } from '../Transition'
 
-import styles from './styles.module.scss'
+import styles from './styles.module.less'
 
 export interface ModalProps {
   open?: boolean // is the modal open?

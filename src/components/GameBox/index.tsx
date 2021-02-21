@@ -11,7 +11,7 @@ import GameModalLayout, {
 
 import Button from '../Button'
 
-import styles from './styles.module.scss'
+import styles from './styles.module.less'
 import {
   AppContext,
   APP_ACTION_TYPE,

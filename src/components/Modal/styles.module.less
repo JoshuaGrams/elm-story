@@ -1,14 +1,14 @@
-@import '../../styles/variables';
+@import '../../styles/variables.less';
 
 .modal {
-  z-index: $modal-z-index;
-  background: $glass-opacity;
+  z-index: @modal-z-index;
+  background: @glass-opacity;
   position: fixed;
   left: 0px;
   right: 0px;
   bottom: 0px;
   top: 0px;
-  backdrop-filter: $glass-blur;
+  backdrop-filter: @glass-blur;
 
   .wrapper {
     min-width: 320px;

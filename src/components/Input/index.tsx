@@ -1,7 +1,5 @@
 import React, { useRef, useEffect } from 'react'
 
-import styles from './styles.module.scss'
-
 export interface InputProps
   extends React.DetailedHTMLProps<
     React.InputHTMLAttributes<HTMLInputElement>,
@@ -10,6 +8,8 @@ export interface InputProps
   focusOnMount?: boolean
   selectOnMount?: boolean
 }
+
+import styles from './styles.module.less'
 
 const Input: React.FC<InputProps> = ({
   type,

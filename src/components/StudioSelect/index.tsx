@@ -9,7 +9,7 @@ import StudioModalLayout, {
   STUDIO_MODAL_LAYOUT_TYPE
 } from '../../layouts/StudioModal'
 
-import styles from './styles.module.scss'
+import styles from './styles.module.less'
 
 type StudioSelectProps = {
   className?: string

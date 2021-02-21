@@ -8,7 +8,7 @@ import api from '../../api'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 
-import styles from './styles.module.scss'
+import styles from './styles.module.less'
 
 export enum GAME_MODAL_LAYOUT_TYPE {
   CREATE = 'CREATE',

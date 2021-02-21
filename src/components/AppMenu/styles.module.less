@@ -1,4 +1,4 @@
-@import '../../styles/variables';
+@import '../../styles/variables.less';
 
 .blocker {
   position: fixed;
@@ -14,11 +14,11 @@
 }
 
 .appMenu {
-  top: $title-bar-height - 1px;
+  top: @title-bar-height - 1px;
   position: fixed;
-  background: $glass-opacity;
+  background: @glass-opacity;
   border: 1px solid black;
-  backdrop-filter: $glass-blur;
+  backdrop-filter: @glass-blur;
   box-sizing: border-box;
   width: 200px;
   box-shadow: 0px 0px 20px hsla(0, 0%, 0%, 0.8);
@@ -51,6 +51,6 @@
   }
 
   .buttonBar {
-    @include buttonBar(2);
+    .buttonBar(2);
   }
 }

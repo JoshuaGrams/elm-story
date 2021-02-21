@@ -5,7 +5,7 @@ import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 
-import styles from './styles.module.scss'
+import styles from './styles.module.less'
 
 enum TITLE_BAR_BUTTON_TYPE {
   QUIT = 'QUIT',

@@ -17,14 +17,14 @@ import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
 import Transition, { TRANSITION_TYPE } from '../Transition'
 import Button, { ButtonProps } from '../Button'
 
-import styles from './styles.module.scss'
-
 import StudioModalLayout, {
   STUDIO_MODAL_LAYOUT_TYPE
 } from '../../layouts/StudioModal'
 import GameModalLayout, {
   GAME_MODAL_LAYOUT_TYPE
 } from '../../layouts/GameModal'
+
+import styles from './styles.module.less'
 
 interface AppMenuRowProps extends ButtonProps {
   title: string

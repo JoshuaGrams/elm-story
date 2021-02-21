@@ -2,7 +2,8 @@
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
-@import './styles/variables';
+@import './styles/variables.less';
+@import '~antd/dist/antd.dark.less';
 
 @font-face {
   font-family: 'Fira Mono';
@@ -128,7 +129,7 @@ select {
   cursor: pointer;
   appearance: none;
   text-align-last: center;
-  @include shadow;
+  .shadow();
 
   &:hover {
     background: hsl(0, 0%, 20%);

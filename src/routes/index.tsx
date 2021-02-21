@@ -7,7 +7,7 @@ import { AppContext, LOCATION } from '../contexts/AppContext'
 import Dashboard from './Dashboard'
 import Editor from './Editor'
 
-import styles from './styles.module.scss'
+import styles from './styles.module.less'
 
 export default () => {
   const { app } = useContext(AppContext)

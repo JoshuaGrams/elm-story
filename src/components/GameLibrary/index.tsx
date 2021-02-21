@@ -10,7 +10,7 @@ import GameModalLayout, {
 } from '../../layouts/GameModal'
 import GameBox from '../GameBox'
 
-import styles from './styles.module.scss'
+import styles from './styles.module.less'
 interface GameLibraryProps {
   studioId: DocumentId
 }
