@@ -9,7 +9,7 @@ import GameModalLayout, {
   GAME_MODAL_LAYOUT_TYPE
 } from '../../layouts/GameModal'
 
-import Button from '../Button'
+import { Button } from 'antd'
 
 import styles from './styles.module.less'
 import {

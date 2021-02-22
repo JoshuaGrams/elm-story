@@ -16,12 +16,12 @@
 .appMenu {
   top: @title-bar-height - 1px;
   position: fixed;
-  background: @glass-opacity;
-  border: 1px solid black;
+  background: @glass-opacity !important;
+  border: 1px solid black !important;
   backdrop-filter: @glass-blur;
   box-sizing: border-box;
   width: 200px;
-  box-shadow: 0px 0px 20px hsla(0, 0%, 0%, 0.8);
+  box-shadow: 0px 0px 20px hsla(0, 0%, 0%, 0.8) !important;
 
   &.floating {
     left: 102px - 23px;
@@ -30,27 +30,6 @@
   &.fullscreen {
     left: 79px - 23px;
   }
-
-  .row {
-    display: block;
-    cursor: pointer;
-    margin: 0px;
-    text-align: left;
-    padding: 0px 10px;
-  }
-
-  .spacer {
-    height: 4px;
-  }
-
-  .menuHeader {
-    font-size: 12px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-top: 1px solid hsl(0, 0%, 20%);
-  }
-
-  .buttonBar {
-    .buttonBar(2);
-  }
 }
+
+

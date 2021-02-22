@@ -1,15 +1,12 @@
 // @TODO: Combine common modal layouts.
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 import type { ModalProps } from '../../components/Modal'
 import { StudioDocument } from '../../data/types'
 
+import { Form, Button, Input, Divider } from 'antd'
+
 import api from '../../api'
-
-import Button from '../../components/Button'
-import Input from '../../components/Input'
-
-import styles from './styles.module.less'
 
 export enum STUDIO_MODAL_LAYOUT_TYPE {
   CREATE = 'CREATE',
@@ -20,64 +17,44 @@ export enum STUDIO_MODAL_LAYOUT_TYPE {
 interface StudioModalLayoutProps extends ModalProps {
   studio?: StudioDocument
   type?: STUDIO_MODAL_LAYOUT_TYPE
-  visible?: boolean
 }
 
 const SaveStudioLayout: React.FC<StudioModalLayoutProps> = ({
   studio,
-  visible = false,
   onCreate,
   onClose
 }) => {
-  const [title, setTitle] = useState<string>('')
-
-  useEffect(() => {
-    if (visible) setTitle(studio?.title || title)
-  }, [visible])
-
-  async function saveStudio(event: React.MouseEvent) {
-    event.preventDefault()
-
-    if (title) {
-      try {
-        const studioId = await api().studios.saveStudio(
-          studio ? { ...studio, title } : { title, tags: [], games: [] }
-        )
-
-        if (onCreate) onCreate(studioId)
-        if (onClose) onClose()
-      } catch (error) {
-        throw new Error(error)
-      }
-    } else {
-      throw new Error('Studio title required.')
-    }
-  }
-
   return (
     <>
       <h3>{studio ? 'Edit ' : 'New '} Studio</h3>
-      <form>
-        <Input
-          type="value"
-          placeholder="Studio Title"
-          onChange={(event) => setTitle(event.target.value)}
-          value={title}
-          focusOnMount
-          selectOnMount
-        />
-        <div className={styles.buttonBar}>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button
-            type="submit"
-            onClick={(event) => saveStudio(event)}
-            disabled={!title}
-            primary
-          >
-            Save
-          </Button>
-        </div>
-      </form>
+      <Form
+        initialValues={{ title: studio?.title || '' }}
+        onFinish={async ({ title }: { title: string }) => {
+          try {
+            const studioId = await api().studios.saveStudio(
+              studio ? { ...studio, title } : { title, tags: [], games: [] }
+            )
+
+            if (onCreate) onCreate(studioId)
+            if (onClose) onClose()
+          } catch (error) {
+            throw new Error(error)
+          }
+        }}
+      >
+        <Form.Item
+          label="Studio Title"
+          name="title"
+          rules={[{ required: true, message: 'Studio title is required.' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Button onClick={onClose}>Cancel</Button>
+        <Button htmlType="submit" type="primary">
+          Save
+        </Button>
+      </Form>
     </>
   )
 }
@@ -87,27 +64,33 @@ const RemoveStudioLayout: React.FC<StudioModalLayoutProps> = ({
   onRemove,
   onClose
 }) => {
-  async function removeStudio() {
-    if (studio && studio.id) await api().studios.removeStudio(studio.id)
-
-    if (onRemove) onRemove()
-    if (onClose) onClose()
-  }
-
   if (!studio)
     throw new Error('Unable to use RemoveStudioLayout. Missing studio data.')
 
   return (
     <>
       <h3>Remove Studio</h3>
+
+      <Divider />
+
       <div>Are you sure you want to remove studio '{studio.title}'?</div>
       <div>All games under this studio will be removed forever.</div>
-      <div className={styles.buttonBar}>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={removeStudio} destroy>
-          Remove
-        </Button>
-      </div>
+
+      <Divider />
+
+      <Button onClick={onClose}>Cancel</Button>
+      <Button
+        onClick={async () => {
+          if (studio && studio.id) await api().studios.removeStudio(studio.id)
+
+          if (onRemove) onRemove()
+          if (onClose) onClose()
+        }}
+        type="primary"
+        danger
+      >
+        Remove
+      </Button>
     </>
   )
 }
@@ -115,7 +98,6 @@ const RemoveStudioLayout: React.FC<StudioModalLayoutProps> = ({
 const StudioModalLayout: React.FC<StudioModalLayoutProps> = ({
   studio,
   type,
-  open,
   onCreate,
   onRemove,
   onClose // @BUG: not used properly; see AppModal
@@ -123,14 +105,10 @@ const StudioModalLayout: React.FC<StudioModalLayoutProps> = ({
   return (
     <>
       {type === STUDIO_MODAL_LAYOUT_TYPE.CREATE && (
-        <SaveStudioLayout
-          visible={open}
-          onCreate={onCreate}
-          onClose={onClose}
-        />
+        <SaveStudioLayout onCreate={onCreate} onClose={onClose} />
       )}
       {type === STUDIO_MODAL_LAYOUT_TYPE.EDIT && (
-        <SaveStudioLayout studio={studio} visible={open} onClose={onClose} />
+        <SaveStudioLayout studio={studio} onClose={onClose} />
       )}
       {type === STUDIO_MODAL_LAYOUT_TYPE.REMOVE && (
         <RemoveStudioLayout

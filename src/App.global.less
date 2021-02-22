@@ -4,6 +4,7 @@
  */
 @import './styles/variables';
 @import '~antd/dist/antd.dark.less';
+@import './styles/ant.less'; // overrides
 @import '@fontsource/fira-mono';
 
 ::-webkit-scrollbar {
@@ -30,9 +31,6 @@
 }
 
 * {
-  margin: 0px;
-  padding: 0px;
-  border: 0px;
   outline: none;
   user-select: none;
   font-family: 'Fira Mono';
@@ -46,6 +44,8 @@ body {
   background-color: hsl(0, 0%, 4%);
   color: white;
   margin: 20px;
+  height: auto;
+  width: auto;
 }
 
 a {
@@ -56,87 +56,6 @@ a {
 
 ul {
   list-style-type: none;
-}
-
-input,
-button {
-  box-sizing: border-box;
-  margin-bottom: 4px;
-  width: 100%;
-  font-size: 12px;
-}
-
-input {
-  height: 44px;
-  padding: 8px;
-  background: hsl(0, 0%, 10%);
-  border: 1px solid hsl(0, 0%, 20%);
-  box-sizing: border-box;
-  box-shadow: inset 0px 0px 8px 4px hsl(0, 0%, 6%);
-  color: white;
-
-  &::placeholder {
-    text-transform: uppercase;
-  }
-
-  &:hover,
-  &:focus {
-    background-color: hsl(0, 0%, 14%);
-    border-color: hsl(0, 0%, 24%);
-    box-shadow: inset 0px 0px 8px 4px hsl(0, 0%, 10%);
-  }
-
-  &:focus::placeholder {
-    color: transparent;
-  }
-}
-
-button {
-  height: 32px;
-  text-transform: uppercase;
-  cursor: pointer;
-  color: white;
-  transition: background-color 0.2s, box-shadow 0.2s, color 0.2s;
-  background: hsl(0, 0%, 10%);
-  border: 1px solid hsl(0, 0%, 1%);
-  box-sizing: border-box;
-  box-shadow: inset 0px 1px 0px hsl(0, 0%, 20%);
-
-  &:hover {
-    background: hsl(0, 0%, 20%);
-    box-shadow: inset 0px 1px 0px hsl(0, 0%, 30%);
-  }
-
-  &:active {
-    border-width: 2px 2px 2px 2px;
-    font-size: 11px;
-  }
-}
-
-select {
-  height: 50px;
-  width: 100%;
-  background: hsl(0, 0%, 10%);
-  border: 1px solid hsl(0, 0%, 1%);
-  box-sizing: border-box;
-  box-shadow: inset 0px 1px 0px hsl(0, 0%, 20%);
-  color: white;
-  padding: 10px;
-  cursor: pointer;
-  appearance: none;
-  text-align-last: center;
-  .shadow();
-
-  &:hover {
-    background: hsl(0, 0%, 20%);
-    box-shadow: inset 0px 1px 0px hsl(0, 0%, 30%);
-  }
-}
-
-hr {
-  height: 1px;
-  background-color: hsl(0, 0%, 15%);
-  margin: 10px 0px;
 }
 
 h3 {

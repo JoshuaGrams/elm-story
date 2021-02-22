@@ -10,7 +10,10 @@ import GameModalLayout, {
 } from '../../layouts/GameModal'
 import GameBox from '../GameBox'
 
+import { Divider } from 'antd'
+
 import styles from './styles.module.less'
+
 interface GameLibraryProps {
   studioId: DocumentId
 }
@@ -79,7 +82,7 @@ const LibraryGrid: React.FC<GameLibraryProps> = ({ studioId }) => {
           )}
         </div>
       </div>
-      <hr />
+      <Divider />
     </>
   )
 }

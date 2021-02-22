@@ -14,8 +14,14 @@ import {
 } from '../../contexts/AppContext'
 import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
 
-import Transition, { TRANSITION_TYPE } from '../Transition'
-import Button, { ButtonProps } from '../Button'
+import { Menu } from 'antd'
+
+import {
+  UserAddOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  SolutionOutlined
+} from '@ant-design/icons'
 
 import StudioModalLayout, {
   STUDIO_MODAL_LAYOUT_TYPE
@@ -25,40 +31,6 @@ import GameModalLayout, {
 } from '../../layouts/GameModal'
 
 import styles from './styles.module.less'
-
-interface AppMenuRowProps extends ButtonProps {
-  title: string
-}
-
-const MenuButton: React.FC<AppMenuRowProps> = ({
-  title,
-  onClick,
-  destroy = false,
-  disabled = false
-}) => {
-  return (
-    <Button
-      className={styles.row}
-      onClick={onClick}
-      destroy={destroy}
-      disabled={disabled}
-    >
-      {title}
-    </Button>
-  )
-}
-
-const MenuVerticalSpacer: React.FC = () => {
-  return <div className={styles.spacer} />
-}
-
-interface MenuHeaderProps {
-  title: string
-}
-
-const MenuHeader: React.FC<MenuHeaderProps> = ({ title }) => {
-  return <div className={styles.menuHeader}>{title}</div>
-}
 
 const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
   const { app, appDispatch } = useContext(AppContext)
@@ -81,54 +53,53 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
 
   return (
     <>
-      {/* Blocks interaction to elements below; closes menu. */}
-      <Transition in={app.menuOpen} type={TRANSITION_TYPE.SNAP}>
-        <div
-          className={`${styles.blocker} ${app.menuOpen && styles.blocking}`}
-          onMouseDown={() => appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })}
-        />
-      </Transition>
+      {app.menuOpen && (
+        <>
+          {/* Blocks interaction to elements below; closes menu. */}
+          <div
+            className={`${styles.blocker} ${app.menuOpen && styles.blocking}`}
+            onMouseDown={() =>
+              appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+            }
+          />
 
-      <Transition in={app.menuOpen} type={TRANSITION_TYPE.FADE}>
-        <div
-          className={`${styles.appMenu} ${
-            app.fullscreen ? styles.fullscreen : styles.floating
-          } ${className}`}
-        >
-          {app.location === LOCATION.DASHBOARD && (
-            <>
-              <MenuButton
-                title="Create Studio..."
-                onClick={() => {
-                  appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
+          <Menu
+            mode="vertical"
+            className={`${styles.appMenu} ${
+              app.fullscreen ? styles.fullscreen : styles.floating
+            } ${className}`}
+          >
+            {app.location === LOCATION.DASHBOARD && (
+              <Menu.SubMenu title="Studios">
+                <Menu.Item
+                  icon={<UserAddOutlined />}
+                  onClick={() => {
+                    appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
-                  modalDispatch({
-                    type: MODAL_ACTION_TYPE.LAYOUT,
-                    layout: (
-                      <StudioModalLayout
-                        type={STUDIO_MODAL_LAYOUT_TYPE.CREATE}
-                        onCreate={(studioId) =>
-                          appDispatch({
-                            type: APP_ACTION_TYPE.STUDIO_SELECT,
-                            selectedStudioId: studioId
-                          })
-                        }
-                      />
-                    )
-                  })
+                    modalDispatch({
+                      type: MODAL_ACTION_TYPE.LAYOUT,
+                      layout: (
+                        <StudioModalLayout
+                          type={STUDIO_MODAL_LAYOUT_TYPE.CREATE}
+                          onCreate={(studioId) =>
+                            appDispatch({
+                              type: APP_ACTION_TYPE.STUDIO_SELECT,
+                              selectedStudioId: studioId
+                            })
+                          }
+                        />
+                      )
+                    })
 
-                  modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                }}
-              />
-
-              {selectedStudio && (
-                <>
-                  <MenuVerticalSpacer />
-                  <MenuHeader title={selectedStudio.title} />
-
-                  <div className={styles.buttonBar}>
-                    <MenuButton
-                      title="Edit..."
+                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                  }}
+                >
+                  Create
+                </Menu.Item>
+                {app.selectedStudioId && (
+                  <>
+                    <Menu.Item
+                      icon={<EditOutlined />}
                       onClick={() => {
                         appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
@@ -144,10 +115,12 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
 
                         modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
                       }}
-                    />
+                    >
+                      Edit
+                    </Menu.Item>
 
-                    <MenuButton
-                      title="Remove..."
+                    <Menu.Item
+                      icon={<DeleteOutlined />}
                       onClick={() => {
                         appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
@@ -169,66 +142,49 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
 
                         modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
                       }}
-                    />
-                  </div>
-                </>
-              )}
+                    >
+                      Remove
+                    </Menu.Item>
+                  </>
+                )}
+              </Menu.SubMenu>
+            )}
+            {app.selectedStudioId && (
+              <Menu.SubMenu title="Games">
+                <Menu.Item
+                  icon={<SolutionOutlined />}
+                  onClick={() => {
+                    if (app.selectedStudioId) {
+                      appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
-              <MenuVerticalSpacer />
+                      modalDispatch({
+                        type: MODAL_ACTION_TYPE.LAYOUT,
+                        layout: (
+                          <GameModalLayout
+                            studioId={app.selectedStudioId}
+                            type={GAME_MODAL_LAYOUT_TYPE.CREATE}
+                          />
+                        )
+                      })
 
-              {app.selectedStudioId && (
-                <>
-                  <MenuButton
-                    title="Create Game..."
-                    onClick={() => {
-                      if (app.selectedStudioId) {
-                        appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
-
-                        modalDispatch({
-                          type: MODAL_ACTION_TYPE.LAYOUT,
-                          layout: (
-                            <GameModalLayout
-                              studioId={app.selectedStudioId}
-                              type={GAME_MODAL_LAYOUT_TYPE.CREATE}
-                            />
-                          )
-                        })
-
-                        modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                      }
-                    }}
-                    primary
-                  />
-                </>
-              )}
-            </>
-          )}
-
-          {app.location === LOCATION.EDITOR && (
-            <>
-              <MenuButton
-                title="DASHBOARD"
-                onClick={() => {
-                  appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
-
-                  appDispatch({
-                    type: APP_ACTION_TYPE.LOCATION,
-                    location: LOCATION.DASHBOARD
-                  })
-                }}
-              />
-            </>
-          )}
-
-          <MenuVerticalSpacer />
-
-          <MenuButton
-            title="Quit"
-            destroy
-            onClick={() => ipcRenderer.send(WINDOW_EVENT_TYPE.QUIT)}
-          />
-        </div>
-      </Transition>
+                      modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                    }
+                  }}
+                >
+                  Create
+                </Menu.Item>
+              </Menu.SubMenu>
+            )}
+            <Menu.Divider />
+            <Menu.Item
+              onClick={() => ipcRenderer.send(WINDOW_EVENT_TYPE.QUIT)}
+              danger
+            >
+              Quit
+            </Menu.Item>
+          </Menu>
+        </>
+      )}
     </>
   )
 }
