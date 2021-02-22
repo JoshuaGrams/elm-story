@@ -75,9 +75,7 @@ export default merge(baseConfig, {
             options: {
               lessOptions: {
                 javascriptEnabled: true,
-                modifyVars: {
-                  'border-radius-base': '20px'
-                }
+                modifyVars: {}
               }
             }
           }
