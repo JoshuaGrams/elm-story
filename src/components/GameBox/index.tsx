@@ -9,7 +9,9 @@ import GameModalLayout, {
   GAME_MODAL_LAYOUT_TYPE
 } from '../../layouts/GameModal'
 
-import { Button } from 'antd'
+import { Card, Button } from 'antd'
+
+import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 import {
@@ -17,6 +19,7 @@ import {
   APP_ACTION_TYPE,
   LOCATION
 } from '../../contexts/AppContext'
+import Meta from 'antd/lib/card/Meta'
 
 interface GameBoxProps {
   studioId: DocumentId
@@ -28,97 +31,92 @@ const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
   const { modalDispatch } = useContext(ModalContext)
 
   return (
-    <div className={styles.gameBox}>
-      {!game && (
-        <Button
-          className={styles.addGameButton}
-          onClick={() => {
-            modalDispatch({
-              type: MODAL_ACTION_TYPE.LAYOUT,
-              layout: (
-                <GameModalLayout
-                  studioId={studioId}
-                  type={GAME_MODAL_LAYOUT_TYPE.CREATE}
-                />
-              )
-            })
+    <Card
+      className={styles.gameBox}
+      title={!game ? undefined : game.title}
+      hoverable
+      actions={
+        !game
+          ? []
+          : [
+              <EditOutlined
+                key="edit"
+                onClick={(event) => {
+                  event.stopPropagation()
 
-            modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-          }}
-        >
-          +
+                  modalDispatch({
+                    type: MODAL_ACTION_TYPE.LAYOUT,
+                    layout: (
+                      <GameModalLayout
+                        studioId={studioId}
+                        game={game}
+                        type={GAME_MODAL_LAYOUT_TYPE.EDIT}
+                      />
+                    )
+                  })
+
+                  modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                }}
+              />,
+              <DeleteOutlined
+                key="delete"
+                onClick={(event) => {
+                  event.stopPropagation()
+
+                  modalDispatch({
+                    type: MODAL_ACTION_TYPE.LAYOUT,
+                    layout: (
+                      <GameModalLayout
+                        studioId={studioId}
+                        game={game}
+                        type={GAME_MODAL_LAYOUT_TYPE.REMOVE}
+                      />
+                    )
+                  })
+
+                  modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                }}
+              />
+            ]
+      }
+      onClick={() => {
+        if (game) {
+          appDispatch({
+            type: APP_ACTION_TYPE.GAME_SELECT,
+            selectedGameId: game.id
+          })
+
+          appDispatch({
+            type: APP_ACTION_TYPE.LOCATION,
+            location: LOCATION.EDITOR
+          })
+        } else {
+          modalDispatch({
+            type: MODAL_ACTION_TYPE.LAYOUT,
+            layout: (
+              <GameModalLayout
+                studioId={studioId}
+                type={GAME_MODAL_LAYOUT_TYPE.CREATE}
+              />
+            )
+          })
+
+          modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+        }
+      }}
+    >
+      {!game && (
+        <Button className={styles.addGameButton}>
+          <PlusOutlined />
         </Button>
       )}
 
       {game && (
         <>
-          <div className={styles.contentWrapper}>
-            <h4>
-              <a
-                onClick={() => {
-                  appDispatch({
-                    type: APP_ACTION_TYPE.GAME_SELECT,
-                    selectedGameId: game.id
-                  })
-
-                  appDispatch({
-                    type: APP_ACTION_TYPE.LOCATION,
-                    location: LOCATION.EDITOR
-                  })
-                }}
-              >
-                {game.title}
-              </a>
-            </h4>
-
-            <div className={styles.contentBottom}>
-              <h5>
-                <em>directed by</em>
-                <br /> {game.director}
-              </h5>
-              <div className={styles.buttonBar}>
-                <Button
-                  onClick={() => {
-                    modalDispatch({
-                      type: MODAL_ACTION_TYPE.LAYOUT,
-                      layout: (
-                        <GameModalLayout
-                          studioId={studioId}
-                          game={game}
-                          type={GAME_MODAL_LAYOUT_TYPE.EDIT}
-                        />
-                      )
-                    })
-
-                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                  }}
-                >
-                  Edit
-                </Button>
-                <Button
-                  onClick={() => {
-                    modalDispatch({
-                      type: MODAL_ACTION_TYPE.LAYOUT,
-                      layout: (
-                        <GameModalLayout
-                          studioId={studioId}
-                          game={game}
-                          type={GAME_MODAL_LAYOUT_TYPE.REMOVE}
-                        />
-                      )
-                    })
-
-                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                  }}
-                >
-                  Remove
-                </Button>
-              </div>
-            </div>
-          </div>
+          <Meta title="directed by" description={game.director} />
         </>
       )}
-    </div>
+    </Card>
   )
 }
 

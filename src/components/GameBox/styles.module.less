@@ -5,11 +5,9 @@
   height: 256px;
   align-items: center;
   background: #0f0f0f;
-  border: 1px solid #000000;
+  border: 1px solid #000000 !important;
   box-sizing: border-box;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
-  box-sizing: border-box;
-  position: realtive;
+  position: relative;
 
   h4,
   h5 {
@@ -17,6 +15,11 @@
   }
 
   .addGameButton {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
     height: 100%;
     font-size: 24px;
   }
@@ -43,18 +46,6 @@
         margin-bottom: 6px;
         em {
           font-size: 10px;
-        }
-      }
-
-      .buttonBar {
-        background: #0f0f0f;
-        border: 1px solid #000000;
-
-        .shadow();
-        .buttonBar(2);
-
-        button {
-          margin-bottom: 0px !important;
         }
       }
     }
