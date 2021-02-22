@@ -13,13 +13,6 @@
     "postinstall": "yarn electron-rebuild"
   },
   "license": "UNLICENSED",
-  "dependencies": {
-    "dexie": "^3.1.0-alpha",
-    "dexie-react-hooks": "^1.0.2",
-    "react": "^17.0.1",
-    "uuid": "^8.3.2"
-  },
-  "devDependencies": {
-    "@types/react": "^16.9.44"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }
