@@ -1,5 +1,5 @@
 import React from 'react'
-import Router from './routes'
+import Routes from './routes'
 
 import ModalProvider from './contexts/AppModalContext'
 
@@ -12,7 +12,7 @@ import './App.global.less'
 const App: React.FC = () => {
   return (
     <ModalProvider>
-      <Router />
+      <Routes />
 
       <TitleBar />
       <AppMenu />

@@ -3,9 +3,14 @@ import React, { useEffect, useRef, useContext } from 'react'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
-import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
+import {
+  AppContext,
+  APP_ACTION_TYPE,
+  APP_LOCATION
+} from '../../contexts/AppContext'
 
 import styles from './styles.module.less'
+import { useLocation } from 'react-router-dom'
 
 enum TITLE_BAR_BUTTON_TYPE {
   QUIT = 'QUIT',
@@ -57,6 +62,7 @@ const TitleBarButton: React.FC<TitleBarButtonProps> = ({ onClick, type }) => {
 }
 
 const TitleBar: React.FC = () => {
+  const { pathname } = useLocation()
   const { app, appDispatch } = useContext(AppContext)
   /**
    * TODO: this is used to prevent toggling out of full screen
@@ -80,6 +86,19 @@ const TitleBar: React.FC = () => {
       ipcRenderer.send(WINDOW_EVENT_TYPE.TOGGLE_FULLSCREEN, app.fullscreen)
     }
   }, [app.fullscreen])
+
+  useEffect(() => {
+    switch (pathname) {
+      case APP_LOCATION.DASHBOARD:
+        appDispatch({ type: APP_ACTION_TYPE.HEADER, header: 'DASHBOARD' })
+        break
+      case APP_LOCATION.EDITOR:
+        appDispatch({ type: APP_ACTION_TYPE.HEADER, header: 'EDITOR' })
+        break
+      default:
+        break
+    }
+  }, [pathname])
 
   return (
     <div className={styles.titleBar}>

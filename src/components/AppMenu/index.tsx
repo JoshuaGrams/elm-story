@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron'
 import React, { useContext, useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { useStudios } from '../../hooks'
 
@@ -10,7 +11,7 @@ import { WINDOW_EVENT_TYPE } from '../../lib/events'
 import {
   AppContext,
   APP_ACTION_TYPE,
-  LOCATION
+  APP_LOCATION
 } from '../../contexts/AppContext'
 import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
 
@@ -41,6 +42,8 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
     StudioDocument | undefined
   >(undefined)
 
+  const { pathname } = useLocation()
+
   useEffect(() => {
     if (studios) {
       setSelectedStudio(
@@ -69,7 +72,7 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
               app.fullscreen ? styles.fullscreen : styles.floating
             } ${className}`}
           >
-            {app.location === LOCATION.DASHBOARD && (
+            {pathname === APP_LOCATION.DASHBOARD && (
               <Menu.SubMenu title="Studios">
                 <Menu.Item
                   icon={<UserAddOutlined />}

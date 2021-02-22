@@ -1,5 +1,5 @@
-import React from 'react'
-import { useContext } from 'react'
+import React, { useContext } from 'react'
+import { useHistory } from 'react-router-dom'
 
 import { DocumentId, GameDocument } from '../../data/types'
 
@@ -13,13 +13,13 @@ import { Card, Button } from 'antd'
 
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 
-import styles from './styles.module.less'
 import {
   AppContext,
   APP_ACTION_TYPE,
-  LOCATION
+  APP_LOCATION
 } from '../../contexts/AppContext'
-import Meta from 'antd/lib/card/Meta'
+
+import styles from './styles.module.less'
 
 interface GameBoxProps {
   studioId: DocumentId
@@ -29,6 +29,10 @@ interface GameBoxProps {
 const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
   const { appDispatch } = useContext(AppContext)
   const { modalDispatch } = useContext(ModalContext)
+
+  const { Meta } = Card
+
+  const history = useHistory()
 
   return (
     <Card
@@ -86,10 +90,7 @@ const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
             selectedGameId: game.id
           })
 
-          appDispatch({
-            type: APP_ACTION_TYPE.LOCATION,
-            location: LOCATION.EDITOR
-          })
+          history.push(APP_LOCATION.EDITOR)
         } else {
           modalDispatch({
             type: MODAL_ACTION_TYPE.LAYOUT,
