@@ -9,7 +9,7 @@ import GameModalLayout, {
   GAME_MODAL_LAYOUT_TYPE
 } from '../../layouts/GameModal'
 
-import { Card, Button } from 'antd'
+import { Card, Button, Tooltip } from 'antd'
 
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 
@@ -37,50 +37,37 @@ const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
   return (
     <Card
       className={styles.gameBox}
-      title={!game ? undefined : game.title}
+      title={game?.title || undefined}
       hoverable
+      key={game?.id || undefined}
       actions={
         !game
           ? []
           : [
-              <EditOutlined
-                key="edit"
-                onClick={(event) => {
-                  event.stopPropagation()
+              <Tooltip title="Remove game from library." mouseEnterDelay={1}>
+                <DeleteOutlined
+                  key="delete"
+                  onClick={(event) => {
+                    event.stopPropagation()
 
-                  modalDispatch({
-                    type: MODAL_ACTION_TYPE.LAYOUT,
-                    layout: (
-                      <GameModalLayout
-                        studioId={studioId}
-                        game={game}
-                        type={GAME_MODAL_LAYOUT_TYPE.EDIT}
-                      />
-                    )
-                  })
+                    modalDispatch({
+                      type: MODAL_ACTION_TYPE.LAYOUT,
+                      layout: (
+                        <GameModalLayout
+                          studioId={studioId}
+                          game={game}
+                          type={GAME_MODAL_LAYOUT_TYPE.REMOVE}
+                        />
+                      )
+                    })
 
-                  modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                }}
-              />,
-              <DeleteOutlined
-                key="delete"
-                onClick={(event) => {
-                  event.stopPropagation()
-
-                  modalDispatch({
-                    type: MODAL_ACTION_TYPE.LAYOUT,
-                    layout: (
-                      <GameModalLayout
-                        studioId={studioId}
-                        game={game}
-                        type={GAME_MODAL_LAYOUT_TYPE.REMOVE}
-                      />
-                    )
-                  })
-
-                  modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                }}
-              />
+                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                  }}
+                />
+              </Tooltip>,
+              <Tooltip title="Open game in editor." mouseEnterDelay={1}>
+                <EditOutlined key="edit" />
+              </Tooltip>
             ]
       }
       onClick={() => {
@@ -107,9 +94,11 @@ const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
       }}
     >
       {!game && (
-        <Button className={styles.addGameButton}>
-          <PlusOutlined />
-        </Button>
+        <Tooltip title="Add game to library." mouseEnterDelay={1}>
+          <Button className={styles.addGameButton}>
+            <PlusOutlined />
+          </Button>
+        </Tooltip>
       )}
 
       {game && (

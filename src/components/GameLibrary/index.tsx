@@ -10,7 +10,7 @@ import GameModalLayout, {
 } from '../../layouts/GameModal'
 import GameBox from '../GameBox'
 
-import { Divider } from 'antd'
+import { Divider, Row, Col } from 'antd'
 
 import styles from './styles.module.less'
 
@@ -41,7 +41,7 @@ const LibraryGrid: React.FC<GameLibraryProps> = ({ studioId }) => {
   return (
     <>
       <div className={styles.gameLibrary}>
-        <h3>Game Library</h3>
+        <Divider>Game Library</Divider>
         <div className={styles.contentWrapper}>
           {selectedStudio && games && games.length === 0 && (
             <div className={styles.noContent}>
@@ -69,20 +69,21 @@ const LibraryGrid: React.FC<GameLibraryProps> = ({ studioId }) => {
           )}
 
           {games && games.length > 0 && (
-            <>
-              <div className={styles.gameGrid}>
-                {games.map((game) =>
-                  game.id !== undefined ? (
+            <Row justify="start" gutter={[20, 20]}>
+              {games.map((game) =>
+                game.id !== undefined ? (
+                  <Col xs={12} sm={12} md={8} lg={6}>
                     <GameBox key={game.id} studioId={studioId} game={game} />
-                  ) : null
-                )}
+                  </Col>
+                ) : null
+              )}
+              <Col xs={12} sm={10} md={8} lg={6}>
                 <GameBox studioId={studioId} />
-              </div>
-            </>
+              </Col>
+            </Row>
           )}
         </div>
       </div>
-      <Divider />
     </>
   )
 }

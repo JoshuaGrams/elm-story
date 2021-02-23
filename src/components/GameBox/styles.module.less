@@ -1,18 +1,9 @@
 @import '../../styles/variables';
 
 .gameBox {
-  width: 160px;
-  height: 256px;
-  align-items: center;
+  height: 300px;
   background: #0f0f0f;
   border: 1px solid #000000 !important;
-  box-sizing: border-box;
-  position: relative;
-
-  h4,
-  h5 {
-    text-align: center;
-  }
 
   .addGameButton {
     position: absolute;
@@ -22,32 +13,5 @@
     bottom: 0px;
     height: 100%;
     font-size: 24px;
-  }
-
-  .contentWrapper {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    bottom: 10px;
-    right: 10px;
-    box-sizing: border-box;
-
-    h4 {
-      font-size: 14px;
-    }
-
-    .contentBottom {
-      position: absolute;
-      bottom: 0px;
-      width: 100%;
-
-      h5 {
-        font-size: 12px;
-        margin-bottom: 6px;
-        em {
-          font-size: 10px;
-        }
-      }
-    }
   }
 }

@@ -29,8 +29,6 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
   return (
     <>
       <div className={`${styles.studioList} ${className}`}>
-        <h3>Game Studios</h3>
-
         {studios && (
           <>
             <Select
@@ -84,7 +82,6 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
           </>
         )}
       </div>
-      <Divider />
     </>
   )
 }

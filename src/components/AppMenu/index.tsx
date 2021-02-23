@@ -21,7 +21,7 @@ import {
   UserAddOutlined,
   EditOutlined,
   DeleteOutlined,
-  SolutionOutlined
+  PlusOutlined
 } from '@ant-design/icons'
 
 import StudioModalLayout, {
@@ -155,7 +155,7 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
             {app.selectedStudioId && (
               <Menu.SubMenu title="Games">
                 <Menu.Item
-                  icon={<SolutionOutlined />}
+                  icon={<PlusOutlined />}
                   onClick={() => {
                     if (app.selectedStudioId) {
                       appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
