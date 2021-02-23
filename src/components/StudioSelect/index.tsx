@@ -21,7 +21,7 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
   className = ''
 }: StudioSelectProps) => {
   const studios = useStudios()
-  const { appDispatch } = useContext(AppContext)
+  const { app, appDispatch } = useContext(AppContext)
   const { modalDispatch } = useContext(ModalContext)
 
   const { Option } = Select
@@ -34,6 +34,7 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
             <Select
               style={{ width: '100%', textAlign: 'center' }}
               placeholder="Select studio..."
+              value={app.selectedStudioId || undefined}
               dropdownRender={(menu) => (
                 <div>
                   {menu}

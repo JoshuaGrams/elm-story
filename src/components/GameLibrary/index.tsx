@@ -18,7 +18,7 @@ interface GameLibraryProps {
   studioId: DocumentId
 }
 
-const LibraryGrid: React.FC<GameLibraryProps> = ({ studioId }) => {
+const GameLibrary: React.FC<GameLibraryProps> = ({ studioId }) => {
   const { modalDispatch } = useContext(ModalContext)
 
   const games = useGames(studioId, [studioId])
@@ -72,12 +72,12 @@ const LibraryGrid: React.FC<GameLibraryProps> = ({ studioId }) => {
             <Row justify="start" gutter={[20, 20]}>
               {games.map((game) =>
                 game.id !== undefined ? (
-                  <Col xs={12} sm={12} md={8} lg={6}>
-                    <GameBox key={game.id} studioId={studioId} game={game} />
+                  <Col xs={12} sm={12} md={8} lg={6} key={game.id}>
+                    <GameBox studioId={studioId} game={game} />
                   </Col>
                 ) : null
               )}
-              <Col xs={12} sm={10} md={8} lg={6}>
+              <Col xs={12} sm={10} md={8} lg={6} key="add-game">
                 <GameBox studioId={studioId} />
               </Col>
             </Row>
@@ -88,4 +88,4 @@ const LibraryGrid: React.FC<GameLibraryProps> = ({ studioId }) => {
   )
 }
 
-export default LibraryGrid
+export default GameLibrary

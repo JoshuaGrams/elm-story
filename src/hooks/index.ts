@@ -1,4 +1,4 @@
-import useStudios from './useStudios'
-import useGames from './useGames'
+import useStudios, { useSelectedStudio } from './useStudios'
+import useGames, { useSelectedGame } from './useGames'
 
-export { useStudios, useGames }
+export { useStudios, useSelectedStudio, useGames, useSelectedGame }

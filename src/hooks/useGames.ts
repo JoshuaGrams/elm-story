@@ -18,4 +18,17 @@ const useGames = (
   return games
 }
 
+const useSelectedGame = (
+  studioId: DocumentId,
+  gameId: DocumentId,
+  deps?: any[]
+): GameDocument | undefined =>
+  useLiveQuery(
+    () => new LibraryDatabase(studioId).games.where({ id: gameId }).first(),
+    deps || [],
+    undefined
+  )
+
+export { useSelectedGame }
+
 export default useGames

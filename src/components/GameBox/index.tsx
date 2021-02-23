@@ -39,7 +39,6 @@ const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
       className={styles.gameBox}
       title={game?.title || undefined}
       hoverable
-      key={game?.id || undefined}
       actions={
         !game
           ? []
