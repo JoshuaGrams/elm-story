@@ -1,16 +1,12 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useGames, useStudios } from '../../hooks'
 
 import { DocumentId, StudioDocument } from '../../data/types'
 
-import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
-
-import GameModalLayout, {
-  GAME_MODAL_LAYOUT_TYPE
-} from '../../layouts/GameModal'
-import GameBox from '../GameBox'
-
 import { Divider, Row, Col } from 'antd'
+
+import { SaveGameModal } from '../Modal'
+import GameBox from '../GameBox'
 
 import styles from './styles.module.less'
 
@@ -19,13 +15,14 @@ interface GameLibraryProps {
 }
 
 const GameLibrary: React.FC<GameLibraryProps> = ({ studioId }) => {
-  const { modalDispatch } = useContext(ModalContext)
-
-  const games = useGames(studioId, [studioId])
   const studios = useStudios([studioId])
+  const games = useGames(studioId, [studioId])
+
   const [selectedStudio, setSelectedStudio] = useState<
     StudioDocument | undefined
   >(undefined)
+
+  const [saveGameModalVisible, setSaveGameModalVisible] = useState(false)
 
   useEffect(() => {
     // @TODO: Move this to hook; see AppMenu duplicate
@@ -40,29 +37,20 @@ const GameLibrary: React.FC<GameLibraryProps> = ({ studioId }) => {
 
   return (
     <>
+      <SaveGameModal
+        visible={saveGameModalVisible}
+        onCancel={() => setSaveGameModalVisible(false)}
+        afterClose={() => setSaveGameModalVisible(false)}
+        studioId={studioId}
+      />
+
       <div className={styles.gameLibrary}>
         <Divider>Game Library</Divider>
         <div className={styles.contentWrapper}>
           {selectedStudio && games && games.length === 0 && (
             <div className={styles.noContent}>
               {selectedStudio.title} has 0 games...{' '}
-              <a
-                onClick={() => {
-                  if (studioId) {
-                    modalDispatch({
-                      type: MODAL_ACTION_TYPE.LAYOUT,
-                      layout: (
-                        <GameModalLayout
-                          studioId={studioId}
-                          type={GAME_MODAL_LAYOUT_TYPE.CREATE}
-                        />
-                      )
-                    })
-
-                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                  }
-                }}
-              >
+              <a onClick={() => setSaveGameModalVisible(true)}>
                 Create game...
               </a>
             </div>
@@ -77,7 +65,7 @@ const GameLibrary: React.FC<GameLibraryProps> = ({ studioId }) => {
                   </Col>
                 ) : null
               )}
-              <Col xs={12} sm={10} md={8} lg={6} key="add-game">
+              <Col xs={12} sm={12} md={8} lg={6} key="add-game">
                 <GameBox studioId={studioId} />
               </Col>
             </Row>

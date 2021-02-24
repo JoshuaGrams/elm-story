@@ -4,19 +4,17 @@ import { useLocation } from 'react-router-dom'
 
 import { useStudios } from '../../hooks'
 
-import { StudioDocument } from '../../data/types'
-
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
+
+import { StudioDocument } from '../../data/types'
 
 import {
   AppContext,
   APP_ACTION_TYPE,
   APP_LOCATION
 } from '../../contexts/AppContext'
-import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
 
 import { Menu } from 'antd'
-
 import {
   UserAddOutlined,
   EditOutlined,
@@ -24,23 +22,27 @@ import {
   PlusOutlined
 } from '@ant-design/icons'
 
-import StudioModalLayout, {
-  STUDIO_MODAL_LAYOUT_TYPE
-} from '../../layouts/StudioModal'
-import GameModalLayout, {
-  GAME_MODAL_LAYOUT_TYPE
-} from '../../layouts/GameModal'
+import { SaveStudioModal, RemoveStudioModal, SaveGameModal } from '../Modal'
 
 import styles from './styles.module.less'
 
 const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
   const { app, appDispatch } = useContext(AppContext)
-  const { modalDispatch } = useContext(ModalContext)
 
   const studios = useStudios([app.selectedStudioId])
+
   const [selectedStudio, setSelectedStudio] = useState<
-    StudioDocument | undefined
-  >(undefined)
+      StudioDocument | undefined
+    >(undefined),
+    [saveStudioModal, setSaveStudioModal] = useState({
+      visible: false,
+      edit: false
+    }),
+    [removeStudioModalVisible, setRemoveStudioModalVisible] = useState(false),
+    [saveGameModal, setSaveGameModal] = useState({
+      visible: false,
+      edit: false
+    })
 
   const { pathname } = useLocation()
 
@@ -56,6 +58,49 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
 
   return (
     <>
+      {/* MODALS */}
+      <>
+        <SaveStudioModal
+          visible={saveStudioModal.visible}
+          onCancel={() => setSaveStudioModal({ visible: false, edit: false })}
+          afterClose={() => setSaveStudioModal({ visible: false, edit: false })}
+          studio={selectedStudio}
+          edit={saveStudioModal.edit}
+          onSave={(studioId) =>
+            appDispatch({
+              type: APP_ACTION_TYPE.STUDIO_SELECT,
+              selectedStudioId: studioId
+            })
+          }
+        />
+
+        {selectedStudio && (
+          <RemoveStudioModal
+            visible={removeStudioModalVisible}
+            onCancel={() => setRemoveStudioModalVisible(false)}
+            afterClose={() => setRemoveStudioModalVisible(false)}
+            studio={selectedStudio}
+            onRemove={() =>
+              appDispatch({
+                type: APP_ACTION_TYPE.STUDIO_SELECT,
+                selectedStudioId: undefined
+              })
+            }
+          />
+        )}
+
+        {app.selectedStudioId && (
+          <SaveGameModal
+            visible={saveGameModal.visible}
+            onCancel={() => setSaveGameModal({ visible: false, edit: false })}
+            afterClose={() => setSaveGameModal({ visible: false, edit: false })}
+            studioId={app.selectedStudioId}
+            edit={saveGameModal.edit}
+          />
+        )}
+      </>
+
+      {/* MENU */}
       {app.menuOpen && (
         <>
           {/* Blocks interaction to elements below; closes menu. */}
@@ -79,22 +124,7 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
                   onClick={() => {
                     appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
-                    modalDispatch({
-                      type: MODAL_ACTION_TYPE.LAYOUT,
-                      layout: (
-                        <StudioModalLayout
-                          type={STUDIO_MODAL_LAYOUT_TYPE.CREATE}
-                          onCreate={(studioId) =>
-                            appDispatch({
-                              type: APP_ACTION_TYPE.STUDIO_SELECT,
-                              selectedStudioId: studioId
-                            })
-                          }
-                        />
-                      )
-                    })
-
-                    modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                    setSaveStudioModal({ visible: true, edit: false })
                   }}
                 >
                   Create
@@ -106,17 +136,7 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
                       onClick={() => {
                         appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
-                        modalDispatch({
-                          type: MODAL_ACTION_TYPE.LAYOUT,
-                          layout: (
-                            <StudioModalLayout
-                              type={STUDIO_MODAL_LAYOUT_TYPE.EDIT}
-                              studio={selectedStudio}
-                            />
-                          )
-                        })
-
-                        modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                        setSaveStudioModal({ visible: true, edit: true })
                       }}
                     >
                       Edit
@@ -127,23 +147,7 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
                       onClick={() => {
                         appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
-                        modalDispatch({
-                          type: MODAL_ACTION_TYPE.LAYOUT,
-                          layout: (
-                            <StudioModalLayout
-                              type={STUDIO_MODAL_LAYOUT_TYPE.REMOVE}
-                              studio={selectedStudio}
-                              onRemove={() =>
-                                appDispatch({
-                                  type: APP_ACTION_TYPE.STUDIO_SELECT,
-                                  selectedStudioId: undefined
-                                })
-                              }
-                            />
-                          )
-                        })
-
-                        modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                        setRemoveStudioModalVisible(true)
                       }}
                     >
                       Remove
@@ -160,17 +164,7 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
                     if (app.selectedStudioId) {
                       appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
-                      modalDispatch({
-                        type: MODAL_ACTION_TYPE.LAYOUT,
-                        layout: (
-                          <GameModalLayout
-                            studioId={app.selectedStudioId}
-                            type={GAME_MODAL_LAYOUT_TYPE.CREATE}
-                          />
-                        )
-                      })
-
-                      modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
+                      setSaveGameModal({ visible: true, edit: false })
                     }
                   }}
                 >

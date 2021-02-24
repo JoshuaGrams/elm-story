@@ -1,15 +1,12 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 
 import { useStudios } from '../../hooks'
 
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
-import { ModalContext, MODAL_ACTION_TYPE } from '../../contexts/AppModalContext'
-
-import StudioModalLayout, {
-  STUDIO_MODAL_LAYOUT_TYPE
-} from '../../layouts/StudioModal'
 
 import { Button, Divider, Select } from 'antd'
+
+import { SaveStudioModal } from '../Modal'
 
 import styles from './styles.module.less'
 
@@ -21,13 +18,27 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
   className = ''
 }: StudioSelectProps) => {
   const studios = useStudios()
+
   const { app, appDispatch } = useContext(AppContext)
-  const { modalDispatch } = useContext(ModalContext)
 
   const { Option } = Select
 
+  const [saveStudioModalVisible, setSaveStudioModalVisible] = useState(false)
+
   return (
     <>
+      <SaveStudioModal
+        visible={saveStudioModalVisible}
+        onCancel={() => setSaveStudioModalVisible(false)}
+        afterClose={() => setSaveStudioModalVisible(false)}
+        onSave={(studioId) =>
+          appDispatch({
+            type: APP_ACTION_TYPE.STUDIO_SELECT,
+            selectedStudioId: studioId
+          })
+        }
+      />
+
       <div className={`${styles.studioList} ${className}`}>
         {studios && (
           <>
@@ -41,23 +52,7 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
                   <Divider />
                   <Button
                     style={{ width: '100%' }}
-                    onClick={() => {
-                      modalDispatch({
-                        type: MODAL_ACTION_TYPE.LAYOUT,
-                        layout: (
-                          <StudioModalLayout
-                            type={STUDIO_MODAL_LAYOUT_TYPE.CREATE}
-                            onCreate={(studioId) =>
-                              appDispatch({
-                                type: APP_ACTION_TYPE.STUDIO_SELECT,
-                                selectedStudioId: studioId
-                              })
-                            }
-                          />
-                        )
-                      })
-                      modalDispatch({ type: MODAL_ACTION_TYPE.OPEN })
-                    }}
+                    onClick={() => setSaveStudioModalVisible(true)}
                   >
                     Create Studio...
                   </Button>
