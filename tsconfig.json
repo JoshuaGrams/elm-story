@@ -23,6 +23,7 @@
     "allowJs": true
   },
   "exclude": [
+    "design",
     "test",
     "release",
     "src/main.prod.js",
