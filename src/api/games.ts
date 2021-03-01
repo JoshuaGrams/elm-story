@@ -1,11 +1,11 @@
 import { LibraryDatabase } from '../db'
-import { DocumentId, GameDocument } from '../data/types'
+import { ComponentId, GameDocument } from '../data/types'
 import { v4 as uuid } from 'uuid'
 import api from '../api'
 
 export async function getGame(
-  studioId: DocumentId,
-  gameId: DocumentId
+  studioId: ComponentId,
+  gameId: ComponentId
 ): Promise<GameDocument> {
   try {
     return await new LibraryDatabase(studioId).getGame(gameId)
@@ -15,16 +15,16 @@ export async function getGame(
 }
 
 export async function getGames(
-  studioId: DocumentId,
-  gameRefs: DocumentId[]
+  studioId: ComponentId,
+  gameRefs: ComponentId[]
 ): Promise<(GameDocument | undefined)[]> {
   return await new LibraryDatabase(studioId).games.bulkGet(gameRefs)
 }
 
 export async function saveGame(
-  studioId: DocumentId,
+  studioId: ComponentId,
   game: GameDocument
-): Promise<DocumentId> {
+): Promise<ComponentId> {
   if (!game.id) game.id = uuid()
 
   game.updated = Date.now()
@@ -38,7 +38,7 @@ export async function saveGame(
   }
 }
 
-export async function removeGame(studioId: DocumentId, gameId: DocumentId) {
+export async function removeGame(studioId: ComponentId, gameId: ComponentId) {
   try {
     await api().studios.removeGameRef(studioId, gameId)
 

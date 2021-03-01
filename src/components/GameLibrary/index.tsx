@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useGames, useStudios } from '../../hooks'
 
-import { DocumentId, StudioDocument } from '../../data/types'
+import { ComponentId, StudioDocument } from '../../data/types'
 
 import { Divider, Row, Col } from 'antd'
 
@@ -11,7 +11,7 @@ import GameBox from '../GameBox'
 import styles from './styles.module.less'
 
 interface GameLibraryProps {
-  studioId: DocumentId
+  studioId: ComponentId
 }
 
 const GameLibrary: React.FC<GameLibraryProps> = ({ studioId }) => {

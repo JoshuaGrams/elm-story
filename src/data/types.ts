@@ -40,58 +40,58 @@ export enum SET_OPERATOR {
   DIVIDE = '/'
 }
 
-export type DocumentId = string
+export type ComponentId = string
 type VariableId = string
 
-export interface Document {
-  id?: DocumentId | VariableId
+export interface Component {
+  id?: ComponentId | VariableId
   title: string
   tags: string[] | []
   updated?: number // UTC timestamp
 }
 
-export interface StudioDocument extends Document {
-  games: DocumentId[] // references by ID
+export interface StudioDocument extends Component {
+  games: ComponentId[] // references by ID
 }
 
-export interface EditorDocument extends Document {}
+export interface EditorDocument extends Component {}
 
-export interface GameDocument extends Document {
+export interface GameDocument extends Component {
   template: GAME_TEMPLATE
   director: string
-  chapters: DocumentId[]
+  chapters: ComponentId[]
   version: string
   engine: string
 }
 
-export interface ChapterDocument extends Document {
-  scenes: DocumentId[]
+export interface ChapterDocument extends Component {
+  scenes: ComponentId[]
 }
 
-export interface SceneDocument extends Document {
-  passages: DocumentId[]
+export interface SceneDocument extends Component {
+  passages: ComponentId[]
 }
 
-export interface PassageDocument extends Document {
+export interface PassageDocument extends Component {
   content: string
-  actions: DocumentId[]
+  actions: ComponentId[]
 }
 
-export interface ActionDocument extends Document {
-  goto: [DOC_TYPE.CHAPTER | DOC_TYPE.SCENE | DOC_TYPE.PASSAGE, DocumentId]
+export interface ActionDocument extends Component {
+  goto: [DOC_TYPE.CHAPTER | DOC_TYPE.SCENE | DOC_TYPE.PASSAGE, ComponentId]
   conditions: ConditionDocument[] | string[]
-  effects: DocumentId[]
+  effects: ComponentId[]
 }
 
-export interface ConditionDocument extends Document {
+export interface ConditionDocument extends Component {
   compare: [VariableId, COMPARE_OPERATOR, VariableId | string]
 }
 
-export interface EffectDocument extends Document {
+export interface EffectDocument extends Component {
   set: [VariableId, SET_OPERATOR, VariableId | string]
 }
 
-export interface VariableDocument extends Document {
+export interface VariableDocument extends Component {
   var_type: VARIABLE
   default?: string
 }

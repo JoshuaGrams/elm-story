@@ -1,14 +1,12 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { useSelectedGame } from '../../hooks'
 
 import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
 
-import { Table, Button } from 'antd'
-import { LeftOutlined, EditOutlined } from '@ant-design/icons'
-
-import { SaveGameModal } from '../../components/Modal'
+import { Button } from 'antd'
+import { LeftOutlined } from '@ant-design/icons'
 
 const Editor: React.FC = () => {
   const history = useHistory()
@@ -20,52 +18,16 @@ const Editor: React.FC = () => {
       ? useSelectedGame(app.selectedStudioId, app.selectedGameId)
       : undefined
 
-  const [editGameModalVisible, setEditGameModalVisible] = useState(false)
-
   return (
     <>
       {!app.selectedStudioId || !app.selectedGameId
         ? history.replace(APP_LOCATION.DASHBOARD)
         : null}
       {app.selectedStudioId && selectedGame && (
-        <>
-          <SaveGameModal
-            visible={editGameModalVisible}
-            onCancel={() => setEditGameModalVisible(false)}
-            afterClose={() => setEditGameModalVisible(false)}
-            studioId={app.selectedStudioId}
-            game={selectedGame}
-            edit
-          />
-
-          <Button onClick={() => history.push(APP_LOCATION.DASHBOARD)}>
-            <LeftOutlined />
-            Dashboard
-          </Button>
-
-          <Table
-            columns={[
-              { title: 'Title', dataIndex: 'title', key: 'title' },
-              { title: 'Director', dataIndex: 'director', key: 'director' },
-              { title: 'ID', dataIndex: 'id', key: 'id' },
-              { title: 'Edit', dataIndex: 'edit', key: 'edit' }
-            ]}
-            dataSource={[
-              {
-                key: '1',
-                title: selectedGame.title,
-                director: selectedGame.director,
-                id: selectedGame.id,
-                edit: (
-                  <Button onClick={() => setEditGameModalVisible(true)}>
-                    <EditOutlined />
-                  </Button>
-                )
-              }
-            ]}
-            pagination={false}
-          />
-        </>
+        <Button onClick={() => history.push(APP_LOCATION.DASHBOARD)}>
+          <LeftOutlined />
+          Dashboard
+        </Button>
       )}
     </>
   )

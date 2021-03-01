@@ -1,17 +1,21 @@
 import logger from '../lib/logger'
 
 import { AppDatabase, LibraryDatabase } from '../db'
-import { DocumentId, StudioDocument } from '../data/types'
+import { ComponentId, StudioDocument } from '../data/types'
 import { v4 as uuid } from 'uuid'
 
-export async function getStudio(studioId: DocumentId): Promise<StudioDocument> {
+export async function getStudio(
+  studioId: ComponentId
+): Promise<StudioDocument> {
   try {
     return new AppDatabase().getStudio(studioId)
   } catch (error) {
     throw new Error(error)
   }
 }
-export async function getGameRefs(studioId: DocumentId): Promise<DocumentId[]> {
+export async function getGameRefs(
+  studioId: ComponentId
+): Promise<ComponentId[]> {
   return (await getStudio(studioId)).games
 }
 
@@ -20,7 +24,7 @@ export async function getGameRefs(studioId: DocumentId): Promise<DocumentId[]> {
  * TODO: Link studios to cloud accounts.
  * @returns id on promise resolve
  */
-export async function saveStudio(studio: StudioDocument): Promise<DocumentId> {
+export async function saveStudio(studio: StudioDocument): Promise<ComponentId> {
   if (!studio.id) studio.id = uuid()
 
   studio.updated = Date.now()
@@ -32,7 +36,7 @@ export async function saveStudio(studio: StudioDocument): Promise<DocumentId> {
  * Delete app studio.
  * TODO: How does this affect cloud accounts?
  */
-export async function removeStudio(studioId: DocumentId) {
+export async function removeStudio(studioId: ComponentId) {
   try {
     await new LibraryDatabase(studioId).delete()
 
@@ -42,7 +46,7 @@ export async function removeStudio(studioId: DocumentId) {
   }
 }
 
-export async function saveGameRef(studioId: DocumentId, gameId: DocumentId) {
+export async function saveGameRef(studioId: ComponentId, gameId: ComponentId) {
   try {
     const studio = await getStudio(studioId),
       exists = studio.games.indexOf(gameId) !== -1
@@ -67,7 +71,10 @@ export async function saveGameRef(studioId: DocumentId, gameId: DocumentId) {
   }
 }
 
-export async function removeGameRef(studioId: DocumentId, gameId: DocumentId) {
+export async function removeGameRef(
+  studioId: ComponentId,
+  gameId: ComponentId
+) {
   try {
     const studio = await getStudio(studioId)
 

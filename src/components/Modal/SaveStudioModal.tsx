@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 
-import { DocumentId, StudioDocument } from '../../data/types'
+import { ComponentId, StudioDocument } from '../../data/types'
 
 import { Modal, ModalProps, Form, Input } from 'antd'
 
@@ -9,7 +9,7 @@ import api from '../../api'
 interface SaveStudioModalProps extends ModalProps {
   studio?: StudioDocument
   edit?: boolean
-  onSave?: (documentId: DocumentId) => void
+  onSave?: (documentId: ComponentId) => void
 }
 
 const SaveStudioModal: React.FC<SaveStudioModalProps> = ({

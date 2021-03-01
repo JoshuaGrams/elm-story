@@ -1,6 +1,6 @@
 import Dexie from 'dexie'
 import {
-  DocumentId,
+  ComponentId,
   StudioDocument,
   EditorDocument,
   GameDocument,
@@ -50,7 +50,7 @@ export class AppDatabase extends Dexie {
     this.editors = this.table(APP_TABLE.EDITORS)
   }
 
-  public async docExists(table: APP_TABLE, id: DocumentId): Promise<boolean> {
+  public async docExists(table: APP_TABLE, id: ComponentId): Promise<boolean> {
     let exists = false
 
     try {
@@ -62,7 +62,7 @@ export class AppDatabase extends Dexie {
     return exists
   }
 
-  public async getStudio(studioId: DocumentId): Promise<StudioDocument> {
+  public async getStudio(studioId: ComponentId): Promise<StudioDocument> {
     try {
       const studio = await this.studios.get(studioId)
 
@@ -78,7 +78,7 @@ export class AppDatabase extends Dexie {
     }
   }
 
-  public async saveStudio(studio: StudioDocument): Promise<DocumentId> {
+  public async saveStudio(studio: StudioDocument): Promise<ComponentId> {
     try {
       await this.transaction('rw', this.studios, async () => {
         if (studio.id) {
@@ -102,7 +102,7 @@ export class AppDatabase extends Dexie {
     }
   }
 
-  public async removeStudio(studioId: DocumentId) {
+  public async removeStudio(studioId: ComponentId) {
     try {
       await this.transaction('rw', this.studios, async () => {
         if (await this.docExists(APP_TABLE.STUDIOS, studioId)) {
@@ -157,7 +157,7 @@ export class LibraryDatabase extends Dexie {
 
   public async docExists(
     table: LIBRARY_TABLE,
-    id: DocumentId
+    id: ComponentId
   ): Promise<boolean> {
     let exists = false
 
@@ -170,7 +170,7 @@ export class LibraryDatabase extends Dexie {
     return exists
   }
 
-  public async getGame(gameId: DocumentId): Promise<GameDocument> {
+  public async getGame(gameId: ComponentId): Promise<GameDocument> {
     try {
       const studio = await this.games.get(gameId)
 
@@ -186,7 +186,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveGame(game: GameDocument): Promise<DocumentId> {
+  public async saveGame(game: GameDocument): Promise<ComponentId> {
     try {
       await this.transaction('rw', this.games, async () => {
         if (game.id) {
@@ -210,7 +210,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeGame(gameId: DocumentId) {
+  public async removeGame(gameId: ComponentId) {
     try {
       await this.transaction('rw', this.games, async () => {
         if (await this.docExists(LIBRARY_TABLE.GAMES, gameId)) {
