@@ -1,13 +1,13 @@
 import React, { useMemo, createContext, useReducer } from 'react'
-import { ComponentId } from '../data/types'
+import { StudioId, GameId } from '../data/types'
 
 type AppState = {
   header: string
   fullscreen: boolean
   menuOpen: boolean
   modalOpen: boolean
-  selectedStudioId?: ComponentId
-  selectedGameId?: ComponentId
+  selectedStudioId?: StudioId
+  selectedGameId?: GameId
 }
 
 export enum APP_ACTION_TYPE {
@@ -35,8 +35,8 @@ type AppActionType =
   | { type: APP_ACTION_TYPE.MENU_CLOSE }
   | { type: APP_ACTION_TYPE.MODAL_OPEN }
   | { type: APP_ACTION_TYPE.MODAL_CLOSE }
-  | { type: APP_ACTION_TYPE.STUDIO_SELECT; selectedStudioId?: ComponentId }
-  | { type: APP_ACTION_TYPE.GAME_SELECT; selectedGameId?: ComponentId }
+  | { type: APP_ACTION_TYPE.STUDIO_SELECT; selectedStudioId?: StudioId }
+  | { type: APP_ACTION_TYPE.GAME_SELECT; selectedGameId?: GameId }
 
 const appReducer = (state: AppState, action: AppActionType): AppState => {
   switch (action.type) {

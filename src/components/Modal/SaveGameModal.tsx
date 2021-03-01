@@ -1,16 +1,16 @@
 import React, { useEffect } from 'react'
 
-import { ComponentId, GameDocument, GAME_TEMPLATE } from '../../data/types'
+import { StudioId, GameDocument, GameId, GAME_TEMPLATE } from '../../data/types'
 
 import { Modal, ModalProps, Form, Input } from 'antd'
 
 import api from '../../api'
 
 interface SaveGameModalProps extends ModalProps {
-  studioId: ComponentId
+  studioId: StudioId
   game?: GameDocument
   edit?: boolean
-  onSave?: (documentId: ComponentId) => void
+  onSave?: (gameId: GameId) => void
 }
 
 const SaveGameModal: React.FC<SaveGameModalProps> = ({

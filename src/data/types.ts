@@ -40,7 +40,10 @@ export enum SET_OPERATOR {
   DIVIDE = '/'
 }
 
+export type StudioId = string
+export type GameId = string
 export type ComponentId = string
+
 type VariableId = string
 
 export interface Component {
@@ -51,12 +54,14 @@ export interface Component {
 }
 
 export interface StudioDocument extends Component {
-  games: ComponentId[] // references by ID
+  id?: StudioId
+  games: GameId[] // references by ID
 }
 
 export interface EditorDocument extends Component {}
 
 export interface GameDocument extends Component {
+  id?: GameId
   template: GAME_TEMPLATE
   director: string
   chapters: ComponentId[]

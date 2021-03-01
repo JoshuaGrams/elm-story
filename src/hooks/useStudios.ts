@@ -1,6 +1,7 @@
 import { AppDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { ComponentId, StudioDocument } from '../data/types'
+
+import { StudioDocument, StudioId } from '../data/types'
 
 const useStudios = (deps?: any[]): StudioDocument[] | undefined => {
   const studios = useLiveQuery(
@@ -16,7 +17,7 @@ const useStudios = (deps?: any[]): StudioDocument[] | undefined => {
 }
 
 const useSelectedStudio = (
-  studioId: ComponentId,
+  studioId: StudioId,
   deps?: any[]
 ): StudioDocument | undefined =>
   useLiveQuery(

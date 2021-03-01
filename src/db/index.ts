@@ -1,6 +1,7 @@
 import Dexie from 'dexie'
 import {
   ComponentId,
+  StudioId,
   StudioDocument,
   EditorDocument,
   GameDocument,
@@ -10,7 +11,8 @@ import {
   ActionDocument,
   ConditionDocument,
   EffectDocument,
-  VariableDocument
+  VariableDocument,
+  GameId
 } from '../data/types'
 
 export enum DATABASE {
@@ -62,7 +64,7 @@ export class AppDatabase extends Dexie {
     return exists
   }
 
-  public async getStudio(studioId: ComponentId): Promise<StudioDocument> {
+  public async getStudio(studioId: StudioId): Promise<StudioDocument> {
     try {
       const studio = await this.studios.get(studioId)
 
@@ -78,7 +80,7 @@ export class AppDatabase extends Dexie {
     }
   }
 
-  public async saveStudio(studio: StudioDocument): Promise<ComponentId> {
+  public async saveStudio(studio: StudioDocument): Promise<StudioId> {
     try {
       await this.transaction('rw', this.studios, async () => {
         if (studio.id) {
@@ -102,7 +104,7 @@ export class AppDatabase extends Dexie {
     }
   }
 
-  public async removeStudio(studioId: ComponentId) {
+  public async removeStudio(studioId: StudioId) {
     try {
       await this.transaction('rw', this.studios, async () => {
         if (await this.docExists(APP_TABLE.STUDIOS, studioId)) {
@@ -170,7 +172,7 @@ export class LibraryDatabase extends Dexie {
     return exists
   }
 
-  public async getGame(gameId: ComponentId): Promise<GameDocument> {
+  public async getGame(gameId: GameId): Promise<GameDocument> {
     try {
       const studio = await this.games.get(gameId)
 
@@ -186,7 +188,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveGame(game: GameDocument): Promise<ComponentId> {
+  public async saveGame(game: GameDocument): Promise<GameId> {
     try {
       await this.transaction('rw', this.games, async () => {
         if (game.id) {
@@ -210,7 +212,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeGame(gameId: ComponentId) {
+  public async removeGame(gameId: GameId) {
     try {
       await this.transaction('rw', this.games, async () => {
         if (await this.docExists(LIBRARY_TABLE.GAMES, gameId)) {

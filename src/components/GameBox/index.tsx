@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { ComponentId, GameDocument } from '../../data/types'
+import { StudioId, GameDocument } from '../../data/types'
 
 import {
   AppContext,
@@ -17,7 +17,7 @@ import { SaveGameModal, RemoveGameModal } from '../Modal'
 import styles from './styles.module.less'
 
 interface GameBoxProps {
-  studioId: ComponentId
+  studioId: StudioId
   game?: GameDocument
 }
 
