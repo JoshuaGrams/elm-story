@@ -7,6 +7,7 @@ import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
 
 import { Button } from 'antd'
 import { LeftOutlined } from '@ant-design/icons'
+import ComponentTree from '../../components/ComponentTree'
 
 const Editor: React.FC = () => {
   const history = useHistory()
@@ -24,10 +25,13 @@ const Editor: React.FC = () => {
         ? history.replace(APP_LOCATION.DASHBOARD)
         : null}
       {app.selectedStudioId && selectedGame && (
-        <Button onClick={() => history.push(APP_LOCATION.DASHBOARD)}>
-          <LeftOutlined />
-          Dashboard
-        </Button>
+        <>
+          <Button onClick={() => history.push(APP_LOCATION.DASHBOARD)}>
+            <LeftOutlined />
+            Dashboard
+          </Button>
+          <ComponentTree />
+        </>
       )}
     </>
   )

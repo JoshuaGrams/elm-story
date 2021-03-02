@@ -6,6 +6,8 @@ import AppProvider from './contexts/AppContext'
 
 import App from './App'
 
+document.addEventListener('contextmenu', (event) => event.preventDefault())
+
 render(
   <Router>
     <AppProvider>

@@ -1,4 +1,4 @@
-export enum DOC_TYPE {
+export enum COMPONENT_TYPE {
   STUDIO = 'STUDIO',
   GAME = 'game',
   CHAPTER = 'CHAPTER',
@@ -83,7 +83,10 @@ export interface PassageDocument extends Component {
 }
 
 export interface ActionDocument extends Component {
-  goto: [DOC_TYPE.CHAPTER | DOC_TYPE.SCENE | DOC_TYPE.PASSAGE, ComponentId]
+  goto: [
+    COMPONENT_TYPE.CHAPTER | COMPONENT_TYPE.SCENE | COMPONENT_TYPE.PASSAGE,
+    ComponentId
+  ]
   conditions: ConditionDocument[] | string[]
   effects: ComponentId[]
 }
