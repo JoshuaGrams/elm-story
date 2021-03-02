@@ -73,10 +73,12 @@ export interface Chapter extends Component {
 }
 
 export interface Scene extends Component {
+  gameId: GameId
   chapterId: ComponentId
 }
 
 export interface Passage extends Component {
+  gameId: GameId
   sceneId: ComponentId
   content: string
 }

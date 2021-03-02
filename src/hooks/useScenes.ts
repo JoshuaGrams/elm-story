@@ -1,14 +1,14 @@
 import { LibraryDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import { StudioId, Scene, ComponentId } from '../data/types'
+import { StudioId, Scene, GameId } from '../data/types'
 
 const useScenes = (
   studioId: StudioId,
-  chapterId: ComponentId
+  gameId: GameId
 ): Scene[] | undefined => {
   const scenes = useLiveQuery(() =>
-    new LibraryDatabase(studioId).scenes.where({ chapterId }).toArray()
+    new LibraryDatabase(studioId).scenes.where({ gameId }).toArray()
   )
 
   // TODO: sort by how user has ordered them in the editor?
