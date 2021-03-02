@@ -7,7 +7,7 @@ import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
 
 import { Button } from 'antd'
 import { LeftOutlined } from '@ant-design/icons'
-import ComponentTree from '../../components/ComponentTree'
+import GameOutline from '../../components/GameOutline'
 
 const Editor: React.FC = () => {
   const history = useHistory()
@@ -30,7 +30,7 @@ const Editor: React.FC = () => {
             <LeftOutlined />
             Dashboard
           </Button>
-          <ComponentTree />
+          <GameOutline studioId={app.selectedStudioId} game={selectedGame} />
         </>
       )}
     </>
