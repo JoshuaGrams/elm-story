@@ -1,13 +1,13 @@
 import React from 'react'
 
-import { StudioDocument } from '../../data/types'
+import { Studio } from '../../data/types'
 
 import { Modal, ModalProps } from 'antd'
 
 import api from '../../api'
 
 interface RemoveStudioModalProps extends ModalProps {
-  studio: StudioDocument
+  studio: Studio
   onRemove?: () => void
 }
 

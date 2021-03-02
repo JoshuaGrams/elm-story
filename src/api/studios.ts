@@ -1,10 +1,10 @@
 import logger from '../lib/logger'
 
 import { AppDatabase, LibraryDatabase } from '../db'
-import { GameId, StudioDocument, StudioId } from '../data/types'
+import { GameId, Studio, StudioId } from '../data/types'
 import { v4 as uuid } from 'uuid'
 
-export async function getStudio(studioId: StudioId): Promise<StudioDocument> {
+export async function getStudio(studioId: StudioId): Promise<Studio> {
   try {
     return new AppDatabase().getStudio(studioId)
   } catch (error) {
@@ -20,7 +20,7 @@ export async function getGameRefs(studioId: StudioId): Promise<GameId[]> {
  * TODO: Link studios to cloud accounts.
  * @returns id on promise resolve
  */
-export async function saveStudio(studio: StudioDocument): Promise<StudioId> {
+export async function saveStudio(studio: Studio): Promise<StudioId> {
   if (!studio.id) studio.id = uuid()
 
   studio.updated = Date.now()

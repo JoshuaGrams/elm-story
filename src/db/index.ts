@@ -1,18 +1,18 @@
 import Dexie from 'dexie'
 import {
-  ComponentId,
+  Studio,
   StudioId,
-  StudioDocument,
-  EditorDocument,
-  GameDocument,
-  ChapterDocument,
-  SceneDocument,
-  PassageDocument,
-  ActionDocument,
-  ConditionDocument,
-  EffectDocument,
-  VariableDocument,
-  GameId
+  Editor,
+  Game,
+  GameId,
+  ComponentId,
+  Chapter,
+  Scene,
+  Passage,
+  Action,
+  Condition,
+  Effect,
+  Variable
 } from '../data/types'
 
 export enum DATABASE {
@@ -37,8 +37,8 @@ export enum LIBRARY_TABLE {
 }
 
 export class AppDatabase extends Dexie {
-  public studios: Dexie.Table<StudioDocument, string>
-  public editors: Dexie.Table<EditorDocument, string>
+  public studios: Dexie.Table<Studio, string>
+  public editors: Dexie.Table<Editor, string>
 
   public constructor() {
     super(DATABASE.APP)
@@ -64,7 +64,7 @@ export class AppDatabase extends Dexie {
     return exists
   }
 
-  public async getStudio(studioId: StudioId): Promise<StudioDocument> {
+  public async getStudio(studioId: StudioId): Promise<Studio> {
     try {
       const studio = await this.studios.get(studioId)
 
@@ -80,7 +80,7 @@ export class AppDatabase extends Dexie {
     }
   }
 
-  public async saveStudio(studio: StudioDocument): Promise<StudioId> {
+  public async saveStudio(studio: Studio): Promise<StudioId> {
     try {
       await this.transaction('rw', this.studios, async () => {
         if (studio.id) {
@@ -122,23 +122,23 @@ export class AppDatabase extends Dexie {
 }
 
 export class LibraryDatabase extends Dexie {
-  public games: Dexie.Table<GameDocument, string>
-  public chapters: Dexie.Table<ChapterDocument, string>
-  public scenes: Dexie.Table<SceneDocument, string>
-  public passages: Dexie.Table<PassageDocument, string>
-  public actions: Dexie.Table<ActionDocument, string>
-  public conditions: Dexie.Table<ConditionDocument, string>
-  public effects: Dexie.Table<EffectDocument, string>
-  public variables: Dexie.Table<VariableDocument, string>
+  public games: Dexie.Table<Game, string>
+  public chapters: Dexie.Table<Chapter, string>
+  public scenes: Dexie.Table<Scene, string>
+  public passages: Dexie.Table<Passage, string>
+  public actions: Dexie.Table<Action, string>
+  public conditions: Dexie.Table<Condition, string>
+  public effects: Dexie.Table<Effect, string>
+  public variables: Dexie.Table<Variable, string>
 
   public constructor(studioId: string) {
     super(`${DATABASE.LIBRARY}-${studioId}`)
 
     this.version(2).stores({
       games: '&id,title,*tags,updated,template,director,version,engine',
-      chapters: '&id,title,*tags,updated',
-      scenes: '&id,title,*tags,updated',
-      passages: '&id,title,*tags,updated',
+      chapters: '&id,gameId,title,*tags,updated',
+      scenes: '&id,chapterId,title,*tags,updated',
+      passages: '&id,sceneId,title,*tags,updated',
       actions: '&id,title,*tags,updated',
       conditions: '&id,title,*tags,updated',
       effects: '&id,title,*tags,updated',
@@ -172,7 +172,7 @@ export class LibraryDatabase extends Dexie {
     return exists
   }
 
-  public async getGame(gameId: GameId): Promise<GameDocument> {
+  public async getGame(gameId: GameId): Promise<Game> {
     try {
       const studio = await this.games.get(gameId)
 
@@ -188,7 +188,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveGame(game: GameDocument): Promise<GameId> {
+  public async saveGame(game: Game): Promise<GameId> {
     try {
       await this.transaction('rw', this.games, async () => {
         if (game.id) {

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 
-import { StudioId, GameDocument, GameId, GAME_TEMPLATE } from '../../data/types'
+import { StudioId, Game, GameId, GAME_TEMPLATE } from '../../data/types'
 
 import { Modal, ModalProps, Form, Input } from 'antd'
 
@@ -8,7 +8,7 @@ import api from '../../api'
 
 interface SaveGameModalProps extends ModalProps {
   studioId: StudioId
-  game?: GameDocument
+  game?: Game
   edit?: boolean
   onSave?: (gameId: GameId) => void
 }
@@ -66,11 +66,10 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
                 : {
                     title,
                     director,
-                    // @TODO: Enable user-defined once more templates are supported.
+                    // TODO: Enable user-defined once more templates are supported.
                     template: GAME_TEMPLATE.ADVENTURE,
                     tags: [],
-                    chapters: [],
-                    // @TODO: Move to defines/types.
+                    // TODO: Move to defines/types.
                     engine: '1.0.0',
                     version: '1.0.0'
                   }

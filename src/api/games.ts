@@ -1,14 +1,14 @@
 import { LibraryDatabase } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { StudioId, GameDocument, GameId } from '../data/types'
+import { StudioId, Game, GameId } from '../data/types'
 
 import api from '../api'
 
 export async function getGame(
   studioId: StudioId,
   gameId: GameId
-): Promise<GameDocument> {
+): Promise<Game> {
   try {
     return await new LibraryDatabase(studioId).getGame(gameId)
   } catch (error) {
@@ -19,13 +19,13 @@ export async function getGame(
 export async function getGames(
   studioId: StudioId,
   gameRefs: GameId[]
-): Promise<(GameDocument | undefined)[]> {
+): Promise<(Game | undefined)[]> {
   return await new LibraryDatabase(studioId).games.bulkGet(gameRefs)
 }
 
 export async function saveGame(
   studioId: StudioId,
-  game: GameDocument
+  game: Game
 ): Promise<GameId> {
   if (!game.id) game.id = uuid()
 

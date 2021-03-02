@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useGames, useStudios } from '../../hooks'
 
-import { StudioId, StudioDocument } from '../../data/types'
+import { StudioId, Studio } from '../../data/types'
 
 import { Divider, Row, Col } from 'antd'
 
@@ -18,14 +18,14 @@ const GameLibrary: React.FC<GameLibraryProps> = ({ studioId }) => {
   const studios = useStudios([studioId])
   const games = useGames(studioId, [studioId])
 
-  const [selectedStudio, setSelectedStudio] = useState<
-    StudioDocument | undefined
-  >(undefined)
+  const [selectedStudio, setSelectedStudio] = useState<Studio | undefined>(
+    undefined
+  )
 
   const [saveGameModalVisible, setSaveGameModalVisible] = useState(false)
 
   useEffect(() => {
-    // @TODO: Move this to hook; see AppMenu duplicate
+    // TODO: Move this to hook; see AppMenu duplicate
     if (studios) {
       setSelectedStudio(
         studioId

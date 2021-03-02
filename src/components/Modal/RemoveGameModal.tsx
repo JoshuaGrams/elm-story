@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { StudioId, GameDocument } from '../../data/types'
+import { StudioId, Game } from '../../data/types'
 
 import { Modal, ModalProps } from 'antd'
 
@@ -8,7 +8,7 @@ import api from '../../api'
 
 interface RemoveGameModalProps extends ModalProps {
   studioId: StudioId
-  game: GameDocument
+  game: Game
 }
 
 const RemoveGameModal: React.FC<RemoveGameModalProps> = ({

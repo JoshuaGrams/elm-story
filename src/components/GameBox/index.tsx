@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { StudioId, GameDocument } from '../../data/types'
+import { StudioId, Game } from '../../data/types'
 
 import {
   AppContext,
@@ -18,7 +18,7 @@ import styles from './styles.module.less'
 
 interface GameBoxProps {
   studioId: StudioId
-  game?: GameDocument
+  game?: Game
 }
 
 const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {

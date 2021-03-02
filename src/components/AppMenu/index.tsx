@@ -6,7 +6,7 @@ import { useStudios } from '../../hooks'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
-import { StudioDocument } from '../../data/types'
+import { Studio } from '../../data/types'
 
 import {
   AppContext,
@@ -31,9 +31,9 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
 
   const studios = useStudios([app.selectedStudioId])
 
-  const [selectedStudio, setSelectedStudio] = useState<
-      StudioDocument | undefined
-    >(undefined),
+  const [selectedStudio, setSelectedStudio] = useState<Studio | undefined>(
+      undefined
+    ),
     [saveStudioModal, setSaveStudioModal] = useState({
       visible: false,
       edit: false

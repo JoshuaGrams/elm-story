@@ -53,53 +53,51 @@ export interface Component {
   updated?: number // UTC timestamp
 }
 
-export interface StudioDocument extends Component {
+export interface Studio extends Component {
   id?: StudioId
   games: GameId[] // references by ID
 }
 
-export interface EditorDocument extends Component {}
+export interface Editor extends Component {}
 
-export interface GameDocument extends Component {
+export interface Game extends Component {
   id?: GameId
   template: GAME_TEMPLATE
   director: string
-  chapters: ComponentId[]
   version: string
   engine: string
 }
 
-export interface ChapterDocument extends Component {
-  scenes: ComponentId[]
+export interface Chapter extends Component {
+  gameId: GameId
 }
 
-export interface SceneDocument extends Component {
-  passages: ComponentId[]
+export interface Scene extends Component {
+  chapterId: ComponentId
 }
 
-export interface PassageDocument extends Component {
+export interface Passage extends Component {
+  sceneId: ComponentId
   content: string
-  actions: ComponentId[]
 }
 
-export interface ActionDocument extends Component {
+export interface Action extends Component {
   goto: [
     COMPONENT_TYPE.CHAPTER | COMPONENT_TYPE.SCENE | COMPONENT_TYPE.PASSAGE,
     ComponentId
   ]
-  conditions: ConditionDocument[] | string[]
-  effects: ComponentId[]
+  conditions: Condition[] | string[]
 }
 
-export interface ConditionDocument extends Component {
+export interface Condition extends Component {
   compare: [VariableId, COMPARE_OPERATOR, VariableId | string]
 }
 
-export interface EffectDocument extends Component {
+export interface Effect extends Component {
   set: [VariableId, SET_OPERATOR, VariableId | string]
 }
 
-export interface VariableDocument extends Component {
+export interface Variable extends Component {
   var_type: VARIABLE
   default?: string
 }
