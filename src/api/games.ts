@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid'
 
 import { StudioId, Game, GameId } from '../data/types'
 
-import api from '../api'
+import api from '.'
 
 export async function getGame(
   studioId: StudioId,

@@ -189,6 +189,9 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveGame(game: Game): Promise<GameId> {
+    if (!game.id)
+      throw new Error('Unable to save game to database. Missing ID.')
+
     try {
       await this.transaction('rw', this.games, async () => {
         if (game.id) {
@@ -205,11 +208,7 @@ export class LibraryDatabase extends Dexie {
       throw new Error(error)
     }
 
-    if (game.id) {
-      return game.id
-    } else {
-      throw new Error('Unable to save game to database. Missing ID.')
-    }
+    return game.id
   }
 
   public async removeGame(gameId: GameId) {
@@ -220,6 +219,129 @@ export class LibraryDatabase extends Dexie {
         } else {
           throw new Error(
             `Unable to remove game with ID: '${gameId}'. Does not exist.`
+          )
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async saveChapter(chapter: Chapter): Promise<ComponentId> {
+    if (!chapter.gameId)
+      throw new Error('Unable to save chapter to databse. Missing game ID.')
+    if (!chapter.id)
+      throw new Error('Unable to save chapter to database. Missing ID.')
+
+    try {
+      await this.transaction('rw', this.chapters, async () => {
+        if (chapter.id) {
+          if (await this.docExists(LIBRARY_TABLE.CHAPTERS, chapter.id)) {
+            await this.chapters.update(chapter.id, chapter)
+          } else {
+            await this.chapters.add(chapter)
+          }
+        } else {
+          throw new Error('Unable to save chapter to database. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    return chapter.id
+  }
+
+  public async removeChapter(chapterId: ComponentId) {
+    try {
+      await this.transaction('rw', this.chapters, async () => {
+        if (await this.docExists(LIBRARY_TABLE.CHAPTERS, chapterId)) {
+          await this.chapters.delete(chapterId)
+        } else {
+          throw new Error(
+            `Unable to remove chapter with ID: '${chapterId}'. Does not exist.`
+          )
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async saveScene(scene: Scene): Promise<ComponentId> {
+    if (!scene.chapterId)
+      throw new Error('Unable to save scene to databse. Missing chapter ID.')
+    if (!scene.id)
+      throw new Error('Unable to save scene to database. Missing ID.')
+
+    try {
+      await this.transaction('rw', this.scenes, async () => {
+        if (scene.id) {
+          if (await this.docExists(LIBRARY_TABLE.SCENES, scene.id)) {
+            await this.scenes.update(scene.id, scene)
+          } else {
+            await this.scenes.add(scene)
+          }
+        } else {
+          throw new Error('Unable to save scene to database. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    return scene.id
+  }
+
+  public async removeScene(sceneId: ComponentId) {
+    try {
+      await this.transaction('rw', this.scenes, async () => {
+        if (await this.docExists(LIBRARY_TABLE.SCENES, sceneId)) {
+          await this.scenes.delete(sceneId)
+        } else {
+          throw new Error(
+            `Unable to remove scene with ID: '${sceneId}'. Does not exist.`
+          )
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async savePassage(passage: Passage): Promise<ComponentId> {
+    if (!passage.sceneId)
+      throw new Error('Unable to save passage to databse. Missing scene ID.')
+    if (!passage.id)
+      throw new Error('Unable to save passage to database. Missing ID.')
+
+    try {
+      await this.transaction('rw', this.passages, async () => {
+        if (passage.id) {
+          if (await this.docExists(LIBRARY_TABLE.PASSAGES, passage.id)) {
+            await this.passages.update(passage.id, passage)
+          } else {
+            await this.passages.add(passage)
+          }
+        } else {
+          throw new Error('Unable to save passage to database. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    return passage.id
+  }
+
+  public async removePassage(passageId: ComponentId) {
+    try {
+      await this.transaction('rw', this.passages, async () => {
+        if (await this.docExists(LIBRARY_TABLE.PASSAGES, passageId)) {
+          await this.passages.delete(passageId)
+        } else {
+          throw new Error(
+            `Unable to remove scene with ID: '${passageId}'. Does not exist.`
           )
         }
       })
