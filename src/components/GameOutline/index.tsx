@@ -1,5 +1,14 @@
 import React, { useEffect, useState, useContext, ReactText } from 'react'
 import logger from '../../lib/logger'
+import createGameMap, { GameMap } from '../../lib/createGameMap'
+import {
+  uniqueNamesGenerator,
+  adjectives,
+  colors,
+  animals
+} from 'unique-names-generator'
+
+import { useChapters, usePassages, useScenes } from '../../hooks'
 
 import { NodeDragEventParams } from 'rc-tree/lib/contextTypes'
 import { DataNode, EventDataNode } from 'antd/lib/tree'
@@ -8,10 +17,7 @@ import {
   COMPONENT_TYPE,
   Game,
   GameId,
-  StudioId,
-  Chapter,
-  Scene,
-  Passage
+  StudioId
 } from '../../data/types'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
@@ -19,68 +25,11 @@ import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 import { Button, Tree, Menu, Dropdown } from 'antd'
 import { DownOutlined, PlusOutlined } from '@ant-design/icons'
 
-import styles from './styles.module.less'
-import { useChapters, usePassages, useScenes } from '../../hooks'
 import api from '../../api'
 
+import styles from './styles.module.less'
+
 const { DirectoryTree } = Tree
-
-// denormalize game, chapter, scene and passage components to flat map
-// position is editor specific data
-interface GameMap {
-  [componentId: string]: {
-    type: COMPONENT_TYPE
-    title: string
-    parentId?: ComponentId
-  }
-}
-
-function createGameMap(
-  game: Game,
-  chapters: Chapter[],
-  scenes: Scene[],
-  passages: Passage[]
-): GameMap {
-  const gameMap: GameMap = {}
-
-  if (game.id) {
-    gameMap[game.id] = {
-      type: COMPONENT_TYPE.GAME,
-      title: game.title
-    }
-  }
-
-  chapters.map((chapter) => {
-    if (chapter.id) {
-      gameMap[chapter.id] = {
-        type: COMPONENT_TYPE.CHAPTER,
-        title: chapter.title
-      }
-    }
-  })
-
-  scenes.map((scene) => {
-    if (scene.id) {
-      gameMap[scene.id] = {
-        type: COMPONENT_TYPE.SCENE,
-        title: scene.title,
-        parentId: scene.chapterId
-      }
-    }
-  })
-
-  passages.map((passage) => {
-    if (passage.id) {
-      gameMap[passage.id] = {
-        type: COMPONENT_TYPE.PASSAGE,
-        title: passage.title,
-        parentId: passage.sceneId
-      }
-    }
-  })
-
-  return gameMap
-}
 
 function createTreeData({
   gameId,
@@ -250,13 +199,12 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   studioId,
   game
 }) => {
+  const { editor, editorDispatch } = useContext(EditorContext)
+
   const chapters = game.id ? useChapters(studioId, game.id) : undefined,
     scenes = game.id ? useScenes(studioId, game.id) : undefined,
     passages = game.id ? usePassages(studioId, game.id) : undefined
 
-  const { editor, editorDispatch } = useContext(EditorContext)
-
-  // const [expandedKeys, setExpandedKeys] = useState<React.Key[]>(['game-id'])
   const [gameMap, setGameMap] = useState<GameMap | undefined>(undefined)
   const [treeData, setTreeData] = useState<DataNode[] | undefined>(undefined)
 
@@ -279,14 +227,12 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   function onExpand(
     keys: React.Key[],
     info: {
-      node: EventDataNode
       expanded: boolean
-      nativeEvent: MouseEvent
     }
   ) {
     const _ids = keys.map((key) => key.toString())
 
-    if (info.expanded) {
+    if (info?.expanded) {
       editorDispatch({
         type: EDITOR_ACTION_TYPE.GAME_OUTLINE_EXPAND,
         expandedComponentIds: [
@@ -304,7 +250,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             ...editor.expandedGameOutlineComponentIds.filter((id) =>
               _ids.includes(id)
             ),
-            game.id
+            ...(!_ids.includes(game.id) ? [game.id] : [])
           ]
         })
       }
@@ -339,6 +285,82 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     // dropToGap true if not nested?
   }
 
+  // TODO: select key of new component
+  async function onAddChapter(gameId: GameId) {
+    try {
+      const chapterId = await api().chapters.saveChapter(studioId, {
+        gameId,
+        tags: [],
+        title: `Chapter ${uniqueNamesGenerator({
+          dictionaries: [adjectives, animals, colors],
+          length: 1
+        }).toUpperCase()}`
+      })
+
+      setTimeout(() => {
+        onExpand([chapterId], { expanded: true })
+
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+          selectedComponentId: chapterId
+        })
+      }, 50)
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  async function onAddScene(gameId: GameId, chapterId: ComponentId) {
+    try {
+      const sceneId = await api().scenes.saveScene(studioId, {
+        gameId,
+        chapterId,
+        tags: [],
+        title: `Scene ${uniqueNamesGenerator({
+          dictionaries: [adjectives, animals, colors],
+          length: 1
+        }).toUpperCase()}`
+      })
+
+      setTimeout(() => {
+        onExpand([chapterId, sceneId], { expanded: true })
+
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+          selectedComponentId: sceneId
+        })
+      }, 50)
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  async function onAddPassage(gameId: GameId, sceneId: ComponentId) {
+    try {
+      const passageId = await api().passages.savePassage(studioId, {
+        gameId,
+        sceneId,
+        tags: [],
+        title: `Passage ${uniqueNamesGenerator({
+          dictionaries: [adjectives, animals, colors],
+          length: 1
+        }).toUpperCase()}`,
+        content: ''
+      })
+
+      setTimeout(() => {
+        onExpand([sceneId, passageId], { expanded: true })
+
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+          selectedComponentId: passageId
+        })
+      }, 50)
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   useEffect(() => {
     if (game.id) {
       editorDispatch({
@@ -365,43 +387,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
         createTreeData({
           gameId: game.id,
           gameMap,
-          // TODO: select key of new component
-          onAddChapter: async (gameId) => {
-            try {
-              const chapterId = await api().chapters.saveChapter(studioId, {
-                gameId,
-                tags: [],
-                title: 'New Chapter'
-              })
-            } catch (error) {
-              throw new Error(error)
-            }
-          },
-          onAddScene: async (gameId, chapterId) => {
-            try {
-              const sceneId = await api().scenes.saveScene(studioId, {
-                gameId,
-                chapterId,
-                tags: [],
-                title: 'New Scene'
-              })
-            } catch (error) {
-              throw new Error(error)
-            }
-          },
-          onAddPassage: async (gameId, sceneId) => {
-            try {
-              const passageId = await api().passages.savePassage(studioId, {
-                gameId,
-                sceneId,
-                tags: [],
-                title: 'New Passage',
-                content: ''
-              })
-            } catch (error) {
-              throw new Error(error)
-            }
-          }
+          onAddChapter,
+          onAddScene,
+          onAddPassage
         })
       )
   }, [gameMap])
@@ -417,6 +405,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                   type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
                   selectedComponentId: game.id
                 })
+
                 editorDispatch({
                   type: EDITOR_ACTION_TYPE.GAME_OUTLINE_EXPAND,
                   expandedComponentIds: [game.id]
