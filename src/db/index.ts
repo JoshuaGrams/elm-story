@@ -1,4 +1,6 @@
 import Dexie from 'dexie'
+import logger from '../lib/logger'
+
 import {
   Studio,
   StudioId,
@@ -212,7 +214,30 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async removeGame(gameId: GameId) {
+    if (!gameId) throw new Error('Unable to remove game. Missing ID.')
+
     try {
+      const chapters = await this.chapters.where({ gameId }).toArray(),
+        scenes = await this.scenes.where({ gameId }).toArray(),
+        passages = await this.passages.where({ gameId }).toArray()
+
+      logger.info(`Removing game with ID: ${gameId}`)
+      logger.info(`CHAPTERS: Removing ${chapters.length}...`)
+      logger.info(`SCENES: Removing ${scenes.length}...`)
+      logger.info(`PASSAGES: Removing ${passages.length}...`)
+
+      await Promise.all([
+        chapters.map(async (chapter) => {
+          if (chapter.id) await this.chapters.delete(chapter.id)
+        }),
+        scenes.map(async (scene) => {
+          if (scene.id) await this.scenes.delete(scene.id)
+        }),
+        passages.map(async (passage) => {
+          if (passage.id) await this.passages.delete(passage.id)
+        })
+      ])
+
       await this.transaction('rw', this.games, async () => {
         if (await this.docExists(LIBRARY_TABLE.GAMES, gameId)) {
           await this.games.delete(gameId)
