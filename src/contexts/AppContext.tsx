@@ -1,7 +1,7 @@
 import React, { useMemo, createContext, useReducer } from 'react'
 import { StudioId, GameId } from '../data/types'
 
-type AppState = {
+interface AppState {
   header: string
   fullscreen: boolean
   menuOpen: boolean
@@ -66,7 +66,7 @@ const appReducer = (state: AppState, action: AppActionType): AppState => {
   }
 }
 
-type AppContextType = {
+interface AppContextType {
   app: AppState
   appDispatch: React.Dispatch<AppActionType>
 }

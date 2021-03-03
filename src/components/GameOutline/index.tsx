@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext, ReactText } from 'react'
 import logger from '../../lib/logger'
 
 import { NodeDragEventParams } from 'rc-tree/lib/contextTypes'
@@ -13,6 +13,8 @@ import {
   Scene,
   Passage
 } from '../../data/types'
+
+import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { Button, Tree, Menu, Dropdown } from 'antd'
 import { DownOutlined, PlusOutlined } from '@ant-design/icons'
@@ -252,15 +254,11 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     scenes = game.id ? useScenes(studioId, game.id) : undefined,
     passages = game.id ? usePassages(studioId, game.id) : undefined
 
-  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>(['game-id'])
+  const { editor, editorDispatch } = useContext(EditorContext)
+
+  // const [expandedKeys, setExpandedKeys] = useState<React.Key[]>(['game-id'])
   const [gameMap, setGameMap] = useState<GameMap | undefined>(undefined)
   const [treeData, setTreeData] = useState<DataNode[] | undefined>(undefined)
-
-  useEffect(() => {
-    if (chapters && scenes && passages) {
-      setGameMap(createGameMap(game, chapters, scenes, passages))
-    }
-  }, [chapters, scenes, passages])
 
   function onSelect(
     selectedKeys: React.Key[],
@@ -272,9 +270,10 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       nativeEvent: MouseEvent
     }
   ) {
-    // multiple select is not yet supported
-    console.log(selectedKeys[0])
-    console.log(info)
+    editorDispatch({
+      type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+      selectedComponentId: selectedKeys[0].toString()
+    })
   }
 
   function onExpand(
@@ -285,16 +284,30 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       nativeEvent: MouseEvent
     }
   ) {
+    const _ids = keys.map((key) => key.toString())
+
     if (info.expanded) {
-      setExpandedKeys([
-        ...expandedKeys,
-        ...keys.filter((key) => !expandedKeys.includes(key))
-      ])
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_EXPAND,
+        expandedComponentIds: [
+          ...editor.expandedGameOutlineComponentIds,
+          ..._ids.filter(
+            (id) => !editor.expandedGameOutlineComponentIds.includes(id)
+          )
+        ]
+      })
     } else {
-      setExpandedKeys([
-        ...expandedKeys.filter((key) => keys.includes(key)),
-        'game-id'
-      ])
+      if (game.id) {
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_EXPAND,
+          expandedComponentIds: [
+            ...editor.expandedGameOutlineComponentIds.filter((id) =>
+              _ids.includes(id)
+            ),
+            game.id
+          ]
+        })
+      }
     }
   }
 
@@ -327,6 +340,26 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   }
 
   useEffect(() => {
+    if (game.id) {
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+        selectedComponentId: game.id
+      })
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_EXPAND,
+        expandedComponentIds: [game.id]
+      })
+    }
+  }, [game.id])
+
+  useEffect(() => {
+    if (chapters && scenes && passages) {
+      setGameMap(createGameMap(game, chapters, scenes, passages))
+    }
+  }, [chapters, scenes, passages])
+
+  useEffect(() => {
     if (game.id && gameMap)
       setTreeData(
         createTreeData({
@@ -340,10 +373,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 tags: [],
                 title: 'New Chapter'
               })
-
-              console.log(chapterId)
             } catch (error) {
-              console.log(error)
+              throw new Error(error)
             }
           },
           onAddScene: async (gameId, chapterId) => {
@@ -354,10 +385,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 tags: [],
                 title: 'New Scene'
               })
-
-              console.log(sceneId)
             } catch (error) {
-              console.log(error)
+              throw new Error(error)
             }
           },
           onAddPassage: async (gameId, sceneId) => {
@@ -369,10 +398,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 title: 'New Passage',
                 content: ''
               })
-
-              console.log(passageId)
             } catch (error) {
-              console.log(error)
+              throw new Error(error)
             }
           }
         })
@@ -383,7 +410,20 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     <div className={styles.componentTree}>
       {chapters && scenes && passages && (
         <>
-          <Button onClick={() => setExpandedKeys(['game-id'])}>
+          <Button
+            onClick={() => {
+              if (game.id) {
+                editorDispatch({
+                  type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+                  selectedComponentId: game.id
+                })
+                editorDispatch({
+                  type: EDITOR_ACTION_TYPE.GAME_OUTLINE_EXPAND,
+                  expandedComponentIds: [game.id]
+                })
+              }
+            }}
+          >
             collapse all
           </Button>
           {treeData && (
@@ -392,7 +432,10 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               switcherIcon={<DownOutlined />}
               treeData={treeData}
               onSelect={onSelect}
-              expandedKeys={expandedKeys}
+              selectedKeys={[
+                editor.selectedGameOutlineComponentId as ReactText
+              ]}
+              expandedKeys={editor.expandedGameOutlineComponentIds}
               draggable
               expandAction="doubleClick"
               onExpand={onExpand}
