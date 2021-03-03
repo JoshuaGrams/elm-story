@@ -23,7 +23,13 @@ import {
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { Button, Tree, Menu, Dropdown } from 'antd'
-import { DownOutlined, PlusOutlined } from '@ant-design/icons'
+import {
+  DownOutlined,
+  PlusOutlined,
+  AlignLeftOutlined,
+  BranchesOutlined,
+  BookOutlined
+} from '@ant-design/icons'
 
 import api from '../../api'
 
@@ -82,7 +88,8 @@ function createTreeData({
       </Dropdown>
     ),
     key: rootGameId,
-    children: []
+    children: [],
+    icon: <BookOutlined />
   })
 
   Object.entries(gameMap).map(([componentId, component]) => {
@@ -164,7 +171,8 @@ function createTreeData({
                 </Dropdown>
               ),
               key: componentId,
-              children: []
+              children: [],
+              icon: <BranchesOutlined />
             })
           }
         })
@@ -178,7 +186,8 @@ function createTreeData({
                 title: component.title,
                 key: componentId,
                 children: [],
-                isLeaf: true
+                isLeaf: true,
+                icon: <AlignLeftOutlined />
               })
             }
           })
