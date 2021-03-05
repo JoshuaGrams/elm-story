@@ -1,6 +1,6 @@
 export enum COMPONENT_TYPE {
   STUDIO = 'STUDIO',
-  GAME = 'game',
+  GAME = 'GAME',
   CHAPTER = 'CHAPTER',
   SCENE = 'SCENE',
   PASSAGE = 'PASSAGE',

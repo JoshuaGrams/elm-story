@@ -7,7 +7,7 @@ import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
 
 import { Button } from 'antd'
 import { LeftOutlined } from '@ant-design/icons'
-import GameOutline from '../../components/GameOutline'
+import GameOutline from '../../components/GameOutline/atlas'
 
 const Editor: React.FC = () => {
   const history = useHistory()

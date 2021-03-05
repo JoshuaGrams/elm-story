@@ -1,6 +1,63 @@
-.componentTree {
+.gameOutline {
   width: 300px;
   border-right: solid 1px #333;
+
+  cursor: pointer !important;
+
+  div[data-react-beautiful-dnd-droppable] {
+    * {
+      cursor: pointer !important;
+    }
+  }
+
+  .itemRow {
+    font-size: 12px !important;
+
+    &:hover {
+      background-color: hsl(0, 0%, 10%);
+
+      .badge {
+        :global .ant-badge-count {
+          background: hsl(0, 0%, 15%) !important;
+        }
+      }
+    }
+
+    &.selected {
+      background: hsl(0, 0%, 20%);
+
+      &:hover {
+        background: hsl(0, 0%, 25%);
+      }
+    }
+
+    button {
+      background: transparent !important;
+    }
+
+    .itemIcon {
+      font-size: 11px;
+      color: hsl(0, 0%, 40%);
+
+      &.component {
+        margin-right: 8px;
+        color: hsl(182, 100%, 30%) !important;
+
+        &.passage {
+          margin-left: 28px;
+        }
+      }
+    }
+
+    .badge {
+      :global .ant-badge-count {
+        background: hsl(0, 0%, 10%) !important;
+        font-size: 10px;
+        min-width: 24px;
+        border: none !important;
+      }
+    }
+  }
 
   .nodeRow {
     position: absolute;
