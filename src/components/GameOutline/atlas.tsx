@@ -410,21 +410,35 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     source: TreeSourcePosition,
     destination?: TreeDestinationPosition
   ) {
-    if (!destination) return
+    if (!destination || !treeData) return
 
-    console.log(destination.index)
+    const sourceParent = treeData.items[source.parentId],
+      destinationParent = treeData.items[destination.parentId],
+      movingComponent = movingComponentId && treeData.items[movingComponentId]
 
-    if (movingComponentId && source && destination) {
-      const movingComponent = treeData?.items[movingComponentId],
-        fromComponent = treeData?.items[source.parentId],
-        toComponent = treeData?.items[destination.parentId]
-
-      // is it possible to move here?
+    if (
+      movingComponent &&
+      sourceParent.data.type === destinationParent.data.type
+    ) {
       logger.info(
-        `moving: ${movingComponent?.data.title} | from: ${fromComponent?.data.title} | to: ${toComponent?.data.title}`
+        `
+          moving: ${movingComponent.data.title}
+          from: ${sourceParent.data.title} (index ${source.index}
+          to: ${destinationParent.data.title} (index ${destination.index})
+        `
       )
 
-      setMovingComponentId(undefined)
+      if (!destinationParent.isExpanded) destinationParent.isExpanded = true
+
+      movingComponent.isExpanded = false
+      movingComponent.data.selected = true
+
+      setTreeData(moveItemOnTree(treeData, source, destination))
+      setSelectedItemId(movingComponent.id as string)
+    } else if (movingComponent) {
+      logger.info(
+        `Unable to move component type '${movingComponent.data.type}' to type '${destinationParent.data.type}'`
+      )
     }
   }
 
