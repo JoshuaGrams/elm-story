@@ -2,6 +2,18 @@ import React, { useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash'
 import logger from '../../lib/logger'
 
+// BUG: deleting is not working properly - check tree
+//
+
+// TODO: remove for production use case
+import { v4 as uuid } from 'uuid'
+import {
+  uniqueNamesGenerator,
+  adjectives,
+  colors,
+  animals
+} from 'unique-names-generator'
+
 import { ComponentId, COMPONENT_TYPE, Game, StudioId } from '../../data/types'
 import Tree, {
   mutateTree,
@@ -45,12 +57,15 @@ const defaultTreeData = (): TreeData => ({
     },
     'chapter-1-id': {
       id: 'chapter-1-id',
-      children: ['scene-1-id', 'scene-2-id'],
-      hasChildren: true,
+      children: [],
+      hasChildren: false,
       isExpanded: true,
       isChildrenLoading: false,
       data: {
-        title: 'Chapter 1',
+        title: `Chapter ${uniqueNamesGenerator({
+          dictionaries: [adjectives, animals, colors],
+          length: 1
+        }).toUpperCase()}`,
         type: COMPONENT_TYPE.CHAPTER,
         selected: false,
         parentId: 'game-id'
@@ -58,103 +73,18 @@ const defaultTreeData = (): TreeData => ({
     },
     'chapter-2-id': {
       id: 'chapter-2-id',
-      children: ['scene-3-id', 'scene-4-id'],
-      hasChildren: true,
+      children: [],
+      hasChildren: false,
       isExpanded: true,
       isChildrenLoading: false,
       data: {
-        title: 'Chapter 2',
+        title: `Chapter ${uniqueNamesGenerator({
+          dictionaries: [adjectives, animals, colors],
+          length: 1
+        }).toUpperCase()}`,
         type: COMPONENT_TYPE.CHAPTER,
         selected: false,
         parentId: 'game-id'
-      }
-    },
-    'scene-1-id': {
-      id: 'scene-1-id',
-      children: [],
-      hasChildren: false,
-      isExpanded: true,
-      isChildrenLoading: false,
-      data: {
-        title: 'Scene 1',
-        type: COMPONENT_TYPE.SCENE,
-        selected: false,
-        parentId: 'chapter-1-id'
-      }
-    },
-    'scene-2-id': {
-      id: 'scene-2-id',
-      children: [],
-      hasChildren: true,
-      isExpanded: false,
-      isChildrenLoading: false,
-      data: {
-        title: 'Scene 2',
-        type: COMPONENT_TYPE.SCENE,
-        selected: false,
-        parentId: 'chapter-1-id'
-      }
-    },
-    'scene-3-id': {
-      id: 'scene-3-id',
-      children: [],
-      hasChildren: false,
-      isExpanded: false,
-      isChildrenLoading: false,
-      data: {
-        title: 'Scene 3',
-        type: COMPONENT_TYPE.SCENE,
-        selected: false,
-        parentId: 'chapter-2-id'
-      }
-    },
-    'scene-4-id': {
-      id: 'scene-4-id',
-      children: ['passage-1-id', 'passage-2-id', 'passage-3-id'],
-      hasChildren: true,
-      isExpanded: true,
-      isChildrenLoading: false,
-      data: {
-        title: 'Scene 4',
-        type: COMPONENT_TYPE.SCENE,
-        selected: false,
-        parentId: 'chapter-2-id'
-      }
-    },
-    'passage-1-id': {
-      id: 'passage-1-id',
-      children: [],
-      hasChildren: false,
-      isExpanded: false,
-      data: {
-        title: 'Passage 1',
-        type: COMPONENT_TYPE.PASSAGE,
-        selected: false,
-        parentId: 'scene-4-id'
-      }
-    },
-    'passage-2-id': {
-      id: 'passage-2-id',
-      children: [],
-      hasChildren: false,
-      isExpanded: false,
-      data: {
-        title: 'Passage 2',
-        type: COMPONENT_TYPE.PASSAGE,
-        selected: false,
-        parentId: 'scene-4-id'
-      }
-    },
-    'passage-3-id': {
-      id: 'passage-3-id',
-      children: [],
-      hasChildren: false,
-      isExpanded: false,
-      data: {
-        title: 'Passage 3',
-        type: COMPONENT_TYPE.PASSAGE,
-        selected: false,
-        parentId: 'scene-4-id'
       }
     }
   }
@@ -284,8 +214,19 @@ const ContextMenu: React.FC<{
   )
 }
 
+function getStyle(style: React.CSSProperties) {
+  if (style?.transform) {
+    const axisLockY = `translate(0px, ${style.transform.split(',').pop()}`
+    return {
+      ...style,
+      transform: axisLockY
+    }
+  }
+  return style
+}
+
 const renderComponentItem = ({
-  item: { item, provided, onExpand, onCollapse },
+  item: { item, provided, onExpand, onCollapse, snapshot },
   onSelect,
   onAdd,
   onRemove,
@@ -328,12 +269,13 @@ const renderComponentItem = ({
       {...provided.dragHandleProps}
       className={`${styles.itemRow} ${
         item.data.selected ? styles.selected : ''
-      }`}
+      } ${snapshot.isDragging ? styles.dragging : ''}`}
       onClick={(event) => {
         event.stopPropagation()
         onSelect(item.id as string)
       }}
       onContextMenu={(event) => event.stopPropagation()}
+      style={getStyle(provided.draggableProps.style)}
     >
       <ContextMenu
         component={{
@@ -385,9 +327,10 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   const [treeData, setTreeData] = useState<TreeData | undefined>(
       defaultTreeData()
     ),
-    [selectedItemId, setSelectedItemId] = useState<string | undefined>(
-      undefined
-    ),
+    [selectedItem, setSelectedItem] = useState<{
+      id: string | undefined
+      expand: boolean
+    }>({ id: undefined, expand: false }),
     [movingComponentId, setMovingComponentId] = useState<string | undefined>(
       undefined
     )
@@ -430,15 +373,22 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
       if (!destinationParent.isExpanded) destinationParent.isExpanded = true
 
-      movingComponent.isExpanded = false
       movingComponent.data.selected = true
 
       setTreeData(moveItemOnTree(treeData, source, destination))
-      setSelectedItemId(movingComponent.id as string)
+      setSelectedItem({
+        id: movingComponent.id as string,
+        expand: movingComponent.isExpanded || false
+      })
     } else if (movingComponent) {
       logger.info(
         `Unable to move component type '${movingComponent.data.type}' to type '${destinationParent.data.type}'`
       )
+      movingComponent.isExpanded = false
+      setSelectedItem({
+        id: movingComponent.id as string,
+        expand: movingComponent.isExpanded
+      })
     }
   }
 
@@ -447,7 +397,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       data = item?.data
 
     if (treeData) {
-      if (selectedItemId) treeData.items[selectedItemId].data.selected = false
+      if (selectedItem.id) treeData.items[selectedItem.id].data.selected = false
 
       switch (data.type) {
         // add chapter
@@ -456,13 +406,16 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
         // add scene
         case COMPONENT_TYPE.CHAPTER:
           const newScene: TreeItem = {
-            id: 'scene-5-id',
+            id: uuid(),
             children: [],
             isExpanded: false,
             hasChildren: false,
             isChildrenLoading: false,
             data: {
-              title: 'Scene 5',
+              title: `Scene ${uniqueNamesGenerator({
+                dictionaries: [adjectives, animals, colors],
+                length: 1
+              }).toUpperCase()}`,
               type: COMPONENT_TYPE.SCENE,
               selected: false,
               parentId: item?.id
@@ -470,18 +423,21 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           }
 
           setTreeData(addItemToTree(treeData, item?.id as string, newScene))
-          setSelectedItemId(newScene.id as string)
+          setSelectedItem({ id: newScene.id as string, expand: true })
           break
         // add passage
         case COMPONENT_TYPE.SCENE:
           const newPassage: TreeItem = {
-            id: 'passage-4-id',
+            id: uuid(),
             children: [],
             isExpanded: false,
             hasChildren: false,
             isChildrenLoading: false,
             data: {
-              title: 'Passage 4',
+              title: `Passage ${uniqueNamesGenerator({
+                dictionaries: [adjectives, animals, colors],
+                length: 1
+              }).toUpperCase()}`,
               type: COMPONENT_TYPE.PASSAGE,
               selected: false,
               parentId: item?.id
@@ -489,7 +445,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           }
 
           setTreeData(addItemToTree(treeData, item?.id as string, newPassage))
-          setSelectedItemId(newPassage.id as string)
+          setSelectedItem({ id: newPassage.id as string, expand: true })
           break
         default:
           break
@@ -503,7 +459,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     const item = treeData?.items[componentId]
 
     if (treeData) {
-      setSelectedItemId(undefined)
+      setSelectedItem({ id: undefined, expand: false })
       setTreeData(removeItemFromTree(treeData, item?.id as string))
 
       logger.info(`removing component from tree id '${componentId}'`)
@@ -515,40 +471,48 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   }
 
   function onSelect(componentId: ComponentId | undefined) {
-    if (componentId && componentId === selectedItemId && treeData) {
+    if (componentId && componentId === selectedItem.id && treeData) {
       setTreeData(
         mutateTree(treeData, componentId, {
           isExpanded: !treeData.items[componentId].isExpanded
         })
       )
-    } else if (selectedItemId && selectedItemId !== componentId && treeData) {
+    } else if (selectedItem.id && selectedItem.id !== componentId && treeData) {
       setTreeData(
-        mutateTree(treeData, selectedItemId, {
-          data: { ...treeData.items[selectedItemId].data, selected: false }
+        mutateTree(treeData, selectedItem.id, {
+          data: { ...treeData.items[selectedItem.id].data, selected: false }
         })
       )
 
-      setSelectedItemId(componentId)
+      if (componentId)
+        setSelectedItem({
+          id: componentId,
+          expand: !treeData.items[componentId].isExpanded
+        })
 
       if (!componentId)
-        logger.info(`deselecting item in tree with id '${selectedItemId}'`)
-    } else if (componentId && !selectedItemId) {
-      setSelectedItemId(componentId)
+        logger.info(`deselecting item in tree with id '${selectedItem.id}'`)
+    } else if (componentId && !selectedItem.id) {
+      if (treeData)
+        setSelectedItem({
+          id: componentId,
+          expand: !treeData.items[componentId].isExpanded
+        })
     }
   }
 
   useEffect(() => {
-    if (selectedItemId && treeData) {
+    if (selectedItem.id && treeData) {
       setTreeData(
-        mutateTree(treeData, selectedItemId, {
-          isExpanded: !treeData.items[selectedItemId].isExpanded,
-          data: { ...treeData.items[selectedItemId].data, selected: true }
+        mutateTree(treeData, selectedItem.id, {
+          isExpanded: selectedItem.expand,
+          data: { ...treeData.items[selectedItem.id].data, selected: true }
         })
       )
 
-      logger.info(`selecting item in tree with id '${selectedItemId}'`)
+      logger.info(`selecting item in tree with id '${selectedItem.id}'`)
     }
-  }, [selectedItemId])
+  }, [selectedItem])
 
   useEffect(() => {
     console.log(treeData)
