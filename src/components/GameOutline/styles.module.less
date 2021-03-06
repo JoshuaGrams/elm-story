@@ -12,9 +12,19 @@
 
   .itemRow {
     font-size: 12px !important;
+    height: 24px;
+    line-height: 24px !important;
+
+    :global .ant-dropdown-trigger {
+      height: 100%;
+    }
 
     &:hover {
       background-color: hsl(0, 0%, 10%);
+
+      .itemIcon {
+        color: hsl(0, 0%, 80%);
+      }
 
       .badge {
         :global .ant-badge-count {
@@ -41,7 +51,7 @@
 
       &.component {
         margin-right: 8px;
-        color: hsl(182, 100%, 30%) !important;
+        color: hsl(182, 100%, 50%) !important;
 
         &.passage {
           margin-left: 28px;
