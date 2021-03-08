@@ -567,27 +567,51 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
   function onRename(
     componentId: ComponentId,
-    title: string,
+    title: string | undefined,
     complete: boolean
   ) {
     if (treeData) {
-      setTreeData(
-        complete
-          ? mutateTree(treeData, componentId, {
-              data: {
-                ...treeData.items[componentId].data,
-                title: title || treeData.items[componentId].data.title,
-                renaming: false
-              }
-            })
-          : mutateTree(treeData, componentId, {
-              data: { ...treeData.items[componentId].data, renaming: true }
-            })
-      )
+      if (complete) {
+        setTreeData(
+          complete
+            ? mutateTree(treeData, componentId, {
+                data: {
+                  ...treeData.items[componentId].data,
+                  title: title || treeData.items[componentId].data.title,
+                  renaming: false
+                }
+              })
+            : mutateTree(treeData, componentId, {
+                data: { ...treeData.items[componentId].data, renaming: true }
+              })
+        )
+      } else {
+        setTreeData(
+          mutateTree(treeData, componentId, {
+            data: { ...treeData.items[componentId].data, renaming: true }
+          })
+        )
+
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_RENAME,
+          renamingGameOutlineComponent: { id: componentId, renaming: true }
+        })
+      }
     }
   }
 
   function onSelect(componentId: ComponentId | undefined) {
+    if (treeData && editor.renamingGameOutlineComponent.id) {
+      treeData.items[
+        editor.renamingGameOutlineComponent.id
+      ].data.renaming = false
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_RENAME,
+        renamingGameOutlineComponent: { id: undefined, renaming: false }
+      })
+    }
+
     if (
       componentId &&
       componentId === editor.selectedGameOutlineComponent.id &&
@@ -607,6 +631,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
         mutateTree(treeData, editor.selectedGameOutlineComponent.id, {
           data: {
             ...treeData.items[editor.selectedGameOutlineComponent.id].data,
+            renaming: false,
             selected: false
           }
         })
@@ -665,6 +690,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       )
     }
   }, [editor.selectedGameOutlineComponent])
+
+  // TODO: can we disable renaming from another component?
 
   useEffect(() => {
     console.log(treeData)
