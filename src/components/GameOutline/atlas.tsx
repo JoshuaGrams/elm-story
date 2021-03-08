@@ -159,13 +159,14 @@ const ContextMenu: React.FC<{
     id: ComponentId
     type: COMPONENT_TYPE
     title: string
+    disabled: boolean
     onAdd: onAddItem
     onRemove: OnRemoveItem
     onRename: OnRenameItem
   }
 }> = ({
   children,
-  component: { id, type, title, onAdd, onRemove, onRename }
+  component: { id, type, title, disabled, onAdd, onRemove, onRename }
 }) => {
   const menuItems: React.ReactElement[] = []
 
@@ -218,16 +219,22 @@ const ContextMenu: React.FC<{
   }
 
   return (
-    <Dropdown
-      overlay={
-        <Menu onClick={(event) => event.domEvent.stopPropagation()}>
-          {menuItems.map((item) => item)}
-        </Menu>
-      }
-      trigger={['contextMenu']}
-    >
-      {children}
-    </Dropdown>
+    <>
+      {!disabled && (
+        <Dropdown
+          overlay={
+            <Menu onClick={(event) => event.domEvent.stopPropagation()}>
+              {menuItems.map((item) => item)}
+            </Menu>
+          }
+          trigger={['contextMenu']}
+        >
+          {children}
+        </Dropdown>
+      )}
+
+      {disabled && <>{children}</>}
+    </>
   )
 }
 
@@ -311,6 +318,7 @@ const renderComponentItem = ({
           id: item.id as string,
           title: componentTitle,
           type: componentType,
+          disabled: item.data.renaming || false,
           onAdd,
           onRemove,
           onRename: () => onRename(item.id as string, undefined, false)
