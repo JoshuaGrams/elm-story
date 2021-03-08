@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom'
 import { useSelectedGame } from '../../hooks'
 
 import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
+import { EditorContext } from '../../contexts/EditorContext'
 
 import { Button } from 'antd'
 import { LeftOutlined } from '@ant-design/icons'
@@ -13,6 +14,7 @@ const Editor: React.FC = () => {
   const history = useHistory()
 
   const { app } = useContext(AppContext)
+  const { editor } = useContext(EditorContext)
 
   const selectedGame =
     app.selectedStudioId && app.selectedGameId
@@ -31,6 +33,7 @@ const Editor: React.FC = () => {
             Dashboard
           </Button>
           <GameOutline studioId={app.selectedStudioId} game={selectedGame} />
+          <div>{editor.selectedGameOutlineComponent.id}</div>
         </>
       )}
     </>

@@ -3,24 +3,23 @@ import React, { createContext, useMemo, useReducer } from 'react'
 import { ComponentId } from '../data/types'
 
 interface EditorState {
-  selectedGameOutlineComponentId: ComponentId | undefined
-  expandedGameOutlineComponentIds: ComponentId[]
+  selectedGameOutlineComponent: {
+    id: ComponentId | undefined,
+    expanded: boolean
+  }
 }
 
 export enum EDITOR_ACTION_TYPE {
-  GAME_OUTLINE_SELECT = 'GAME_OUTLINE_SELECT',
-  GAME_OUTLINE_EXPAND = 'GAME_OUTLINE_EXPANDED'
+  GAME_OUTLINE_SELECT = 'GAME_OUTLINE_SELECT'
 }
 
-type EditorActionType =
-  | {
-      type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT
-      selectedComponentId: ComponentId
-    }
-  | {
-      type: EDITOR_ACTION_TYPE.GAME_OUTLINE_EXPAND
-      expandedComponentIds: ComponentId[]
-    }
+type EditorActionType = {
+  type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT
+  selectedGameOutlineComponent: {
+    id: ComponentId | undefined,
+    expanded: boolean
+  }
+}
 
 const editorReducer = (
   state: EditorState,
@@ -30,12 +29,7 @@ const editorReducer = (
     case EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT:
       return {
         ...state,
-        selectedGameOutlineComponentId: action.selectedComponentId
-      }
-    case EDITOR_ACTION_TYPE.GAME_OUTLINE_EXPAND:
-      return {
-        ...state,
-        expandedGameOutlineComponentIds: action.expandedComponentIds
+        selectedGameOutlineComponent: action.selectedGameOutlineComponent
       }
     default:
       return state
@@ -48,8 +42,10 @@ interface EditorContextType {
 }
 
 const defaultEditorState: EditorState = {
-  selectedGameOutlineComponentId: undefined,
-  expandedGameOutlineComponentIds: []
+  selectedGameOutlineComponent: {
+    id: undefined,
+    expanded: false
+  }
 }
 
 export const EditorContext = createContext<EditorContextType>({

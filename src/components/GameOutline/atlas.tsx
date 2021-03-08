@@ -1,9 +1,8 @@
-import React, { Component, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash'
 import logger from '../../lib/logger'
 
-// BUG: deleting is not working properly - check tree
-//
+import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 // TODO: remove for production use case
 import { v4 as uuid } from 'uuid'
@@ -336,13 +335,11 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   studioId,
   game
 }) => {
+  const { editor, editorDispatch } = useContext(EditorContext)
+
   const [treeData, setTreeData] = useState<TreeData | undefined>(
       defaultTreeData()
     ),
-    [selectedItem, setSelectedItem] = useState<{
-      id: string | undefined
-      expand: boolean
-    }>({ id: undefined, expand: false }),
     [movingComponentId, setMovingComponentId] = useState<string | undefined>(
       undefined
     )
@@ -388,18 +385,25 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       movingComponent.data.selected = true
 
       setTreeData(moveItemOnTree(treeData, source, destination))
-      setSelectedItem({
-        id: movingComponent.id as string,
-        expand: movingComponent.isExpanded || false
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+        selectedGameOutlineComponent: {
+          id: movingComponent.id as string,
+          expanded: movingComponent.isExpanded || false
+        }
       })
     } else if (movingComponent) {
       logger.info(
         `Unable to move component type '${movingComponent.data.type}' to type '${destinationParent.data.type}'`
       )
       movingComponent.isExpanded = false
-      setSelectedItem({
-        id: movingComponent.id as string,
-        expand: movingComponent.isExpanded
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+        selectedGameOutlineComponent: {
+          id: movingComponent.id as string,
+          expanded: movingComponent.isExpanded
+        }
       })
     }
   }
@@ -409,7 +413,10 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       data = item?.data
 
     if (treeData && item) {
-      if (selectedItem.id) treeData.items[selectedItem.id].data.selected = false
+      if (editor.selectedGameOutlineComponent.id)
+        treeData.items[
+          editor.selectedGameOutlineComponent.id
+        ].data.selected = false
 
       switch (data.type) {
         // add chapter
@@ -434,7 +441,14 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           item.hasChildren = true
 
           setTreeData(addItemToTree(treeData, item?.id as string, newChapter))
-          setSelectedItem({ id: newChapter.id as string, expand: true })
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+            selectedGameOutlineComponent: {
+              id: newChapter.id as string,
+              expanded: true
+            }
+          })
+
           break
         // add scene
         case COMPONENT_TYPE.CHAPTER:
@@ -458,7 +472,14 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           item.hasChildren = true
 
           setTreeData(addItemToTree(treeData, item?.id as string, newScene))
-          setSelectedItem({ id: newScene.id as string, expand: true })
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+            selectedGameOutlineComponent: {
+              id: newScene.id as string,
+              expanded: true
+            }
+          })
+
           break
         // add passage
         case COMPONENT_TYPE.SCENE:
@@ -482,7 +503,14 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           item.hasChildren = true
 
           setTreeData(addItemToTree(treeData, item?.id as string, newPassage))
-          setSelectedItem({ id: newPassage.id as string, expand: true })
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+            selectedGameOutlineComponent: {
+              id: newPassage.id as string,
+              expanded: true
+            }
+          })
+
           break
         default:
           break
@@ -496,7 +524,14 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     const item = treeData?.items[componentId]
 
     if (treeData) {
-      setSelectedItem({ id: undefined, expand: false })
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+        selectedGameOutlineComponent: {
+          id: undefined,
+          expanded: false
+        }
+      })
+
       setTreeData(removeItemFromTree(treeData, item?.id as string))
 
       logger.info(`removing component from tree id '${componentId}'`)
@@ -508,48 +543,83 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   }
 
   function onSelect(componentId: ComponentId | undefined) {
-    if (componentId && componentId === selectedItem.id && treeData) {
+    if (
+      componentId &&
+      componentId === editor.selectedGameOutlineComponent.id &&
+      treeData
+    ) {
       setTreeData(
         mutateTree(treeData, componentId, {
           isExpanded: !treeData.items[componentId].isExpanded
         })
       )
-    } else if (selectedItem.id && selectedItem.id !== componentId && treeData) {
+    } else if (
+      editor.selectedGameOutlineComponent.id &&
+      editor.selectedGameOutlineComponent.id !== componentId &&
+      treeData
+    ) {
       setTreeData(
-        mutateTree(treeData, selectedItem.id, {
-          data: { ...treeData.items[selectedItem.id].data, selected: false }
+        mutateTree(treeData, editor.selectedGameOutlineComponent.id, {
+          data: {
+            ...treeData.items[editor.selectedGameOutlineComponent.id].data,
+            selected: false
+          }
         })
       )
 
-      if (componentId)
-        setSelectedItem({
-          id: componentId,
-          expand: !treeData.items[componentId].isExpanded
+      if (componentId) {
+        // TODO: remove dupe?
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+          selectedGameOutlineComponent: {
+            id: componentId,
+            expanded: !treeData.items[componentId].isExpanded
+          }
         })
+      } else if (!componentId) {
+        logger.info(
+          `deselecting item in tree with id '${editor.selectedGameOutlineComponent.id}'`
+        )
 
-      if (!componentId)
-        logger.info(`deselecting item in tree with id '${selectedItem.id}'`)
-    } else if (componentId && !selectedItem.id) {
-      if (treeData)
-        setSelectedItem({
-          id: componentId,
-          expand: !treeData.items[componentId].isExpanded
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+          selectedGameOutlineComponent: {
+            id: undefined,
+            expanded: false
+          }
         })
+      }
+    } else if (componentId && !editor.selectedGameOutlineComponent.id) {
+      if (treeData) {
+        // TODO: remove dupe?
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+          selectedGameOutlineComponent: {
+            id: componentId,
+            expanded: !treeData.items[componentId].isExpanded
+          }
+        })
+      }
     }
   }
 
   useEffect(() => {
-    if (selectedItem.id && treeData) {
-      setTreeData(
-        mutateTree(treeData, selectedItem.id, {
-          isExpanded: selectedItem.expand,
-          data: { ...treeData.items[selectedItem.id].data, selected: true }
-        })
+    if (editor.selectedGameOutlineComponent.id && treeData) {
+      logger.info(
+        `selecting item in tree with id '${editor.selectedGameOutlineComponent.id}'`
       )
 
-      logger.info(`selecting item in tree with id '${selectedItem.id}'`)
+      setTreeData(
+        mutateTree(treeData, editor.selectedGameOutlineComponent.id, {
+          isExpanded: editor.selectedGameOutlineComponent.expanded,
+          data: {
+            ...treeData.items[editor.selectedGameOutlineComponent.id].data,
+            selected: true
+          }
+        })
+      )
     }
-  }, [selectedItem])
+  }, [editor.selectedGameOutlineComponent])
 
   useEffect(() => {
     console.log(treeData)
