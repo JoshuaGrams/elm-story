@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash'
 import logger from '../../lib/logger'
 
@@ -166,10 +166,18 @@ const ContextMenu: React.FC<{
   const menuItems: React.ReactElement[] = []
 
   switch (type) {
+    case COMPONENT_TYPE.GAME:
+      menuItems.push(
+        <Menu.Item key={`${id}-add`} onClick={() => onAdd(id)}>
+          Add Chapter to '{title}'
+        </Menu.Item>
+      )
+
+      break
     case COMPONENT_TYPE.CHAPTER:
       menuItems.push(
         <Menu.Item key={`${id}-add`} onClick={() => onAdd(id)}>
-          Add New Scene to '{title}'
+          Add Scene to '{title}'
         </Menu.Item>
       )
 
@@ -177,7 +185,7 @@ const ContextMenu: React.FC<{
     case COMPONENT_TYPE.SCENE:
       menuItems.push(
         <Menu.Item key={`${id}-add`} onClick={() => onAdd(id)}>
-          Add New Passage to '{title}'
+          Add Passage to '{title}'
         </Menu.Item>
       )
 
@@ -194,11 +202,12 @@ const ContextMenu: React.FC<{
     </Menu.Item>
   )
 
-  menuItems.push(
-    <Menu.Item key={`${id}-remove`} onClick={() => onRemove(id)}>
-      Remove '{title}'
-    </Menu.Item>
-  )
+  if (type !== COMPONENT_TYPE.GAME)
+    menuItems.push(
+      <Menu.Item key={`${id}-remove`} onClick={() => onRemove(id)}>
+        Remove '{title}'
+      </Menu.Item>
+    )
 
   return (
     <Dropdown
@@ -214,14 +223,17 @@ const ContextMenu: React.FC<{
   )
 }
 
-function getStyle(style: React.CSSProperties) {
+// lock vertical axis
+const getStyle = (style: React.CSSProperties) => {
   if (style?.transform) {
     const axisLockY = `translate(0px, ${style.transform.split(',').pop()}`
+
     return {
       ...style,
       transform: axisLockY
     }
   }
+
   return style
 }
 
@@ -396,12 +408,33 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     const item = treeData?.items[componentId],
       data = item?.data
 
-    if (treeData) {
+    if (treeData && item) {
       if (selectedItem.id) treeData.items[selectedItem.id].data.selected = false
 
       switch (data.type) {
         // add chapter
         case COMPONENT_TYPE.GAME:
+          const newChapter: TreeItem = {
+            id: uuid(),
+            children: [],
+            isExpanded: false,
+            hasChildren: false,
+            isChildrenLoading: false,
+            data: {
+              title: `Chapter ${uniqueNamesGenerator({
+                dictionaries: [adjectives, animals, colors],
+                length: 1
+              }).toUpperCase()}`,
+              type: COMPONENT_TYPE.CHAPTER,
+              selected: false,
+              parentId: item?.id
+            }
+          }
+
+          item.hasChildren = true
+
+          setTreeData(addItemToTree(treeData, item?.id as string, newChapter))
+          setSelectedItem({ id: newChapter.id as string, expand: true })
           break
         // add scene
         case COMPONENT_TYPE.CHAPTER:
@@ -421,6 +454,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               parentId: item?.id
             }
           }
+
+          item.hasChildren = true
 
           setTreeData(addItemToTree(treeData, item?.id as string, newScene))
           setSelectedItem({ id: newScene.id as string, expand: true })
@@ -443,6 +478,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               parentId: item?.id
             }
           }
+
+          item.hasChildren = true
 
           setTreeData(addItemToTree(treeData, item?.id as string, newPassage))
           setSelectedItem({ id: newPassage.id as string, expand: true })
@@ -522,27 +559,46 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     <>
       {game.id && treeData && (
         <div className={styles.gameOutline} onClick={() => onSelect(undefined)}>
-          <div>{game.title}</div>
+          <ContextMenu
+            component={{
+              id: 'game-id', // game.id as string,
+              title: game.title,
+              type: COMPONENT_TYPE.GAME,
+              onAdd,
+              onRemove,
+              onEdit
+            }}
+          >
+            <div className={styles.title}>{game.title}</div>
+          </ContextMenu>
           <div style={{ height: '500px', overflow: 'auto' }}>
-            <Tree
-              tree={treeData}
-              renderItem={(item: RenderItemParams) =>
-                renderComponentItem({
-                  item,
-                  onSelect,
-                  onAdd,
-                  onRemove,
-                  onEdit
-                })
-              }
-              onExpand={onExpand}
-              onCollapse={onCollapse}
-              onDragStart={onDragStart}
-              onDragEnd={onDragEnd}
-              offsetPerLevel={19}
-              isDragEnabled
-              isNestingEnabled
-            />
+            {treeData.items[treeData.rootId].hasChildren && (
+              <Tree
+                tree={treeData}
+                renderItem={(item: RenderItemParams) =>
+                  renderComponentItem({
+                    item,
+                    onSelect,
+                    onAdd,
+                    onRemove,
+                    onEdit
+                  })
+                }
+                onExpand={onExpand}
+                onCollapse={onCollapse}
+                onDragStart={onDragStart}
+                onDragEnd={onDragEnd}
+                offsetPerLevel={19}
+                isDragEnabled
+                isNestingEnabled
+              />
+            )}
+
+            {!treeData.items[treeData.rootId].hasChildren && (
+              <Button type="text" onClick={() => onAdd('game-id')}>
+                Add Chapter...
+              </Button>
+            )}
           </div>
         </div>
       )}

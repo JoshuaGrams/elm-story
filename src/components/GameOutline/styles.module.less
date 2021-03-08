@@ -1,8 +1,12 @@
 .gameOutline {
   width: 300px;
-  border-right: solid 1px #333;
+  border-right: solid 1px hsl(0, 0%, 20%);
 
-  cursor: pointer !important;
+  .title {
+    border-bottom: solid hsl(0, 0%, 20%) 1px;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
 
   div[data-react-beautiful-dnd-droppable] {
     * {
