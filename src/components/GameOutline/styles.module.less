@@ -2,6 +2,10 @@
   width: 300px;
   border-right: solid 1px hsl(0, 0%, 20%);
 
+  * {
+    font-size: 12px !important;
+  }
+
   .title {
     border-bottom: solid hsl(0, 0%, 20%) 1px;
     padding: 4px 8px;
@@ -15,12 +19,38 @@
   }
 
   .itemRow {
-    font-size: 12px !important;
     height: 24px;
     line-height: 24px !important;
+    position: relative;
 
     :global .ant-dropdown-trigger {
       height: 100%;
+    }
+
+    :global .ant-typography {
+      display: inline-block;
+      padding-left: 10px !important;
+      height: 24px !important;
+      position: absolute;
+      right: 0px;
+      left: 37px;
+      top: 0px;
+      bottom: 0px;
+
+      textarea {
+        min-height: 20px !important;
+        max-height: 20px !important;
+        top: 3px;
+        padding: 0px;
+        max-width: 100%;
+        color: white !important;
+        box-shadow: none !important;
+        border-radius: 0px !important;
+      }
+
+      :global .ant-typography-edit-content-confirm {
+        display: none;
+      }
     }
 
     &.dragging {
@@ -74,19 +104,6 @@
         min-width: 24px;
         border: none !important;
       }
-    }
-  }
-
-  .nodeRow {
-    position: absolute;
-    left: 30px;
-    top: 0px;
-    bottom: 0px;
-    right: 0px;
-
-    .addButton {
-      position: absolute;
-      right: 4px;
     }
   }
 }

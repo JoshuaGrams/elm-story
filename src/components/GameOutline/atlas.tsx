@@ -25,7 +25,7 @@ import Tree, {
   TreeItem
 } from '@atlaskit/tree'
 
-import { Badge, Button, Dropdown, Menu } from 'antd'
+import { Badge, Button, Dropdown, Menu, Typography } from 'antd'
 
 import {
   DownOutlined,
@@ -37,6 +37,8 @@ import {
 } from '@ant-design/icons'
 
 import styles from './styles.module.less'
+
+const { Text } = Typography
 
 const defaultTreeData = (): TreeData => ({
   rootId: 'game-id',
@@ -51,7 +53,8 @@ const defaultTreeData = (): TreeData => ({
         title: 'Pulp Fiction',
         type: COMPONENT_TYPE.GAME,
         selected: false,
-        parentId: undefined
+        parentId: undefined,
+        renaming: false
       }
     },
     'chapter-1-id': {
@@ -67,7 +70,8 @@ const defaultTreeData = (): TreeData => ({
         }).toUpperCase()}`,
         type: COMPONENT_TYPE.CHAPTER,
         selected: false,
-        parentId: 'game-id'
+        parentId: 'game-id',
+        renaming: false
       }
     },
     'chapter-2-id': {
@@ -83,7 +87,8 @@ const defaultTreeData = (): TreeData => ({
         }).toUpperCase()}`,
         type: COMPONENT_TYPE.CHAPTER,
         selected: false,
-        parentId: 'game-id'
+        parentId: 'game-id',
+        renaming: false
       }
     }
   }
@@ -156,11 +161,11 @@ const ContextMenu: React.FC<{
     title: string
     onAdd: onAddItem
     onRemove: OnRemoveItem
-    onEdit: OnEditItem
+    onRename: OnRenameItem
   }
 }> = ({
   children,
-  component: { id, type, title, onAdd, onRemove, onEdit }
+  component: { id, type, title, onAdd, onRemove, onRename }
 }) => {
   const menuItems: React.ReactElement[] = []
 
@@ -195,18 +200,22 @@ const ContextMenu: React.FC<{
       break
   }
 
-  menuItems.push(
-    <Menu.Item key={`${id}-edit`} onClick={() => onEdit(id)}>
-      Edit '{title}'
-    </Menu.Item>
-  )
+  if (type !== COMPONENT_TYPE.GAME) {
+    menuItems.push(
+      <Menu.Item
+        key={`${id}-rename`}
+        onClick={() => onRename(id, undefined, false)}
+      >
+        Rename '{title}'
+      </Menu.Item>
+    )
 
-  if (type !== COMPONENT_TYPE.GAME)
     menuItems.push(
       <Menu.Item key={`${id}-remove`} onClick={() => onRemove(id)}>
         Remove '{title}'
       </Menu.Item>
     )
+  }
 
   return (
     <Dropdown
@@ -236,18 +245,27 @@ const getStyle = (style: React.CSSProperties) => {
   return style
 }
 
+type OnSelectItem = (componentId: ComponentId) => void
+type onAddItem = (componentId: ComponentId) => void
+type OnRemoveItem = (componentId: ComponentId) => void
+type OnRenameItem = (
+  componentId: ComponentId,
+  title: string | undefined,
+  complete: boolean | false
+) => void
+
 const renderComponentItem = ({
   item: { item, provided, onExpand, onCollapse, snapshot },
   onSelect,
   onAdd,
   onRemove,
-  onEdit
+  onRename
 }: {
   item: RenderItemParams
   onSelect: OnSelectItem
   onAdd: onAddItem
   onRemove: OnRemoveItem
-  onEdit: OnEditItem
+  onRename: OnRenameItem
 }): React.ReactNode | undefined => {
   const componentType: COMPONENT_TYPE = item.data.type,
     componentTitle: string = item.data.title
@@ -283,7 +301,7 @@ const renderComponentItem = ({
       } ${snapshot.isDragging ? styles.dragging : ''}`}
       onClick={(event) => {
         event.stopPropagation()
-        onSelect(item.id as string)
+        if (!item.data.renaming) onSelect(item.id as string)
       }}
       onContextMenu={(event) => event.stopPropagation()}
       style={getStyle(provided.draggableProps.style)}
@@ -295,7 +313,7 @@ const renderComponentItem = ({
           type: componentType,
           onAdd,
           onRemove,
-          onEdit
+          onRename: () => onRename(item.id as string, undefined, false)
         }}
       >
         <div>
@@ -305,14 +323,25 @@ const renderComponentItem = ({
               size="small"
               onClick={(event) => {
                 event.stopPropagation()
-                item.isExpanded ? onCollapse(item.id) : onExpand(item.id)
+                if (!item.data.renaming)
+                  item.isExpanded ? onCollapse(item.id) : onExpand(item.id)
               }}
             >
               <ExpandedIcon />
             </Button>
           )}
           <ComponentIcon />
-          <span>{componentTitle}</span>{' '}
+          {item.data.renaming && (
+            <Text
+              editable={{
+                editing: item.data.renaming,
+                onChange: (title) => onRename(item.id as string, title, true)
+              }}
+            >
+              {componentTitle || `New ${componentType}`}
+            </Text>
+          )}
+          {!item.data.renaming && <span>{componentTitle}</span>}{' '}
           {!item.isExpanded && (
             <Badge
               count={item.children.length}
@@ -325,11 +354,6 @@ const renderComponentItem = ({
     </div>
   )
 }
-
-type OnSelectItem = (componentId: ComponentId) => void
-type onAddItem = (componentId: ComponentId) => void
-type OnRemoveItem = (componentId: ComponentId) => void
-type OnEditItem = (componentId: ComponentId) => void
 
 const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   studioId,
@@ -434,7 +458,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               }).toUpperCase()}`,
               type: COMPONENT_TYPE.CHAPTER,
               selected: false,
-              parentId: item?.id
+              parentId: item?.id,
+              renaming: true
             }
           }
 
@@ -465,7 +490,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               }).toUpperCase()}`,
               type: COMPONENT_TYPE.SCENE,
               selected: false,
-              parentId: item?.id
+              parentId: item?.id,
+              renaming: true
             }
           }
 
@@ -496,7 +522,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               }).toUpperCase()}`,
               type: COMPONENT_TYPE.PASSAGE,
               selected: false,
-              parentId: item?.id
+              parentId: item?.id,
+              renaming: true
             }
           }
 
@@ -538,8 +565,26 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   }
 
-  function onEdit(componentId: ComponentId) {
-    logger.info(`editing component in tree with id '${componentId}'`)
+  function onRename(
+    componentId: ComponentId,
+    title: string,
+    complete: boolean
+  ) {
+    if (treeData) {
+      setTreeData(
+        complete
+          ? mutateTree(treeData, componentId, {
+              data: {
+                ...treeData.items[componentId].data,
+                title: title || treeData.items[componentId].data.title,
+                renaming: false
+              }
+            })
+          : mutateTree(treeData, componentId, {
+              data: { ...treeData.items[componentId].data, renaming: true }
+            })
+      )
+    }
   }
 
   function onSelect(componentId: ComponentId | undefined) {
@@ -636,7 +681,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               type: COMPONENT_TYPE.GAME,
               onAdd,
               onRemove,
-              onEdit
+              onRename
             }}
           >
             <div className={styles.title}>{game.title}</div>
@@ -651,7 +696,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                     onSelect,
                     onAdd,
                     onRemove,
-                    onEdit
+                    onRename
                   })
                 }
                 onExpand={onExpand}
