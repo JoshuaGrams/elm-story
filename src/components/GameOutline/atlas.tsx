@@ -162,11 +162,11 @@ const ContextMenu: React.FC<{
     disabled: boolean
     onAdd: onAddItem
     onRemove: OnRemoveItem
-    onRename: OnRenameItem
+    onEditName: OnEditName
   }
 }> = ({
   children,
-  component: { id, type, title, disabled, onAdd, onRemove, onRename }
+  component: { id, type, title, disabled, onAdd, onRemove, onEditName }
 }) => {
   const menuItems: React.ReactElement[] = []
 
@@ -205,7 +205,7 @@ const ContextMenu: React.FC<{
     menuItems.push(
       <Menu.Item
         key={`${id}-rename`}
-        onClick={() => onRename(id, undefined, false)}
+        onClick={() => onEditName(id, undefined, false)}
       >
         Rename '{title}'
       </Menu.Item>
@@ -255,7 +255,7 @@ const getStyle = (style: React.CSSProperties) => {
 type OnSelectItem = (componentId: ComponentId) => void
 type onAddItem = (componentId: ComponentId) => void
 type OnRemoveItem = (componentId: ComponentId) => void
-type OnRenameItem = (
+type OnEditName = (
   componentId: ComponentId,
   title: string | undefined,
   complete: boolean | false
@@ -266,13 +266,13 @@ const renderComponentItem = ({
   onSelect,
   onAdd,
   onRemove,
-  onRename
+  onEditName
 }: {
   item: RenderItemParams
   onSelect: OnSelectItem
   onAdd: onAddItem
   onRemove: OnRemoveItem
-  onRename: OnRenameItem
+  onEditName: OnEditName
 }): React.ReactNode | undefined => {
   const componentType: COMPONENT_TYPE = item.data.type,
     componentTitle: string = item.data.title
@@ -321,7 +321,7 @@ const renderComponentItem = ({
           disabled: item.data.renaming || false,
           onAdd,
           onRemove,
-          onRename: () => onRename(item.id as string, undefined, false)
+          onEditName: () => onEditName(item.id as string, undefined, false)
         }}
       >
         <div>
@@ -343,14 +343,14 @@ const renderComponentItem = ({
             <Text
               editable={{
                 editing: item.data.renaming,
-                onChange: (title) => onRename(item.id as string, title, true)
+                onChange: (title) => onEditName(item.id as string, title, true)
               }}
             >
               {componentTitle || `New ${componentType}`}
             </Text>
           )}
           {!item.data.renaming && <span>{componentTitle}</span>}{' '}
-          {!item.isExpanded && (
+          {!item.isExpanded && !item.data.renaming && (
             <Badge
               count={item.children.length}
               size="small"
@@ -387,6 +387,29 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   }
 
   function onDragStart(itemId: React.ReactText) {
+    if (treeData && editor.renamingGameOutlineComponent.id) {
+      if (editor.selectedGameOutlineComponent.id) {
+        treeData.items[
+          editor.selectedGameOutlineComponent.id
+        ].data.selected = false
+      }
+
+      setTreeData(
+        mutateTree(treeData, editor.renamingGameOutlineComponent.id, {
+          data: {
+            ...treeData.items[editor.renamingGameOutlineComponent.id].data,
+            selected: false,
+            renaming: false
+          }
+        })
+      )
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_RENAME,
+        renamingGameOutlineComponent: { id: undefined, renaming: false }
+      })
+    }
+
     setMovingComponentId(itemId as string)
   }
 
@@ -573,7 +596,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   }
 
-  function onRename(
+  function onEditName(
     componentId: ComponentId,
     title: string | undefined,
     complete: boolean
@@ -714,9 +737,10 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               id: 'game-id', // game.id as string,
               title: game.title,
               type: COMPONENT_TYPE.GAME,
+              disabled: false,
               onAdd,
               onRemove,
-              onRename
+              onEditName
             }}
           >
             <div className={styles.title}>{game.title}</div>
@@ -731,7 +755,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                     onSelect,
                     onAdd,
                     onRemove,
-                    onRename
+                    onEditName
                   })
                 }
                 onExpand={onExpand}
