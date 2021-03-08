@@ -6,7 +6,7 @@
     font-size: 12px !important;
   }
 
-  .title {
+  .gameTitle {
     border-bottom: solid hsl(0, 0%, 20%) 1px;
     padding: 4px 8px;
     cursor: pointer;
@@ -33,7 +33,7 @@
       height: 24px !important;
       position: absolute;
       right: 0px;
-      left: 37px;
+      left: 38px;
       top: 0px;
       bottom: 0px;
 
@@ -41,6 +41,7 @@
         min-height: 20px !important;
         max-height: 20px !important;
         top: 3px;
+        left: -1px;
         padding: 0px;
         max-width: 100%;
         color: white !important;
@@ -98,6 +99,10 @@
     }
 
     .badge {
+      position: absolute;
+      right: 6px;
+      top: 5px;
+
       :global .ant-badge-count {
         background: hsl(0, 0%, 10%) !important;
         font-size: 10px;

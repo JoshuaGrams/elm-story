@@ -349,7 +349,7 @@ const renderComponentItem = ({
               {componentTitle || `New ${componentType}`}
             </Text>
           )}
-          {!item.data.renaming && <span>{componentTitle}</span>}{' '}
+          {!item.data.renaming && <Text ellipsis>{componentTitle}</Text>}{' '}
           {!item.isExpanded && !item.data.renaming && (
             <Badge
               count={item.children.length}
@@ -743,7 +743,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               onEditName
             }}
           >
-            <div className={styles.title}>{game.title}</div>
+            <div className={styles.gameTitle}>{game.title}</div>
           </ContextMenu>
           <div style={{ height: '500px', overflow: 'auto' }}>
             {treeData.items[treeData.rootId].hasChildren && (
