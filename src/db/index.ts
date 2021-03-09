@@ -311,8 +311,42 @@ export class LibraryDatabase extends Dexie {
 
   public async removeChapter(chapterId: ComponentId) {
     try {
+      const scenes = await this.scenes.where({ chapterId }).toArray()
+
+      if (scenes.length > 0) {
+        logger.info(
+          `Removing ${scenes.length} scene(s) from chapter with ID: ${chapterId}`
+        )
+      }
+
+      await Promise.all(
+        scenes.map(async (scene) => {
+          if (scene.id) {
+            const passages = await this.passages
+              .where({ sceneId: scene.id })
+              .toArray()
+
+            if (passages.length > 0) {
+              logger.info(
+                `Removing ${passages.length} passage(s) from scene with ID: ${scene.id}`
+              )
+            }
+
+            passages.map(async (passage) => {
+              if (passage.id) {
+                await this.passages.delete(passage.id)
+              }
+            })
+
+            await this.scenes.delete(scene.id)
+          }
+        })
+      )
+
       await this.transaction('rw', this.chapters, async () => {
         if (await this.getComponent(LIBRARY_TABLE.CHAPTERS, chapterId)) {
+          logger.info(`Removing chapter with ID: ${chapterId}`)
+
           await this.chapters.delete(chapterId)
         } else {
           throw new Error(
@@ -360,8 +394,26 @@ export class LibraryDatabase extends Dexie {
 
   public async removeScene(sceneId: ComponentId) {
     try {
+      const passages = await this.passages.where({ sceneId }).toArray()
+
+      if (passages.length > 0) {
+        logger.info(
+          `Removing ${passages.length} passage(s) from scene with ID: ${sceneId}`
+        )
+      }
+
+      await Promise.all(
+        passages.map(async (passage) => {
+          if (passage.id) {
+            await this.passages.delete(passage.id)
+          }
+        })
+      )
+
       await this.transaction('rw', this.scenes, async () => {
         if (await this.getComponent(LIBRARY_TABLE.SCENES, sceneId)) {
+          logger.info(`Removing scene with ID: ${sceneId}`)
+
           await this.scenes.delete(sceneId)
         } else {
           throw new Error(
@@ -411,6 +463,8 @@ export class LibraryDatabase extends Dexie {
     try {
       await this.transaction('rw', this.passages, async () => {
         if (await this.getComponent(LIBRARY_TABLE.PASSAGES, passageId)) {
+          logger.info(`Removing passage with ID: ${passageId}`)
+
           await this.passages.delete(passageId)
         } else {
           throw new Error(

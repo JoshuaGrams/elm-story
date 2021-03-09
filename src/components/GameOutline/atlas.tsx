@@ -42,60 +42,6 @@ import api from '../../api'
 
 const { Text } = Typography
 
-const defaultTreeData = (): TreeData => ({
-  rootId: 'game-id',
-  items: {
-    'game-id': {
-      id: 'game-id',
-      children: ['chapter-1-id', 'chapter-2-id'],
-      hasChildren: true,
-      isExpanded: true,
-      isChildrenLoading: false,
-      data: {
-        title: 'Pulp Fiction',
-        type: COMPONENT_TYPE.GAME,
-        selected: false,
-        parentId: undefined,
-        renaming: false
-      }
-    },
-    'chapter-1-id': {
-      id: 'chapter-1-id',
-      children: [],
-      hasChildren: false,
-      isExpanded: true,
-      isChildrenLoading: false,
-      data: {
-        title: `Chapter ${uniqueNamesGenerator({
-          dictionaries: [adjectives, animals, colors],
-          length: 1
-        }).toUpperCase()}`,
-        type: COMPONENT_TYPE.CHAPTER,
-        selected: false,
-        parentId: 'game-id',
-        renaming: false
-      }
-    },
-    'chapter-2-id': {
-      id: 'chapter-2-id',
-      children: [],
-      hasChildren: false,
-      isExpanded: true,
-      isChildrenLoading: false,
-      data: {
-        title: `Chapter ${uniqueNamesGenerator({
-          dictionaries: [adjectives, animals, colors],
-          length: 1
-        }).toUpperCase()}`,
-        type: COMPONENT_TYPE.CHAPTER,
-        selected: false,
-        parentId: 'game-id',
-        renaming: false
-      }
-    }
-  }
-})
-
 const addItemToTree = (
   treeData: TreeData,
   parentId: ComponentId,
@@ -476,11 +422,17 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       switch (data.type) {
         // add chapter
         case COMPONENT_TYPE.GAME:
-          const chapterId = await api().chapters.saveChapter(studioId, {
-            gameId: game.id,
-            title: 'Untitled Chapter',
-            tags: []
-          })
+          let chapterId = undefined
+
+          try {
+            chapterId = await api().chapters.saveChapter(studioId, {
+              gameId: game.id,
+              title: 'Untitled Chapter',
+              tags: []
+            })
+          } catch (error) {
+            throw error
+          }
 
           item.hasChildren = true
 
@@ -512,12 +464,18 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           break
         // add scene
         case COMPONENT_TYPE.CHAPTER:
-          const sceneId = await api().scenes.saveScene(studioId, {
-            gameId: game.id,
-            chapterId: item.id as string,
-            title: 'Untitled Scene',
-            tags: []
-          })
+          let sceneId = undefined
+
+          try {
+            sceneId = await api().scenes.saveScene(studioId, {
+              gameId: game.id,
+              chapterId: item.id as string,
+              title: 'Untitled Scene',
+              tags: []
+            })
+          } catch (error) {
+            throw new Error(error)
+          }
 
           item.hasChildren = true
 
@@ -549,13 +507,19 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           break
         // add passage
         case COMPONENT_TYPE.SCENE:
-          const passageId = await api().passages.savePassage(studioId, {
-            gameId: game.id,
-            sceneId: item.id as string,
-            title: 'Untitled Passage',
-            content: '',
-            tags: []
-          })
+          let passageId = undefined
+
+          try {
+            passageId = await api().passages.savePassage(studioId, {
+              gameId: game.id,
+              sceneId: item.id as string,
+              title: 'Untitled Passage',
+              content: '',
+              tags: []
+            })
+          } catch (error) {
+            throw new Error(error)
+          }
 
           item.hasChildren = true
 
@@ -593,10 +557,29 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   }
 
-  function onRemove(componentId: ComponentId) {
-    const item = treeData?.items[componentId]
+  async function onRemove(componentId: ComponentId) {
+    const item = treeData?.items[componentId],
+      data = item?.data
 
     if (treeData) {
+      try {
+        switch (data.type) {
+          case COMPONENT_TYPE.CHAPTER:
+            await api().chapters.removeChapter(studioId, item?.id as string)
+            break
+          case COMPONENT_TYPE.SCENE:
+            await api().scenes.removeScene(studioId, item?.id as string)
+            break
+          case COMPONENT_TYPE.PASSAGE:
+            await api().passages.removePassage(studioId, item?.id as string)
+            break
+          default:
+            break
+        }
+      } catch (error) {
+        throw new Error(error)
+      }
+
       editorDispatch({
         type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
         selectedGameOutlineComponent: {
