@@ -54,7 +54,10 @@ export class AppDatabase extends Dexie {
     this.editors = this.table(APP_TABLE.EDITORS)
   }
 
-  public async docExists(table: APP_TABLE, id: ComponentId): Promise<boolean> {
+  public async getComponent(
+    table: APP_TABLE,
+    id: ComponentId
+  ): Promise<boolean> {
     let exists = false
 
     try {
@@ -86,7 +89,7 @@ export class AppDatabase extends Dexie {
     try {
       await this.transaction('rw', this.studios, async () => {
         if (studio.id) {
-          if (await this.docExists(APP_TABLE.STUDIOS, studio.id)) {
+          if (await this.getComponent(APP_TABLE.STUDIOS, studio.id)) {
             await this.studios.update(studio.id, studio)
           } else {
             await this.studios.add(studio)
@@ -109,7 +112,7 @@ export class AppDatabase extends Dexie {
   public async removeStudio(studioId: StudioId) {
     try {
       await this.transaction('rw', this.studios, async () => {
-        if (await this.docExists(APP_TABLE.STUDIOS, studioId)) {
+        if (await this.getComponent(APP_TABLE.STUDIOS, studioId)) {
           await this.studios.delete(studioId)
         } else {
           throw new Error(
@@ -159,19 +162,48 @@ export class LibraryDatabase extends Dexie {
     this.variables = this.table(LIBRARY_TABLE.VARIABLES)
   }
 
-  public async docExists(
-    table: LIBRARY_TABLE,
-    id: ComponentId
-  ): Promise<boolean> {
-    let exists = false
+  public async getComponent(table: LIBRARY_TABLE, id: ComponentId) {
+    let component = undefined
 
     try {
-      exists = (await this[table].where({ id }).first()) ? true : false
+      component = (await this[table].where({ id }).first()) || undefined
     } catch (error) {
       throw new Error(error)
     }
 
-    return exists
+    return component
+  }
+
+  public async getComponentsByGameId(gameId: GameId, table: LIBRARY_TABLE) {
+    try {
+      return await this[table].where({ gameId }).toArray()
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async saveComponentTitle(
+    componentId: ComponentId,
+    table: LIBRARY_TABLE,
+    title: string
+  ) {
+    try {
+      await this.transaction('rw', this[table], async () => {
+        if (componentId) {
+          const component = await this.getComponent(table, componentId)
+
+          if (component) {
+            await this[table].update(componentId, { ...component, title })
+          } else {
+            throw new Error('Unable to rename component. Component missing.')
+          }
+        } else {
+          throw new Error('Unable to rename component. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 
   public async getGame(gameId: GameId): Promise<Game> {
@@ -197,7 +229,7 @@ export class LibraryDatabase extends Dexie {
     try {
       await this.transaction('rw', this.games, async () => {
         if (game.id) {
-          if (await this.docExists(LIBRARY_TABLE.GAMES, game.id)) {
+          if (await this.getComponent(LIBRARY_TABLE.GAMES, game.id)) {
             await this.games.update(game.id, game)
           } else {
             await this.games.add(game)
@@ -239,7 +271,7 @@ export class LibraryDatabase extends Dexie {
       ])
 
       await this.transaction('rw', this.games, async () => {
-        if (await this.docExists(LIBRARY_TABLE.GAMES, gameId)) {
+        if (await this.getComponent(LIBRARY_TABLE.GAMES, gameId)) {
           await this.games.delete(gameId)
         } else {
           throw new Error(
@@ -261,7 +293,7 @@ export class LibraryDatabase extends Dexie {
     try {
       await this.transaction('rw', this.chapters, async () => {
         if (chapter.id) {
-          if (await this.docExists(LIBRARY_TABLE.CHAPTERS, chapter.id)) {
+          if (await this.getComponent(LIBRARY_TABLE.CHAPTERS, chapter.id)) {
             await this.chapters.update(chapter.id, chapter)
           } else {
             await this.chapters.add(chapter)
@@ -280,7 +312,7 @@ export class LibraryDatabase extends Dexie {
   public async removeChapter(chapterId: ComponentId) {
     try {
       await this.transaction('rw', this.chapters, async () => {
-        if (await this.docExists(LIBRARY_TABLE.CHAPTERS, chapterId)) {
+        if (await this.getComponent(LIBRARY_TABLE.CHAPTERS, chapterId)) {
           await this.chapters.delete(chapterId)
         } else {
           throw new Error(
@@ -288,6 +320,14 @@ export class LibraryDatabase extends Dexie {
           )
         }
       })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getChaptersByGameId(gameId: GameId): Promise<Chapter[]> {
+    try {
+      return await this.chapters.where({ gameId }).toArray()
     } catch (error) {
       throw new Error(error)
     }
@@ -302,7 +342,7 @@ export class LibraryDatabase extends Dexie {
     try {
       await this.transaction('rw', this.scenes, async () => {
         if (scene.id) {
-          if (await this.docExists(LIBRARY_TABLE.SCENES, scene.id)) {
+          if (await this.getComponent(LIBRARY_TABLE.SCENES, scene.id)) {
             await this.scenes.update(scene.id, scene)
           } else {
             await this.scenes.add(scene)
@@ -321,7 +361,7 @@ export class LibraryDatabase extends Dexie {
   public async removeScene(sceneId: ComponentId) {
     try {
       await this.transaction('rw', this.scenes, async () => {
-        if (await this.docExists(LIBRARY_TABLE.SCENES, sceneId)) {
+        if (await this.getComponent(LIBRARY_TABLE.SCENES, sceneId)) {
           await this.scenes.delete(sceneId)
         } else {
           throw new Error(
@@ -329,6 +369,14 @@ export class LibraryDatabase extends Dexie {
           )
         }
       })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getScenesByGameId(gameId: GameId): Promise<Scene[]> {
+    try {
+      return await this.scenes.where({ gameId }).toArray()
     } catch (error) {
       throw new Error(error)
     }
@@ -343,7 +391,7 @@ export class LibraryDatabase extends Dexie {
     try {
       await this.transaction('rw', this.passages, async () => {
         if (passage.id) {
-          if (await this.docExists(LIBRARY_TABLE.PASSAGES, passage.id)) {
+          if (await this.getComponent(LIBRARY_TABLE.PASSAGES, passage.id)) {
             await this.passages.update(passage.id, passage)
           } else {
             await this.passages.add(passage)
@@ -362,7 +410,7 @@ export class LibraryDatabase extends Dexie {
   public async removePassage(passageId: ComponentId) {
     try {
       await this.transaction('rw', this.passages, async () => {
-        if (await this.docExists(LIBRARY_TABLE.PASSAGES, passageId)) {
+        if (await this.getComponent(LIBRARY_TABLE.PASSAGES, passageId)) {
           await this.passages.delete(passageId)
         } else {
           throw new Error(
@@ -370,6 +418,14 @@ export class LibraryDatabase extends Dexie {
           )
         }
       })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getPassagesByGameId(gameId: GameId): Promise<Passage[]> {
+    try {
+      return await this.passages.where({ gameId }).toArray()
     } catch (error) {
       throw new Error(error)
     }

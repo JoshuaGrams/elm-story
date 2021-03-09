@@ -1,7 +1,7 @@
-import { LibraryDatabase } from '../db'
+import { LibraryDatabase, LIBRARY_TABLE } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { Passage, ComponentId, StudioId } from '../data/types'
+import { Passage, ComponentId, StudioId, GameId } from '../data/types'
 
 export async function savePassage(
   studioId: StudioId,
@@ -24,6 +24,33 @@ export async function removePassage(
 ) {
   try {
     await new LibraryDatabase(studioId).removePassage(passageId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function getPassagesByGameId(
+  studioId: StudioId,
+  gameId: GameId
+): Promise<Passage[]> {
+  try {
+    return await new LibraryDatabase(studioId).getPassagesByGameId(gameId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function savePassageTitle(
+  studioId: StudioId,
+  passageId: ComponentId,
+  title: string
+) {
+  try {
+    return await new LibraryDatabase(studioId).saveComponentTitle(
+      passageId,
+      LIBRARY_TABLE.PASSAGES,
+      title
+    )
   } catch (error) {
     throw new Error(error)
   }

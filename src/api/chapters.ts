@@ -1,7 +1,7 @@
-import { LibraryDatabase } from '../db'
+import { LibraryDatabase, LIBRARY_TABLE } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { Chapter, ComponentId, StudioId } from '../data/types'
+import { Chapter, ComponentId, GameId, StudioId } from '../data/types'
 
 export async function saveChapter(
   studioId: StudioId,
@@ -24,6 +24,33 @@ export async function removeChapter(
 ) {
   try {
     await new LibraryDatabase(studioId).removeChapter(chapterId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function getChaptersByGameId(
+  studioId: StudioId,
+  gameId: GameId
+): Promise<Chapter[]> {
+  try {
+    return await new LibraryDatabase(studioId).getChaptersByGameId(gameId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function saveChapterTitle(
+  studioId: StudioId,
+  chapterId: ComponentId,
+  title: string
+) {
+  try {
+    return await new LibraryDatabase(studioId).saveComponentTitle(
+      chapterId,
+      LIBRARY_TABLE.CHAPTERS,
+      title
+    )
   } catch (error) {
     throw new Error(error)
   }

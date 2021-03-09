@@ -2,10 +2,11 @@ import React, { useContext, useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash'
 import logger from '../../lib/logger'
 
+import createGameOutlineTreeData from '../../lib/createGameOutlineTreeData'
+
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 // TODO: remove for production use case
-import { v4 as uuid } from 'uuid'
 import {
   uniqueNamesGenerator,
   adjectives,
@@ -37,6 +38,7 @@ import {
 } from '@ant-design/icons'
 
 import styles from './styles.module.less'
+import api from '../../api'
 
 const { Text } = Typography
 
@@ -369,9 +371,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 }) => {
   const { editor, editorDispatch } = useContext(EditorContext)
 
-  const [treeData, setTreeData] = useState<TreeData | undefined>(
-      defaultTreeData()
-    ),
+  const [treeData, setTreeData] = useState<TreeData | undefined>(undefined),
     [movingComponentId, setMovingComponentId] = useState<string | undefined>(
       undefined
     )
@@ -463,11 +463,11 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   }
 
-  function onAdd(componentId: ComponentId) {
+  async function onAdd(componentId: ComponentId) {
     const item = treeData?.items[componentId],
       data = item?.data
 
-    if (treeData && item) {
+    if (treeData && item && game.id) {
       if (editor.selectedGameOutlineComponent.id)
         treeData.items[
           editor.selectedGameOutlineComponent.id
@@ -476,31 +476,35 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       switch (data.type) {
         // add chapter
         case COMPONENT_TYPE.GAME:
-          const newChapter: TreeItem = {
-            id: uuid(),
-            children: [],
-            isExpanded: false,
-            hasChildren: false,
-            isChildrenLoading: false,
-            data: {
-              title: `Chapter ${uniqueNamesGenerator({
-                dictionaries: [adjectives, animals, colors],
-                length: 1
-              }).toUpperCase()}`,
-              type: COMPONENT_TYPE.CHAPTER,
-              selected: false,
-              parentId: item?.id,
-              renaming: true
-            }
-          }
+          const chapterId = await api().chapters.saveChapter(studioId, {
+            gameId: game.id,
+            title: 'Untitled Chapter',
+            tags: []
+          })
 
           item.hasChildren = true
 
-          setTreeData(addItemToTree(treeData, item?.id as string, newChapter))
+          setTreeData(
+            addItemToTree(treeData, item.id as string, {
+              id: chapterId,
+              children: [],
+              isExpanded: false,
+              hasChildren: false,
+              isChildrenLoading: false,
+              data: {
+                title: 'Untitled Chapter',
+                type: COMPONENT_TYPE.CHAPTER,
+                selected: false,
+                parentId: item.id,
+                renaming: true
+              }
+            })
+          )
+
           editorDispatch({
             type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
             selectedGameOutlineComponent: {
-              id: newChapter.id as string,
+              id: chapterId,
               expanded: true
             }
           })
@@ -508,31 +512,36 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           break
         // add scene
         case COMPONENT_TYPE.CHAPTER:
-          const newScene: TreeItem = {
-            id: uuid(),
-            children: [],
-            isExpanded: false,
-            hasChildren: false,
-            isChildrenLoading: false,
-            data: {
-              title: `Scene ${uniqueNamesGenerator({
-                dictionaries: [adjectives, animals, colors],
-                length: 1
-              }).toUpperCase()}`,
-              type: COMPONENT_TYPE.SCENE,
-              selected: false,
-              parentId: item?.id,
-              renaming: true
-            }
-          }
+          const sceneId = await api().scenes.saveScene(studioId, {
+            gameId: game.id,
+            chapterId: item.id as string,
+            title: 'Untitled Scene',
+            tags: []
+          })
 
           item.hasChildren = true
 
-          setTreeData(addItemToTree(treeData, item?.id as string, newScene))
+          setTreeData(
+            addItemToTree(treeData, item.id as string, {
+              id: sceneId,
+              children: [],
+              isExpanded: false,
+              hasChildren: false,
+              isChildrenLoading: false,
+              data: {
+                title: 'Untitled Scene',
+                type: COMPONENT_TYPE.SCENE,
+                selected: false,
+                parentId: item.id,
+                renaming: true
+              }
+            })
+          )
+
           editorDispatch({
             type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
             selectedGameOutlineComponent: {
-              id: newScene.id as string,
+              id: sceneId,
               expanded: true
             }
           })
@@ -540,31 +549,37 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           break
         // add passage
         case COMPONENT_TYPE.SCENE:
-          const newPassage: TreeItem = {
-            id: uuid(),
-            children: [],
-            isExpanded: false,
-            hasChildren: false,
-            isChildrenLoading: false,
-            data: {
-              title: `Passage ${uniqueNamesGenerator({
-                dictionaries: [adjectives, animals, colors],
-                length: 1
-              }).toUpperCase()}`,
-              type: COMPONENT_TYPE.PASSAGE,
-              selected: false,
-              parentId: item?.id,
-              renaming: true
-            }
-          }
+          const passageId = await api().passages.savePassage(studioId, {
+            gameId: game.id,
+            sceneId: item.id as string,
+            title: 'Untitled Passage',
+            content: '',
+            tags: []
+          })
 
           item.hasChildren = true
 
-          setTreeData(addItemToTree(treeData, item?.id as string, newPassage))
+          setTreeData(
+            addItemToTree(treeData, item.id as string, {
+              id: passageId,
+              children: [],
+              isExpanded: false,
+              hasChildren: false,
+              isChildrenLoading: false,
+              data: {
+                title: 'Untitled Passage',
+                type: COMPONENT_TYPE.PASSAGE,
+                selected: false,
+                parentId: item.id,
+                renaming: true
+              }
+            })
+          )
+
           editorDispatch({
             type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
             selectedGameOutlineComponent: {
-              id: newPassage.id as string,
+              id: passageId,
               expanded: true
             }
           })
@@ -596,13 +611,27 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   }
 
-  function onEditName(
+  async function onEditName(
     componentId: ComponentId,
     title: string | undefined,
     complete: boolean
   ) {
     if (treeData) {
-      if (complete) {
+      if (complete && title) {
+        switch (treeData.items[componentId].data.type) {
+          case COMPONENT_TYPE.CHAPTER:
+            await api().chapters.saveChapterTitle(studioId, componentId, title)
+            break
+          case COMPONENT_TYPE.SCENE:
+            await api().scenes.saveSceneTitle(studioId, componentId, title)
+            break
+          case COMPONENT_TYPE.PASSAGE:
+            await api().passages.savePassageTitle(studioId, componentId, title)
+            break
+          default:
+            break
+        }
+
         setTreeData(
           complete
             ? mutateTree(treeData, componentId, {
@@ -728,13 +757,34 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     console.log(treeData)
   }, [treeData])
 
+  useEffect(() => {
+    async function getGameComponents() {
+      if (game.id) {
+        const chapters = await api().chapters.getChaptersByGameId(
+            studioId,
+            game.id
+          ),
+          scenes = await api().scenes.getScenesByGameId(studioId, game.id),
+          passages = await api().passages.getPassagesByGameId(studioId, game.id)
+
+        if (chapters && scenes && passages) {
+          setTreeData(
+            createGameOutlineTreeData(game, chapters, scenes, passages)
+          )
+        }
+      }
+    }
+
+    getGameComponents()
+  }, [])
+
   return (
     <>
       {game.id && treeData && (
         <div className={styles.gameOutline} onClick={() => onSelect(undefined)}>
           <ContextMenu
             component={{
-              id: 'game-id', // game.id as string,
+              id: game.id,
               title: game.title,
               type: COMPONENT_TYPE.GAME,
               disabled: false,
@@ -769,7 +819,12 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             )}
 
             {!treeData.items[treeData.rootId].hasChildren && (
-              <Button type="text" onClick={() => onAdd('game-id')}>
+              <Button
+                type="text"
+                onClick={() => {
+                  if (game.id) onAdd(game.id)
+                }}
+              >
                 Add Chapter...
               </Button>
             )}
