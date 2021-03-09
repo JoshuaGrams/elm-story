@@ -66,15 +66,18 @@ export interface Game extends Component {
   director: string
   version: string
   engine: string
+  chapters: ComponentId[]
 }
 
 export interface Chapter extends Component {
   gameId: GameId
+  scenes: ComponentId[]
 }
 
 export interface Scene extends Component {
   gameId: GameId
   chapterId: ComponentId
+  passages: ComponentId[]
 }
 
 export interface Passage extends Component {

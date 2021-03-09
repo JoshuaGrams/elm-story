@@ -8,7 +8,8 @@ import { EditorContext } from '../../contexts/EditorContext'
 
 import { Button } from 'antd'
 import { LeftOutlined } from '@ant-design/icons'
-import GameOutline from '../../components/GameOutline/atlas'
+
+import GameOutline from '../../components/GameOutline'
 
 const Editor: React.FC = () => {
   const history = useHistory()

@@ -43,10 +43,37 @@ export async function saveSceneTitle(
   title: string
 ) {
   try {
-    return await new LibraryDatabase(studioId).saveComponentTitle(
+    await new LibraryDatabase(studioId).saveComponentTitle(
       sceneId,
       LIBRARY_TABLE.SCENES,
       title
+    )
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function saveChapterIdToScene(
+  studioId: StudioId,
+  chapterId: ComponentId,
+  sceneId: ComponentId
+) {
+  try {
+    await new LibraryDatabase(studioId).saveChapterIdToScene(chapterId, sceneId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function savePassageRefsToScene(
+  studioId: StudioId,
+  sceneId: ComponentId,
+  passages: ComponentId[]
+) {
+  try {
+    await new LibraryDatabase(studioId).savePassageRefsToScene(
+      sceneId,
+      passages
     )
   } catch (error) {
     throw new Error(error)

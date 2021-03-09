@@ -16,9 +16,7 @@ const createGameOutlineTreeData = (
 
     gameOutlineTreeData.items[game.id] = {
       id: game.id,
-      children: chapters
-        .map((chapter) => chapter.id)
-        .filter((chapterId): chapterId is string => !!chapterId),
+      children: game.chapters,
       hasChildren: chapters.length > 0,
       isExpanded: true,
       isChildrenLoading: false,
@@ -35,11 +33,7 @@ const createGameOutlineTreeData = (
       if (chapter.id) {
         gameOutlineTreeData.items[chapter.id] = {
           id: chapter.id,
-          children: scenes
-            .map((scene) =>
-              scene.chapterId === chapter.id ? scene.id : undefined
-            )
-            .filter((sceneId): sceneId is string => !!sceneId),
+          children: chapter.scenes,
           hasChildren: false,
           isExpanded: false,
           isChildrenLoading: false,
@@ -61,11 +55,7 @@ const createGameOutlineTreeData = (
       if (scene.id) {
         gameOutlineTreeData.items[scene.id] = {
           id: scene.id,
-          children: passages
-            .map((passage) =>
-              passage.sceneId === scene.id ? passage.id : undefined
-            )
-            .filter((passageId): passageId is string => !!passageId),
+          children: scene.passages,
           hasChildren: false,
           isExpanded: false,
           isChildrenLoading: false,

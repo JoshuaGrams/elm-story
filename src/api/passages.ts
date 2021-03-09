@@ -46,11 +46,23 @@ export async function savePassageTitle(
   title: string
 ) {
   try {
-    return await new LibraryDatabase(studioId).saveComponentTitle(
+    await new LibraryDatabase(studioId).saveComponentTitle(
       passageId,
       LIBRARY_TABLE.PASSAGES,
       title
     )
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function saveSceneIdToPassage(
+  studioId: StudioId,
+  sceneId: ComponentId,
+  passageId: ComponentId
+) {
+  try {
+    await new LibraryDatabase(studioId).saveSceneIdToPassage(sceneId, passageId)
   } catch (error) {
     throw new Error(error)
   }

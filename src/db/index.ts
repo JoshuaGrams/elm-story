@@ -245,6 +245,24 @@ export class LibraryDatabase extends Dexie {
     return game.id
   }
 
+  public async saveChapterRefsToGame(gameId: GameId, chapters: ComponentId[]) {
+    try {
+      await this.transaction('rw', this.games, async () => {
+        if (gameId) {
+          const game = await this.getComponent(LIBRARY_TABLE.GAMES, gameId)
+
+          if (game) {
+            this.games.update(gameId, { ...game, chapters })
+          } else {
+            throw new Error('Unable to save chapter refs. Game missing.')
+          }
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async removeGame(gameId: GameId) {
     if (!gameId) throw new Error('Unable to remove game. Missing ID.')
 
@@ -307,6 +325,30 @@ export class LibraryDatabase extends Dexie {
     }
 
     return chapter.id
+  }
+
+  public async saveSceneRefsToChapter(
+    chapterId: ComponentId,
+    scenes: ComponentId[]
+  ) {
+    try {
+      await this.transaction('rw', this.chapters, async () => {
+        if (chapterId) {
+          const chapter = await this.getComponent(
+            LIBRARY_TABLE.CHAPTERS,
+            chapterId
+          )
+
+          if (chapter) {
+            this.chapters.update(chapterId, { ...chapter, scenes })
+          } else {
+            throw new Error('Unable to save scene refs. Chapter missing.')
+          }
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 
   public async removeChapter(chapterId: ComponentId) {
@@ -392,6 +434,44 @@ export class LibraryDatabase extends Dexie {
     return scene.id
   }
 
+  public async saveChapterIdToScene(
+    chapterId: ComponentId,
+    sceneId: ComponentId
+  ) {
+    try {
+      const scene = await this.getComponent(LIBRARY_TABLE.SCENES, sceneId)
+
+      if (scene && scene.id) {
+        await this.scenes.update(scene.id, { ...scene, chapterId })
+      } else {
+        throw new Error('Unable to save chapter ID. Missing scene.')
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async savePassageRefsToScene(
+    sceneId: ComponentId,
+    passages: ComponentId[]
+  ) {
+    try {
+      await this.transaction('rw', this.scenes, async () => {
+        if (sceneId) {
+          const scene = await this.getComponent(LIBRARY_TABLE.SCENES, sceneId)
+
+          if (scene) {
+            this.scenes.update(sceneId, { ...scene, passages })
+          } else {
+            throw new Error('Unable to save passage refs. Scene missing.')
+          }
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async removeScene(sceneId: ComponentId) {
     try {
       const passages = await this.passages.where({ sceneId }).toArray()
@@ -457,6 +537,23 @@ export class LibraryDatabase extends Dexie {
     }
 
     return passage.id
+  }
+
+  public async saveSceneIdToPassage(
+    sceneId: ComponentId,
+    passageId: ComponentId
+  ) {
+    try {
+      const passage = await this.getComponent(LIBRARY_TABLE.PASSAGES, passageId)
+
+      if (passage && passage.id) {
+        await this.passages.update(passage.id, { ...passage, sceneId })
+      } else {
+        throw new Error('Unable to save scene ID. Missing passage.')
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 
   public async removePassage(passageId: ComponentId) {

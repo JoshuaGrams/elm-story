@@ -71,7 +71,8 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
                     tags: [],
                     // TODO: Move to defines/types.
                     engine: '1.0.0',
-                    version: '1.0.0'
+                    version: '1.0.0',
+                    chapters: []
                   }
             )
 
