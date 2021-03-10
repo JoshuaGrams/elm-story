@@ -6,10 +6,9 @@ import { useSelectedGame } from '../../hooks'
 import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
 import { EditorContext } from '../../contexts/EditorContext'
 
-import { Button } from 'antd'
-import { LeftOutlined } from '@ant-design/icons'
-
 import GameOutline from '../../components/GameOutline'
+
+import styles from './styles.module.less'
 
 const Editor: React.FC = () => {
   const history = useHistory()
@@ -24,18 +23,17 @@ const Editor: React.FC = () => {
 
   return (
     <>
+      {/* Route back to Dashboard */}
       {!app.selectedStudioId || !app.selectedGameId
         ? history.replace(APP_LOCATION.DASHBOARD)
         : null}
+
+      {/* Editor */}
       {app.selectedStudioId && selectedGame && (
-        <>
-          <Button onClick={() => history.push(APP_LOCATION.DASHBOARD)}>
-            <LeftOutlined />
-            Dashboard
-          </Button>
+        <div className={styles.editor}>
           <GameOutline studioId={app.selectedStudioId} game={selectedGame} />
           <div>{editor.selectedGameOutlineComponent.id}</div>
-        </>
+        </div>
       )}
     </>
   )

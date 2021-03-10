@@ -18,19 +18,24 @@ import Tree, {
   TreeItem
 } from '@atlaskit/tree'
 
-import { Badge, Button, Dropdown, Menu, Typography } from 'antd'
+import { Badge, Button, Dropdown, Menu, Tooltip, Typography } from 'antd'
 import {
   DownOutlined,
   AlignLeftOutlined,
   BranchesOutlined,
   BookOutlined,
   QuestionOutlined,
-  RightOutlined
+  RightOutlined,
+  LeftOutlined,
+  PlusOutlined,
+  EditOutlined
 } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
 import api from '../../api'
+import { APP_LOCATION } from '../../contexts/AppContext'
+import { useHistory } from 'react-router'
 
 const { Text } = Typography
 
@@ -307,6 +312,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   studioId,
   game
 }) => {
+  const history = useHistory()
+
   const { editor, editorDispatch } = useContext(EditorContext)
 
   const [treeData, setTreeData] = useState<TreeData | undefined>(undefined),
@@ -882,23 +889,55 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     <>
       {game.id && treeData && (
         <div className={styles.gameOutline} onClick={() => onSelect(undefined)}>
-          {/* Game Title */}
-          <ContextMenu
-            component={{
-              id: game.id,
-              title: game.title,
-              type: COMPONENT_TYPE.GAME,
-              disabled: false,
-              onAdd,
-              onRemove,
-              onEditName
-            }}
-          >
-            <div className={styles.gameTitle}>{game.title}</div>
-          </ContextMenu>
+          {/* Outline Nav */}
+          <div className={styles.outlineNav}>
+            <Tooltip
+              title="Back to Dashboard"
+              placement="right"
+              align={{ offset: [-10, 0] }}
+              mouseEnterDelay={1}
+            >
+              <Button
+                onClick={() => history.push(APP_LOCATION.DASHBOARD)}
+                type="link"
+                className={styles.dashboardButton}
+              >
+                <LeftOutlined />
+              </Button>
+            </Tooltip>
+
+            <span>{game.title}</span>
+
+            <div className={styles.gameButtons}>
+              <Tooltip
+                title="Edit Game Details..."
+                placement="right"
+                align={{ offset: [-10, 0] }}
+                mouseEnterDelay={1}
+              >
+                <Button type="link">
+                  <EditOutlined />
+                </Button>
+              </Tooltip>
+
+              <Tooltip
+                title="Add Chapter"
+                placement="right"
+                align={{ offset: [-10, 0] }}
+                mouseEnterDelay={1}
+              >
+                <Button
+                  onClick={() => onAdd(game.id as ComponentId)}
+                  type="link"
+                >
+                  <PlusOutlined />
+                </Button>
+              </Tooltip>
+            </div>
+          </div>
 
           {/* Game Outline */}
-          <div style={{ height: '500px', overflow: 'auto' }}>
+          <div className={styles.tree}>
             {treeData.items[treeData.rootId].hasChildren && (
               <Tree
                 tree={treeData}
@@ -923,10 +962,11 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
             {!treeData.items[treeData.rootId].hasChildren && (
               <Button
-                type="text"
+                type="link"
                 onClick={() => {
                   if (game.id) onAdd(game.id)
                 }}
+                className={styles.addChapterButton}
               >
                 Add Chapter...
               </Button>
