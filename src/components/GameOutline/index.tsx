@@ -399,7 +399,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
         type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
         selectedGameOutlineComponent: {
           id: movingComponent.id as string,
-          expanded: movingComponent.isExpanded || false
+          expanded: movingComponent.isExpanded || false,
+          type: movingComponent.data.type,
+          title: movingComponent.data.title
         }
       })
 
@@ -473,7 +475,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
         type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
         selectedGameOutlineComponent: {
           id: movingComponent.id as string,
-          expanded: movingComponent.isExpanded
+          expanded: movingComponent.isExpanded,
+          type: movingComponent.data.type,
+          title: movingComponent.data.title
         }
       })
     }
@@ -540,7 +544,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
             selectedGameOutlineComponent: {
               id: chapterId,
-              expanded: true
+              expanded: true,
+              type: COMPONENT_TYPE.CHAPTER,
+              title: 'Untitled Chapter'
             }
           })
 
@@ -594,7 +600,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
             selectedGameOutlineComponent: {
               id: sceneId,
-              expanded: true
+              expanded: true,
+              type: COMPONENT_TYPE.SCENE,
+              title: 'Untitled Scene'
             }
           })
 
@@ -648,7 +656,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
             selectedGameOutlineComponent: {
               id: passageId,
-              expanded: true
+              expanded: true,
+              type: COMPONENT_TYPE.PASSAGE,
+              title: 'Untitled Passage'
             }
           })
 
@@ -711,7 +721,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
         type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
         selectedGameOutlineComponent: {
           id: undefined,
-          expanded: false
+          expanded: false,
+          type: undefined,
+          title: undefined
         }
       })
 
@@ -755,6 +767,16 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 data: { ...treeData.items[componentId].data, renaming: true }
               })
         )
+
+        if (componentId === editor.selectedGameOutlineComponent.id) {
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+            selectedGameOutlineComponent: {
+              ...editor.selectedGameOutlineComponent,
+              title: title || treeData.items[componentId].data.title
+            }
+          })
+        }
       } else {
         setTreeData(
           mutateTree(treeData, componentId, {
@@ -813,7 +835,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
           selectedGameOutlineComponent: {
             id: componentId,
-            expanded: !treeData.items[componentId].isExpanded
+            expanded: !treeData.items[componentId].isExpanded,
+            type: treeData.items[componentId].data.type,
+            title: treeData.items[componentId].data.title
           }
         })
       } else if (!componentId) {
@@ -825,7 +849,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
           selectedGameOutlineComponent: {
             id: undefined,
-            expanded: false
+            expanded: false,
+            type: undefined,
+            title: undefined
           }
         })
       }
@@ -836,7 +862,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
           selectedGameOutlineComponent: {
             id: componentId,
-            expanded: !treeData.items[componentId].isExpanded
+            expanded: !treeData.items[componentId].isExpanded,
+            type: treeData.items[componentId].data.type,
+            title: treeData.items[componentId].data.title
           }
         })
       }

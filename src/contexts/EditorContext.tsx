@@ -1,11 +1,13 @@
 import React, { createContext, useMemo, useReducer } from 'react'
 
-import { ComponentId } from '../data/types'
+import { ComponentId, COMPONENT_TYPE } from '../data/types'
 
 interface EditorState {
   selectedGameOutlineComponent: {
     id: ComponentId | undefined
     expanded: boolean
+    type: COMPONENT_TYPE | undefined
+    title: string | undefined
   }
   renamingGameOutlineComponent: {
     id: ComponentId | undefined
@@ -24,6 +26,8 @@ type EditorActionType =
       selectedGameOutlineComponent: {
         id: ComponentId | undefined
         expanded: boolean
+        type: COMPONENT_TYPE | undefined
+        title: string | undefined
       }
     }
   | {
@@ -62,7 +66,9 @@ interface EditorContextType {
 const defaultEditorState: EditorState = {
   selectedGameOutlineComponent: {
     id: undefined,
-    expanded: false
+    expanded: false,
+    type: undefined,
+    title: undefined
   },
   renamingGameOutlineComponent: {
     id: undefined,
