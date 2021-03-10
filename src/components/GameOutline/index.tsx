@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { useHistory } from 'react-router'
 import { cloneDeep } from 'lodash'
+
 import logger from '../../lib/logger'
 
 import createGameOutlineTreeData from '../../lib/createGameOutlineTreeData'
 
+import { APP_LOCATION } from '../../contexts/AppContext'
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { ComponentId, COMPONENT_TYPE, Game, StudioId } from '../../data/types'
@@ -31,11 +34,11 @@ import {
   EditOutlined
 } from '@ant-design/icons'
 
+import { SaveGameModal } from '../Modal'
+
 import styles from './styles.module.less'
 
 import api from '../../api'
-import { APP_LOCATION } from '../../contexts/AppContext'
-import { useHistory } from 'react-router'
 
 const { Text } = Typography
 
@@ -308,6 +311,7 @@ const renderComponentItem = ({
   )
 }
 
+// TODO: Reduce component bulk; decouple
 const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   studioId,
   game
@@ -316,7 +320,10 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
   const { editor, editorDispatch } = useContext(EditorContext)
 
-  const [treeData, setTreeData] = useState<TreeData | undefined>(undefined),
+  const [editGameModalVisible, setEditGameModalVisible] = useState<boolean>(
+      false
+    ),
+    [treeData, setTreeData] = useState<TreeData | undefined>(undefined),
     [movingComponentId, setMovingComponentId] = useState<string | undefined>(
       undefined
     )
@@ -888,91 +895,108 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   return (
     <>
       {game.id && treeData && (
-        <div className={styles.gameOutline} onClick={() => onSelect(undefined)}>
-          {/* Outline Nav */}
-          <div className={styles.outlineNav}>
-            <Tooltip
-              title="Back to Dashboard"
-              placement="right"
-              align={{ offset: [-10, 0] }}
-              mouseEnterDelay={1}
-            >
-              <Button
-                onClick={() => history.push(APP_LOCATION.DASHBOARD)}
-                type="link"
-                className={styles.dashboardButton}
-              >
-                <LeftOutlined />
-              </Button>
-            </Tooltip>
+        <>
+          <SaveGameModal
+            visible={editGameModalVisible}
+            onCancel={() => setEditGameModalVisible(false)}
+            afterClose={() => setEditGameModalVisible(false)}
+            studioId={studioId}
+            game={game}
+            edit
+          />
 
-            <span>{game.title}</span>
-
-            <div className={styles.gameButtons}>
+          <div
+            className={styles.gameOutline}
+            onClick={() => onSelect(undefined)}
+          >
+            {/* Outline Nav */}
+            <div className={styles.outlineNav}>
               <Tooltip
-                title="Edit Game Details..."
-                placement="right"
-                align={{ offset: [-10, 0] }}
-                mouseEnterDelay={1}
-              >
-                <Button type="link">
-                  <EditOutlined />
-                </Button>
-              </Tooltip>
-
-              <Tooltip
-                title="Add Chapter"
+                title="Back to Dashboard"
                 placement="right"
                 align={{ offset: [-10, 0] }}
                 mouseEnterDelay={1}
               >
                 <Button
-                  onClick={() => onAdd(game.id as ComponentId)}
+                  onClick={() => history.push(APP_LOCATION.DASHBOARD)}
                   type="link"
+                  className={styles.dashboardButton}
                 >
-                  <PlusOutlined />
+                  <LeftOutlined />
                 </Button>
               </Tooltip>
+
+              <span>{game.title}</span>
+
+              <div className={styles.gameButtons}>
+                <Tooltip
+                  title="Edit Game Details..."
+                  placement="right"
+                  align={{ offset: [-10, 0] }}
+                  mouseEnterDelay={1}
+                >
+                  <Button
+                    onClick={() => setEditGameModalVisible(true)}
+                    type="link"
+                  >
+                    <EditOutlined />
+                  </Button>
+                </Tooltip>
+
+                <Tooltip
+                  title="Add Chapter"
+                  placement="right"
+                  align={{ offset: [-10, 0] }}
+                  mouseEnterDelay={1}
+                >
+                  <Button
+                    onClick={() => onAdd(game.id as ComponentId)}
+                    type="link"
+                  >
+                    <PlusOutlined />
+                  </Button>
+                </Tooltip>
+              </div>
+            </div>
+
+            {/* Game Outline */}
+            <div className={styles.tree}>
+              {treeData.items[treeData.rootId].hasChildren && (
+                <Tree
+                  tree={treeData}
+                  renderItem={(item: RenderItemParams) =>
+                    renderComponentItem({
+                      item,
+                      onSelect,
+                      onAdd,
+                      onRemove,
+                      onEditName
+                    })
+                  }
+                  onExpand={onExpand}
+                  onCollapse={onCollapse}
+                  onDragStart={onDragStart}
+                  onDragEnd={onDragEnd}
+                  offsetPerLevel={19}
+                  isDragEnabled
+                  isNestingEnabled
+                />
+              )}
+
+              {!treeData.items[treeData.rootId].hasChildren && (
+                <Button
+                  type="link"
+                  onClick={() => {
+                    if (game.id) onAdd(game.id)
+                  }}
+                  className={styles.addChapterButton}
+                >
+                  Add Chapter...
+                </Button>
+              )}
             </div>
           </div>
-
-          {/* Game Outline */}
-          <div className={styles.tree}>
-            {treeData.items[treeData.rootId].hasChildren && (
-              <Tree
-                tree={treeData}
-                renderItem={(item: RenderItemParams) =>
-                  renderComponentItem({
-                    item,
-                    onSelect,
-                    onAdd,
-                    onRemove,
-                    onEditName
-                  })
-                }
-                onExpand={onExpand}
-                onCollapse={onCollapse}
-                onDragStart={onDragStart}
-                onDragEnd={onDragEnd}
-                offsetPerLevel={19}
-                isDragEnabled
-                isNestingEnabled
-              />
-            )}
-
-            {!treeData.items[treeData.rootId].hasChildren && (
-              <Button
-                type="link"
-                onClick={() => {
-                  if (game.id) onAdd(game.id)
-                }}
-                className={styles.addChapterButton}
-              >
-                Add Chapter...
-              </Button>
-            )}
-          </div>
-        </div>
+        </>
       )}
     </>
   )
