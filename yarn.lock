@@ -9856,10 +9856,10 @@ rc-dialog@~8.5.0, rc-dialog@~8.5.1:
     rc-motion "^2.3.0"
     rc-util "^5.6.1"
 
-rc-dock@^3.0.4:
-  version "3.0.4"
-  resolved "https://registry.npmjs.org/rc-dock/-/rc-dock-3.0.4.tgz#6a8a858f9f532c30b16353f3966b932f524b7149"
-  integrity sha512-J/ZMWvQEwpXN2YTxordEmXkppw51B/C8E59Xgj/umI0SpRuLfjBkWcvGfV08u/ALB5aDbrDM/1p42DAXdcsSAQ==
+rc-dock@^3.0.7:
+  version "3.0.7"
+  resolved "https://registry.npmjs.org/rc-dock/-/rc-dock-3.0.7.tgz#063250454591c00b57074bb07018805b020de767"
+  integrity sha512-6E7ujhetVWrpz++raQcZhGEl0tbZHNYO5FPTuqm3uO8YGvzfNJ/32Zd5tPSaEVkjS6KcqJTp7fBuqSyzt0WUXw==
   dependencies:
     classnames "^2.2.6"
     lodash "^4.17.20"
