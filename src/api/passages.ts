@@ -3,6 +3,14 @@ import { v4 as uuid } from 'uuid'
 
 import { Passage, ComponentId, StudioId, GameId } from '../data/types'
 
+export async function getPassage(studioId: StudioId, passageId: ComponentId) {
+  try {
+    return await new LibraryDatabase(studioId).getPassage(passageId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function savePassage(
   studioId: StudioId,
   passage: Passage

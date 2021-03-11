@@ -3,6 +3,14 @@ import { v4 as uuid } from 'uuid'
 
 import { Chapter, ComponentId, GameId, StudioId } from '../data/types'
 
+export async function getChapter(studioId: StudioId, chapterId: ComponentId) {
+  try {
+    return await new LibraryDatabase(studioId).getChapter(chapterId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function saveChapter(
   studioId: StudioId,
   chapter: Chapter

@@ -3,6 +3,14 @@ import { v4 as uuid } from 'uuid'
 
 import { Scene, ComponentId, StudioId, GameId } from '../data/types'
 
+export async function getScene(studioId: StudioId, sceneId: ComponentId) {
+  try {
+    return await new LibraryDatabase(studioId).getScene(sceneId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function saveScene(
   studioId: StudioId,
   scene: Scene

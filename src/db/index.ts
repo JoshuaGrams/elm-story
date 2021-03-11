@@ -208,13 +208,13 @@ export class LibraryDatabase extends Dexie {
 
   public async getGame(gameId: GameId): Promise<Game> {
     try {
-      const studio = await this.games.get(gameId)
+      const game = await this.games.get(gameId)
 
-      if (studio) {
-        return studio
+      if (game) {
+        return game
       } else {
         throw new Error(
-          `Unable to get studio with ID: ${gameId}. Does not exist.`
+          `Unable to get game with ID: ${gameId}. Does not exist.`
         )
       }
     } catch (error) {
@@ -297,6 +297,22 @@ export class LibraryDatabase extends Dexie {
           )
         }
       })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getChapter(chapterId: ComponentId): Promise<Chapter> {
+    try {
+      const chapter = await this.chapters.get(chapterId)
+
+      if (chapter) {
+        return chapter
+      } else {
+        throw new Error(
+          `Unable to get chapter with ID: ${chapterId}. Does not exist.`
+        )
+      }
     } catch (error) {
       throw new Error(error)
     }
@@ -409,6 +425,22 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async getScene(sceneId: ComponentId): Promise<Scene> {
+    try {
+      const scene = await this.scenes.get(sceneId)
+
+      if (scene) {
+        return scene
+      } else {
+        throw new Error(
+          `Unable to get scene with ID: ${sceneId}. Does not exist.`
+        )
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async saveScene(scene: Scene): Promise<ComponentId> {
     if (!scene.chapterId)
       throw new Error('Unable to save scene to databse. Missing chapter ID.')
@@ -509,6 +541,22 @@ export class LibraryDatabase extends Dexie {
   public async getScenesByGameId(gameId: GameId): Promise<Scene[]> {
     try {
       return await this.scenes.where({ gameId }).toArray()
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getPassage(passageId: ComponentId): Promise<Passage> {
+    try {
+      const passage = await this.passages.get(passageId)
+
+      if (passage) {
+        return passage
+      } else {
+        throw new Error(
+          `Unable to get passage with ID: ${passageId}. Does not exist.`
+        )
+      }
     } catch (error) {
       throw new Error(error)
     }
