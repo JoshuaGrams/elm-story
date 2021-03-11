@@ -882,6 +882,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           isExpanded: editor.selectedGameOutlineComponent.expanded,
           data: {
             ...treeData.items[editor.selectedGameOutlineComponent.id].data,
+            title: editor.selectedGameOutlineComponent.title,
             selected: true
           }
         })

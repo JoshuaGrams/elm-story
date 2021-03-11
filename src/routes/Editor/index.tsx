@@ -40,7 +40,10 @@ const Editor: React.FC = () => {
           <ComponentEditor />
 
           <DividerBox mode="vertical" className={styles.inspectorPanel}>
-            <GameInspector />
+            <GameInspector
+              studioId={app.selectedStudioId}
+              gameId={app.selectedGameId}
+            />
           </DividerBox>
         </DividerBox>
       )}

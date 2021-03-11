@@ -11,16 +11,16 @@ const ComponentEditor: React.FC = () => {
           tabs: [
             {
               id: 't1',
-              title: 'Diner (INT)',
-              content: <div>Diner (INT) Flow</div>,
-              group: 'content',
+              title: 'Tab Test 1',
+              content: <div style={{ padding: '10px' }}>Tab Test 1</div>,
+              group: 'default',
               closable: true
             },
             {
               id: 't2',
-              title: 'Diner (EXT)',
-              content: <div>Diner (EXT) Flow</div>,
-              group: 'content',
+              title: 'Tab Test 2',
+              content: <div style={{ padding: '10px' }}>Tab Test 2</div>,
+              group: 'default',
               closable: true
             }
           ]

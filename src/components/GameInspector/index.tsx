@@ -1,12 +1,18 @@
 import React, { useState } from 'react'
 
-import { EditorContext } from '../../contexts/EditorContext'
+import { GameId, StudioId } from '../../data/types'
 
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 
+import ComponentProperties from '../ComponentProperties'
+import GameProblems from '../GameProblems'
+
 import styles from './styles.module.less'
 
-const GameInspector: React.FC = () => {
+const GameInspector: React.FC<{
+  studioId: StudioId
+  gameId: GameId | undefined
+}> = ({ studioId, gameId = undefined }) => {
   const [defaultLayout] = useState<LayoutData>({
     dockbox: {
       mode: 'horizontal',
@@ -17,31 +23,18 @@ const GameInspector: React.FC = () => {
               id: 'propertiesTab',
               title: 'Properties',
               content: (
-                <EditorContext.Consumer>
-                  {({ editor }) => (
-                    <div>
-                      {editor.selectedGameOutlineComponent.id ? (
-                        <>
-                          <div>
-                            Title: {editor.selectedGameOutlineComponent.title}
-                          </div>
-                          <div>
-                            Type: {editor.selectedGameOutlineComponent.type}
-                          </div>
-                        </>
-                      ) : (
-                        <div>Nothing Selected</div>
-                      )}
-                    </div>
+                <>
+                  {studioId && (
+                    <ComponentProperties studioId={studioId} gameId={gameId} />
                   )}
-                </EditorContext.Consumer>
+                </>
               ),
               group: 'default'
             },
             {
               id: 'problemsTab',
               title: 'Problems',
-              content: <div>Problems</div>,
+              content: <GameProblems />,
               group: 'default'
             }
           ]
