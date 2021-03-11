@@ -81,10 +81,6 @@ const ComponentProperties: React.FC<{
   }
 
   useEffect(() => {
-    console.log(activeKeys)
-  }, [activeKeys])
-
-  useEffect(() => {
     editComponentTitleForm.resetFields()
 
     if (

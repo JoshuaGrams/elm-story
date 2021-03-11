@@ -13,11 +13,13 @@ interface EditorState {
     id: ComponentId | undefined
     renaming: boolean
   }
+  expandedGameOutlineComponents: ComponentId[]
 }
 
 export enum EDITOR_ACTION_TYPE {
   GAME_OUTLINE_SELECT = 'GAME_OUTLINE_SELECT',
-  GAME_OUTLINE_RENAME = 'GAME_OUTLINE_RENAME'
+  GAME_OUTLINE_RENAME = 'GAME_OUTLINE_RENAME',
+  GAME_OUTLINE_EXPAND = 'GAME_OUTLINE_EXPAND'
 }
 
 type EditorActionType =
@@ -37,6 +39,10 @@ type EditorActionType =
         renaming: boolean
       }
     }
+  | {
+      type: EDITOR_ACTION_TYPE.GAME_OUTLINE_EXPAND
+      expandedGameOutlineComponents: ComponentId[]
+    }
 
 const editorReducer = (
   state: EditorState,
@@ -52,6 +58,11 @@ const editorReducer = (
       return {
         ...state,
         renamingGameOutlineComponent: action.renamingGameOutlineComponent
+      }
+    case EDITOR_ACTION_TYPE.GAME_OUTLINE_EXPAND:
+      return {
+        ...state,
+        expandedGameOutlineComponents: action.expandedGameOutlineComponents
       }
     default:
       return state
@@ -73,7 +84,8 @@ const defaultEditorState: EditorState = {
   renamingGameOutlineComponent: {
     id: undefined,
     renaming: false
-  }
+  },
+  expandedGameOutlineComponents: []
 }
 
 export const EditorContext = createContext<EditorContextType>({
