@@ -4,10 +4,10 @@ import { ComponentId, COMPONENT_TYPE } from '../data/types'
 
 interface EditorState {
   selectedGameOutlineComponent: {
-    id: ComponentId | undefined
-    expanded: boolean
-    type: COMPONENT_TYPE | undefined
-    title: string | undefined
+    id?: ComponentId | undefined
+    expanded?: boolean | undefined
+    type?: COMPONENT_TYPE | undefined
+    title?: string | undefined
   }
   renamingGameOutlineComponent: {
     id: ComponentId | undefined
@@ -26,10 +26,10 @@ type EditorActionType =
   | {
       type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT
       selectedGameOutlineComponent: {
-        id: ComponentId | undefined
-        expanded: boolean
-        type: COMPONENT_TYPE | undefined
-        title: string | undefined
+        id?: ComponentId | undefined
+        expanded?: boolean | undefined
+        type?: COMPONENT_TYPE | undefined
+        title?: string | undefined
       }
     }
   | {
@@ -52,7 +52,7 @@ const editorReducer = (
     case EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT:
       return {
         ...state,
-        selectedGameOutlineComponent: action.selectedGameOutlineComponent
+        selectedGameOutlineComponent: action.selectedGameOutlineComponent || {}
       }
     case EDITOR_ACTION_TYPE.GAME_OUTLINE_RENAME:
       return {

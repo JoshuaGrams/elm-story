@@ -256,10 +256,10 @@ const renderComponentItem = ({
       } ${snapshot.isDragging ? styles.dragging : ''}`}
       onClick={(event) => {
         event.stopPropagation()
-        if (!item.data.renaming) onSelect(item.id as string)
+        if (!item.data.renaming) onSelect(item.id as ComponentId)
       }}
       onContextMenu={(event) => event.stopPropagation()}
-      style={getStyle(provided.draggableProps.style)}
+      // style={getStyle(provided.draggableProps.style)} locks axis; disable for now
     >
       <ContextMenu
         component={{
@@ -717,6 +717,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
         throw new Error(error)
       }
 
+      setTreeData(newTreeData)
+
       editorDispatch({
         type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
         selectedGameOutlineComponent: {
@@ -726,8 +728,6 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           title: undefined
         }
       })
-
-      setTreeData(newTreeData)
 
       logger.info(`Removing component from outline with ID: ${componentId}`)
     }
@@ -792,109 +792,43 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   }
 
-  function onSelect(componentId: ComponentId | undefined) {
-    if (treeData && editor.renamingGameOutlineComponent.id) {
-      treeData.items[
-        editor.renamingGameOutlineComponent.id
-      ].data.renaming = false
+  function selectComponent() {
+    if (treeData) {
+      const clonedTreeData = cloneDeep(treeData)
 
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_RENAME,
-        renamingGameOutlineComponent: { id: undefined, renaming: false }
+      Object.entries(clonedTreeData.items).map(([componentId, component]) => {
+        if (editor.renamingGameOutlineComponent.id) {
+          component.data.renaming = false
+
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_RENAME,
+            renamingGameOutlineComponent: { id: undefined, renaming: false }
+          })
+        }
+
+        component.isExpanded =
+          componentId === editor.selectedGameOutlineComponent.id ||
+          clonedTreeData.items[componentId].isExpanded
+
+        component.data.selected =
+          (componentId &&
+            editor.selectedGameOutlineComponent.id &&
+            componentId === editor.selectedGameOutlineComponent.id) ||
+          false
       })
-    }
 
-    if (
-      componentId &&
-      componentId === editor.selectedGameOutlineComponent.id &&
-      treeData
-    ) {
-      setTreeData(
-        mutateTree(treeData, componentId, {
-          isExpanded: !treeData.items[componentId].isExpanded
-        })
-      )
-    } else if (
-      editor.selectedGameOutlineComponent.id &&
-      editor.selectedGameOutlineComponent.id !== componentId &&
-      treeData
-    ) {
-      setTreeData(
-        mutateTree(treeData, editor.selectedGameOutlineComponent.id, {
-          data: {
-            ...treeData.items[editor.selectedGameOutlineComponent.id].data,
-            renaming: false,
-            selected: false
-          }
-        })
-      )
-
-      if (componentId) {
-        // TODO: remove dupe?
-        editorDispatch({
-          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-          selectedGameOutlineComponent: {
-            id: componentId,
-            expanded: !treeData.items[componentId].isExpanded,
-            type: treeData.items[componentId].data.type,
-            title: treeData.items[componentId].data.title
-          }
-        })
-      } else if (!componentId) {
-        logger.info(
-          `deselecting item in tree with id '${editor.selectedGameOutlineComponent.id}'`
-        )
-
-        editorDispatch({
-          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-          selectedGameOutlineComponent: {
-            id: undefined,
-            expanded: false,
-            type: undefined,
-            title: undefined
-          }
-        })
-      }
-    } else if (componentId && !editor.selectedGameOutlineComponent.id) {
-      if (treeData) {
-        // TODO: remove dupe?
-        editorDispatch({
-          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-          selectedGameOutlineComponent: {
-            id: componentId,
-            expanded: !treeData.items[componentId].isExpanded,
-            type: treeData.items[componentId].data.type,
-            title: treeData.items[componentId].data.title
-          }
-        })
-      }
+      setTreeData(clonedTreeData)
     }
   }
 
-  useEffect(() => {
-    if (editor.selectedGameOutlineComponent.id && treeData) {
-      logger.info(
-        `selecting item in tree with id '${editor.selectedGameOutlineComponent.id}'`
-      )
-
-      setTreeData(
-        mutateTree(treeData, editor.selectedGameOutlineComponent.id, {
-          isExpanded: editor.selectedGameOutlineComponent.expanded,
-          data: {
-            ...treeData.items[editor.selectedGameOutlineComponent.id].data,
-            title: editor.selectedGameOutlineComponent.title,
-            selected: true
-          }
-        })
-      )
-    }
-  }, [editor.selectedGameOutlineComponent])
+  useEffect(selectComponent, [editor.selectedGameOutlineComponent])
 
   // TODO: Disable renaming from another component?
 
   useEffect(() => {
     if (treeData) {
       logger.info('Game outline tree data has been updated.')
+      console.log(treeData)
     }
   }, [treeData])
 
@@ -934,10 +868,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             edit
           />
 
-          <div
-            className={styles.gameOutline}
-            onClick={() => onSelect(undefined)}
-          >
+          <div className={styles.gameOutline}>
             {/* Outline Nav */}
             <div className={styles.outlineNav}>
               <Tooltip
@@ -996,7 +927,22 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                   renderItem={(item: RenderItemParams) =>
                     renderComponentItem({
                       item,
-                      onSelect,
+                      onSelect: (componentId) => {
+                        const {
+                          id,
+                          data: { type, title }
+                        } = treeData.items[componentId]
+
+                        editorDispatch({
+                          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+                          selectedGameOutlineComponent: {
+                            id: id as ComponentId,
+                            type,
+                            expanded: true,
+                            title
+                          }
+                        })
+                      },
                       onAdd,
                       onRemove,
                       onEditName
