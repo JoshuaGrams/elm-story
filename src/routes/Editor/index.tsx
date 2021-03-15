@@ -37,7 +37,7 @@ const Editor: React.FC = () => {
             <GameOutline studioId={app.selectedStudioId} game={selectedGame} />
           </DividerBox>
 
-          <ComponentEditor />
+          <ComponentEditor studioId={app.selectedStudioId} />
 
           <DividerBox mode="vertical" className={styles.inspectorPanel}>
             <GameInspector
