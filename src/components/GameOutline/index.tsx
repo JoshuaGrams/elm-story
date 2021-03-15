@@ -810,11 +810,16 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           componentId === editor.selectedGameOutlineComponent.id ||
           clonedTreeData.items[componentId].isExpanded
 
-        component.data.selected =
-          (componentId &&
-            editor.selectedGameOutlineComponent.id &&
-            componentId === editor.selectedGameOutlineComponent.id) ||
-          false
+        if (
+          componentId &&
+          editor.selectedGameOutlineComponent.id &&
+          componentId === editor.selectedGameOutlineComponent.id
+        ) {
+          component.data.title = editor.selectedGameOutlineComponent.title
+          component.data.selected = true
+        } else {
+          component.data.selected = false
+        }
       })
 
       setTreeData(clonedTreeData)
