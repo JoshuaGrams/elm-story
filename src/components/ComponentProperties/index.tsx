@@ -71,6 +71,14 @@ const ComponentProperties: React.FC<{
       }
 
       editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
+        renamedComponent: {
+          id: editor.selectedGameOutlineComponent.id,
+          newTitle: title
+        }
+      })
+
+      editorDispatch({
         type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
         selectedGameOutlineComponent: {
           ...editor.selectedGameOutlineComponent,

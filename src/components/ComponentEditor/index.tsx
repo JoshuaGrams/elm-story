@@ -243,6 +243,19 @@ const ComponentEditor: React.FC = () => {
   }, [tabs])
 
   useEffect(() => {
+    const clonedTabs = cloneDeep(tabs),
+      tabToRename = clonedTabs.find(
+        (clonedTab) => clonedTab.data.id === editor.renamedComponent.id
+      )
+
+    if (tabToRename && editor.renamedComponent.newTitle) {
+      tabToRename.data.title = editor.renamedComponent.newTitle
+    }
+
+    setTabs(clonedTabs)
+  }, [editor.renamedComponent])
+
+  useEffect(() => {
     logger.info(`Set active panel ID: ${activePanelId}`)
   }, [activePanelId])
 

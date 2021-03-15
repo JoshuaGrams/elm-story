@@ -3,6 +3,10 @@ import React, { createContext, useMemo, useReducer } from 'react'
 import { ComponentId, COMPONENT_TYPE } from '../data/types'
 
 interface EditorState {
+  renamedComponent: {
+    id?: ComponentId
+    newTitle?: string
+  }
   selectedGameOutlineComponent: {
     id?: ComponentId | undefined
     expanded?: boolean | undefined
@@ -17,12 +21,20 @@ interface EditorState {
 }
 
 export enum EDITOR_ACTION_TYPE {
+  COMPONENT_RENAME = 'EDITOR_COMPONENT_RENAME',
   GAME_OUTLINE_SELECT = 'GAME_OUTLINE_SELECT',
   GAME_OUTLINE_RENAME = 'GAME_OUTLINE_RENAME',
   GAME_OUTLINE_EXPAND = 'GAME_OUTLINE_EXPAND'
 }
 
 type EditorActionType =
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_RENAME
+      renamedComponent: {
+        id?: ComponentId
+        newTitle?: string
+      }
+    }
   | {
       type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT
       selectedGameOutlineComponent: {
@@ -49,6 +61,11 @@ const editorReducer = (
   action: EditorActionType
 ): EditorState => {
   switch (action.type) {
+    case EDITOR_ACTION_TYPE.COMPONENT_RENAME:
+      return {
+        ...state,
+        renamedComponent: action.renamedComponent
+      }
     case EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT:
       return {
         ...state,
@@ -75,6 +92,10 @@ interface EditorContextType {
 }
 
 const defaultEditorState: EditorState = {
+  renamedComponent: {
+    id: undefined,
+    newTitle: undefined
+  },
   selectedGameOutlineComponent: {
     id: undefined,
     expanded: false,

@@ -768,6 +768,16 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               })
         )
 
+        if (complete) {
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
+            renamedComponent: {
+              id: componentId,
+              newTitle: title || treeData.items[componentId].data.title
+            }
+          })
+        }
+
         if (componentId === editor.selectedGameOutlineComponent.id) {
           editorDispatch({
             type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
