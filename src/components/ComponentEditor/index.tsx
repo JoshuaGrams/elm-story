@@ -1,7 +1,7 @@
 import React, { useRef, useState, useContext, useEffect } from 'react'
 import { cloneDeep } from 'lodash'
 
-import { ComponentId, COMPONENT_TYPE } from '../../data/types'
+import { ComponentId, COMPONENT_TYPE, StudioId } from '../../data/types'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
@@ -15,6 +15,9 @@ import DockLayout, {
   BoxBase
 } from 'rc-dock'
 import logger from '../../lib/logger'
+
+import ChapterTabContent from './ChapterTabContent'
+import SceneTabContent from './SceneTabContent'
 
 interface EditorTab {
   panelId: string
@@ -65,7 +68,7 @@ interface Panel extends BoxBase {
 const getPanels = (boxes: BoxBase[]): Panel[] =>
   boxes.filter((box) => !box.mode).map((panel) => panel)
 
-const ComponentEditor: React.FC = () => {
+const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
   const dockLayout = useRef<DockLayout>(null)
 
   const { editor, editorDispatch } = useContext(EditorContext)
@@ -180,6 +183,7 @@ const ComponentEditor: React.FC = () => {
     ) {
       const { id, title, type, expanded } = editor.selectedGameOutlineComponent
 
+      // TODO: passage type -> open scene tab -> select scene tab -> zoom passage node
       if (tabs.findIndex((tab) => tab.data.id === id) === -1 && activePanelId) {
         setTabs([
           ...tabs,
@@ -191,7 +195,18 @@ const ComponentEditor: React.FC = () => {
             data: {
               id,
               title,
-              content: <EditorContent title={title} />
+              content: () => {
+                switch (type) {
+                  case COMPONENT_TYPE.CHAPTER:
+                    return (
+                      <ChapterTabContent studioId={studioId} chapterId={id} />
+                    )
+                  case COMPONENT_TYPE.SCENE:
+                    return <SceneTabContent studioId={studioId} sceneId={id} />
+                  default:
+                    return <EditorContent title={title} />
+                }
+              }
             }
           })
         ])

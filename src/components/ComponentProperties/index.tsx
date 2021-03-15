@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from 'react'
 
 import { COMPONENT_TYPE, Game, GameId, StudioId } from '../../data/types'
 
+import { useSelectedGame } from '../../hooks'
+
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { Collapse, Form, Input } from 'antd'
@@ -9,7 +11,6 @@ import { Collapse, Form, Input } from 'antd'
 import api from '../../api'
 
 import styles from './styles.module.less'
-import { useSelectedGame } from '../../hooks'
 
 const { Panel } = Collapse
 
