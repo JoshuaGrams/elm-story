@@ -225,22 +225,22 @@ const ComponentEditor: React.FC = () => {
   }, [activePanelId])
 
   useEffect(() => {
-    console.log(layoutData)
+    logger.info('layoutData effect')
 
-    const clonedBasePanel = cloneDeep(
-      layoutData.dockbox.children[0] as PanelData
-    )
+    const clonedLayoutData = cloneDeep(layoutData),
+      clonedPanels = getPanels(
+        getBoxes(clonedLayoutData.dockbox)
+      ) as PanelData[]
 
-    if (layoutData.dockbox.children.length === 1) {
-      setPanels([clonedBasePanel])
-      setActivePanelId(clonedBasePanel.id)
-    }
+    if (clonedPanels.length === 1) {
+      setActivePanelId(clonedPanels[0].id)
 
-    if (clonedBasePanel.tabs.length === 0) {
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-        selectedGameOutlineComponent: {}
-      })
+      if (clonedPanels[0].tabs.length === 0) {
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+          selectedGameOutlineComponent: {}
+        })
+      }
     }
   }, [layoutData])
 
