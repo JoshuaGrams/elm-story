@@ -109,35 +109,57 @@ const ComponentEditor: React.FC = () => {
         clonedTabs.map((tab, index) => {
           if (tab.data.id === changingTabId) {
             if (
+              // panel is closing
               clonedPanels.findIndex(
-                (clonedPanel) => tabs[index].panelId === clonedPanel.id
+                (clonedPanel) => clonedTabs[index].panelId === clonedPanel.id
               ) === -1
             ) {
-              // TODO: this should be next to the closest panel (use state 'panels')
-              setActivePanelId('+0')
+              const firstPanel = clonedPanels[0],
+                activeTab = clonedTabs.find(
+                  (tab) => tab.data.id === firstPanel.activeId
+                )
+
+              // TODO: closest ccw panel, not the first
+              setActivePanelId(firstPanel.id)
+
+              editorDispatch({
+                type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+                selectedGameOutlineComponent: {
+                  id: activeTab?.data.id,
+                  type: activeTab?.type,
+                  title: activeTab?.data.title as string,
+                  expanded: true
+                }
+              })
             }
 
             clonedTabs.splice(index, 1)
+          } else {
+            // panel is not closing
           }
         })
+      } else {
+        if (editor.selectedGameOutlineComponent.id !== changingTabId) {
+          const activeTab = clonedTabs.find(
+            (tab) => tab.data.id === changingTabId
+          )
+
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+            selectedGameOutlineComponent: {
+              id: changingTabId,
+              type: activeTab?.type,
+              title: activeTab?.data.title as string,
+              expanded: true
+            }
+          })
+        }
       }
 
       clonedPanels.map((panel) => {
         clonedTabs.map((tab) => {
           if (tab.panelId === panel.id) {
             tab.active = panel.activeId === tab.data.id
-
-            if (editor.selectedGameOutlineComponent.id !== tab.data.id) {
-              editorDispatch({
-                type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-                selectedGameOutlineComponent: {
-                  id: panel.activeId,
-                  type: tab.type,
-                  title: tab.data.title as string,
-                  expanded: true
-                }
-              })
-            }
           }
         })
       })
