@@ -138,6 +138,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
 
             clonedTabs.splice(index, 1)
           } else {
+            // TODO: select correct component
             // panel is not closing
           }
         })
@@ -241,6 +242,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         panels = getPanels(getBoxes(clonedLayoutData.dockbox)) as PanelData[],
         clonedTabs = cloneDeep(tabs)
 
+      // TODO: when setting activeId, check first if tab still exists
       panels.map((panel) => {
         clonedTabs.map((tab) => {
           if (tab.panelId === panel.id && tab.active) {
@@ -254,6 +256,8 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
       })
 
       setLayoutData(clonedLayoutData)
+    } else {
+      setLayoutData(createBaseLayoutData())
     }
   }, [tabs])
 
@@ -271,11 +275,53 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
   }, [editor.renamedComponent])
 
   useEffect(() => {
+    logger.info('ComponentEditor -> editor.removedComponent Effect')
+    // TODO: find panel with component to remove -> closest available tab to make active
+    // -> remove tab -> set tabs
+    // TODO: if the component being removed is a chapter or scene, must also recursively
+    // close the children if they are open
+    const clonedLayoutData = cloneDeep(layoutData),
+      clonedPanels = getPanels(
+        getBoxes(clonedLayoutData.dockbox)
+      ) as PanelData[],
+      clonedTabs = cloneDeep(tabs),
+      tabToRemoveIndex = clonedTabs.findIndex(
+        (clonedTab) => clonedTab.data.id === editor.removedComponent.id
+      ),
+      tabToRemove = clonedTabs.find(
+        (clonedTab) => clonedTab.data.id === editor.removedComponent.id
+      ),
+      clonedPanelWithTab = clonedPanels.find(
+        (clonedPanel) => clonedPanel.id === tabToRemove?.panelId
+      )
+
+    if (clonedPanels.length === 1) {
+      // only 1 panel
+      if (clonedPanelWithTab?.tabs.length === 1) {
+        // only 1 tab
+        setTabs([])
+      } else {
+        // more than 1 tab
+
+        clonedTabs.splice(tabToRemoveIndex, 1)
+
+        setTabs(clonedTabs)
+      }
+    } else {
+      // more than 1 panel
+    }
+
+    console.log(tabToRemove)
+    console.log(clonedPanelWithTab)
+  }, [editor.removedComponent])
+
+  useEffect(() => {
     logger.info(`Set active panel ID: ${activePanelId}`)
   }, [activePanelId])
 
   useEffect(() => {
     logger.info('layoutData effect')
+    console.log(layoutData)
 
     const clonedLayoutData = cloneDeep(layoutData),
       clonedPanels = getPanels(

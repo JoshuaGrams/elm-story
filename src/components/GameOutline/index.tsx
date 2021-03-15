@@ -678,6 +678,11 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     if (game.id && item && treeData) {
       const newTreeData = removeItemFromTree(treeData, item.id as ComponentId)
 
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
+        removedComponent: { id: componentId, type: data.type }
+      })
+
       try {
         switch (data.type) {
           case COMPONENT_TYPE.CHAPTER:

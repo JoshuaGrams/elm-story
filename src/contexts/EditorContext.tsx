@@ -5,7 +5,12 @@ import { ComponentId, COMPONENT_TYPE } from '../data/types'
 interface EditorState {
   renamedComponent: {
     id?: ComponentId
+    type?: COMPONENT_TYPE
     newTitle?: string
+  }
+  removedComponent: {
+    id?: ComponentId
+    type?: COMPONENT_TYPE
   }
   selectedGameOutlineComponent: {
     id?: ComponentId | undefined
@@ -22,6 +27,7 @@ interface EditorState {
 
 export enum EDITOR_ACTION_TYPE {
   COMPONENT_RENAME = 'EDITOR_COMPONENT_RENAME',
+  COMPONENT_REMOVE = 'EDITOR_COMPONENT_REMOVE',
   GAME_OUTLINE_SELECT = 'GAME_OUTLINE_SELECT',
   GAME_OUTLINE_RENAME = 'GAME_OUTLINE_RENAME',
   GAME_OUTLINE_EXPAND = 'GAME_OUTLINE_EXPAND'
@@ -32,7 +38,15 @@ type EditorActionType =
       type: EDITOR_ACTION_TYPE.COMPONENT_RENAME
       renamedComponent: {
         id?: ComponentId
+        type?: COMPONENT_TYPE
         newTitle?: string
+      }
+    }
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE
+      removedComponent: {
+        id?: ComponentId
+        type?: COMPONENT_TYPE
       }
     }
   | {
@@ -66,6 +80,11 @@ const editorReducer = (
         ...state,
         renamedComponent: action.renamedComponent
       }
+    case EDITOR_ACTION_TYPE.COMPONENT_REMOVE:
+      return {
+        ...state,
+        removedComponent: action.removedComponent
+      }
     case EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT:
       return {
         ...state,
@@ -94,7 +113,12 @@ interface EditorContextType {
 const defaultEditorState: EditorState = {
   renamedComponent: {
     id: undefined,
+    type: undefined,
     newTitle: undefined
+  },
+  removedComponent: {
+    id: undefined,
+    type: undefined
   },
   selectedGameOutlineComponent: {
     id: undefined,
