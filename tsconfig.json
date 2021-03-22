@@ -20,7 +20,18 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "allowJs": true
+    "allowJs": true,
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"],
+      "@api/*": ["./api/*"],
+      "@components/*": ["./components/*"],
+      "@contexts/*": ["./contexts/*"],
+      "@data/*": ["./data/*"],
+      "@db/*": ["./db/*"],
+      "@hooks/*": ["./hooks/*"],
+      "@lib/*": ["./lib/*"]
+    }
   },
   "exclude": [
     "design",
