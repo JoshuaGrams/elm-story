@@ -425,6 +425,22 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async getSceneIdsByChapterId(
+    chapterId: ComponentId
+  ): Promise<ComponentId[]> {
+    try {
+      const chapter = await this.chapters.where({ id: chapterId }).first()
+
+      if (chapter) {
+        return chapter.scenes
+      } else {
+        throw new Error('Chapter not found.')
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async getScene(sceneId: ComponentId): Promise<Scene> {
     try {
       const scene = await this.scenes.get(sceneId)
@@ -541,6 +557,22 @@ export class LibraryDatabase extends Dexie {
   public async getScenesByGameId(gameId: GameId): Promise<Scene[]> {
     try {
       return await this.scenes.where({ gameId }).toArray()
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getPassageIdsBySceneId(
+    sceneId: ComponentId
+  ): Promise<ComponentId[]> {
+    try {
+      const scene = await this.scenes.where({ id: sceneId }).first()
+
+      if (scene) {
+        return scene.passages
+      } else {
+        throw new Error('Scene not found.')
+      }
     } catch (error) {
       throw new Error(error)
     }

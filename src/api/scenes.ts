@@ -45,6 +45,17 @@ export async function getScenesByGameId(
   }
 }
 
+export async function getPassageIdsBySceneId(
+  studioId: StudioId,
+  sceneId: ComponentId
+): Promise<ComponentId[]> {
+  try {
+    return await new LibraryDatabase(studioId).getPassageIdsBySceneId(sceneId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function saveSceneTitle(
   studioId: StudioId,
   sceneId: ComponentId,

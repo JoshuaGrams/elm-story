@@ -18,6 +18,7 @@ import DockLayout, {
 
 import ChapterTabContent from './ChapterTabContent'
 import SceneTabContent from './SceneTabContent'
+import api from '../../api'
 
 interface EditorTab {
   panelId: string
@@ -145,20 +146,6 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
                 }
               })
             }
-
-            // logger.info('setting cloned tab position')
-
-            // const clonedTabToRemove = clonedTabsData[index],
-            //   clonedTabsInActivePanel = clonedTabsData.filter(
-            //     (clonedTabData) =>
-            //       clonedTabData.panelId === clonedTabsData[index].panelId
-            //   )
-
-            // clonedTabsInActivePanel.map((clonedTab) => {
-            //   if (clonedTab.position > clonedTabToRemove.position) {
-            //     --clonedTab.position
-            //   }
-            // })
 
             console.log('removing cloned tab data')
 
@@ -349,51 +336,92 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
     // close the children if they are open
     // TODO: consider keeping track of parent-child relationship in EditorContext
     // to avoid hitting the API
-    switch (editor.removedComponent.type) {
-      case COMPONENT_TYPE.CHAPTER:
-        break
-      case COMPONENT_TYPE.SCENE:
-        break
-      case COMPONENT_TYPE.PASSAGE:
-        break
-      default:
-        break
-    }
 
-    const clonedLayoutData = cloneDeep(layoutData),
-      clonedPanels = getPanels(
-        getBoxes(clonedLayoutData.dockbox)
-      ) as PanelData[],
-      clonedTabsData = cloneDeep(tabs.data),
-      tabToRemoveIndex = clonedTabsData.findIndex(
-        (clonedTab) => clonedTab.data.id === editor.removedComponent.id
-      ),
-      tabToRemove = clonedTabsData.find(
-        (clonedTab) => clonedTab.data.id === editor.removedComponent.id
-      ),
-      clonedPanelWithTab = clonedPanels.find(
-        (clonedPanel) => clonedPanel.id === tabToRemove?.panelId
-      )
+    async function removeComponents() {
+      let scenesById: ComponentId[] = [],
+        passagesById: ComponentId[] = []
 
-    if (clonedPanels.length === 1) {
-      // only 1 panel
-      if (clonedPanelWithTab?.tabs.length === 1) {
-        // only 1 tab
-        setTabs({ data: [], updateLayout: true })
-      } else {
-        // more than 1 tab
+      if (editor.removedComponent.id) {
+        if (editor.removedComponent.type === COMPONENT_TYPE.CHAPTER) {
+          scenesById = await api().chapters.getSceneIdsByChapterId(
+            studioId,
+            editor.removedComponent.id
+          )
+        }
 
-        clonedTabsData.splice(tabToRemoveIndex, 1)
+        if (
+          editor.removedComponent.type === COMPONENT_TYPE.CHAPTER ||
+          editor.removedComponent.type === COMPONENT_TYPE.SCENE
+        ) {
+          await Promise.all(
+            scenesById.map(async (sceneId) => {
+              passagesById = [
+                ...passagesById,
+                ...(await api().scenes.getPassageIdsBySceneId(
+                  studioId,
+                  sceneId
+                ))
+              ]
+            })
+          )
+        }
 
-        setTabs({ data: clonedTabsData, updateLayout: true })
+        const clonedLayoutData = cloneDeep(layoutData),
+          clonedPanels = getPanels(
+            getBoxes(clonedLayoutData.dockbox)
+          ) as PanelData[],
+          clonedTabsData = cloneDeep(tabs.data),
+          tabToRemoveIndex = clonedTabsData.findIndex(
+            (clonedTab) => clonedTab.data.id === editor.removedComponent.id
+          ),
+          tabToRemove = clonedTabsData.find(
+            (clonedTab) => clonedTab.data.id === editor.removedComponent.id
+          ),
+          clonedPanelWithTab = clonedPanels.find(
+            (clonedPanel) => clonedPanel.id === tabToRemove?.panelId
+          )
+
+        if (clonedPanels.length === 1) {
+          // only 1 panel
+          if (clonedPanelWithTab?.tabs.length === 1) {
+            // only 1 tab
+            setTabs({ data: [], updateLayout: true })
+          } else {
+            // more than 1 tab
+
+            scenesById.map((sceneId) =>
+              clonedTabsData.splice(
+                clonedTabsData.findIndex(
+                  (clonedTabData) => clonedTabData.data.id === sceneId
+                ),
+                1
+              )
+            )
+
+            passagesById.map((passageId) =>
+              clonedTabsData.splice(
+                clonedTabsData.findIndex(
+                  (clonedTabData) => clonedTabData.data.id === passageId
+                ),
+                1
+              )
+            )
+
+            clonedTabsData.splice(tabToRemoveIndex, 1)
+
+            setTabs({ data: clonedTabsData, updateLayout: true })
+          }
+        } else {
+          // more than 1 panel
+        }
+
+        console.log(editor.removedComponent)
+        console.log(tabToRemove)
+        console.log(clonedPanelWithTab)
       }
-    } else {
-      // more than 1 panel
     }
 
-    console.log(editor.removedComponent)
-    console.log(tabToRemove)
-    console.log(clonedPanelWithTab)
+    removeComponents()
   }, [editor.removedComponent])
 
   useEffect(() => {

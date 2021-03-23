@@ -48,6 +48,17 @@ export async function getChaptersByGameId(
   }
 }
 
+export async function getSceneIdsByChapterId(
+  studioId: StudioId,
+  chapterId: ComponentId
+): Promise<ComponentId[]> {
+  try {
+    return await new LibraryDatabase(studioId).getSceneIdsByChapterId(chapterId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function saveChapterTitle(
   studioId: StudioId,
   chapterId: ComponentId,
