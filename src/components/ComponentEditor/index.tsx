@@ -1,5 +1,6 @@
 import React, { useRef, useState, useContext, useEffect } from 'react'
 import { cloneDeep } from 'lodash'
+import logger from '../../lib/logger'
 
 import { ComponentId, COMPONENT_TYPE, StudioId } from '../../data/types'
 
@@ -14,7 +15,6 @@ import DockLayout, {
   PanelBase,
   BoxBase
 } from 'rc-dock'
-import logger from '../../lib/logger'
 
 import ChapterTabContent from './ChapterTabContent'
 import SceneTabContent from './SceneTabContent'
@@ -78,7 +78,10 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
     ),
     [panels, setPanels] = useState<PanelBase[]>([]),
     [activePanelId, setActivePanelId] = useState<string | undefined>(undefined),
-    [tabs, setTabs] = useState<EditorTab[]>([]),
+    [tabs, setTabs] = useState<{ data: EditorTab[]; updateLayout: boolean }>({
+      data: [],
+      updateLayout: false
+    }),
     [activeTabId, setActiveTabId] = useState<ComponentId | undefined>(undefined)
 
   function onLayoutChange(
@@ -86,6 +89,9 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
     changingTabId?: string | undefined,
     direction?: DropDirection | undefined
   ) {
+    logger.info('onLayoutChange')
+    console.log(newLayout)
+
     setLayoutData(newLayout)
 
     if (changingTabId) {
@@ -96,30 +102,31 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
           (panel) =>
             panel.tabs.findIndex((tab) => tab.id === changingTabId) !== -1
         ),
-        clonedTabs = cloneDeep(tabs)
+        clonedTabsData = cloneDeep(tabs.data)
 
       if (activePanel && activePanel.id) {
         setActivePanelId(activePanel.id)
 
-        clonedTabs.map((tab) => {
-          if (tab.data.id === changingTabId && activePanel.id) {
-            tab.panelId = activePanel.id
+        clonedTabsData.map((clonedTab) => {
+          if (clonedTab.data.id === changingTabId && activePanel.id) {
+            clonedTab.panelId = activePanel.id
           }
         })
       }
 
       if (direction && direction === 'remove') {
-        clonedTabs.map((tab, index) => {
-          if (tab.data.id === changingTabId) {
+        clonedTabsData.map((clonedTab, index) => {
+          if (clonedTab.data.id === changingTabId) {
             if (
               // panel is closing
               clonedPanels.findIndex(
-                (clonedPanel) => clonedTabs[index].panelId === clonedPanel.id
+                (clonedPanel) =>
+                  clonedTabsData[index].panelId === clonedPanel.id
               ) === -1
             ) {
               const firstPanel = clonedPanels[0],
-                activeTab = clonedTabs.find(
-                  (tab) => tab.data.id === firstPanel.activeId
+                activeTab = clonedTabsData.find(
+                  (clonedTab) => clonedTab.data.id === firstPanel.activeId
                 )
 
               // TODO: closest ccw panel, not the first
@@ -136,7 +143,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
               })
             }
 
-            clonedTabs.splice(index, 1)
+            clonedTabsData.splice(index, 1)
           } else {
             // TODO: select correct component
             // panel is not closing
@@ -144,8 +151,8 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         })
       } else {
         if (editor.selectedGameOutlineComponent.id !== changingTabId) {
-          const activeTab = clonedTabs.find(
-            (tab) => tab.data.id === changingTabId
+          const activeTab = clonedTabsData.find(
+            (clonedTab) => clonedTab.data.id === changingTabId
           )
 
           editorDispatch({
@@ -161,20 +168,20 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
       }
 
       clonedPanels.map((panel) => {
-        clonedTabs.map((tab) => {
-          if (tab.panelId === panel.id) {
-            tab.active = panel.activeId === tab.data.id
+        clonedTabsData.map((clonedTab) => {
+          if (clonedTab.panelId === panel.id) {
+            clonedTab.active = panel.activeId === clonedTab.data.id
           }
         })
       })
 
       setPanels(clonedPanels)
-      setTabs(clonedTabs)
+      setTabs({ data: clonedTabsData, updateLayout: false })
     }
   }
 
   function loadTab({ id }: TabBase): TabData {
-    return tabs[tabs.findIndex((tab) => tab.data.id === id)].data
+    return tabs.data[tabs.data.findIndex((tab) => tab.data.id === id)].data
   }
 
   useEffect(() => {
@@ -185,85 +192,100 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
       const { id, title, type, expanded } = editor.selectedGameOutlineComponent
 
       // TODO: passage type -> open scene tab -> select scene tab -> zoom passage node
-      if (tabs.findIndex((tab) => tab.data.id === id) === -1 && activePanelId) {
-        setTabs([
-          ...tabs,
-          createEditorTab({
-            panelId: activePanelId,
-            active: true,
-            type,
-            expanded,
-            data: {
-              id,
-              title,
-              content: () => {
-                switch (type) {
-                  case COMPONENT_TYPE.CHAPTER:
-                    return (
-                      <ChapterTabContent studioId={studioId} chapterId={id} />
-                    )
-                  case COMPONENT_TYPE.SCENE:
-                    return <SceneTabContent studioId={studioId} sceneId={id} />
-                  default:
-                    return <EditorContent title={title} />
-                }
+      if (
+        tabs.data.findIndex((tab) => tab.data.id === id) === -1 &&
+        activePanelId
+      ) {
+        let content
+
+        switch (type) {
+          case COMPONENT_TYPE.CHAPTER:
+            content = <ChapterTabContent studioId={studioId} chapterId={id} />
+            break
+          case COMPONENT_TYPE.SCENE:
+            content = <SceneTabContent studioId={studioId} sceneId={id} />
+            break
+          default:
+            content = <EditorContent title={title} />
+            break
+        }
+
+        setTabs({
+          data: [
+            ...tabs.data,
+            createEditorTab({
+              panelId: activePanelId,
+              active: true,
+              type,
+              expanded,
+              data: {
+                id,
+                title,
+                content
               }
-            }
-          })
-        ])
+            })
+          ],
+          updateLayout: true
+        })
       } else {
-        const clonedTabs = cloneDeep(tabs)
+        const clonedTabsData = cloneDeep(tabs.data)
         let newActivePanelId: string | undefined
 
-        clonedTabs.map((tab) => {
-          if (tab.data.id === id) {
-            newActivePanelId = tab.panelId
+        clonedTabsData.map((clonedTab) => {
+          if (clonedTab.data.id === id) {
+            newActivePanelId = clonedTab.panelId
           }
         })
 
         if (newActivePanelId) {
-          clonedTabs.map((tab) => {
-            if (tab.panelId === newActivePanelId) {
-              tab.active = tab.data.id === id
+          clonedTabsData.map((clonedTab) => {
+            if (clonedTab.panelId === newActivePanelId) {
+              clonedTab.active = clonedTab.data.id === id
             }
           })
 
           setActivePanelId(newActivePanelId)
         }
 
-        setTabs(clonedTabs)
+        setTabs({ data: clonedTabsData, updateLayout: false })
       }
     }
   }, [editor.selectedGameOutlineComponent])
 
   useEffect(() => {
-    if (tabs.length > 0) {
-      const clonedLayoutData = cloneDeep(layoutData),
-        panels = getPanels(getBoxes(clonedLayoutData.dockbox)) as PanelData[],
-        clonedTabs = cloneDeep(tabs)
+    logger.info('tabs effect')
 
-      // TODO: when setting activeId, check first if tab still exists
-      panels.map((panel) => {
-        clonedTabs.map((tab) => {
-          if (tab.panelId === panel.id && tab.active) {
-            panel.activeId = tab.data.id
-          }
+    if (tabs.updateLayout) {
+      if (tabs.data.length > 0) {
+        console.log(dockLayout.current?.getLayout())
+
+        const clonedLayoutData = cloneDeep(layoutData),
+          panels = getPanels(getBoxes(clonedLayoutData.dockbox)) as PanelData[],
+          clonedTabsData = cloneDeep(tabs.data)
+
+        // TODO: when setting activeId, check first if tab still exists
+        panels.map((panel) => {
+          clonedTabsData.map((clonedTab) => {
+            if (clonedTab.panelId === panel.id && clonedTab.active) {
+              panel.activeId = clonedTab.data.id
+            }
+          })
+
+          panel.tabs = clonedTabsData
+            .filter((clonedTab) => clonedTab.panelId === panel.id)
+            .map((clonedTab) => clonedTab.data)
         })
 
-        panel.tabs = clonedTabs
-          .filter((tab) => tab.panelId === panel.id)
-          .map((tab) => tab.data)
-      })
-
-      setLayoutData(clonedLayoutData)
-    } else {
-      setLayoutData(createBaseLayoutData())
+        setLayoutData(clonedLayoutData)
+      } else {
+        setLayoutData(createBaseLayoutData())
+      }
     }
   }, [tabs])
 
   useEffect(() => {
-    const clonedTabs = cloneDeep(tabs),
-      tabToRename = clonedTabs.find(
+    const clonedTabsData = cloneDeep(tabs.data),
+      tabToRename = clonedTabsData.find(
         (clonedTab) => clonedTab.data.id === editor.renamedComponent.id
       )
 
@@ -271,7 +293,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
       tabToRename.data.title = editor.renamedComponent.newTitle
     }
 
-    setTabs(clonedTabs)
+    setTabs({ data: clonedTabsData, updateLayout: true })
   }, [editor.renamedComponent])
 
   useEffect(() => {
@@ -284,11 +306,11 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
       clonedPanels = getPanels(
         getBoxes(clonedLayoutData.dockbox)
       ) as PanelData[],
-      clonedTabs = cloneDeep(tabs),
-      tabToRemoveIndex = clonedTabs.findIndex(
+      clonedTabsData = cloneDeep(tabs.data),
+      tabToRemoveIndex = clonedTabsData.findIndex(
         (clonedTab) => clonedTab.data.id === editor.removedComponent.id
       ),
-      tabToRemove = clonedTabs.find(
+      tabToRemove = clonedTabsData.find(
         (clonedTab) => clonedTab.data.id === editor.removedComponent.id
       ),
       clonedPanelWithTab = clonedPanels.find(
@@ -299,13 +321,13 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
       // only 1 panel
       if (clonedPanelWithTab?.tabs.length === 1) {
         // only 1 tab
-        setTabs([])
+        setTabs({ data: [], updateLayout: true })
       } else {
         // more than 1 tab
 
-        clonedTabs.splice(tabToRemoveIndex, 1)
+        clonedTabsData.splice(tabToRemoveIndex, 1)
 
-        setTabs(clonedTabs)
+        setTabs({ data: clonedTabsData, updateLayout: true })
       }
     } else {
       // more than 1 panel
@@ -347,7 +369,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
 
   return (
     <>
-      {tabs.length > 0 ? (
+      {tabs.data.length > 0 ? (
         <DockLayout
           ref={dockLayout}
           layout={layoutData}
