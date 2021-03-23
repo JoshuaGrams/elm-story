@@ -146,6 +146,22 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
               })
             }
 
+            // logger.info('setting cloned tab position')
+
+            // const clonedTabToRemove = clonedTabsData[index],
+            //   clonedTabsInActivePanel = clonedTabsData.filter(
+            //     (clonedTabData) =>
+            //       clonedTabData.panelId === clonedTabsData[index].panelId
+            //   )
+
+            // clonedTabsInActivePanel.map((clonedTab) => {
+            //   if (clonedTab.position > clonedTabToRemove.position) {
+            //     --clonedTab.position
+            //   }
+            // })
+
+            console.log('removing cloned tab data')
+
             clonedTabsData.splice(index, 1)
           } else {
             // TODO: select correct component
@@ -170,18 +186,20 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         }
       }
 
-      activeClonedPanel?.tabs.map((clonedTab, index) => {
-        const foundClonedTabData = clonedTabsData.find(
-          (clonedTabData) => clonedTab.id === clonedTabData.data.id
-        )
+      clonedPanels.map((clonedPanel) => {
+        logger.info('setting tab position')
 
-        if (foundClonedTabData) foundClonedTabData.position = index
-      })
+        clonedPanel.tabs.map((clonedTab, index) => {
+          const foundClonedTabData = clonedTabsData.find(
+            (clonedTabData) => clonedTab.id === clonedTabData.data.id
+          )
 
-      clonedPanels.map((panel) => {
+          if (foundClonedTabData) foundClonedTabData.position = index
+        })
+
         clonedTabsData.map((clonedTab) => {
-          if (clonedTab.panelId === panel.id) {
-            clonedTab.active = panel.activeId === clonedTab.data.id
+          if (clonedTab.panelId === clonedPanel.id) {
+            clonedTab.active = clonedPanel.activeId === clonedTab.data.id
           }
         })
       })
