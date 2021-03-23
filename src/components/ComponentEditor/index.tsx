@@ -24,6 +24,7 @@ interface EditorTab {
   active: boolean
   type?: COMPONENT_TYPE
   expanded?: boolean
+  position: number // order in panel 0-n
   data: TabData
 }
 
@@ -36,12 +37,14 @@ const createEditorTab = ({
   active,
   type,
   expanded,
+  position,
   data: { id, title, content, group = 'default' }
 }: EditorTab): EditorTab => ({
   panelId,
   active,
   type,
   expanded,
+  position,
   data: {
     id,
     title,
@@ -98,18 +101,18 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
       const clonedPanels = cloneDeep(
           getPanels(getBoxes(newLayout.dockbox)) as PanelBase[]
         ),
-        activePanel = clonedPanels.find(
+        activeClonedPanel = clonedPanels.find(
           (panel) =>
             panel.tabs.findIndex((tab) => tab.id === changingTabId) !== -1
         ),
         clonedTabsData = cloneDeep(tabs.data)
 
-      if (activePanel && activePanel.id) {
-        setActivePanelId(activePanel.id)
+      if (activeClonedPanel && activeClonedPanel.id) {
+        setActivePanelId(activeClonedPanel.id)
 
         clonedTabsData.map((clonedTab) => {
-          if (clonedTab.data.id === changingTabId && activePanel.id) {
-            clonedTab.panelId = activePanel.id
+          if (clonedTab.data.id === changingTabId && activeClonedPanel.id) {
+            clonedTab.panelId = activeClonedPanel.id
           }
         })
       }
@@ -167,6 +170,14 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         }
       }
 
+      activeClonedPanel?.tabs.map((clonedTab, index) => {
+        const foundClonedTabData = clonedTabsData.find(
+          (clonedTabData) => clonedTab.id === clonedTabData.data.id
+        )
+
+        if (foundClonedTabData) foundClonedTabData.position = index
+      })
+
       clonedPanels.map((panel) => {
         clonedTabsData.map((clonedTab) => {
           if (clonedTab.panelId === panel.id) {
@@ -176,7 +187,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
       })
 
       setPanels(clonedPanels)
-      setTabs({ data: clonedTabsData, updateLayout: false })
+      setTabs({ data: clonedTabsData, updateLayout: true })
     }
   }
 
@@ -185,6 +196,8 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
   }
 
   useEffect(() => {
+    logger.info('editor.selectedGameOutlineComponent')
+
     if (
       editor.selectedGameOutlineComponent.id &&
       editor.selectedGameOutlineComponent.title
@@ -196,37 +209,49 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         tabs.data.findIndex((tab) => tab.data.id === id) === -1 &&
         activePanelId
       ) {
-        let content
+        const clonedLayout = cloneDeep(layoutData),
+          clonedPanels = getPanels(getBoxes(clonedLayout.dockbox)),
+          activeClonedPanel = clonedPanels.find(
+            (clonedPanel) => clonedPanel.id === activePanelId
+          )
 
-        switch (type) {
-          case COMPONENT_TYPE.CHAPTER:
-            content = <ChapterTabContent studioId={studioId} chapterId={id} />
-            break
-          case COMPONENT_TYPE.SCENE:
-            content = <SceneTabContent studioId={studioId} sceneId={id} />
-            break
-          default:
-            content = <EditorContent title={title} />
-            break
+        console.log(activeClonedPanel)
+
+        if (activeClonedPanel && activeClonedPanel.tabs) {
+          let content
+
+          switch (type) {
+            case COMPONENT_TYPE.CHAPTER:
+              content = <ChapterTabContent studioId={studioId} chapterId={id} />
+              break
+            case COMPONENT_TYPE.SCENE:
+              content = <SceneTabContent studioId={studioId} sceneId={id} />
+              break
+            default:
+              content = <EditorContent title={title} />
+              break
+          }
+
+          setTabs({
+            data: [
+              ...tabs.data,
+              createEditorTab({
+                panelId: activePanelId,
+                active: true,
+                type,
+                expanded,
+                // TODO: this should be after the active tab
+                position: activeClonedPanel?.tabs?.length,
+                data: {
+                  id,
+                  title,
+                  content
+                }
+              })
+            ],
+            updateLayout: true
+          })
         }
-
-        setTabs({
-          data: [
-            ...tabs.data,
-            createEditorTab({
-              panelId: activePanelId,
-              active: true,
-              type,
-              expanded,
-              data: {
-                id,
-                title,
-                content
-              }
-            })
-          ],
-          updateLayout: true
-        })
       } else {
         const clonedTabsData = cloneDeep(tabs.data)
         let newActivePanelId: string | undefined
@@ -247,13 +272,14 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
           setActivePanelId(newActivePanelId)
         }
 
-        setTabs({ data: clonedTabsData, updateLayout: false })
+        setTabs({ data: clonedTabsData, updateLayout: true })
       }
     }
   }, [editor.selectedGameOutlineComponent])
 
   useEffect(() => {
     logger.info('tabs effect')
+    console.log(tabs)
 
     if (tabs.updateLayout) {
       if (tabs.data.length > 0) {
@@ -273,6 +299,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
 
           panel.tabs = clonedTabsData
             .filter((clonedTab) => clonedTab.panelId === panel.id)
+            .sort((a, b) => a.position - b.position)
             .map((clonedTab) => clonedTab.data)
         })
 
@@ -302,6 +329,19 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
     // -> remove tab -> set tabs
     // TODO: if the component being removed is a chapter or scene, must also recursively
     // close the children if they are open
+    // TODO: consider keeping track of parent-child relationship in EditorContext
+    // to avoid hitting the API
+    switch (editor.removedComponent.type) {
+      case COMPONENT_TYPE.CHAPTER:
+        break
+      case COMPONENT_TYPE.SCENE:
+        break
+      case COMPONENT_TYPE.PASSAGE:
+        break
+      default:
+        break
+    }
+
     const clonedLayoutData = cloneDeep(layoutData),
       clonedPanels = getPanels(
         getBoxes(clonedLayoutData.dockbox)
@@ -333,6 +373,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
       // more than 1 panel
     }
 
+    console.log(editor.removedComponent)
     console.log(tabToRemove)
     console.log(clonedPanelWithTab)
   }, [editor.removedComponent])
