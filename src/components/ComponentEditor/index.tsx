@@ -16,9 +16,19 @@ import DockLayout, {
 
 import { find as findBox } from 'rc-dock/lib/Algorithm'
 
+import {
+  AlignLeftOutlined,
+  BookOutlined,
+  BranchesOutlined,
+  CloseOutlined,
+  QuestionOutlined
+} from '@ant-design/icons'
+
 import GameTabContent from './GameTabContent'
 import ChapterTabContent from './ChapterTabContent'
 import SceneTabContent from './SceneTabContent'
+
+import styles from './styles.module.less'
 
 import api from '../../api'
 
@@ -46,7 +56,7 @@ function createBaseLayoutData(studioId: StudioId, game: Game): LayoutData {
   }
 }
 
-function getContentComponent(
+function getTabContent(
   studioId: StudioId,
   id: ComponentId,
   type: COMPONENT_TYPE | undefined
@@ -61,6 +71,45 @@ function getContentComponent(
     default:
       return <div>Unknown Content</div>
   }
+}
+
+function getTabIcon(type: COMPONENT_TYPE | undefined): JSX.Element {
+  switch (type) {
+    case COMPONENT_TYPE.GAME:
+      return <BookOutlined className={styles.tabIcon} />
+    case COMPONENT_TYPE.CHAPTER:
+      return <BookOutlined className={styles.tabIcon} />
+    case COMPONENT_TYPE.SCENE:
+      return <BranchesOutlined className={styles.tabIcon} />
+    case COMPONENT_TYPE.PASSAGE:
+      return <AlignLeftOutlined className={styles.tabIcon} />
+    default:
+      return <QuestionOutlined className={styles.tabIcon} />
+  }
+}
+
+function getTabTitle(
+  component: {
+    id?: string | undefined
+    expanded?: boolean | undefined
+    type?: COMPONENT_TYPE | undefined
+    title?: string | undefined
+  },
+  onClose: (componentId: ComponentId) => void
+): JSX.Element {
+  return (
+    <div className={styles.tabTitle}>
+      {getTabIcon(component.type)}
+      {component.title || 'Unknown Title'}
+      <CloseOutlined
+        className={styles.tabCloseButton}
+        onClick={(event) => {
+          event.stopPropagation()
+          component.id && onClose(component.id)
+        }}
+      />
+    </div>
+  )
 }
 
 const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
@@ -180,9 +229,32 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
       if (!foundTab) {
         dockLayout.current.dockMove(
           {
-            title: editor.selectedGameOutlineComponent.title ?? 'Untitled',
+            title: getTabTitle(
+              editor.selectedGameOutlineComponent,
+              (componentId: ComponentId) => {
+                const tabToRemove = dockLayout.current?.find(componentId) as
+                  | TabData
+                  | undefined
+
+                tabToRemove &&
+                  dockLayout.current &&
+                  // @ts-ignore
+                  dockLayout.current.dockMove(tabToRemove, null, 'remove')
+
+                const clonedTabs = cloneDeep(tabs)
+
+                clonedTabs.splice(
+                  clonedTabs.findIndex(
+                    (clonedTab) => clonedTab.id === componentId
+                  ),
+                  1
+                )
+
+                setTabs(clonedTabs)
+              }
+            ),
             id: editor.selectedGameOutlineComponent.id,
-            content: getContentComponent(
+            content: getTabContent(
               studioId,
               editor.selectedGameOutlineComponent.id,
               editor.selectedGameOutlineComponent.type
@@ -223,7 +295,34 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
 
         if (foundTab) {
           foundTab.title = editor.renamedComponent.newTitle
-          tabToUpdate.title = editor.renamedComponent.newTitle
+
+          tabToUpdate.title = getTabTitle(
+            {
+              ...foundTab,
+              title: editor.renamedComponent.newTitle
+            },
+            (componentId: ComponentId) => {
+              const tabToRemove = dockLayout.current?.find(componentId) as
+                | TabData
+                | undefined
+
+              tabToRemove &&
+                dockLayout.current &&
+                // @ts-ignore
+                dockLayout.current.dockMove(tabToRemove, null, 'remove')
+
+              const clonedTabs = cloneDeep(tabs)
+
+              clonedTabs.splice(
+                clonedTabs.findIndex(
+                  (clonedTab) => clonedTab.id === componentId
+                ),
+                1
+              )
+
+              setTabs(clonedTabs)
+            }
+          )
 
           setTabs(clonedTabs)
 
