@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 
 import { COMPONENT_TYPE, Game, GameId, StudioId } from '../../data/types'
 
-import { useSelectedGame } from '../../hooks'
+import { useGame } from '../../hooks'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
@@ -21,7 +21,7 @@ const ComponentProperties: React.FC<{
   const { editor, editorDispatch } = useContext(EditorContext)
 
   const selectedGame: Game | undefined = gameId
-    ? useSelectedGame(studioId, gameId)
+    ? useGame(studioId, gameId)
     : undefined
 
   const [editComponentTitleForm] = Form.useForm()

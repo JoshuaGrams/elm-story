@@ -881,6 +881,20 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
         <>
           <SaveGameModal
             visible={editGameModalVisible}
+            onSave={({ id, title }) => {
+              if (id && title) {
+                logger.info('EDITOR_ACTION_TYPE.COMPONENT_RENAME dispatch')
+
+                editorDispatch({
+                  type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
+                  renamedComponent: {
+                    id,
+                    newTitle: title,
+                    type: COMPONENT_TYPE.GAME
+                  }
+                })
+              }
+            }}
             onCancel={() => setEditGameModalVisible(false)}
             afterClose={() => setEditGameModalVisible(false)}
             studioId={studioId}

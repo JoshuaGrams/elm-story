@@ -16,7 +16,7 @@ const useGames = (studioId: StudioId, deps?: any[]): Game[] | undefined => {
   return games
 }
 
-const useSelectedGame = (
+const useGame = (
   studioId: StudioId,
   gameId: GameId,
   deps?: any[]
@@ -27,6 +27,6 @@ const useSelectedGame = (
     undefined
   )
 
-export { useSelectedGame }
+export { useGame }
 
 export default useGames

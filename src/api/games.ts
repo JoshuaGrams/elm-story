@@ -23,10 +23,7 @@ export async function getGames(
   return await new LibraryDatabase(studioId).games.bulkGet(gameRefs)
 }
 
-export async function saveGame(
-  studioId: StudioId,
-  game: Game
-): Promise<GameId> {
+export async function saveGame(studioId: StudioId, game: Game): Promise<Game> {
   if (!game.id) game.id = uuid()
 
   game.updated = Date.now()

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 
-import { StudioId, Game, GameId, GAME_TEMPLATE } from '../../data/types'
+import { StudioId, Game, GAME_TEMPLATE } from '../../data/types'
 
 import { Modal, ModalProps, Form, Input } from 'antd'
 
@@ -10,7 +10,7 @@ interface SaveGameModalProps extends ModalProps {
   studioId: StudioId
   game?: Game
   edit?: boolean
-  onSave?: (gameId: GameId) => void
+  onSave?: (savedGame: Game) => void
 }
 
 const SaveGameModal: React.FC<SaveGameModalProps> = ({
@@ -59,7 +59,7 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
           director: string
         }) => {
           try {
-            const gameId = await api().games.saveGame(
+            const savedGame = await api().games.saveGame(
               studioId,
               game && edit
                 ? { ...game, title, director }
@@ -76,7 +76,7 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
                   }
             )
 
-            if (onSave) onSave(gameId)
+            if (onSave) onSave(savedGame)
             if (afterClose) afterClose()
           } catch (error) {
             throw new Error(error)

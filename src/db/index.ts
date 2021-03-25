@@ -222,7 +222,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveGame(game: Game): Promise<GameId> {
+  public async saveGame(game: Game): Promise<Game> {
     if (!game.id)
       throw new Error('Unable to save game to database. Missing ID.')
 
@@ -242,7 +242,7 @@ export class LibraryDatabase extends Dexie {
       throw new Error(error)
     }
 
-    return game.id
+    return game
   }
 
   public async saveChapterRefsToGame(gameId: GameId, chapters: ComponentId[]) {

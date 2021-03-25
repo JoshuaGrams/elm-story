@@ -1,5 +1,5 @@
 import useStudios, { useSelectedStudio } from './useStudios'
-import useGames, { useSelectedGame } from './useGames'
+import useGames, { useGame } from './useGames'
 import useChapters, { useChapter } from './useChapters'
 import useScenes, { useScene } from './useScenes'
 import usePassages, { usePassage } from './usePassages'
@@ -8,7 +8,7 @@ export {
   useStudios,
   useSelectedStudio,
   useGames,
-  useSelectedGame,
+  useGame,
   useChapters,
   useChapter,
   useScenes,

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { cloneDeep } from 'lodash'
 import logger from '../../lib/logger'
 
-import { ComponentId, COMPONENT_TYPE, StudioId } from '../../data/types'
+import { ComponentId, COMPONENT_TYPE, Game, StudioId } from '../../data/types'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
@@ -15,30 +15,58 @@ import DockLayout, {
 } from 'rc-dock'
 
 import { find as findBox } from 'rc-dock/lib/Algorithm'
+
+import GameTabContent from './GameTabContent'
 import ChapterTabContent from './ChapterTabContent'
 import SceneTabContent from './SceneTabContent'
+
 import api from '../../api'
 
-const createBaseLayoutData = (): LayoutData => ({
-  dockbox: {
-    mode: 'horizontal',
-    children: [
-      {
-        id: '+0',
-        tabs: [
-          {
-            title: 'Game Title',
-            id: 'game-id',
-            content: <div>Game Content</div>,
-            group: 'default'
-          }
-        ]
-      }
-    ]
-  }
-})
+function createBaseLayoutData(studioId: StudioId, game: Game): LayoutData {
+  if (!game.id)
+    throw new Error('Unable to create base layout. Missing game ID.')
 
-const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
+  return {
+    dockbox: {
+      mode: 'horizontal',
+      children: [
+        {
+          id: '+0',
+          tabs: [
+            {
+              title: game.title,
+              id: game.id,
+              content: <GameTabContent studioId={studioId} gameId={game.id} />,
+              group: 'default'
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+function getContentComponent(
+  studioId: StudioId,
+  id: ComponentId,
+  type: COMPONENT_TYPE | undefined
+): JSX.Element {
+  switch (type) {
+    case COMPONENT_TYPE.CHAPTER:
+      return <ChapterTabContent studioId={studioId} chapterId={id} />
+    case COMPONENT_TYPE.SCENE:
+      return <SceneTabContent studioId={studioId} sceneId={id} />
+    case COMPONENT_TYPE.PASSAGE:
+      return <div>Passage Content</div>
+    default:
+      return <div>Unknown Content</div>
+  }
+}
+
+const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
+  studioId,
+  game
+}) => {
   const dockLayout = useRef<DockLayout>(null)
 
   const [activePanelId, setActivePanelId] = useState<string | undefined>('+0'),
@@ -52,7 +80,14 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         type?: COMPONENT_TYPE | undefined
         title?: string | undefined
       }[]
-    >([])
+    >([
+      {
+        id: game.id,
+        title: game.title,
+        type: COMPONENT_TYPE.GAME,
+        expanded: true
+      }
+    ])
 
   const { editor, editorDispatch } = useContext(EditorContext)
 
@@ -73,10 +108,14 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         ) as PanelData | undefined
 
         if (newLayoutParentPanel) {
-          logger.info('setting active panel to existing parent')
+          logger.info(
+            `setting active panel to existing parent '${newLayoutParentPanel.id}'`
+          )
           setActivePanelId(newLayoutParentPanel.id)
         } else {
-          logger.info('setting active panel to root panel')
+          logger.info(
+            `setting active panel to root panel '${newLayout.dockbox.children[0].id}'`
+          )
           setActivePanelId(newLayout.dockbox.children[0].id)
         }
       }
@@ -108,11 +147,22 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         direction !== 'remove' &&
         changingTabId !== editor.selectedGameOutlineComponent.id
       ) {
-        editorDispatch({
-          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-          selectedGameOutlineComponent:
-            clonedTabIndex !== -1 ? cloneDeep(tabs[clonedTabIndex]) : {}
-        })
+        if (clonedTabIndex !== -1) {
+          const foundTab = cloneDeep(tabs[clonedTabIndex])
+
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+            selectedGameOutlineComponent:
+              foundTab.type !== COMPONENT_TYPE.GAME
+                ? cloneDeep(tabs[clonedTabIndex])
+                : {}
+          })
+        } else {
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+            selectedGameOutlineComponent: {}
+          })
+        }
       }
     }
   }
@@ -128,40 +178,15 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
       ) as TabData
 
       if (!foundTab) {
-        let contentComponent: React.ReactElement
-
-        switch (editor.selectedGameOutlineComponent.type) {
-          case COMPONENT_TYPE.CHAPTER:
-            contentComponent = (
-              <ChapterTabContent
-                studioId={studioId}
-                chapterId={editor.selectedGameOutlineComponent.id}
-              />
-            )
-            break
-          case COMPONENT_TYPE.SCENE:
-            contentComponent = (
-              <SceneTabContent
-                studioId={studioId}
-                sceneId={editor.selectedGameOutlineComponent.id}
-              />
-            )
-            break
-          case COMPONENT_TYPE.PASSAGE:
-            contentComponent = <div>Passage Content</div>
-            break
-          default:
-            contentComponent = <div>Unknown Content</div>
-            break
-        }
-
-        setTabs([...tabs, editor.selectedGameOutlineComponent])
-
         dockLayout.current.dockMove(
           {
             title: editor.selectedGameOutlineComponent.title ?? 'Untitled',
             id: editor.selectedGameOutlineComponent.id,
-            content: contentComponent,
+            content: getContentComponent(
+              studioId,
+              editor.selectedGameOutlineComponent.id,
+              editor.selectedGameOutlineComponent.type
+            ),
             group: 'default',
             closable: true,
             cached:
@@ -170,6 +195,8 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
           activePanelId,
           'middle'
         )
+
+        setTabs([...tabs, editor.selectedGameOutlineComponent])
       } else {
         if (foundTab.id) {
           dockLayout.current.updateTab(foundTab.id, foundTab)
@@ -290,15 +317,17 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
   }, [editor.removedComponent])
 
   return (
-    <DockLayout
-      ref={dockLayout}
-      defaultLayout={createBaseLayoutData()}
-      groups={{
-        default: { floatable: false, animated: false, maximizable: true }
-      }}
-      onLayoutChange={onLayoutChange}
-      dropMode="edge"
-    />
+    <>
+      <DockLayout
+        ref={dockLayout}
+        defaultLayout={createBaseLayoutData(studioId, game)}
+        groups={{
+          default: { floatable: false, animated: false, maximizable: true }
+        }}
+        onLayoutChange={onLayoutChange}
+        dropMode="edge"
+      />
+    </>
   )
 }
 

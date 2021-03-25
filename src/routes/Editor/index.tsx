@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { useSelectedGame } from '../../hooks'
+import { useGame } from '../../hooks'
 
 import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
 
@@ -20,7 +20,7 @@ const Editor: React.FC = () => {
 
   const selectedGame =
     app.selectedStudioId && app.selectedGameId
-      ? useSelectedGame(app.selectedStudioId, app.selectedGameId)
+      ? useGame(app.selectedStudioId, app.selectedGameId)
       : undefined
 
   return (
@@ -37,7 +37,10 @@ const Editor: React.FC = () => {
             <GameOutline studioId={app.selectedStudioId} game={selectedGame} />
           </DividerBox>
 
-          <ComponentEditor studioId={app.selectedStudioId} />
+          <ComponentEditor
+            studioId={app.selectedStudioId}
+            game={selectedGame}
+          />
 
           <DividerBox mode="vertical" className={styles.inspectorPanel}>
             <GameInspector
