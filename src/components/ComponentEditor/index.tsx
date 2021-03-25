@@ -189,9 +189,19 @@ const ComponentEditor: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
       ) as TabData | undefined
 
       if (tabToUpdate) {
-        tabToUpdate.title = editor.renamedComponent.newTitle
+        const clonedTabs = cloneDeep(tabs),
+          foundTab = clonedTabs.find(
+            (clonedTab) => clonedTab.id === editor.renamedComponent.id
+          )
 
-        dockLayout.current.updateTab(editor.renamedComponent.id, tabToUpdate)
+        if (foundTab) {
+          foundTab.title = editor.renamedComponent.newTitle
+          tabToUpdate.title = editor.renamedComponent.newTitle
+
+          setTabs(clonedTabs)
+
+          dockLayout.current.updateTab(editor.renamedComponent.id, tabToUpdate)
+        }
       }
     }
   }, [editor.renamedComponent])
