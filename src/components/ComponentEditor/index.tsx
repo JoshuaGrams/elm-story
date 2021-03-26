@@ -21,6 +21,7 @@ import {
   BookOutlined,
   BranchesOutlined,
   CloseOutlined,
+  PlayCircleFilled,
   QuestionOutlined
 } from '@ant-design/icons'
 
@@ -44,10 +45,16 @@ function createBaseLayoutData(studioId: StudioId, game: Game): LayoutData {
           id: '+0',
           tabs: [
             {
-              title: game.title,
+              title: getTabTitle({
+                id: game.id,
+                title: game.title,
+                type: COMPONENT_TYPE.GAME,
+                expanded: true
+              }),
               id: game.id,
               content: <GameTabContent studioId={studioId} gameId={game.id} />,
-              group: 'default'
+              group: 'default',
+              cached: true
             }
           ]
         }
@@ -76,7 +83,7 @@ function getTabContent(
 function getTabIcon(type: COMPONENT_TYPE | undefined): JSX.Element {
   switch (type) {
     case COMPONENT_TYPE.GAME:
-      return <BookOutlined className={styles.tabIcon} />
+      return <PlayCircleFilled className={styles.tabIcon} />
     case COMPONENT_TYPE.CHAPTER:
       return <BookOutlined className={styles.tabIcon} />
     case COMPONENT_TYPE.SCENE:
@@ -95,7 +102,7 @@ function getTabTitle(
     type?: COMPONENT_TYPE | undefined
     title?: string | undefined
   },
-  onClose: (componentId: ComponentId) => void
+  onClose?: (componentId: ComponentId) => void
 ): JSX.Element {
   return (
     <div className={styles.tabTitle}>
@@ -106,7 +113,7 @@ function getTabTitle(
           className={styles.tabCloseButton}
           onClick={(event) => {
             event.stopPropagation()
-            component.id && onClose(component.id)
+            component.id && onClose && onClose(component.id)
           }}
         />
       )}
@@ -263,8 +270,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
             ),
             group: 'default',
             closable: true,
-            cached:
-              editor.selectedGameOutlineComponent.type === COMPONENT_TYPE.SCENE
+            cached: true
           },
           activePanelId,
           'middle'
@@ -423,7 +429,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
         ref={dockLayout}
         defaultLayout={createBaseLayoutData(studioId, game)}
         groups={{
-          default: { floatable: false, animated: false, maximizable: true }
+          default: { floatable: false, animated: false }
         }}
         onLayoutChange={onLayoutChange}
         dropMode="edge"
