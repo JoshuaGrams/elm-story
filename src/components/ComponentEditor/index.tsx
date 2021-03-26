@@ -101,13 +101,15 @@ function getTabTitle(
     <div className={styles.tabTitle}>
       {getTabIcon(component.type)}
       {component.title || 'Unknown Title'}
-      <CloseOutlined
-        className={styles.tabCloseButton}
-        onClick={(event) => {
-          event.stopPropagation()
-          component.id && onClose(component.id)
-        }}
-      />
+      {component.type !== COMPONENT_TYPE.GAME && (
+        <CloseOutlined
+          className={styles.tabCloseButton}
+          onClick={(event) => {
+            event.stopPropagation()
+            component.id && onClose(component.id)
+          }}
+        />
+      )}
     </div>
   )
 }
