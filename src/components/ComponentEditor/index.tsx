@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, uniqueId } from 'lodash'
 import logger from '../../lib/logger'
 
 import { ComponentId, COMPONENT_TYPE, Game, StudioId } from '../../data/types'
@@ -72,7 +72,10 @@ function getTabContent(
     case COMPONENT_TYPE.CHAPTER:
       return <ChapterTabContent studioId={studioId} chapterId={id} />
     case COMPONENT_TYPE.SCENE:
-      return <SceneTabContent studioId={studioId} sceneId={id} />
+      return (
+        <SceneTabContent key={uniqueId()} studioId={studioId} sceneId={id} />
+      )
+
     case COMPONENT_TYPE.PASSAGE:
       return <div>Passage Content</div>
     default:

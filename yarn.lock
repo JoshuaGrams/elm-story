@@ -1115,7 +1115,7 @@
     core-js-pure "^3.0.0"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.1", "@babel/runtime@^7.10.2", "@babel/runtime@^7.10.4", "@babel/runtime@^7.11.1", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.1", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.9", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.1", "@babel/runtime@^7.10.2", "@babel/runtime@^7.10.4", "@babel/runtime@^7.11.1", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.1", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
   version "7.13.10"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.13.10.tgz#47d42a57b6095f4468da440388fdbad8bebf0d7d"
   integrity sha512-4QPkjJq6Ns3V/RgpEahRk+AGfL0eO6RHHtTWoNNr5mO49G6B5+X6d6THgWEAvTrznU5xYpbAlVKRYcsCgh/Akw==
@@ -10278,12 +10278,12 @@ react-draggable@^4.4.3:
     classnames "^2.2.5"
     prop-types "^15.6.0"
 
-react-flow-renderer@^9.2.0:
-  version "9.2.0"
-  resolved "https://registry.npmjs.org/react-flow-renderer/-/react-flow-renderer-9.2.0.tgz#de189bfcafd7c1d32b48b618065afeaf91d41a77"
-  integrity sha512-51LBv0rVSEoJFzwA1eQIU3O1ZBgDOtxXfBXKDbKlqYfj0vr+2fN2u7Vdc1VTpRzc5Eb2vYrVocQIiOax8uQHvQ==
+react-flow-renderer@^9.2.2:
+  version "9.3.2"
+  resolved "https://registry.npmjs.org/react-flow-renderer/-/react-flow-renderer-9.3.2.tgz#ed34ae89ce4a3cb482efd769645acf56973f9abb"
+  integrity sha512-3jLxj+Rjz7wqQeFkpgdZVbGV0O+j5e6je9j2GDUK75pnLF3iJ4C/EhwiYwbU3uU14iHqnvbv3qjxFvkx2eceAw==
   dependencies:
-    "@babel/runtime" "^7.13.9"
+    "@babel/runtime" "^7.13.10"
     classcat "^5.0.3"
     d3-selection "^2.0.0"
     d3-zoom "^2.0.0"

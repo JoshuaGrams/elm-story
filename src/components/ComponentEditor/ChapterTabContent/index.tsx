@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
-import logger from '../../lib/logger'
+import logger from '../../../lib/logger'
 
-import { ComponentId, StudioId } from '../../data/types'
+import { ComponentId, StudioId } from '../../../data/types'
 
-import { useChapter } from '../../hooks'
+import { useChapter } from '../../../hooks'
 
 import { Table } from 'antd'
 
