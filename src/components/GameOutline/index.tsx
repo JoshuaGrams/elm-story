@@ -609,10 +609,10 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           break
         // add passage
         case COMPONENT_TYPE.SCENE:
-          let passageId = undefined
+          let passage = undefined
 
           try {
-            passageId = await api().passages.savePassage(studioId, {
+            passage = await api().passages.savePassage(studioId, {
               gameId: game.id,
               sceneId: item.id as string,
               title: 'Untitled Passage',
@@ -625,42 +625,44 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
           item.hasChildren = true
 
-          newTreeData = addItemToTree(treeData, item.id as ComponentId, {
-            id: passageId,
-            children: [],
-            isExpanded: false,
-            hasChildren: false,
-            isChildrenLoading: false,
-            data: {
-              title: 'Untitled Passage',
-              type: COMPONENT_TYPE.PASSAGE,
-              selected: false,
-              parentId: item.id,
-              renaming: true
-            }
-          })
+          if (passage.id) {
+            newTreeData = addItemToTree(treeData, item.id as ComponentId, {
+              id: passage.id,
+              children: [],
+              isExpanded: false,
+              hasChildren: false,
+              isChildrenLoading: false,
+              data: {
+                title: 'Untitled Passage',
+                type: COMPONENT_TYPE.PASSAGE,
+                selected: false,
+                parentId: item.id,
+                renaming: true
+              }
+            })
 
-          try {
-            await api().scenes.savePassageRefsToScene(
-              studioId,
-              item.id as ComponentId,
-              newTreeData.items[item.id].children as ComponentId[]
-            )
-          } catch (error) {
-            throw new Error(error)
+            try {
+              await api().scenes.savePassageRefsToScene(
+                studioId,
+                item.id as ComponentId,
+                newTreeData.items[item.id].children as ComponentId[]
+              )
+            } catch (error) {
+              throw new Error(error)
+            }
+
+            setTreeData(newTreeData)
+
+            editorDispatch({
+              type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+              selectedGameOutlineComponent: {
+                id: passage.id,
+                expanded: true,
+                type: COMPONENT_TYPE.PASSAGE,
+                title: 'Untitled Passage'
+              }
+            })
           }
-
-          setTreeData(newTreeData)
-
-          editorDispatch({
-            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-            selectedGameOutlineComponent: {
-              id: passageId,
-              expanded: true,
-              type: COMPONENT_TYPE.PASSAGE,
-              title: 'Untitled Passage'
-            }
-          })
 
           break
         default:
@@ -842,6 +844,46 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   }
 
   useEffect(selectComponent, [editor.selectedGameOutlineComponent])
+
+  useEffect(() => {
+    async function updateTree() {
+      logger.info('GameOutline->editor.savedComponent effect')
+
+      // TODO: Can't we do this better? *hic*
+      if (treeData && editor.savedComponent.id) {
+        const { id, type } = editor.savedComponent
+
+        switch (type) {
+          case COMPONENT_TYPE.PASSAGE:
+            const passage = await api().passages.getPassage(studioId, id)
+
+            if (passage.id) {
+              setTreeData(
+                addItemToTree(treeData, passage.sceneId, {
+                  id,
+                  children: [],
+                  isExpanded: false,
+                  hasChildren: false,
+                  isChildrenLoading: false,
+                  data: {
+                    title: 'Untitled Passage',
+                    type: COMPONENT_TYPE.PASSAGE,
+                    selected: false,
+                    parentId: passage.sceneId,
+                    renaming: true
+                  }
+                })
+              )
+            }
+            break
+          default:
+            break
+        }
+      }
+    }
+
+    updateTree()
+  }, [editor.savedComponent])
 
   // TODO: Disable renaming from another component?
 

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import { Button } from 'antd'
+import React, { useContext, useEffect, useState } from 'react'
 import ReactFlow, {
   ReactFlowProvider,
   Background, // TODO: https://github.com/wbkd/react-flow/issues/1037
@@ -6,8 +7,13 @@ import ReactFlow, {
   Controls,
   FlowElement
 } from 'react-flow-renderer'
+import api from '../../../api'
+import {
+  EditorContext,
+  EDITOR_ACTION_TYPE
+} from '../../../contexts/EditorContext'
 
-import { ComponentId, StudioId } from '../../../data/types'
+import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
 
 import { useScene } from '../../../hooks'
 
@@ -18,8 +24,46 @@ import styles from './styles.module.less'
 export const SceneViewTools: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
-}> = () => {
-  return <div>Scene View Tools</div>
+}> = ({ studioId, sceneId }) => {
+  const scene = useScene(studioId, sceneId)
+
+  const { editorDispatch } = useContext(EditorContext)
+
+  return (
+    <>
+      {scene && (
+        <Button
+          size="small"
+          onClick={async () => {
+            try {
+              const passage = await api().passages.savePassage(studioId, {
+                gameId: scene.gameId,
+                sceneId: sceneId,
+                title: 'Untitled Passage',
+                content: '',
+                tags: []
+              })
+
+              passage.id &&
+                (await api().scenes.savePassageRefsToScene(studioId, sceneId, [
+                  ...scene.passages,
+                  passage.id
+                ]))
+
+              editorDispatch({
+                type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
+                savedComponent: { id: passage.id, type: COMPONENT_TYPE.PASSAGE }
+              })
+            } catch (error) {
+              throw new Error(error)
+            }
+          }}
+        >
+          New Passage
+        </Button>
+      )}
+    </>
+  )
 }
 
 const SceneView: React.FC<{

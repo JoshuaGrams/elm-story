@@ -14,7 +14,7 @@ export async function getPassage(studioId: StudioId, passageId: ComponentId) {
 export async function savePassage(
   studioId: StudioId,
   passage: Passage
-): Promise<ComponentId> {
+): Promise<Passage> {
   if (!passage.id) passage.id = uuid()
 
   passage.updated = Date.now()

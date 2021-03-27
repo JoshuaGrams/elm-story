@@ -3,6 +3,10 @@ import React, { createContext, useMemo, useReducer } from 'react'
 import { ComponentId, COMPONENT_TYPE } from '../data/types'
 
 interface EditorState {
+  savedComponent: {
+    id?: ComponentId
+    type?: COMPONENT_TYPE
+  }
   renamedComponent: {
     id?: ComponentId
     type?: COMPONENT_TYPE
@@ -26,6 +30,7 @@ interface EditorState {
 }
 
 export enum EDITOR_ACTION_TYPE {
+  COMPONENT_SAVE = 'EDITOR_COMPONENT_SAVE',
   COMPONENT_RENAME = 'EDITOR_COMPONENT_RENAME',
   COMPONENT_REMOVE = 'EDITOR_COMPONENT_REMOVE',
   GAME_OUTLINE_SELECT = 'GAME_OUTLINE_SELECT',
@@ -34,6 +39,13 @@ export enum EDITOR_ACTION_TYPE {
 }
 
 type EditorActionType =
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_SAVE
+      savedComponent: {
+        id?: ComponentId
+        type?: COMPONENT_TYPE
+      }
+    }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_RENAME
       renamedComponent: {
@@ -75,6 +87,11 @@ const editorReducer = (
   action: EditorActionType
 ): EditorState => {
   switch (action.type) {
+    case EDITOR_ACTION_TYPE.COMPONENT_SAVE:
+      return {
+        ...state,
+        savedComponent: action.savedComponent || {}
+      }
     case EDITOR_ACTION_TYPE.COMPONENT_RENAME:
       return {
         ...state,
@@ -111,6 +128,10 @@ interface EditorContextType {
 }
 
 const defaultEditorState: EditorState = {
+  savedComponent: {
+    id: undefined,
+    type: undefined
+  },
   renamedComponent: {
     id: undefined,
     type: undefined,

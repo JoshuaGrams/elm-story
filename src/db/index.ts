@@ -594,7 +594,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async savePassage(passage: Passage): Promise<ComponentId> {
+  public async savePassage(passage: Passage): Promise<Passage> {
     if (!passage.sceneId)
       throw new Error('Unable to save passage to databse. Missing scene ID.')
     if (!passage.id)
@@ -616,7 +616,7 @@ export class LibraryDatabase extends Dexie {
       throw new Error(error)
     }
 
-    return passage.id
+    return passage
   }
 
   public async saveSceneIdToPassage(

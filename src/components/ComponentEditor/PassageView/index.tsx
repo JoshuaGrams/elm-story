@@ -5,7 +5,7 @@ import { ComponentId, StudioId } from '../../../data/types'
 
 import { usePassage } from '../../../hooks'
 
-import { Table } from 'antd'
+import { Button, Table } from 'antd'
 
 export const PassageViewTools: React.FC<{
   studioId: StudioId
