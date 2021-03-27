@@ -7,14 +7,21 @@ import { useChapter } from '../../../hooks'
 
 import { Table } from 'antd'
 
-const ChapterTabContent: React.FC<{
+export const ChapterViewTools: React.FC<{
+  studioId: StudioId
+  chapterId: ComponentId
+}> = () => {
+  return <div>Chapter View Tools</div>
+}
+
+const ChapterView: React.FC<{
   studioId: StudioId
   chapterId: ComponentId
 }> = ({ studioId, chapterId }) => {
   const chapter = useChapter(studioId, chapterId)
 
   useEffect(() => {
-    logger.info('ChapterTabContent mount effect')
+    logger.info('ChapterView mount effect')
   }, [])
 
   return (
@@ -45,4 +52,4 @@ const ChapterTabContent: React.FC<{
   )
 }
 
-export default ChapterTabContent
+export default ChapterView

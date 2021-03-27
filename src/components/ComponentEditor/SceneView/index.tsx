@@ -15,7 +15,14 @@ import PassageNode from './PassageNode'
 
 import styles from './styles.module.less'
 
-const SceneTabContent: React.FC<{
+export const SceneViewTools: React.FC<{
+  studioId: StudioId
+  sceneId: ComponentId
+}> = () => {
+  return <div>Scene View Tools</div>
+}
+
+const SceneView: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
 }> = ({ studioId, sceneId }) => {
@@ -42,24 +49,24 @@ const SceneTabContent: React.FC<{
   return (
     <>
       {scene && (
-        <div style={{ position: 'absolute', width: '100%', height: '100%' }}>
-          <ReactFlowProvider>
-            <ReactFlow
-              elements={nodes}
-              snapToGrid
-              nodeTypes={{
-                passageNode: PassageNode
-              }}
-            >
-              <Background size={1} />
-              <Controls className={styles.control} />
-              <MiniMap />
-            </ReactFlow>
-          </ReactFlowProvider>
-        </div>
+        // <div style={{ position: 'absolute', width: '100%', height: '100%' }}>
+        <ReactFlowProvider>
+          <ReactFlow
+            elements={nodes}
+            snapToGrid
+            nodeTypes={{
+              passageNode: PassageNode
+            }}
+          >
+            <Background size={1} />
+            <Controls className={styles.control} />
+            <MiniMap />
+          </ReactFlow>
+        </ReactFlowProvider>
+        // </div>
       )}
     </>
   )
 }
 
-export default SceneTabContent
+export default SceneView

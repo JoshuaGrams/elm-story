@@ -25,9 +25,11 @@ import {
   QuestionOutlined
 } from '@ant-design/icons'
 
-import GameTabContent from './GameTabContent'
-import ChapterTabContent from './ChapterTabContent'
-import SceneTabContent from './SceneTabContent'
+import TabContent from './TabContent'
+import GameView, { GameViewTools } from './GameView'
+import ChapterView, { ChapterViewTools } from './ChapterView'
+import SceneView, { SceneViewTools } from './SceneView'
+import PassageView, { PassageViewTools } from './PassageView'
 
 import styles from './styles.module.less'
 
@@ -52,7 +54,12 @@ function createBaseLayoutData(studioId: StudioId, game: Game): LayoutData {
                 expanded: true
               }),
               id: game.id,
-              content: <GameTabContent studioId={studioId} gameId={game.id} />,
+              content: (
+                <TabContent
+                  tools={<GameViewTools studioId={studioId} gameId={game.id} />}
+                  view={<GameView studioId={studioId} gameId={game.id} />}
+                />
+              ),
               group: 'default',
               cached: true
             }
@@ -70,14 +77,26 @@ function getTabContent(
 ): JSX.Element {
   switch (type) {
     case COMPONENT_TYPE.CHAPTER:
-      return <ChapterTabContent studioId={studioId} chapterId={id} />
+      return (
+        <TabContent
+          tools={<ChapterViewTools studioId={studioId} chapterId={id} />}
+          view={<ChapterView studioId={studioId} chapterId={id} />}
+        />
+      )
     case COMPONENT_TYPE.SCENE:
       return (
-        <SceneTabContent key={uniqueId()} studioId={studioId} sceneId={id} />
+        <TabContent
+          tools={<SceneViewTools studioId={studioId} sceneId={id} />}
+          view={<SceneView studioId={studioId} sceneId={id} />}
+        />
       )
-
     case COMPONENT_TYPE.PASSAGE:
-      return <div>Passage Content</div>
+      return (
+        <TabContent
+          tools={<PassageViewTools studioId={studioId} passageId={id} />}
+          view={<PassageView studioId={studioId} passageId={id} />}
+        />
+      )
     default:
       return <div>Unknown Content</div>
   }
@@ -86,7 +105,7 @@ function getTabContent(
 function getTabIcon(type: COMPONENT_TYPE | undefined): JSX.Element {
   switch (type) {
     case COMPONENT_TYPE.GAME:
-      return <PlayCircleFilled className={styles.tabIcon} />
+      return <PlayCircleFilled className={styles.gameTabIcon} />
     case COMPONENT_TYPE.CHAPTER:
       return <BookOutlined className={styles.tabIcon} />
     case COMPONENT_TYPE.SCENE:
@@ -110,7 +129,8 @@ function getTabTitle(
   return (
     <div className={styles.tabTitle}>
       {getTabIcon(component.type)}
-      {component.title || 'Unknown Title'}
+      {component.type !== COMPONENT_TYPE.GAME &&
+        (component.title || 'Unknown Title')}
       {component.type !== COMPONENT_TYPE.GAME && (
         <CloseOutlined
           className={styles.tabCloseButton}

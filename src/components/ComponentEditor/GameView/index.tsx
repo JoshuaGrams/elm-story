@@ -1,20 +1,27 @@
 import React, { useEffect } from 'react'
 import logger from '../../../lib/logger'
 
-import { ComponentId, StudioId } from '../../../data/types'
+import { GameId, StudioId } from '../../../data/types'
 
 import { useGame } from '../../../hooks'
 
 import { Table } from 'antd'
 
-const ChapterTabContent: React.FC<{
+export const GameViewTools: React.FC<{
   studioId: StudioId
-  gameId: ComponentId
+  gameId: GameId
+}> = () => {
+  return <div>Game View Tools</div>
+}
+
+const GameView: React.FC<{
+  studioId: StudioId
+  gameId: GameId
 }> = ({ studioId, gameId }) => {
   const game = useGame(studioId, gameId)
 
   useEffect(() => {
-    logger.info('GameTabComponent mount effect')
+    logger.info('GameView mount effect')
   }, [])
 
   return (
@@ -45,4 +52,4 @@ const ChapterTabContent: React.FC<{
   )
 }
 
-export default ChapterTabContent
+export default GameView
