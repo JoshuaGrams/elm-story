@@ -11,7 +11,7 @@ import {
   Chapter,
   Scene,
   Passage,
-  Action,
+  Choice,
   Condition,
   Effect,
   Variable
@@ -32,7 +32,7 @@ export enum LIBRARY_TABLE {
   CHAPTERS = 'chapters',
   SCENES = 'scenes',
   PASSAGES = 'passages',
-  ACTIONS = 'actions',
+  CHOICES = 'choices',
   CONDITIONS = 'conditions',
   EFFECTS = 'effects',
   VARIABLES = 'variables'
@@ -131,7 +131,7 @@ export class LibraryDatabase extends Dexie {
   public chapters: Dexie.Table<Chapter, string>
   public scenes: Dexie.Table<Scene, string>
   public passages: Dexie.Table<Passage, string>
-  public actions: Dexie.Table<Action, string>
+  public choices: Dexie.Table<Choice, string>
   public conditions: Dexie.Table<Condition, string>
   public effects: Dexie.Table<Effect, string>
   public variables: Dexie.Table<Variable, string>
@@ -144,7 +144,7 @@ export class LibraryDatabase extends Dexie {
       chapters: '&id,gameId,title,*tags,updated',
       scenes: '&id,gameId,chapterId,title,*tags,updated',
       passages: '&id,gameId,sceneId,title,*tags,updated',
-      actions: '&id,title,*tags,updated',
+      choices: '&id,title,*tags,updated',
       conditions: '&id,title,*tags,updated',
       effects: '&id,title,*tags,updated',
       variables: '&id,title,*tags,updated'
@@ -156,7 +156,7 @@ export class LibraryDatabase extends Dexie {
     this.chapters = this.table(LIBRARY_TABLE.CHAPTERS)
     this.scenes = this.table(LIBRARY_TABLE.SCENES)
     this.passages = this.table(LIBRARY_TABLE.PASSAGES)
-    this.actions = this.table(LIBRARY_TABLE.ACTIONS)
+    this.choices = this.table(LIBRARY_TABLE.CHOICES)
     this.conditions = this.table(LIBRARY_TABLE.CONDITIONS)
     this.effects = this.table(LIBRARY_TABLE.EFFECTS)
     this.variables = this.table(LIBRARY_TABLE.VARIABLES)

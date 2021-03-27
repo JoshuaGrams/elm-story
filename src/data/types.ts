@@ -4,7 +4,7 @@ export enum COMPONENT_TYPE {
   CHAPTER = 'CHAPTER',
   SCENE = 'SCENE',
   PASSAGE = 'PASSAGE',
-  ACTION = 'ACTION',
+  CHOICE = 'CHOICE',
   CONDITION = 'CONDITION',
   EFFECT = 'EFFECT',
   VARIABLE = 'VARIABLE'
@@ -86,7 +86,7 @@ export interface Passage extends Component {
   content: string
 }
 
-export interface Action extends Component {
+export interface Choice extends Component {
   goto: [
     COMPONENT_TYPE.CHAPTER | COMPONENT_TYPE.SCENE | COMPONENT_TYPE.PASSAGE,
     ComponentId
