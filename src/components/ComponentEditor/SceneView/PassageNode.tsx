@@ -112,6 +112,8 @@ const PassageNode: React.FC<NodeProps<{
                           clonedChoices[index].id
                         )
 
+                        clonedChoices.splice(index, 1)
+
                         await api().passages.saveChoiceRefsToPassage(
                           data.studioId,
                           data.passageId,
