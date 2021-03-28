@@ -5,7 +5,7 @@ import { ComponentId, StudioId } from '../../../data/types'
 
 import { usePassage } from '../../../hooks'
 
-import { Button, Table } from 'antd'
+import { Table } from 'antd'
 
 export const PassageViewTools: React.FC<{
   studioId: StudioId
@@ -32,7 +32,7 @@ const PassageView: React.FC<{
             { title: 'ID', key: 'id', dataIndex: 'id' },
             { title: 'Title', key: 'title', dataIndex: 'title' },
             {
-              title: 'Scenes',
+              title: 'Choices',
               key: 'choiceTotal',
               dataIndex: 'choiceTotal'
             }
@@ -42,7 +42,7 @@ const PassageView: React.FC<{
               key: passage.id,
               id: passage.id,
               title: passage.title,
-              choiceTotal: 0
+              choiceTotal: passage.choices.length
             }
           ]}
           pagination={false}
