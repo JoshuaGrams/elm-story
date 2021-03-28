@@ -37,12 +37,12 @@ export async function removePassage(
   }
 }
 
-export async function getPassagesByGameId(
+export async function getPassagesByGameRef(
   studioId: StudioId,
   gameId: GameId
 ): Promise<Passage[]> {
   try {
-    return await new LibraryDatabase(studioId).getPassagesByGameId(gameId)
+    return await new LibraryDatabase(studioId).getPassagesByGameRef(gameId)
   } catch (error) {
     throw new Error(error)
   }
@@ -64,13 +64,31 @@ export async function savePassageTitle(
   }
 }
 
-export async function saveSceneIdToPassage(
+export async function saveSceneRefToPassage(
   studioId: StudioId,
   sceneId: ComponentId,
   passageId: ComponentId
 ) {
   try {
-    await new LibraryDatabase(studioId).saveSceneIdToPassage(sceneId, passageId)
+    await new LibraryDatabase(studioId).saveSceneRefToPassage(
+      sceneId,
+      passageId
+    )
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function saveChoiceRefsToPassage(
+  studioId: StudioId,
+  passageId: ComponentId,
+  choices: ComponentId[]
+) {
+  try {
+    await new LibraryDatabase(studioId).saveChoiceRefsToPassage(
+      passageId,
+      choices
+    )
   } catch (error) {
     throw new Error(error)
   }

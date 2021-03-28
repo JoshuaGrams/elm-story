@@ -83,14 +83,17 @@ export interface Scene extends Component {
 export interface Passage extends Component {
   gameId: GameId
   sceneId: ComponentId
+  choices: ComponentId[]
   content: string
 }
 
 export interface Choice extends Component {
+  gameId: GameId
+  passageId: ComponentId
   goto: [
     COMPONENT_TYPE.CHAPTER | COMPONENT_TYPE.SCENE | COMPONENT_TYPE.PASSAGE,
     ComponentId
-  ]
+  ] | []
   conditions: Condition[] | string[]
 }
 

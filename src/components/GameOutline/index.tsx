@@ -418,7 +418,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               break
             case COMPONENT_TYPE.SCENE:
               await Promise.all([
-                api().scenes.saveChapterIdToScene(
+                api().scenes.saveChapterRefToScene(
                   studioId,
                   destinationParent.id as ComponentId,
                   movingComponent.id as ComponentId
@@ -438,7 +438,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               break
             case COMPONENT_TYPE.PASSAGE:
               await Promise.all([
-                api().passages.saveSceneIdToPassage(
+                api().passages.saveSceneRefToPassage(
                   studioId,
                   destinationParent.id as ComponentId,
                   movingComponent.id as ComponentId
@@ -616,6 +616,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               gameId: game.id,
               sceneId: item.id as string,
               title: 'Untitled Passage',
+              choices: [],
               content: '',
               tags: []
             })
@@ -897,12 +898,15 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   useEffect(() => {
     async function getGameComponents() {
       if (game.id) {
-        const chapters = await api().chapters.getChaptersByGameId(
+        const chapters = await api().chapters.getChaptersByGameRef(
             studioId,
             game.id
           ),
           scenes = await api().scenes.getScenesByGameId(studioId, game.id),
-          passages = await api().passages.getPassagesByGameId(studioId, game.id)
+          passages = await api().passages.getPassagesByGameRef(
+            studioId,
+            game.id
+          )
 
         if (chapters && scenes && passages) {
           setTreeData(

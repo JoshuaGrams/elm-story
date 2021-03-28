@@ -1,6 +1,9 @@
-import { Button } from 'antd'
 import React, { memo, useEffect, useState } from 'react'
-import { v4 as uuid } from 'uuid'
+import { cloneDeep } from 'lodash'
+
+import { Choice, ComponentId, StudioId } from '../../../data/types'
+
+import { useChoicesByPassageRef, usePassage } from '../../../hooks'
 
 import {
   Handle,
@@ -9,13 +12,13 @@ import {
   Connection,
   Edge
 } from 'react-flow-renderer'
-import { ComponentId, StudioId } from '../../../data/types'
 
-import { usePassage } from '../../../hooks'
+import { Button } from 'antd'
+import { DeleteOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
-import { DeleteOutlined } from '@ant-design/icons'
-import { cloneDeep } from 'lodash'
+
+import api from '../../../api'
 
 const onConnect = (params: Connection | Edge) =>
   console.log('handle onConnect', params)
@@ -24,15 +27,37 @@ const PassageNode: React.FC<NodeProps<{
   studioId: StudioId
   passageId: ComponentId
 }>> = ({ data }) => {
-  const passage = usePassage(data.studioId, data.passageId)
+  const passage = usePassage(data.studioId, data.passageId),
+    choicesByPassageRef = useChoicesByPassageRef(data.studioId, data.passageId)
 
   const [choices, setChoices] = useState<
-    { id: ComponentId; handle: JSX.Element }[]
+    { id: ComponentId; title: string; handle: JSX.Element }[]
   >([])
 
   useEffect(() => {
-    console.log(choices)
-  }, [choices])
+    if (choicesByPassageRef) {
+      setChoices(
+        // @ts-ignore
+        choicesByPassageRef
+          .filter(
+            (choice): choice is Choice => choice && choice.id !== undefined
+          )
+          .map((choice) => ({
+            id: choice.id,
+            title: choice.title,
+            handle: (
+              <Handle
+                key={choice.id}
+                type="source"
+                style={{ top: 'auto', bottom: 'auto' }}
+                position={Position.Right}
+                id={`handle-${choice.id}`}
+              />
+            )
+          }))
+      )
+    }
+  }, [choicesByPassageRef])
 
   return (
     <div className={styles.passageNode}>
@@ -46,23 +71,27 @@ const PassageNode: React.FC<NodeProps<{
           <div>{passage.title}</div>
 
           <Button
-            onClick={() => {
-              const choiceId = uuid()
-              setChoices([
-                ...choices,
-                {
-                  id: choiceId,
-                  handle: (
-                    <Handle
-                      key={choiceId}
-                      type="source"
-                      style={{ top: 'auto', bottom: 'auto' }}
-                      position={Position.Right}
-                      id={`handle-${choiceId}`}
-                    />
+            onClick={async () => {
+              try {
+                const choice = await api().choices.saveChoice(data.studioId, {
+                  gameId: passage.gameId,
+                  passageId: data.passageId,
+                  title: 'Untitle Choice',
+                  goto: [],
+                  conditions: [],
+                  tags: []
+                })
+
+                if (choice.id) {
+                  await api().passages.saveChoiceRefsToPassage(
+                    data.studioId,
+                    data.passageId,
+                    [...passage.choices, choice.id]
                   )
                 }
-              ])
+              } catch (error) {
+                throw new Error(error)
+              }
             }}
           >
             Add Choice
@@ -72,15 +101,25 @@ const PassageNode: React.FC<NodeProps<{
             return (
               <>
                 <div>
-                  Choice {index}{' '}
+                  {choice.title}
                   <Button
-                    onClick={() => {
-                      console.log(index)
-                      const clonedChoices = cloneDeep(choices)
+                    onClick={async () => {
+                      try {
+                        const clonedChoices = cloneDeep(choices)
 
-                      clonedChoices.splice(index, 1)
+                        await api().choices.removeChoice(
+                          data.studioId,
+                          clonedChoices[index].id
+                        )
 
-                      setChoices(clonedChoices)
+                        await api().passages.saveChoiceRefsToPassage(
+                          data.studioId,
+                          data.passageId,
+                          clonedChoices.map((clonedChoice) => clonedChoice.id)
+                        )
+                      } catch (error) {
+                        throw new Error(error)
+                      }
                     }}
                   >
                     <DeleteOutlined />

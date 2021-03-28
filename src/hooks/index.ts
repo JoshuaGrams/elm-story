@@ -3,6 +3,7 @@ import useGames, { useGame } from './useGames'
 import useChapters, { useChapter } from './useChapters'
 import useScenes, { useScene } from './useScenes'
 import usePassages, { usePassage } from './usePassages'
+import useChoices, { useChoicesByPassageRef } from './useChoices'
 
 export {
   useStudios,
@@ -14,5 +15,7 @@ export {
   useScenes,
   useScene,
   usePassages,
-  usePassage
+  usePassage,
+  useChoices,
+  useChoicesByPassageRef
 }

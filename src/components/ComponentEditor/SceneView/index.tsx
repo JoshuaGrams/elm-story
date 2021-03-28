@@ -40,6 +40,7 @@ export const SceneViewTools: React.FC<{
                 gameId: scene.gameId,
                 sceneId: sceneId,
                 title: 'Untitled Passage',
+                choices: [],
                 content: '',
                 tags: []
               })

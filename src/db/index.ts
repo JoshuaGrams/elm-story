@@ -144,7 +144,7 @@ export class LibraryDatabase extends Dexie {
       chapters: '&id,gameId,title,*tags,updated',
       scenes: '&id,gameId,chapterId,title,*tags,updated',
       passages: '&id,gameId,sceneId,title,*tags,updated',
-      choices: '&id,title,*tags,updated',
+      choices: '&id,gameId,passageId,title,*tags,updated',
       conditions: '&id,title,*tags,updated',
       effects: '&id,title,*tags,updated',
       variables: '&id,title,*tags,updated'
@@ -174,7 +174,7 @@ export class LibraryDatabase extends Dexie {
     return component
   }
 
-  public async getComponentsByGameId(gameId: GameId, table: LIBRARY_TABLE) {
+  public async getComponentsByGameRef(gameId: GameId, table: LIBRARY_TABLE) {
     try {
       return await this[table].where({ gameId }).toArray()
     } catch (error) {
@@ -417,7 +417,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getChaptersByGameId(gameId: GameId): Promise<Chapter[]> {
+  public async getChaptersByGameRef(gameId: GameId): Promise<Chapter[]> {
     try {
       return await this.chapters.where({ gameId }).toArray()
     } catch (error) {
@@ -425,7 +425,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getSceneIdsByChapterId(
+  public async getSceneRefsByChapterRef(
     chapterId: ComponentId
   ): Promise<ComponentId[]> {
     try {
@@ -482,7 +482,7 @@ export class LibraryDatabase extends Dexie {
     return scene.id
   }
 
-  public async saveChapterIdToScene(
+  public async saveChapterRefToScene(
     chapterId: ComponentId,
     sceneId: ComponentId
   ) {
@@ -562,7 +562,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getPassageIdsBySceneId(
+  public async getPassageRefsBySceneRef(
     sceneId: ComponentId
   ): Promise<ComponentId[]> {
     try {
@@ -619,7 +619,7 @@ export class LibraryDatabase extends Dexie {
     return passage
   }
 
-  public async saveSceneIdToPassage(
+  public async saveSceneRefToPassage(
     sceneId: ComponentId,
     passageId: ComponentId
   ) {
@@ -636,8 +636,48 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async saveChoiceRefsToPassage(
+    passageId: ComponentId,
+    choices: ComponentId[]
+  ) {
+    try {
+      await this.transaction('rw', this.passages, async () => {
+        if (passageId) {
+          const passage = await this.getComponent(
+            LIBRARY_TABLE.PASSAGES,
+            passageId
+          )
+
+          if (passage) {
+            this.passages.update(passageId, { ...passage, choices })
+          } else {
+            throw new Error('Unable to save choice refs. Passage missing.')
+          }
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async removePassage(passageId: ComponentId) {
     try {
+      const choices = await this.choices.where({ passageId }).toArray()
+
+      if (choices.length > 0) {
+        logger.info(
+          `Removing ${choices.length} choices(s) from passage with ID: ${passageId}`
+        )
+      }
+
+      await Promise.all(
+        choices.map(async (choice) => {
+          if (choice.id) {
+            await this.choices.delete(choice.id)
+          }
+        })
+      )
+
       await this.transaction('rw', this.passages, async () => {
         if (await this.getComponent(LIBRARY_TABLE.PASSAGES, passageId)) {
           logger.info(`Removing passage with ID: ${passageId}`)
@@ -645,7 +685,7 @@ export class LibraryDatabase extends Dexie {
           await this.passages.delete(passageId)
         } else {
           throw new Error(
-            `Unable to remove scene with ID: '${passageId}'. Does not exist.`
+            `Unable to remove passage with ID: '${passageId}'. Does not exist.`
           )
         }
       })
@@ -654,9 +694,54 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getPassagesByGameId(gameId: GameId): Promise<Passage[]> {
+  public async getPassagesByGameRef(gameId: GameId): Promise<Passage[]> {
     try {
       return await this.passages.where({ gameId }).toArray()
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async saveChoice(choice: Choice): Promise<Choice> {
+    if (!choice.gameId)
+      throw new Error('Unable to save choice to database. Missing game ID.')
+    if (!choice.passageId)
+      throw new Error('Unable to save choice to database. Missing passage ID.')
+    if (!choice.id)
+      throw new Error('Unable to save choice to database. Missing ID.')
+
+    try {
+      await this.transaction('rw', this.choices, async () => {
+        if (choice.id) {
+          if (await this.getComponent(LIBRARY_TABLE.CHOICES, choice.id)) {
+            await this.choices.update(choice.id, choice)
+          } else {
+            await this.choices.add(choice)
+          }
+        } else {
+          throw new Error('Unable to save choice to database. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    return choice
+  }
+
+  public async removeChoice(choiceId: ComponentId) {
+    try {
+      await this.transaction('rw', this.choices, async () => {
+        if (await this.getComponent(LIBRARY_TABLE.CHOICES, choiceId)) {
+          logger.info(`Removing choice with ID: ${choiceId}`)
+
+          await this.choices.delete(choiceId)
+        } else {
+          throw new Error(
+            `Unable to remove choice with ID: '${choiceId}'. Does not exist.`
+          )
+        }
+      })
     } catch (error) {
       throw new Error(error)
     }

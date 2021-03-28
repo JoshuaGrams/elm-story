@@ -37,23 +37,25 @@ export async function removeChapter(
   }
 }
 
-export async function getChaptersByGameId(
+export async function getChaptersByGameRef(
   studioId: StudioId,
   gameId: GameId
 ): Promise<Chapter[]> {
   try {
-    return await new LibraryDatabase(studioId).getChaptersByGameId(gameId)
+    return await new LibraryDatabase(studioId).getChaptersByGameRef(gameId)
   } catch (error) {
     throw new Error(error)
   }
 }
 
-export async function getSceneIdsByChapterId(
+export async function getSceneRefsByChapterRef(
   studioId: StudioId,
   chapterId: ComponentId
 ): Promise<ComponentId[]> {
   try {
-    return await new LibraryDatabase(studioId).getSceneIdsByChapterId(chapterId)
+    return await new LibraryDatabase(studioId).getSceneRefsByChapterRef(
+      chapterId
+    )
   } catch (error) {
     throw new Error(error)
   }

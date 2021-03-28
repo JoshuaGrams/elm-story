@@ -376,7 +376,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
       const clonedTabs = cloneDeep(tabs)
 
       if (editor.removedComponent.type === COMPONENT_TYPE.CHAPTER) {
-        scenesById = await api().chapters.getSceneIdsByChapterId(
+        scenesById = await api().chapters.getSceneRefsByChapterRef(
           studioId,
           editor.removedComponent.id
         )
@@ -390,7 +390,10 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
           scenesById.map(async (sceneId) => {
             passagesById = [
               ...passagesById,
-              ...(await api().scenes.getPassageIdsBySceneId(studioId, sceneId))
+              ...(await api().scenes.getPassageRefsBySceneRef(
+                studioId,
+                sceneId
+              ))
             ]
           })
         )

@@ -45,12 +45,12 @@ export async function getScenesByGameId(
   }
 }
 
-export async function getPassageIdsBySceneId(
+export async function getPassageRefsBySceneRef(
   studioId: StudioId,
   sceneId: ComponentId
 ): Promise<ComponentId[]> {
   try {
-    return await new LibraryDatabase(studioId).getPassageIdsBySceneId(sceneId)
+    return await new LibraryDatabase(studioId).getPassageRefsBySceneRef(sceneId)
   } catch (error) {
     throw new Error(error)
   }
@@ -72,13 +72,16 @@ export async function saveSceneTitle(
   }
 }
 
-export async function saveChapterIdToScene(
+export async function saveChapterRefToScene(
   studioId: StudioId,
   chapterId: ComponentId,
   sceneId: ComponentId
 ) {
   try {
-    await new LibraryDatabase(studioId).saveChapterIdToScene(chapterId, sceneId)
+    await new LibraryDatabase(studioId).saveChapterRefToScene(
+      chapterId,
+      sceneId
+    )
   } catch (error) {
     throw new Error(error)
   }
