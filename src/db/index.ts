@@ -269,13 +269,16 @@ export class LibraryDatabase extends Dexie {
     try {
       const chapters = await this.chapters.where({ gameId }).toArray(),
         scenes = await this.scenes.where({ gameId }).toArray(),
-        passages = await this.passages.where({ gameId }).toArray()
+        passages = await this.passages.where({ gameId }).toArray(),
+        choices = await this.choices.where({ gameId }).toArray()
 
       logger.info(`Removing game with ID: ${gameId}`)
       logger.info(`CHAPTERS: Removing ${chapters.length}...`)
       logger.info(`SCENES: Removing ${scenes.length}...`)
       logger.info(`PASSAGES: Removing ${passages.length}...`)
+      logger.info(`CHOICES: Removing ${choices.length}...`)
 
+      // TODO: replace 'delete' method with methods that handle children
       await Promise.all([
         chapters.map(async (chapter) => {
           if (chapter.id) await this.chapters.delete(chapter.id)
@@ -285,6 +288,9 @@ export class LibraryDatabase extends Dexie {
         }),
         passages.map(async (passage) => {
           if (passage.id) await this.passages.delete(passage.id)
+        }),
+        choices.map(async (passage) => {
+          if (passage.id) await this.choices.delete(passage.id)
         })
       ])
 
@@ -392,7 +398,7 @@ export class LibraryDatabase extends Dexie {
 
             passages.map(async (passage) => {
               if (passage.id) {
-                await this.passages.delete(passage.id)
+                await this.removePassage(passage.id)
               }
             })
 
@@ -533,7 +539,7 @@ export class LibraryDatabase extends Dexie {
       await Promise.all(
         passages.map(async (passage) => {
           if (passage.id) {
-            await this.passages.delete(passage.id)
+            await this.removePassage(passage.id)
           }
         })
       )

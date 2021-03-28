@@ -6,6 +6,13 @@ import { Choice, ComponentId, StudioId } from '../../../data/types'
 import { useChoicesByPassageRef, usePassage } from '../../../hooks'
 
 import {
+  uniqueNamesGenerator,
+  adjectives,
+  animals,
+  colors
+} from 'unique-names-generator'
+
+import {
   Handle,
   Position,
   NodeProps,
@@ -76,7 +83,11 @@ const PassageNode: React.FC<NodeProps<{
                 const choice = await api().choices.saveChoice(data.studioId, {
                   gameId: passage.gameId,
                   passageId: data.passageId,
-                  title: 'Untitle Choice',
+                  title: uniqueNamesGenerator({
+                    dictionaries: [adjectives, animals, colors],
+                    separator: ' ',
+                    length: 2
+                  }),
                   goto: [],
                   conditions: [],
                   tags: []
