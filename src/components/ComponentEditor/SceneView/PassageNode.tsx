@@ -67,7 +67,7 @@ const PassageNode: React.FC<NodeProps<{
   }, [choicesByPassageRef])
 
   return (
-    <div className={styles.passageNode}>
+    <div className={styles.passageNode} key={passage?.id}>
       {passage ? (
         <>
           <Handle

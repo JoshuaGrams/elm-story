@@ -85,15 +85,21 @@ export interface Passage extends Component {
   sceneId: ComponentId
   choices: ComponentId[]
   content: string
+  editor?: {
+    componentEditorPosX?: number
+    componentEditorPosY?: number
+  }
 }
 
 export interface Choice extends Component {
   gameId: GameId
   passageId: ComponentId
-  goto: [
-    COMPONENT_TYPE.CHAPTER | COMPONENT_TYPE.SCENE | COMPONENT_TYPE.PASSAGE,
-    ComponentId
-  ] | []
+  goto:
+    | [
+        COMPONENT_TYPE.CHAPTER | COMPONENT_TYPE.SCENE | COMPONENT_TYPE.PASSAGE,
+        ComponentId
+      ]
+    | []
   conditions: Condition[] | string[]
 }
 
