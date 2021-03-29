@@ -1,3 +1,4 @@
+import { NodeExpandOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 import { cloneDeep } from 'lodash'
 import React, { useContext, useEffect, useState } from 'react'
@@ -15,7 +16,12 @@ import {
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
 
-import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
+import {
+  ComponentId,
+  COMPONENT_TYPE,
+  Passage,
+  StudioId
+} from '../../../data/types'
 
 import { usePassagesBySceneRef, useScene } from '../../../hooks'
 
@@ -101,6 +107,37 @@ const SceneView: React.FC<{
     }
   }
 
+  async function onSelectionDragStop(
+    event: React.MouseEvent<Element, MouseEvent>,
+    nodes: Node<any>[]
+  ) {
+    if (passages) {
+      const clonedPassages =
+        cloneDeep(
+          passages.filter(
+            (passage) =>
+              nodes.find((node) => node.id === passage.id) !== undefined
+          )
+        ) || []
+
+      Promise.all(
+        clonedPassages.map(async (clonedPassage) => {
+          // TODO: cache this
+          const foundNode = nodes.find((node) => node.id === clonedPassage.id)
+
+          foundNode &&
+            (await api().passages.savePassage(studioId, {
+              ...clonedPassage,
+              editor: {
+                componentEditorPosX: foundNode.position.x,
+                componentEditorPosY: foundNode.position.y
+              }
+            }))
+        })
+      )
+    }
+  }
+
   useEffect(() => {
     if (passages) {
       setNodes(
@@ -139,6 +176,8 @@ const SceneView: React.FC<{
               passageNode: PassageNode
             }}
             onNodeDragStop={onNodeDragStop}
+            onSelectionDragStop={onSelectionDragStop}
+            elementsSelectable
           >
             <Background size={1} />
             <Controls className={styles.control} />
