@@ -14,7 +14,8 @@ import {
   Choice,
   Condition,
   Effect,
-  Variable
+  Variable,
+  Route
 } from '../data/types'
 
 export enum DATABASE {
@@ -31,6 +32,7 @@ export enum LIBRARY_TABLE {
   GAMES = 'games',
   CHAPTERS = 'chapters',
   SCENES = 'scenes',
+  ROUTES = 'routes',
   PASSAGES = 'passages',
   CHOICES = 'choices',
   CONDITIONS = 'conditions',
@@ -130,6 +132,7 @@ export class LibraryDatabase extends Dexie {
   public games: Dexie.Table<Game, string>
   public chapters: Dexie.Table<Chapter, string>
   public scenes: Dexie.Table<Scene, string>
+  public routes: Dexie.Table<Route, string>
   public passages: Dexie.Table<Passage, string>
   public choices: Dexie.Table<Choice, string>
   public conditions: Dexie.Table<Condition, string>
@@ -143,6 +146,8 @@ export class LibraryDatabase extends Dexie {
       games: '&id,title,*tags,updated,template,director,version,engine',
       chapters: '&id,gameId,title,*tags,updated',
       scenes: '&id,gameId,chapterId,title,*tags,updated',
+      routes:
+        '&id,gamdId,sceneId,title,originId,choiceId,originType,destinationId,destinationType,*tags,updated',
       passages: '&id,gameId,sceneId,title,*tags,updated',
       choices: '&id,gameId,passageId,title,*tags,updated',
       conditions: '&id,title,*tags,updated',
@@ -155,6 +160,7 @@ export class LibraryDatabase extends Dexie {
     this.games = this.table(LIBRARY_TABLE.GAMES)
     this.chapters = this.table(LIBRARY_TABLE.CHAPTERS)
     this.scenes = this.table(LIBRARY_TABLE.SCENES)
+    this.routes = this.table(LIBRARY_TABLE.ROUTES)
     this.passages = this.table(LIBRARY_TABLE.PASSAGES)
     this.choices = this.table(LIBRARY_TABLE.CHOICES)
     this.conditions = this.table(LIBRARY_TABLE.CONDITIONS)
@@ -584,6 +590,49 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async saveRoute(route: Route): Promise<ComponentId> {
+    if (!route.sceneId)
+      throw new Error('Unable to save route to databse. Missing scene ID.')
+    if (!route.id)
+      throw new Error('Unable to save route to database. Missing ID.')
+
+    try {
+      await this.transaction('rw', this.routes, async () => {
+        if (route.id) {
+          if (await this.getComponent(LIBRARY_TABLE.ROUTES, route.id)) {
+            await this.routes.update(route.id, route)
+          } else {
+            await this.routes.add(route)
+          }
+        } else {
+          throw new Error('Unable to save route to database. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    return route.id
+  }
+
+  public async removeRoute(routeId: ComponentId) {
+    try {
+      await this.transaction('rw', this.routes, async () => {
+        if (await this.getComponent(LIBRARY_TABLE.ROUTES, routeId)) {
+          logger.info(`Removing route with ID: ${routeId}`)
+
+          await this.routes.delete(routeId)
+        } else {
+          throw new Error(
+            `Unable to remove route with ID: '${routeId}'. Does not exist.`
+          )
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async getPassage(passageId: ComponentId): Promise<Passage> {
     try {
       const passage = await this.passages.get(passageId)
@@ -679,7 +728,7 @@ export class LibraryDatabase extends Dexie {
       await Promise.all(
         choices.map(async (choice) => {
           if (choice.id) {
-            await this.choices.delete(choice.id)
+            await this.removeChoice(choice.id)
           }
         })
       )
@@ -737,6 +786,22 @@ export class LibraryDatabase extends Dexie {
 
   public async removeChoice(choiceId: ComponentId) {
     try {
+      const routes = await this.routes.where({ choiceId }).toArray()
+
+      if (routes.length > 0) {
+        logger.info(
+          `Removing ${routes.length} route(s) from choice with ID: ${choiceId}`
+        )
+      }
+
+      await Promise.all(
+        routes.map(async (route) => {
+          if (route.id) {
+            await this.removeRoute(route.id)
+          }
+        })
+      )
+
       await this.transaction('rw', this.choices, async () => {
         if (await this.getComponent(LIBRARY_TABLE.CHOICES, choiceId)) {
           logger.info(`Removing choice with ID: ${choiceId}`)

@@ -3,6 +3,7 @@ export enum COMPONENT_TYPE {
   GAME = 'GAME',
   CHAPTER = 'CHAPTER',
   SCENE = 'SCENE',
+  ROUTE = 'ROUTE',
   PASSAGE = 'PASSAGE',
   CHOICE = 'CHOICE',
   CONDITION = 'CONDITION',
@@ -78,6 +79,16 @@ export interface Scene extends Component {
   gameId: GameId
   chapterId: ComponentId
   passages: ComponentId[]
+}
+
+export interface Route extends Component {
+  gameId: GameId
+  sceneId: ComponentId
+  originId: ComponentId
+  choiceId?: ComponentId
+  originType: COMPONENT_TYPE
+  destinationId: ComponentId
+  destinationType: COMPONENT_TYPE
 }
 
 export interface Passage extends Component {

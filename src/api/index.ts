@@ -5,6 +5,7 @@ import * as studios from './studios'
 import * as games from './games'
 import * as chapters from './chapters'
 import * as scenes from './scenes'
+import * as routes from './routes'
 import * as passages from './passages'
 import * as choices from './choices'
 // import * as conditions from './conditions'
@@ -16,6 +17,7 @@ export default () => ({
   games,
   chapters,
   scenes,
+  routes,
   passages,
   choices
   // conditions,
