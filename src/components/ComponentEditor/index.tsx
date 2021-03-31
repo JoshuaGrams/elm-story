@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { cloneDeep, uniqueId } from 'lodash'
+import { cloneDeep } from 'lodash'
 import logger from '../../lib/logger'
 
 import { ComponentId, COMPONENT_TYPE, Game, StudioId } from '../../data/types'
@@ -56,6 +56,9 @@ function createBaseLayoutData(studioId: StudioId, game: Game): LayoutData {
               id: game.id,
               content: (
                 <TabContent
+                  studioId={studioId}
+                  id={game.id}
+                  type={COMPONENT_TYPE.GAME}
                   tools={<GameViewTools studioId={studioId} gameId={game.id} />}
                   view={<GameView studioId={studioId} gameId={game.id} />}
                 />
@@ -79,6 +82,9 @@ function getTabContent(
     case COMPONENT_TYPE.CHAPTER:
       return (
         <TabContent
+          studioId={studioId}
+          id={id}
+          type={type}
           tools={<ChapterViewTools studioId={studioId} chapterId={id} />}
           view={<ChapterView studioId={studioId} chapterId={id} />}
         />
@@ -86,6 +92,9 @@ function getTabContent(
     case COMPONENT_TYPE.SCENE:
       return (
         <TabContent
+          studioId={studioId}
+          id={id}
+          type={type}
           tools={<SceneViewTools studioId={studioId} sceneId={id} />}
           view={<SceneView studioId={studioId} sceneId={id} />}
         />
@@ -93,6 +102,9 @@ function getTabContent(
     case COMPONENT_TYPE.PASSAGE:
       return (
         <TabContent
+          studioId={studioId}
+          id={id}
+          type={type}
           tools={<PassageViewTools studioId={studioId} passageId={id} />}
           view={<PassageView studioId={studioId} passageId={id} />}
         />
