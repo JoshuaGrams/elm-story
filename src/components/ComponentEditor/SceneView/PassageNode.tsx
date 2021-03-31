@@ -9,8 +9,8 @@ import { Choice, ComponentId, Route, StudioId } from '../../../data/types'
 import {
   useChoicesByPassageRef,
   usePassage,
-  useRoutesByPassageRef,
-  useRoutesByChoiceRef
+  useRoutesByChoiceRef,
+  useRoutesBySceneRef
 } from '../../../hooks'
 
 import {
@@ -34,9 +34,6 @@ import { PlusOutlined } from '@ant-design/icons'
 import styles from './styles.module.less'
 
 import api from '../../../api'
-
-const onConnect = (params: Connection | Edge) =>
-  logger.info('handle onConnect', params)
 
 const ChoiceRow: React.FC<{
   studioId: StudioId
@@ -71,8 +68,12 @@ const ChoiceRow: React.FC<{
           </Menu>
         }
       >
-        <div>
-          <div>{title}</div>
+        <div
+          onClick={() => {
+            logger.info(`onClick: choice: ${choiceId}`)
+          }}
+        >
+          {title}
         </div>
       </Dropdown>
       {handle}
@@ -80,12 +81,90 @@ const ChoiceRow: React.FC<{
   )
 }
 
+const PassageHandle: React.FC<{
+  studioId: StudioId
+  sceneId: ComponentId
+  passageId: ComponentId
+}> = ({ studioId, sceneId, passageId }) => {
+  // TODO: do we really need to get access to routes on every passage?
+  const routes = useRoutesBySceneRef(studioId, sceneId)
+
+  return (
+    <Handle
+      type="target"
+      id={passageId}
+      style={{ top: '50%', bottom: '50%' }}
+      position={Position.Left}
+      isValidConnection={(connection: Connection): boolean => {
+        logger.info('isValidConnection')
+
+        if (
+          routes &&
+          !routes.find(
+            (route) =>
+              route.choiceId === connection.sourceHandle &&
+              route.destinationId === connection.target
+          )
+        ) {
+          logger.info(
+            `Route possible from choice: ${connection.sourceHandle} to passage: ${connection.target}`
+          )
+          return true
+        } else {
+          logger.info('Duplicate route not possible.')
+          return false
+        }
+      }}
+    ></Handle>
+  )
+}
+
+const ChoiceHandle: React.FC<{
+  studioId: StudioId
+  sceneId: ComponentId
+  choiceId: ComponentId
+}> = ({ studioId, sceneId, choiceId }) => {
+  // TODO: do we really need to get access to routes on every choice?
+  const routes = useRoutesBySceneRef(studioId, sceneId)
+
+  return (
+    <Handle
+      key={choiceId}
+      type="source"
+      className={styles.choiceHandle}
+      style={{ top: '50%', bottom: '50%' }}
+      position={Position.Right}
+      id={choiceId}
+      isValidConnection={(connection: Connection): boolean => {
+        logger.info('isValidConnection')
+
+        if (
+          routes &&
+          !routes.find(
+            (route) =>
+              route.choiceId === connection.sourceHandle &&
+              route.destinationId === connection.target
+          )
+        ) {
+          logger.info(
+            `Route possible from choice: ${connection.sourceHandle} to passage: ${connection.target}`
+          )
+          return true
+        } else {
+          logger.info('Duplicate route not possible.')
+          return false
+        }
+      }}
+    ></Handle>
+  )
+}
+
 const PassageNode: React.FC<NodeProps<{
   studioId: StudioId
+  sceneId: ComponentId
   passageId: ComponentId
 }>> = ({ data }) => {
   const passage = usePassage(data.studioId, data.passageId),
-    incomingRoutes = useRoutesByPassageRef(data.studioId, data.passageId),
     choicesByPassageRef = useChoicesByPassageRef(data.studioId, data.passageId)
 
   const [choices, setChoices] = useState<
@@ -100,47 +179,37 @@ const PassageNode: React.FC<NodeProps<{
           .filter(
             (choice): choice is Choice => choice && choice.id !== undefined
           )
-          .map((choice) => ({
-            id: choice.id,
-            title: choice.title,
-            handle: (
-              <Handle
-                key={choice.id}
-                type="source"
-                className={styles.choiceHandle}
-                style={{ top: '50%', bottom: '50%' }}
-                position={Position.Right}
-                id={choice.id}
-                isValidConnection={(connection: Connection) => {
-                  logger.info('isValidConnection')
-                  console.log(connection)
-                  console.log(incomingRoutes)
-                  return true
-                }}
-              />
-            )
-          }))
+          .map((choice) => {
+            if (!choice.id)
+              throw new Error('Unable to generate handle. Missing choice ID.')
+
+            return {
+              id: choice.id,
+              title: choice.title,
+              handle: (
+                <ChoiceHandle
+                  studioId={data.studioId}
+                  sceneId={data.sceneId}
+                  choiceId={choice.id}
+                />
+              )
+            }
+          })
       )
     }
   }, [choicesByPassageRef])
 
-  useEffect(() => {
-    logger.info('useEffect: incomingRoutes')
-    console.log(incomingRoutes)
-  }, [incomingRoutes])
-
   return (
     <div className={styles.passageNode} key={passage?.id}>
-      {passage ? (
+      {passage && passage.id ? (
         <>
-          <div>
-            <Handle
-              type="target"
-              id={passage.id}
-              style={{ top: '50%', bottom: '50%' }}
-              position={Position.Left}
-              onConnect={onConnect}
+          <div onClick={() => logger.info(`onClick: passage: ${passage.id}`)}>
+            <PassageHandle
+              studioId={data.studioId}
+              sceneId={data.sceneId}
+              passageId={passage.id}
             />
+
             <h1>{passage.title}</h1>
           </div>
 

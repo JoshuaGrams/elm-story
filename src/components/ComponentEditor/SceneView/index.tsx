@@ -220,7 +220,7 @@ const SceneView: React.FC<{
   }
 
   useEffect(() => {
-    if (passages && routes) {
+    if (scene && passages && routes) {
       // TODO: optimize; this is re-rendering too much
       const nodes: Node[] = passages.map((passage) => {
           if (!passage.id)
@@ -230,6 +230,7 @@ const SceneView: React.FC<{
             id: passage.id,
             data: {
               studioId,
+              sceneId: scene.id,
               passageId: passage.id,
               type: COMPONENT_TYPE.PASSAGE
             },
