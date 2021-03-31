@@ -199,22 +199,24 @@ const SceneView: React.FC<{
       })
     )
 
-    const clonedScene = cloneDeep(scene)
+    // TODO: issue #45
 
-    if (clonedScene && clonedScene.id) {
-      await Promise.all([
-        api().scenes.savePassageRefsToScene(
-          studioId,
-          clonedScene.id,
-          clonedScene.passages.filter(
-            (passageRef) => !passageRefs.includes(passageRef)
-          )
-        ),
-        passageRefs.map(async (passageRef) => {
-          await api().passages.removePassage(studioId, passageRef)
-        })
-      ])
-    }
+    // const clonedScene = cloneDeep(scene)
+
+    // if (clonedScene && clonedScene.id) {
+    //   await Promise.all([
+    //     api().scenes.savePassageRefsToScene(
+    //       studioId,
+    //       clonedScene.id,
+    //       clonedScene.passages.filter(
+    //         (passageRef) => !passageRefs.includes(passageRef)
+    //       )
+    //     ),
+    //     passageRefs.map(async (passageRef) => {
+    //       await api().passages.removePassage(studioId, passageRef)
+    //     })
+    //   ])
+    // }
   }
 
   useEffect(() => {

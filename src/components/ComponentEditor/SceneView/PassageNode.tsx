@@ -28,8 +28,8 @@ import {
   Edge
 } from 'react-flow-renderer'
 
-import { Button, Divider, Dropdown, Menu } from 'antd'
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Menu } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
