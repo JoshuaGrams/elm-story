@@ -2,6 +2,7 @@ import logger from '../../../lib/logger'
 
 import React, { memo, useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash'
+import { v4 as uuid } from 'uuid'
 
 import { Choice, ComponentId, Route, StudioId } from '../../../data/types'
 
@@ -27,8 +28,8 @@ import {
   Edge
 } from 'react-flow-renderer'
 
-import { Button } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
+import { Button, Divider, Dropdown, Menu } from 'antd'
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
@@ -41,26 +42,41 @@ const ChoiceRow: React.FC<{
   studioId: StudioId
   choiceId: ComponentId
   title: string
+  showDivider: boolean
   handle: JSX.Element
   onDelete: (choiceId: ComponentId, outgoingRoutes: Route[]) => void
-}> = ({ studioId, choiceId, title, handle, onDelete }) => {
+}> = ({ studioId, choiceId, title, showDivider = true, handle, onDelete }) => {
   const outgoingRoutes = useRoutesByChoiceRef(studioId, choiceId)
 
   return (
-    <>
-      <div>
-        <div>{title}</div>
-        <div style={{ fontSize: 10 }}>{choiceId}</div>
-        <Button
-          onClick={() => {
-            onDelete(choiceId, outgoingRoutes || [])
-          }}
-        >
-          <DeleteOutlined />
-        </Button>
-      </div>
+    <div
+      className={`${styles.choiceRow} nodrag`}
+      style={{
+        borderBottom: showDivider ? '1px solid hsl(0, 0%, 0%)' : 'none'
+      }}
+    >
+      <Dropdown
+        trigger={['contextMenu']}
+        overlay={
+          <Menu>
+            <Menu.Item
+              onClick={(event) => {
+                event.domEvent.stopPropagation()
+
+                onDelete(choiceId, outgoingRoutes || [])
+              }}
+            >
+              Remove Choice...
+            </Menu.Item>
+          </Menu>
+        }
+      >
+        <div>
+          <div>{title}</div>
+        </div>
+      </Dropdown>
       {handle}
-    </>
+    </div>
   )
 }
 
@@ -91,7 +107,8 @@ const PassageNode: React.FC<NodeProps<{
               <Handle
                 key={choice.id}
                 type="source"
-                style={{ top: 'auto', bottom: 'auto' }}
+                className={styles.choiceHandle}
+                style={{ top: '50%', bottom: '50%' }}
                 position={Position.Right}
                 id={choice.id}
                 isValidConnection={(connection: Connection) => {
@@ -116,19 +133,99 @@ const PassageNode: React.FC<NodeProps<{
     <div className={styles.passageNode} key={passage?.id}>
       {passage ? (
         <>
-          <Handle
-            type="target"
-            id={passage.id}
-            position={Position.Left}
-            onConnect={onConnect}
-          />
-          <div>{passage.title}</div>
-          <div style={{ fontSize: 10 }}>{passage.id}</div>
+          <div>
+            <Handle
+              type="target"
+              id={passage.id}
+              style={{ top: '50%', bottom: '50%' }}
+              position={Position.Left}
+              onConnect={onConnect}
+            />
+            <h1>{passage.title}</h1>
+          </div>
+
+          <div className={styles.choices}>
+            {choices
+              .sort(
+                (a, b) =>
+                  passage.choices.findIndex((choiceId) => a.id === choiceId) -
+                  passage.choices.findIndex((choiceId) => b.id === choiceId)
+              )
+              .map((choice, index) => {
+                return (
+                  <>
+                    {choice.id && (
+                      <ChoiceRow
+                        key={choice.id}
+                        studioId={data.studioId}
+                        choiceId={choice.id}
+                        title={choice.title}
+                        showDivider={choices.length - 1 !== index}
+                        handle={choice.handle}
+                        onDelete={async (choiceId, outgoingRoutes) => {
+                          try {
+                            const clonedChoices = cloneDeep(choices),
+                              foundChoiceIndex = clonedChoices.findIndex(
+                                (clonedChoice) => clonedChoice.id === choiceId
+                              )
+
+                            if (foundChoiceIndex !== -1) {
+                              await Promise.all(
+                                outgoingRoutes.map(async (outgoingRoute) => {
+                                  if (!outgoingRoute.id)
+                                    throw new Error(
+                                      'Unable to remove route. Missing ID'
+                                    )
+
+                                  await api().routes.removeRoute(
+                                    data.studioId,
+                                    outgoingRoute.id
+                                  )
+                                })
+                              )
+
+                              await api().choices.removeChoice(
+                                data.studioId,
+                                clonedChoices[foundChoiceIndex].id
+                              )
+
+                              clonedChoices.splice(foundChoiceIndex, 1)
+
+                              await api().passages.saveChoiceRefsToPassage(
+                                data.studioId,
+                                data.passageId,
+                                clonedChoices.map(
+                                  (clonedChoice) => clonedChoice.id
+                                )
+                              )
+                            }
+                          } catch (error) {
+                            throw new Error(error)
+                          }
+                        }}
+                      />
+                    )}
+                  </>
+                )
+              })}
+          </div>
 
           <Button
+            className={`${styles.addChoiceButton} nodrag`}
+            size="small"
+            type="text"
             onClick={async () => {
               try {
-                const choice = await api().choices.saveChoice(data.studioId, {
+                const choiceId = uuid()
+
+                await api().passages.saveChoiceRefsToPassage(
+                  data.studioId,
+                  data.passageId,
+                  [...passage.choices, choiceId]
+                )
+
+                await api().choices.saveChoice(data.studioId, {
+                  id: choiceId,
                   gameId: passage.gameId,
                   passageId: data.passageId,
                   title: uniqueNamesGenerator({
@@ -140,76 +237,13 @@ const PassageNode: React.FC<NodeProps<{
                   conditions: [],
                   tags: []
                 })
-
-                if (choice.id) {
-                  await api().passages.saveChoiceRefsToPassage(
-                    data.studioId,
-                    data.passageId,
-                    [...passage.choices, choice.id]
-                  )
-                }
               } catch (error) {
                 throw new Error(error)
               }
             }}
           >
-            Add Choice
+            <PlusOutlined />
           </Button>
-
-          {choices.map((choice) => {
-            return (
-              <>
-                {choice.id && (
-                  <ChoiceRow
-                    key={choice.id}
-                    studioId={data.studioId}
-                    choiceId={choice.id}
-                    title={choice.title}
-                    handle={choice.handle}
-                    onDelete={async (choiceId, outgoingRoutes) => {
-                      try {
-                        const clonedChoices = cloneDeep(choices),
-                          foundChoiceIndex = clonedChoices.findIndex(
-                            (clonedChoice) => clonedChoice.id === choiceId
-                          )
-
-                        if (foundChoiceIndex !== -1) {
-                          await Promise.all(
-                            outgoingRoutes.map(async (outgoingRoute) => {
-                              if (!outgoingRoute.id)
-                                throw new Error(
-                                  'Unable to remove route. Missing ID'
-                                )
-
-                              await api().routes.removeRoute(
-                                data.studioId,
-                                outgoingRoute.id
-                              )
-                            })
-                          )
-
-                          await api().choices.removeChoice(
-                            data.studioId,
-                            clonedChoices[foundChoiceIndex].id
-                          )
-
-                          clonedChoices.splice(foundChoiceIndex, 1)
-
-                          await api().passages.saveChoiceRefsToPassage(
-                            data.studioId,
-                            data.passageId,
-                            clonedChoices.map((clonedChoice) => clonedChoice.id)
-                          )
-                        }
-                      } catch (error) {
-                        throw new Error(error)
-                      }
-                    }}
-                  />
-                )}
-              </>
-            )
-          })}
         </>
       ) : (
         <div>...</div>

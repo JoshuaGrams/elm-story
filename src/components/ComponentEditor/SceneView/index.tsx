@@ -252,6 +252,7 @@ const SceneView: React.FC<{
             targetHandle: route.destinationId,
             type: 'default',
             arrowHeadType: ArrowHeadType.ArrowClosed,
+            animated: true,
             data: {
               type: COMPONENT_TYPE.ROUTE
             }

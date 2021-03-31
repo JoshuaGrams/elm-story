@@ -14,10 +14,6 @@ const useChoices = (
     undefined
   )
 
-  // TODO: sort by how user has ordered them in the editor?
-  // TODO:...or don't sort and let editor track order?
-  if (choices) choices.sort((a, b) => (a.title > b.title ? 1 : -1))
-
   return choices
 }
 
@@ -34,10 +30,6 @@ const useChoicesByPassageRef = (
     deps || [],
     undefined
   )
-
-  // TODO: sort by how user has ordered them in the editor?
-  // TODO:...or don't sort and let editor track order?
-  if (choices) choices.sort((a, b) => (a.title > b.title ? 1 : -1))
 
   return choices
 }
