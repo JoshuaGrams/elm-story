@@ -1,33 +1,42 @@
-import { NodeExpandOutlined } from '@ant-design/icons'
-import { Button } from 'antd'
-import { cloneDeep } from 'lodash'
+import logger from '../../../lib/logger'
+
 import React, { useContext, useEffect, useState } from 'react'
-import ReactFlow, {
-  ReactFlowProvider,
-  Background, // TODO: https://github.com/wbkd/react-flow/issues/1037
-  MiniMap,
-  Controls,
-  FlowElement,
-  Node
-} from 'react-flow-renderer'
-import api from '../../../api'
+import { cloneDeep } from 'lodash'
+
+import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
+
 import {
   EditorContext,
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
 
 import {
-  ComponentId,
-  COMPONENT_TYPE,
-  Passage,
-  StudioId
-} from '../../../data/types'
+  usePassagesBySceneRef,
+  useRoutesBySceneRef,
+  useScene
+} from '../../../hooks'
 
-import { usePassagesBySceneRef, useScene } from '../../../hooks'
+import ReactFlow, {
+  ReactFlowProvider,
+  Background,
+  MiniMap,
+  Controls,
+  FlowElement,
+  Node,
+  OnConnectStartParams,
+  Edge,
+  Connection,
+  Elements,
+  ArrowHeadType
+} from 'react-flow-renderer'
+
+import { Button } from 'antd'
 
 import PassageNode from './PassageNode'
 
 import styles from './styles.module.less'
+
+import api from '../../../api'
 
 export const SceneViewTools: React.FC<{
   studioId: StudioId
@@ -83,9 +92,11 @@ const SceneView: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
 }> = ({ studioId, sceneId }) => {
-  const passages = usePassagesBySceneRef(studioId, sceneId)
+  const scene = useScene(studioId, sceneId),
+    routes = useRoutesBySceneRef(studioId, sceneId),
+    passages = usePassagesBySceneRef(studioId, sceneId)
 
-  const [nodes, setNodes] = useState<FlowElement[]>([])
+  const [elements, setElements] = useState<FlowElement[]>([])
 
   async function onNodeDragStop(
     event: React.MouseEvent<Element, MouseEvent>,
@@ -104,6 +115,29 @@ const SceneView: React.FC<{
           }
         })
       }
+    }
+  }
+
+  async function onConnect(connection: Edge<any> | Connection) {
+    logger.info('onConnect')
+
+    if (
+      scene &&
+      connection.source &&
+      connection.sourceHandle &&
+      connection.targetHandle
+    ) {
+      api().routes.saveRoute(studioId, {
+        title: '',
+        gameId: scene.gameId,
+        sceneId,
+        originId: connection.source,
+        choiceId: connection.sourceHandle,
+        originType: COMPONENT_TYPE.CHOICE,
+        destinationId: connection.targetHandle,
+        destinationType: COMPONENT_TYPE.PASSAGE,
+        tags: []
+      })
     }
   }
 
@@ -138,10 +172,55 @@ const SceneView: React.FC<{
     }
   }
 
+  async function onElementsRemove(elements: Elements<any>) {
+    logger.info('onElementsRemove')
+
+    const routeRefs: ComponentId[] = [],
+      passageRefs: ComponentId[] = []
+
+    elements.map((element) => {
+      // TODO: improve types
+      switch (element.data.type as COMPONENT_TYPE) {
+        case COMPONENT_TYPE.ROUTE:
+          routeRefs.push(element.id)
+          break
+        case COMPONENT_TYPE.PASSAGE:
+          passageRefs.push(element.id)
+          break
+        default:
+          logger.info('Unknown element type.')
+          return
+      }
+    })
+
+    await Promise.all(
+      routeRefs.map(async (routeRef) => {
+        await api().routes.removeRoute(studioId, routeRef)
+      })
+    )
+
+    const clonedScene = cloneDeep(scene)
+
+    if (clonedScene && clonedScene.id) {
+      await Promise.all([
+        api().scenes.savePassageRefsToScene(
+          studioId,
+          clonedScene.id,
+          clonedScene.passages.filter(
+            (passageRef) => !passageRefs.includes(passageRef)
+          )
+        ),
+        passageRefs.map(async (passageRef) => {
+          await api().passages.removePassage(studioId, passageRef)
+        })
+      ])
+    }
+  }
+
   useEffect(() => {
-    if (passages) {
-      setNodes(
-        passages.map((passage) => {
+    if (passages && routes) {
+      // TODO: optimize; this is re-rendering too much
+      const nodes: Node[] = passages.map((passage) => {
           if (!passage.id)
             throw new Error('Unable to set nodes. Missing passage ID.')
 
@@ -149,7 +228,8 @@ const SceneView: React.FC<{
             id: passage.id,
             data: {
               studioId,
-              passageId: passage.id
+              passageId: passage.id,
+              type: COMPONENT_TYPE.PASSAGE
             },
             type: 'passageNode',
             position: passage.editor
@@ -159,32 +239,67 @@ const SceneView: React.FC<{
                 }
               : { x: 0, y: 0 }
           }
+        }),
+        edges: Edge[] = routes.map((route) => {
+          if (!route.id)
+            throw new Error('Unable to generate edge. Missing route ID.')
+
+          return {
+            id: route.id,
+            source: route.originId,
+            sourceHandle: route.choiceId, // TODO: this will change with entrances / exits
+            target: route.destinationId,
+            targetHandle: route.destinationId,
+            type: 'default',
+            arrowHeadType: ArrowHeadType.ArrowClosed,
+            data: {
+              type: COMPONENT_TYPE.ROUTE
+            }
+          }
         })
-      )
+
+      // BUG: Unable to create edges on initial node render because choices aren't ready
+      setElements([...nodes, ...edges])
     }
-  }, [passages])
+  }, [passages, routes])
 
   return (
     <>
       {passages && (
-        // <div style={{ position: 'absolute', width: '100%', height: '100%' }}>
         <ReactFlowProvider>
           <ReactFlow
-            elements={nodes}
             snapToGrid
             nodeTypes={{
               passageNode: PassageNode
             }}
+            onlyRenderVisibleElements={false}
+            // TODO: fit to saved editor transform (pan/zoom)
+            onLoad={(reactFlowInstance) => reactFlowInstance.fitView()}
+            elements={elements}
+            onElementsRemove={onElementsRemove}
             onNodeDragStop={onNodeDragStop}
-            onSelectionDragStop={onSelectionDragStop}
+            onConnectStart={(
+              event: React.MouseEvent<Element, MouseEvent>,
+              params: OnConnectStartParams
+            ) => {
+              // nodeId: passage ID
+              // handleId: passage ID or choice ID
+              // handleType: 'target' passage ID / 'source' choice ID
+              logger.info('onConnectStart')
+            }}
+            onConnect={onConnect}
             elementsSelectable
+            onSelectionDragStop={onSelectionDragStop}
+            onSelectionChange={(elements: Elements<any> | null) => {
+              logger.info('onSelectionChange')
+              console.log(elements)
+            }}
           >
             <Background size={1} />
             <Controls className={styles.control} />
             <MiniMap />
           </ReactFlow>
         </ReactFlowProvider>
-        // </div>
       )}
     </>
   )

@@ -1,9 +1,16 @@
+import logger from '../../../lib/logger'
+
 import React, { memo, useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash'
 
-import { Choice, ComponentId, StudioId } from '../../../data/types'
+import { Choice, ComponentId, Route, StudioId } from '../../../data/types'
 
-import { useChoicesByPassageRef, usePassage } from '../../../hooks'
+import {
+  useChoicesByPassageRef,
+  usePassage,
+  useRoutesByPassageRef,
+  useRoutesByChoiceRef
+} from '../../../hooks'
 
 import {
   uniqueNamesGenerator,
@@ -28,13 +35,41 @@ import styles from './styles.module.less'
 import api from '../../../api'
 
 const onConnect = (params: Connection | Edge) =>
-  console.log('handle onConnect', params)
+  logger.info('handle onConnect', params)
+
+const ChoiceRow: React.FC<{
+  studioId: StudioId
+  choiceId: ComponentId
+  title: string
+  handle: JSX.Element
+  onDelete: (choiceId: ComponentId, outgoingRoutes: Route[]) => void
+}> = ({ studioId, choiceId, title, handle, onDelete }) => {
+  const outgoingRoutes = useRoutesByChoiceRef(studioId, choiceId)
+
+  return (
+    <>
+      <div>
+        <div>{title}</div>
+        <div style={{ fontSize: 10 }}>{choiceId}</div>
+        <Button
+          onClick={() => {
+            onDelete(choiceId, outgoingRoutes || [])
+          }}
+        >
+          <DeleteOutlined />
+        </Button>
+      </div>
+      {handle}
+    </>
+  )
+}
 
 const PassageNode: React.FC<NodeProps<{
   studioId: StudioId
   passageId: ComponentId
 }>> = ({ data }) => {
   const passage = usePassage(data.studioId, data.passageId),
+    incomingRoutes = useRoutesByPassageRef(data.studioId, data.passageId),
     choicesByPassageRef = useChoicesByPassageRef(data.studioId, data.passageId)
 
   const [choices, setChoices] = useState<
@@ -58,7 +93,13 @@ const PassageNode: React.FC<NodeProps<{
                 type="source"
                 style={{ top: 'auto', bottom: 'auto' }}
                 position={Position.Right}
-                id={`handle-${choice.id}`}
+                id={choice.id}
+                isValidConnection={(connection: Connection) => {
+                  logger.info('isValidConnection')
+                  console.log(connection)
+                  console.log(incomingRoutes)
+                  return true
+                }}
               />
             )
           }))
@@ -66,16 +107,23 @@ const PassageNode: React.FC<NodeProps<{
     }
   }, [choicesByPassageRef])
 
+  useEffect(() => {
+    logger.info('useEffect: incomingRoutes')
+    console.log(incomingRoutes)
+  }, [incomingRoutes])
+
   return (
     <div className={styles.passageNode} key={passage?.id}>
       {passage ? (
         <>
           <Handle
             type="target"
+            id={passage.id}
             position={Position.Left}
             onConnect={onConnect}
           />
           <div>{passage.title}</div>
+          <div style={{ fontSize: 10 }}>{passage.id}</div>
 
           <Button
             onClick={async () => {
@@ -108,38 +156,57 @@ const PassageNode: React.FC<NodeProps<{
             Add Choice
           </Button>
 
-          {choices.map((choice, index) => {
+          {choices.map((choice) => {
             return (
               <>
-                <div>
-                  {choice.title}
-                  <Button
-                    onClick={async () => {
+                {choice.id && (
+                  <ChoiceRow
+                    key={choice.id}
+                    studioId={data.studioId}
+                    choiceId={choice.id}
+                    title={choice.title}
+                    handle={choice.handle}
+                    onDelete={async (choiceId, outgoingRoutes) => {
                       try {
-                        const clonedChoices = cloneDeep(choices)
+                        const clonedChoices = cloneDeep(choices),
+                          foundChoiceIndex = clonedChoices.findIndex(
+                            (clonedChoice) => clonedChoice.id === choiceId
+                          )
 
-                        await api().choices.removeChoice(
-                          data.studioId,
-                          clonedChoices[index].id
-                        )
+                        if (foundChoiceIndex !== -1) {
+                          await Promise.all(
+                            outgoingRoutes.map(async (outgoingRoute) => {
+                              if (!outgoingRoute.id)
+                                throw new Error(
+                                  'Unable to remove route. Missing ID'
+                                )
 
-                        clonedChoices.splice(index, 1)
+                              await api().routes.removeRoute(
+                                data.studioId,
+                                outgoingRoute.id
+                              )
+                            })
+                          )
 
-                        await api().passages.saveChoiceRefsToPassage(
-                          data.studioId,
-                          data.passageId,
-                          clonedChoices.map((clonedChoice) => clonedChoice.id)
-                        )
+                          await api().choices.removeChoice(
+                            data.studioId,
+                            clonedChoices[foundChoiceIndex].id
+                          )
+
+                          clonedChoices.splice(foundChoiceIndex, 1)
+
+                          await api().passages.saveChoiceRefsToPassage(
+                            data.studioId,
+                            data.passageId,
+                            clonedChoices.map((clonedChoice) => clonedChoice.id)
+                          )
+                        }
                       } catch (error) {
                         throw new Error(error)
                       }
                     }}
-                  >
-                    <DeleteOutlined />
-                  </Button>
-                </div>
-
-                {choice.handle}
+                  />
+                )}
               </>
             )
           })}
