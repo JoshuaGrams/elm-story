@@ -330,6 +330,8 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
         dockLayout.current.find(editor.renamedComponent.id)
       ) as TabData | undefined
 
+      logger.info(`ComponentEditor: editor.renamedComponent`)
+
       if (tabToUpdate) {
         const clonedTabs = cloneDeep(tabs),
           foundTab = clonedTabs.find(

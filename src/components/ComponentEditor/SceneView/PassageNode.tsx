@@ -20,15 +20,9 @@ import {
   colors
 } from 'unique-names-generator'
 
-import {
-  Handle,
-  Position,
-  NodeProps,
-  Connection,
-  Edge
-} from 'react-flow-renderer'
+import { Handle, Position, NodeProps, Connection } from 'react-flow-renderer'
 
-import { Button, Dropdown, Menu } from 'antd'
+import { Dropdown, Menu } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
@@ -49,7 +43,7 @@ const ChoiceRow: React.FC<{
     <div
       className={`${styles.choiceRow} nodrag`}
       style={{
-        borderBottom: showDivider ? '1px solid hsl(0, 0%, 0%)' : 'none'
+        borderBottom: showDivider ? '1px solid hsl(0, 0%, 15%)' : 'none'
       }}
     >
       <Dropdown
@@ -93,6 +87,7 @@ const PassageHandle: React.FC<{
     <Handle
       type="target"
       id={passageId}
+      className={styles.passageHandle}
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Left}
       isValidConnection={(connection: Connection): boolean => {
@@ -279,10 +274,8 @@ const PassageNode: React.FC<NodeProps<{
               })}
           </div>
 
-          <Button
+          <div
             className={`${styles.addChoiceButton} nodrag`}
-            size="small"
-            type="text"
             onClick={async () => {
               try {
                 const choiceId = uuid()
@@ -312,7 +305,7 @@ const PassageNode: React.FC<NodeProps<{
             }}
           >
             <PlusOutlined />
-          </Button>
+          </div>
         </>
       ) : (
         <div>...</div>

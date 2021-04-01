@@ -272,10 +272,12 @@ const SceneView: React.FC<{
       {passages && (
         <ReactFlowProvider>
           <ReactFlow
+            className={styles.sceneView}
             snapToGrid
             nodeTypes={{
               passageNode: PassageNode
             }}
+            snapGrid={[4, 4]}
             onlyRenderVisibleElements={false}
             // TODO: fit to saved editor transform (pan/zoom)
             onLoad={(reactFlowInstance) => reactFlowInstance.fitView()}
@@ -299,7 +301,11 @@ const SceneView: React.FC<{
               console.log(elements)
             }}
           >
-            <Background size={1} />
+            <Background
+              size={1}
+              className={styles.background}
+              color={'hsl(0, 0%, 10%)'}
+            />
             <Controls className={styles.control} />
             <MiniMap />
           </ReactFlow>
