@@ -8,7 +8,7 @@ import useRoutes, {
   useRoutesByChoiceRef
 } from './useRoutes'
 import usePassages, { usePassagesBySceneRef, usePassage } from './usePassages'
-import useChoices, { useChoicesByPassageRef } from './useChoices'
+import useChoices, { useChoice, useChoicesByPassageRef } from './useChoices'
 
 export {
   useStudios,
@@ -27,5 +27,6 @@ export {
   usePassagesBySceneRef,
   usePassage,
   useChoices,
+  useChoice,
   useChoicesByPassageRef
 }

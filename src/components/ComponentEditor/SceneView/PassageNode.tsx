@@ -1,12 +1,21 @@
 import logger from '../../../lib/logger'
 
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useContext, useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash'
 import { v4 as uuid } from 'uuid'
 
-import { Choice, ComponentId, Route, StudioId } from '../../../data/types'
+import { useStoreActions } from 'react-flow-renderer'
 
 import {
+  Choice,
+  ComponentId,
+  COMPONENT_TYPE,
+  Route,
+  StudioId
+} from '../../../data/types'
+
+import {
+  useChoice,
   useChoicesByPassageRef,
   usePassage,
   useRoutesByChoiceRef,
@@ -28,6 +37,10 @@ import { PlusOutlined } from '@ant-design/icons'
 import styles from './styles.module.less'
 
 import api from '../../../api'
+import {
+  EditorContext,
+  EDITOR_ACTION_TYPE
+} from '../../../contexts/EditorContext'
 
 const ChoiceRow: React.FC<{
   studioId: StudioId
@@ -35,15 +48,35 @@ const ChoiceRow: React.FC<{
   title: string
   showDivider: boolean
   handle: JSX.Element
+  selected: boolean
+  onSelect: (passageId: ComponentId, choiceId: ComponentId) => void
   onDelete: (choiceId: ComponentId, outgoingRoutes: Route[]) => void
-}> = ({ studioId, choiceId, title, showDivider = true, handle, onDelete }) => {
-  const outgoingRoutes = useRoutesByChoiceRef(studioId, choiceId)
+}> = ({
+  studioId,
+  choiceId,
+  title,
+  showDivider = true,
+  handle,
+  selected = false,
+  onSelect,
+  onDelete
+}) => {
+  const choice = useChoice(studioId, choiceId),
+    outgoingRoutes = useRoutesByChoiceRef(studioId, choiceId)
 
   return (
     <div
-      className={`${styles.choiceRow} nodrag`}
+      className={`${styles.choiceRow} nodrag ${
+        selected && styles.choiceSelected
+      }`}
       style={{
         borderBottom: showDivider ? '1px solid hsl(0, 0%, 15%)' : 'none'
+      }}
+      onClick={() => {
+        choice &&
+          choice.passageId &&
+          choice.id &&
+          onSelect(choice.passageId, choice.id)
       }}
     >
       <Dropdown
@@ -62,13 +95,7 @@ const ChoiceRow: React.FC<{
           </Menu>
         }
       >
-        <div
-          onClick={() => {
-            logger.info(`onClick: choice: ${choiceId}`)
-          }}
-        >
-          {title}
-        </div>
+        <div>{title}</div>
       </Dropdown>
       {handle}
     </div>
@@ -162,6 +189,12 @@ const PassageNode: React.FC<NodeProps<{
   const passage = usePassage(data.studioId, data.passageId),
     choicesByPassageRef = useChoicesByPassageRef(data.studioId, data.passageId)
 
+  const setSelectedElement = useStoreActions(
+    (actions) => actions.setSelectedElements
+  )
+
+  const { editor, editorDispatch } = useContext(EditorContext)
+
   const [choices, setChoices] = useState<
     { id: ComponentId; title: string; handle: JSX.Element }[]
   >([])
@@ -198,7 +231,28 @@ const PassageNode: React.FC<NodeProps<{
     <div className={styles.passageNode} key={passage?.id}>
       {passage && passage.id ? (
         <>
-          <div onClick={() => logger.info(`onClick: passage: ${passage.id}`)}>
+          <div
+            onMouseDown={() => {
+              logger.info(`onClick: passage: ${passage.id}`)
+
+              passage.id &&
+                editorDispatch({
+                  type:
+                    EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                  selectedComponentEditorSceneViewPassage: passage.id
+                })
+
+              if (
+                passage.id !== editor.selectedComponentEditorSceneViewPassage
+              ) {
+                editorDispatch({
+                  type:
+                    EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                  selectedComponentEditorSceneViewChoice: null
+                })
+              }
+            }}
+          >
             <PassageHandle
               studioId={data.studioId}
               sceneId={data.sceneId}
@@ -226,6 +280,37 @@ const PassageNode: React.FC<NodeProps<{
                         title={choice.title}
                         showDivider={choices.length - 1 !== index}
                         handle={choice.handle}
+                        selected={
+                          editor.selectedComponentEditorSceneViewChoice ===
+                          choice.id
+                        }
+                        onSelect={(passageId, choiceId) => {
+                          if (
+                            !editor.selectedComponentEditorComponents.find(
+                              (selectedComponent) => {
+                                selectedComponent.id === choiceId
+                              }
+                            )
+                          ) {
+                            logger.info(`onClick: choice: ${choiceId}`)
+
+                            setSelectedElement([
+                              { id: passageId, type: 'passageNode' }
+                            ])
+
+                            editorDispatch({
+                              type:
+                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                              selectedComponentEditorSceneViewPassage: passageId
+                            })
+
+                            editorDispatch({
+                              type:
+                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                              selectedComponentEditorSceneViewChoice: choiceId
+                            })
+                          }
+                        }}
                         onDelete={async (choiceId, outgoingRoutes) => {
                           try {
                             const clonedChoices = cloneDeep(choices),
@@ -277,30 +362,60 @@ const PassageNode: React.FC<NodeProps<{
           <div
             className={`${styles.addChoiceButton} nodrag`}
             onClick={async () => {
-              try {
-                const choiceId = uuid()
+              if (
+                editor.selectedComponentEditorSceneViewPassage === passage.id
+              ) {
+                try {
+                  const choiceId = uuid()
 
-                await api().passages.saveChoiceRefsToPassage(
-                  data.studioId,
-                  data.passageId,
-                  [...passage.choices, choiceId]
-                )
+                  passage.id &&
+                    setSelectedElement([
+                      { id: passage.id, type: 'passageNode' }
+                    ])
 
-                await api().choices.saveChoice(data.studioId, {
-                  id: choiceId,
-                  gameId: passage.gameId,
-                  passageId: data.passageId,
-                  title: uniqueNamesGenerator({
-                    dictionaries: [adjectives, animals, colors],
-                    separator: ' ',
-                    length: 2
-                  }),
-                  goto: [],
-                  conditions: [],
-                  tags: []
-                })
-              } catch (error) {
-                throw new Error(error)
+                  await api().passages.saveChoiceRefsToPassage(
+                    data.studioId,
+                    data.passageId,
+                    [...passage.choices, choiceId]
+                  )
+
+                  await api().choices.saveChoice(data.studioId, {
+                    id: choiceId,
+                    gameId: passage.gameId,
+                    passageId: data.passageId,
+                    title: uniqueNamesGenerator({
+                      dictionaries: [adjectives, animals, colors],
+                      separator: ' ',
+                      length: 2
+                    }),
+                    goto: [],
+                    conditions: [],
+                    tags: []
+                  })
+
+                  editorDispatch({
+                    type:
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                    selectedComponentEditorSceneViewChoice: choiceId
+                  })
+                } catch (error) {
+                  throw new Error(error)
+                }
+              } else {
+                passage.id &&
+                  setSelectedElement([
+                    { id: passage.id, type: 'passageNode' }
+                  ]) &&
+                  editorDispatch({
+                    type:
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                    selectedComponentEditorSceneViewPassage: passage.id
+                  }) &&
+                  editorDispatch({
+                    type:
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                    selectedComponentEditorSceneViewChoice: null
+                  })
               }
             }}
           >

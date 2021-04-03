@@ -11,6 +11,8 @@ import { Collapse, Form, Input } from 'antd'
 import api from '../../api'
 
 import styles from './styles.module.less'
+import ChoiceDetails from './ChoiceDetails'
+import PassageDetails from './PassageDetails'
 
 const { Panel } = Collapse
 
@@ -103,8 +105,8 @@ const ComponentProperties: React.FC<{
   return (
     <Collapse
       className={styles.componentProperties}
-      activeKey={activeKeys}
-      onChange={(activeKeys) => setActiveKeys([...activeKeys])}
+      // activeKey={activeKeys}
+      // onChange={(activeKeys) => setActiveKeys([...activeKeys])}
     >
       <Panel header="Game Details" key="game-details">
         {selectedGame && (
@@ -137,6 +139,41 @@ const ComponentProperties: React.FC<{
           <div>Select component...</div>
         )}
       </Panel>
+
+      {editor.selectedGameOutlineComponent.type === COMPONENT_TYPE.SCENE && (
+        <Panel header="Scene Details" key="scene-details">
+          <div>{editor.selectedGameOutlineComponent.title}</div>
+          {editor.totalComponentEditorSceneViewSelectedNodes > 1 && (
+            <div>
+              Selected nodes:{' '}
+              {editor.totalComponentEditorSceneViewSelectedNodes}
+            </div>
+          )}
+          {/* Nested Components */}
+          {editor.selectedComponentEditorSceneViewPassage && (
+            <Collapse>
+              {/* Passage Panel */}
+              {editor.selectedComponentEditorSceneViewPassage && (
+                <Panel header="Passage Details" key="passage-details">
+                  <PassageDetails
+                    studioId={studioId}
+                    id={editor.selectedComponentEditorSceneViewPassage}
+                  />
+                </Panel>
+              )}
+              {/* Choice Panel */}
+              {editor.selectedComponentEditorSceneViewChoice && (
+                <Panel header="Choice Details" key="choice-details">
+                  <ChoiceDetails
+                    studioId={studioId}
+                    id={editor.selectedComponentEditorSceneViewChoice}
+                  />
+                </Panel>
+              )}
+            </Collapse>
+          )}
+        </Panel>
+      )}
     </Collapse>
   )
 }

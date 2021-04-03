@@ -27,7 +27,8 @@ import ReactFlow, {
   Edge,
   Connection,
   Elements,
-  ArrowHeadType
+  ArrowHeadType,
+  useStoreState
 } from 'react-flow-renderer'
 
 import { Button } from 'antd'
@@ -96,7 +97,10 @@ const SceneView: React.FC<{
     routes = useRoutesBySceneRef(studioId, sceneId),
     passages = usePassagesBySceneRef(studioId, sceneId)
 
-  const [elements, setElements] = useState<FlowElement[]>([])
+  const { editor, editorDispatch } = useContext(EditorContext)
+
+  const selectedElements = useStoreState((state) => state.selectedElements),
+    [elements, setElements] = useState<FlowElement[]>([])
 
   async function onNodeDragStop(
     event: React.MouseEvent<Element, MouseEvent>,
@@ -219,6 +223,54 @@ const SceneView: React.FC<{
     // }
   }
 
+  function onSelectionChange(elements: Elements<any> | null) {
+    logger.info('onSelectionChange')
+    console.log(selectedElements)
+
+    if (!elements) {
+      editorDispatch({
+        type:
+          EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES,
+        totalComponentEditorSceneViewSelectedNodes: 0
+      })
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+        selectedComponentEditorSceneViewPassage: null
+      })
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+        selectedComponentEditorSceneViewChoice: null
+      })
+    }
+
+    if (elements && elements.length > 0) {
+      editorDispatch({
+        type:
+          EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES,
+        totalComponentEditorSceneViewSelectedNodes: elements.length
+      })
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+        selectedComponentEditorSceneViewPassage: null
+      })
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+        selectedComponentEditorSceneViewChoice: null
+      })
+    }
+
+    if (elements && elements.length === 1) {
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+        selectedComponentEditorSceneViewPassage: elements[0].id
+      })
+    }
+  }
+
   useEffect(() => {
     if (scene && passages && routes) {
       // TODO: optimize; this is re-rendering too much
@@ -267,49 +319,50 @@ const SceneView: React.FC<{
     }
   }, [passages, routes])
 
+  useEffect(() => {
+    if (editor.selectedGameOutlineComponent.id === sceneId) {
+      onSelectionChange(selectedElements)
+    }
+  }, [editor.selectedGameOutlineComponent])
+
   return (
     <>
       {passages && (
-        <ReactFlowProvider>
-          <ReactFlow
-            className={styles.sceneView}
-            snapToGrid
-            nodeTypes={{
-              passageNode: PassageNode
-            }}
-            snapGrid={[4, 4]}
-            onlyRenderVisibleElements={false}
-            // TODO: fit to saved editor transform (pan/zoom)
-            onLoad={(reactFlowInstance) => reactFlowInstance.fitView()}
-            elements={elements}
-            onElementsRemove={onElementsRemove}
-            onNodeDragStop={onNodeDragStop}
-            onConnectStart={(
-              event: React.MouseEvent<Element, MouseEvent>,
-              params: OnConnectStartParams
-            ) => {
-              // nodeId: passage ID
-              // handleId: passage ID or choice ID
-              // handleType: 'target' passage ID / 'source' choice ID
-              logger.info('onConnectStart')
-            }}
-            onConnect={onConnect}
-            elementsSelectable
-            onSelectionDragStop={onSelectionDragStop}
-            onSelectionChange={(elements: Elements<any> | null) => {
-              logger.info('onSelectionChange')
-              console.log(elements)
-            }}
-          >
-            <Background
-              size={1}
-              className={styles.background}
-              color={'hsl(0, 0%, 10%)'}
-            />
-            <Controls className={styles.control} />
-            <MiniMap />
-          </ReactFlow>
-        </ReactFlowProvider>
+        <ReactFlow
+          className={styles.sceneView}
+          snapToGrid
+          nodeTypes={{
+            passageNode: PassageNode
+          }}
+          snapGrid={[4, 4]}
+          onlyRenderVisibleElements={false}
+          // TODO: fit to saved editor transform (pan/zoom)
+          onLoad={(reactFlowInstance) => reactFlowInstance.fitView()}
+          elements={elements}
+          onElementsRemove={onElementsRemove}
+          onNodeDragStop={onNodeDragStop}
+          onConnectStart={(
+            event: React.MouseEvent<Element, MouseEvent>,
+            params: OnConnectStartParams
+          ) => {
+            // nodeId: passage ID
+            // handleId: passage ID or choice ID
+            // handleType: 'target' passage ID / 'source' choice ID
+            logger.info('onConnectStart')
+          }}
+          onConnect={onConnect}
+          elementsSelectable
+          onSelectionDragStop={onSelectionDragStop}
+          onSelectionChange={onSelectionChange}
+        >
+          <Background
+            size={1}
+            className={styles.background}
+            color={'hsl(0, 0%, 10%)'}
+          />
+          <Controls className={styles.control} />
+          <MiniMap />
+        </ReactFlow>
       )}
     </>
   )

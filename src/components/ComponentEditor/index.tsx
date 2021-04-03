@@ -34,6 +34,7 @@ import PassageView, { PassageViewTools } from './PassageView'
 import styles from './styles.module.less'
 
 import api from '../../api'
+import { ReactFlowProvider } from 'react-flow-renderer'
 
 function createBaseLayoutData(studioId: StudioId, game: Game): LayoutData {
   if (!game.id)
@@ -96,7 +97,11 @@ function getTabContent(
           id={id}
           type={type}
           tools={<SceneViewTools studioId={studioId} sceneId={id} />}
-          view={<SceneView studioId={studioId} sceneId={id} />}
+          view={
+            <ReactFlowProvider>
+              <SceneView studioId={studioId} sceneId={id} />
+            </ReactFlowProvider>
+          }
         />
       )
     case COMPONENT_TYPE.PASSAGE:
@@ -242,6 +247,9 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
       ) {
         if (clonedTabIndex !== -1) {
           const foundTab = cloneDeep(tabs[clonedTabIndex])
+
+          console.log('test')
+          console.log(tabs[clonedTabIndex])
 
           editorDispatch({
             type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,

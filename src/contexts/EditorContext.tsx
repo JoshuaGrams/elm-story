@@ -17,16 +17,23 @@ interface EditorState {
     type?: COMPONENT_TYPE
   }
   selectedGameOutlineComponent: {
-    id?: ComponentId | undefined
-    expanded?: boolean | undefined
-    type?: COMPONENT_TYPE | undefined
-    title?: string | undefined
+    id?: ComponentId
+    expanded?: boolean
+    type?: COMPONENT_TYPE
+    title?: string
   }
   renamingGameOutlineComponent: {
-    id: ComponentId | undefined
+    id?: ComponentId
     renaming: boolean
   }
   expandedGameOutlineComponents: ComponentId[]
+  totalComponentEditorSceneViewSelectedNodes: number
+  selectedComponentEditorSceneViewPassage: ComponentId | null
+  selectedComponentEditorSceneViewChoice: ComponentId | null
+  selectedComponentEditorComponents: {
+    id?: ComponentId
+    type?: COMPONENT_TYPE
+  }[]
 }
 
 export enum EDITOR_ACTION_TYPE {
@@ -35,7 +42,11 @@ export enum EDITOR_ACTION_TYPE {
   COMPONENT_REMOVE = 'EDITOR_COMPONENT_REMOVE',
   GAME_OUTLINE_SELECT = 'GAME_OUTLINE_SELECT',
   GAME_OUTLINE_RENAME = 'GAME_OUTLINE_RENAME',
-  GAME_OUTLINE_EXPAND = 'GAME_OUTLINE_EXPAND'
+  GAME_OUTLINE_EXPAND = 'GAME_OUTLINE_EXPAND',
+  COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES',
+  COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE',
+  COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE',
+  COMPONENT_EDITOR_SELECT = 'COMPONENT_EDITOR_SELECT'
 }
 
 type EditorActionType =
@@ -64,22 +75,41 @@ type EditorActionType =
   | {
       type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT
       selectedGameOutlineComponent: {
-        id?: ComponentId | undefined
-        expanded?: boolean | undefined
-        type?: COMPONENT_TYPE | undefined
-        title?: string | undefined
+        id?: ComponentId
+        expanded?: boolean
+        type?: COMPONENT_TYPE
+        title?: string
       }
     }
   | {
       type: EDITOR_ACTION_TYPE.GAME_OUTLINE_RENAME
       renamingGameOutlineComponent: {
-        id: ComponentId | undefined
+        id?: ComponentId
         renaming: boolean
       }
     }
   | {
       type: EDITOR_ACTION_TYPE.GAME_OUTLINE_EXPAND
       expandedGameOutlineComponents: ComponentId[]
+    }
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES
+      totalComponentEditorSceneViewSelectedNodes: number
+    }
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE
+      selectedComponentEditorSceneViewPassage: ComponentId | null
+    }
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE
+      selectedComponentEditorSceneViewChoice: ComponentId | null
+    }
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SELECT
+      selectedComponentEditorComponents: {
+        id?: ComponentId
+        type?: COMPONENT_TYPE
+      }[]
     }
 
 const editorReducer = (
@@ -117,6 +147,30 @@ const editorReducer = (
         ...state,
         expandedGameOutlineComponents: action.expandedGameOutlineComponents
       }
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES:
+      return {
+        ...state,
+        totalComponentEditorSceneViewSelectedNodes:
+          action.totalComponentEditorSceneViewSelectedNodes
+      }
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE:
+      return {
+        ...state,
+        selectedComponentEditorSceneViewPassage:
+          action.selectedComponentEditorSceneViewPassage
+      }
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE:
+      return {
+        ...state,
+        selectedComponentEditorSceneViewChoice:
+          action.selectedComponentEditorSceneViewChoice
+      }
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SELECT:
+      return {
+        ...state,
+        selectedComponentEditorComponents:
+          action.selectedComponentEditorComponents || []
+      }
     default:
       return state
   }
@@ -151,7 +205,11 @@ const defaultEditorState: EditorState = {
     id: undefined,
     renaming: false
   },
-  expandedGameOutlineComponents: []
+  expandedGameOutlineComponents: [],
+  totalComponentEditorSceneViewSelectedNodes: 0,
+  selectedComponentEditorSceneViewPassage: null,
+  selectedComponentEditorSceneViewChoice: null,
+  selectedComponentEditorComponents: []
 }
 
 export const EditorContext = createContext<EditorContextType>({

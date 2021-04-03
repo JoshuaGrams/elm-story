@@ -17,6 +17,20 @@ const useChoices = (
   return choices
 }
 
+const useChoice = (
+  studioId: StudioId,
+  choiceId: ComponentId,
+  deps?: any[]
+): Choice | undefined => {
+  const choice = useLiveQuery(
+    () => new LibraryDatabase(studioId).choices.where({ id: choiceId }).first(),
+    deps || [],
+    undefined
+  )
+
+  return choice
+}
+
 const useChoicesByPassageRef = (
   studioId: StudioId,
   passageId: ComponentId,
@@ -34,6 +48,6 @@ const useChoicesByPassageRef = (
   return choices
 }
 
-export { useChoicesByPassageRef }
+export { useChoice, useChoicesByPassageRef }
 
 export default useChoices
