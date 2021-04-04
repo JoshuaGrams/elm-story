@@ -132,11 +132,17 @@ const TabContent: React.FC<{
   }
 
   return (
-    <div
-      className={styles.TabContent}
-      onClick={onSelectTab}
-      onMouseDown={onSelectTab}
-    >
+    <div className={styles.TabContent}>
+      {/* This mask selects tab without interacting with tab content. */}
+      <div
+        onClick={onSelectTab}
+        onMouseDown={onSelectTab}
+        className={styles.interactionMask}
+        style={{
+          display:
+            editor.selectedGameOutlineComponent.id === id ? 'none' : 'block'
+        }}
+      />
       <TabContentToolbar>{tools}</TabContentToolbar>
       <div className={styles.TabContentView}>{view}</div>
     </div>
