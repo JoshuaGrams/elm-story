@@ -142,12 +142,12 @@ export class LibraryDatabase extends Dexie {
   public constructor(studioId: string) {
     super(`${DATABASE.LIBRARY}-${studioId}`)
 
-    this.version(2).stores({
+    this.version(1).stores({
       games: '&id,title,*tags,updated,template,director,version,engine',
       chapters: '&id,gameId,title,*tags,updated',
       scenes: '&id,gameId,chapterId,title,*tags,updated',
       routes:
-        '&id,gamdId,sceneId,title,originId,choiceId,originType,destinationId,destinationType,*tags,updated',
+        '&id,gameId,sceneId,title,originId,choiceId,originType,destinationId,destinationType,*tags,updated',
       passages: '&id,gameId,sceneId,title,*tags,updated',
       choices: '&id,gameId,passageId,title,*tags,updated',
       conditions: '&id,title,*tags,updated',
@@ -276,12 +276,14 @@ export class LibraryDatabase extends Dexie {
       const chapters = await this.chapters.where({ gameId }).toArray(),
         scenes = await this.scenes.where({ gameId }).toArray(),
         passages = await this.passages.where({ gameId }).toArray(),
+        routes = await this.routes.where({ gameId }).toArray(),
         choices = await this.choices.where({ gameId }).toArray()
 
       logger.info(`Removing game with ID: ${gameId}`)
       logger.info(`CHAPTERS: Removing ${chapters.length}...`)
       logger.info(`SCENES: Removing ${scenes.length}...`)
       logger.info(`PASSAGES: Removing ${passages.length}...`)
+      logger.info(`ROUTES: Remove ${routes.length}...`)
       logger.info(`CHOICES: Removing ${choices.length}...`)
 
       // TODO: replace 'delete' method with methods that handle children
@@ -294,6 +296,9 @@ export class LibraryDatabase extends Dexie {
         }),
         passages.map(async (passage) => {
           if (passage.id) await this.passages.delete(passage.id)
+        }),
+        routes.map(async (route) => {
+          if (route.id) await this.routes.delete(route.id)
         }),
         choices.map(async (passage) => {
           if (passage.id) await this.choices.delete(passage.id)
