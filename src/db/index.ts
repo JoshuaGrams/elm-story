@@ -722,7 +722,16 @@ export class LibraryDatabase extends Dexie {
 
   public async removePassage(passageId: ComponentId) {
     try {
-      const choices = await this.choices.where({ passageId }).toArray()
+      const routes = await this.routes
+          .where({ destinationId: passageId })
+          .toArray(),
+        choices = await this.choices.where({ passageId }).toArray()
+
+      if (routes.length > 0) {
+        logger.info(
+          `Removing ${routes.length} route(s) from passage with ID: ${passageId}`
+        )
+      }
 
       if (choices.length > 0) {
         logger.info(
@@ -730,13 +739,14 @@ export class LibraryDatabase extends Dexie {
         )
       }
 
-      await Promise.all(
-        choices.map(async (choice) => {
-          if (choice.id) {
-            await this.removeChoice(choice.id)
-          }
-        })
-      )
+      await Promise.all([
+        routes.map(
+          async (route) => route.id && (await this.removeRoute(route.id))
+        ),
+        choices.map(
+          async (choice) => choice.id && (await this.removeChoice(choice.id))
+        )
+      ])
 
       await this.transaction('rw', this.passages, async () => {
         if (await this.getComponent(LIBRARY_TABLE.PASSAGES, passageId)) {
