@@ -17,7 +17,6 @@ import {
 } from '../../../hooks'
 
 import ReactFlow, {
-  ReactFlowProvider,
   Background,
   MiniMap,
   Controls,
@@ -43,7 +42,7 @@ export const SceneViewTools: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
 }> = ({ studioId, sceneId }) => {
-  const scene = useScene(studioId, sceneId)
+  const scene = useScene(studioId, sceneId, [sceneId])
 
   const { editorDispatch } = useContext(EditorContext)
 
@@ -100,6 +99,10 @@ const SceneView: React.FC<{
   const { editor, editorDispatch } = useContext(EditorContext)
 
   const selectedElements = useStoreState((state) => state.selectedElements),
+    // TODO: Support multiple selected passages?
+    [totalSelectedNodes, setTotalSelectedNodes] = useState<number>(0),
+    [selectedPassage, setSelectedPassage] = useState<ComponentId | null>(null),
+    [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
     [elements, setElements] = useState<FlowElement[]>([])
 
   async function onNodeDragStop(
@@ -225,49 +228,17 @@ const SceneView: React.FC<{
 
   function onSelectionChange(elements: Elements<any> | null) {
     logger.info('onSelectionChange')
-    console.log(selectedElements)
 
-    if (!elements) {
-      editorDispatch({
-        type:
-          EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES,
-        totalComponentEditorSceneViewSelectedNodes: 0
-      })
+    setTotalSelectedNodes((elements && elements.length) || 0)
 
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-        selectedComponentEditorSceneViewPassage: null
-      })
-
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-        selectedComponentEditorSceneViewChoice: null
-      })
-    }
-
-    if (elements && elements.length > 0) {
-      editorDispatch({
-        type:
-          EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES,
-        totalComponentEditorSceneViewSelectedNodes: elements.length
-      })
-
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-        selectedComponentEditorSceneViewPassage: null
-      })
-
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-        selectedComponentEditorSceneViewChoice: null
-      })
+    if (!elements || (elements && elements.length > 0)) {
+      setSelectedPassage(null)
+      setSelectedChoice(null)
     }
 
     if (elements && elements.length === 1) {
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-        selectedComponentEditorSceneViewPassage: elements[0].id
-      })
+      setSelectedPassage(elements[0].id)
+      setSelectedChoice(null)
     }
   }
 
@@ -317,13 +288,35 @@ const SceneView: React.FC<{
       // BUG: Unable to create edges on initial node render because choices aren't ready
       setElements([...nodes, ...edges])
     }
-  }, [passages, routes])
+  }, [scene, passages, routes])
 
   useEffect(() => {
     if (editor.selectedGameOutlineComponent.id === sceneId) {
-      onSelectionChange(selectedElements)
+      totalSelectedNodes !==
+        editor.totalComponentEditorSceneViewSelectedNodes &&
+        editorDispatch({
+          type:
+            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES,
+          totalComponentEditorSceneViewSelectedNodes: totalSelectedNodes
+        })
+      selectedPassage !== editor.selectedComponentEditorSceneViewPassage &&
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+          selectedComponentEditorSceneViewPassage: selectedPassage
+        })
+
+      selectedChoice !== editor.selectedComponentEditorSceneViewChoice &&
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+          selectedComponentEditorSceneViewChoice: selectedChoice
+        })
     }
-  }, [editor.selectedGameOutlineComponent])
+  }, [
+    editor.selectedGameOutlineComponent,
+    totalSelectedNodes,
+    selectedPassage,
+    selectedChoice
+  ])
 
   return (
     <>

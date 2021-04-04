@@ -54,85 +54,88 @@ const TabContent: React.FC<{
       break
   }
 
+  const onSelectTab = () => {
+    if (id !== editor.selectedGameOutlineComponent.id) {
+      switch (type) {
+        case COMPONENT_TYPE.GAME:
+          if (game && game.id) {
+            logger.info(
+              `TabContent->onClick: setSelectedGameOutlineComponent to game: ${game.id}`
+            )
+
+            editorDispatch({
+              type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+              selectedGameOutlineComponent: {
+                id: game.id,
+                title: game.title,
+                type: COMPONENT_TYPE.GAME,
+                expanded: true
+              }
+            })
+          }
+          return
+        case COMPONENT_TYPE.CHAPTER:
+          if (chapter && chapter.id) {
+            logger.info(
+              `TabContent->onClick: setSelectedGameOutlineComponent to chapter: ${chapter.id}`
+            )
+
+            editorDispatch({
+              type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+              selectedGameOutlineComponent: {
+                id: chapter.id,
+                title: chapter.title,
+                type: COMPONENT_TYPE.CHAPTER,
+                expanded: true
+              }
+            })
+          }
+          return
+        case COMPONENT_TYPE.SCENE:
+          if (scene && scene.id) {
+            logger.info(
+              `TabContent->onClick: setSelectedGameOutlineComponent to scene: ${scene.id}`
+            )
+
+            editorDispatch({
+              type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+              selectedGameOutlineComponent: {
+                id: scene.id,
+                title: scene.title,
+                type: COMPONENT_TYPE.SCENE,
+                expanded: true
+              }
+            })
+          }
+          return
+        case COMPONENT_TYPE.PASSAGE:
+          if (passage && passage.id) {
+            logger.info(
+              `TabContent->onClick: setSelectedGameOutlineComponent to passage: ${passage.id}`
+            )
+
+            editorDispatch({
+              type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+              selectedGameOutlineComponent: {
+                id: passage.id,
+                title: passage.title,
+                type: COMPONENT_TYPE.PASSAGE,
+                expanded: true
+              }
+            })
+          }
+          return
+        default:
+          break
+      }
+    }
+  }
+
   return (
     <div
       className={styles.TabContent}
-      onClick={() => {
-        if (id !== editor.selectedGameOutlineComponent.id) {
-          switch (type) {
-            case COMPONENT_TYPE.GAME:
-              if (game && game.id) {
-                logger.info(
-                  `TabContent->onClick: setSelectedGameOutlineComponent to game: ${game.id}`
-                )
-
-                editorDispatch({
-                  type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-                  selectedGameOutlineComponent: {
-                    id: game.id,
-                    title: game.title,
-                    type: COMPONENT_TYPE.GAME,
-                    expanded: true
-                  }
-                })
-              }
-              return
-            case COMPONENT_TYPE.CHAPTER:
-              if (chapter && chapter.id) {
-                logger.info(
-                  `TabContent->onClick: setSelectedGameOutlineComponent to chapter: ${chapter.id}`
-                )
-
-                editorDispatch({
-                  type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-                  selectedGameOutlineComponent: {
-                    id: chapter.id,
-                    title: chapter.title,
-                    type: COMPONENT_TYPE.CHAPTER,
-                    expanded: true
-                  }
-                })
-              }
-              return
-            case COMPONENT_TYPE.SCENE:
-              if (scene && scene.id) {
-                logger.info(
-                  `TabContent->onClick: setSelectedGameOutlineComponent to scene: ${scene.id}`
-                )
-
-                editorDispatch({
-                  type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-                  selectedGameOutlineComponent: {
-                    id: scene.id,
-                    title: scene.title,
-                    type: COMPONENT_TYPE.SCENE,
-                    expanded: true
-                  }
-                })
-              }
-              return
-            case COMPONENT_TYPE.PASSAGE:
-              if (passage && passage.id) {
-                logger.info(
-                  `TabContent->onClick: setSelectedGameOutlineComponent to passage: ${passage.id}`
-                )
-
-                editorDispatch({
-                  type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-                  selectedGameOutlineComponent: {
-                    id: passage.id,
-                    title: passage.title,
-                    type: COMPONENT_TYPE.PASSAGE,
-                    expanded: true
-                  }
-                })
-              }
-              return
-            default:
-              break
-          }
-        }
-      }}
+      onClick={onSelectTab}
+      onMouseDown={onSelectTab}
     >
       <TabContentToolbar>{tools}</TabContentToolbar>
       <div className={styles.TabContentView}>{view}</div>

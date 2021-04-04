@@ -313,6 +313,14 @@ const PassageNode: React.FC<NodeProps<{
                         }}
                         onDelete={async (choiceId, outgoingRoutes) => {
                           try {
+                            editor.selectedComponentEditorSceneViewChoice ===
+                              choice.id &&
+                              editorDispatch({
+                                type:
+                                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                                selectedComponentEditorSceneViewChoice: null
+                              })
+
                             const clonedChoices = cloneDeep(choices),
                               foundChoiceIndex = clonedChoices.findIndex(
                                 (clonedChoice) => clonedChoice.id === choiceId
