@@ -4,15 +4,9 @@ import React, { memo, useContext, useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash'
 import { v4 as uuid } from 'uuid'
 
-import { useStoreActions } from 'react-flow-renderer'
+import { useStoreState, useStoreActions } from 'react-flow-renderer'
 
-import {
-  Choice,
-  ComponentId,
-  COMPONENT_TYPE,
-  Route,
-  StudioId
-} from '../../../data/types'
+import { Choice, ComponentId, Route, StudioId } from '../../../data/types'
 
 import {
   useChoice,
@@ -189,9 +183,10 @@ const PassageNode: React.FC<NodeProps<{
   const passage = usePassage(data.studioId, data.passageId),
     choicesByPassageRef = useChoicesByPassageRef(data.studioId, data.passageId)
 
-  const setSelectedElement = useStoreActions(
-    (actions) => actions.setSelectedElements
-  )
+  const passageNodes = useStoreState((state) => state.nodes),
+    setSelectedElement = useStoreActions(
+      (actions) => actions.setSelectedElements
+    )
 
   const { editor, editorDispatch } = useContext(EditorContext)
 
@@ -297,7 +292,11 @@ const PassageNode: React.FC<NodeProps<{
                             )
 
                             setSelectedElement([
-                              { id: passageId, type: 'passageNode' }
+                              cloneDeep(
+                                passageNodes.find(
+                                  (passageNode) => passageNode.id === passageId
+                                )
+                              )
                             ])
 
                             editorDispatch({
@@ -311,7 +310,11 @@ const PassageNode: React.FC<NodeProps<{
                               editorDispatch({
                                 type:
                                   EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                                selectedComponentEditorSceneViewChoice: choiceId
+                                selectedComponentEditorSceneViewChoice:
+                                  editor.selectedComponentEditorSceneViewChoice !==
+                                  choice.id
+                                    ? choiceId
+                                    : null
                               })
                           }
                         }}
