@@ -227,7 +227,7 @@ const SceneView: React.FC<{
   }
 
   function onSelectionChange(elements: Elements<any> | null) {
-    logger.info('onSelectionChange')
+    logger.info('SceneView->onSelectionChange')
 
     setTotalSelectedNodes((elements && elements.length) || 0)
 

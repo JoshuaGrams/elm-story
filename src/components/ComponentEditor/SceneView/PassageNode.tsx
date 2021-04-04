@@ -292,7 +292,9 @@ const PassageNode: React.FC<NodeProps<{
                               }
                             )
                           ) {
-                            logger.info(`onClick: choice: ${choiceId}`)
+                            logger.info(
+                              `PassageNode->onClick: choice: ${choiceId}`
+                            )
 
                             setSelectedElement([
                               { id: passageId, type: 'passageNode' }
@@ -304,11 +306,13 @@ const PassageNode: React.FC<NodeProps<{
                               selectedComponentEditorSceneViewPassage: passageId
                             })
 
-                            editorDispatch({
-                              type:
-                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                              selectedComponentEditorSceneViewChoice: choiceId
-                            })
+                            editor.selectedComponentEditorSceneViewPassage ===
+                              passageId &&
+                              editorDispatch({
+                                type:
+                                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                                selectedComponentEditorSceneViewChoice: choiceId
+                              })
                           }
                         }}
                         onDelete={async (choiceId, outgoingRoutes) => {
