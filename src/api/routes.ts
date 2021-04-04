@@ -25,3 +25,14 @@ export async function removeRoute(studioId: StudioId, routeId: ComponentId) {
     throw new Error(error)
   }
 }
+
+export async function removeRoutesByChoiceRef(
+  studioId: StudioId,
+  choiceId: ComponentId
+) {
+  try {
+    await new LibraryDatabase(studioId).removeRoutesByChoiceRef(choiceId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}

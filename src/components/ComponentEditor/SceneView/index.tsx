@@ -26,8 +26,7 @@ import ReactFlow, {
   Edge,
   Connection,
   Elements,
-  ArrowHeadType,
-  useStoreState
+  ArrowHeadType
 } from 'react-flow-renderer'
 
 import { Button } from 'antd'
@@ -98,8 +97,7 @@ const SceneView: React.FC<{
 
   const { editor, editorDispatch } = useContext(EditorContext)
 
-  const selectedElements = useStoreState((state) => state.selectedElements),
-    // TODO: Support multiple selected passages?
+  const // TODO: Support multiple selected passages?
     [totalSelectedNodes, setTotalSelectedNodes] = useState<number>(0),
     [selectedPassage, setSelectedPassage] = useState<ComponentId | null>(null),
     [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
@@ -182,31 +180,41 @@ const SceneView: React.FC<{
   async function onElementsRemove(elements: Elements<any>) {
     logger.info('onElementsRemove')
 
-    const routeRefs: ComponentId[] = [],
-      passageRefs: ComponentId[] = []
+    if (!editor.selectedComponentEditorSceneViewChoice) {
+      const routeRefs: ComponentId[] = [],
+        passageRefs: ComponentId[] = []
 
-    elements.map((element) => {
-      // TODO: improve types
-      switch (element.data.type as COMPONENT_TYPE) {
-        case COMPONENT_TYPE.ROUTE:
-          routeRefs.push(element.id)
-          break
-        case COMPONENT_TYPE.PASSAGE:
-          passageRefs.push(element.id)
-          break
-        default:
-          logger.info('Unknown element type.')
-          return
-      }
-    })
-
-    await Promise.all(
-      routeRefs.map(async (routeRef) => {
-        await api().routes.removeRoute(studioId, routeRef)
+      elements.map((element) => {
+        // TODO: improve types
+        switch (element.data.type as COMPONENT_TYPE) {
+          case COMPONENT_TYPE.ROUTE:
+            routeRefs.push(element.id)
+            break
+          case COMPONENT_TYPE.PASSAGE:
+            passageRefs.push(element.id)
+            break
+          default:
+            logger.info('Unknown element type.')
+            return
+        }
       })
-    )
+
+      await Promise.all(
+        routeRefs.map(async (routeRef) => {
+          await api().routes.removeRoute(studioId, routeRef)
+        })
+      )
+    }
+
+    if (editor.selectedComponentEditorSceneViewChoice) {
+      await api().routes.removeRoutesByChoiceRef(
+        studioId,
+        editor.selectedComponentEditorSceneViewChoice
+      )
+    }
 
     // TODO: issue #45
+    // It's not currently possible to remove multiple passages, choices from SceneView
 
     // const clonedScene = cloneDeep(scene)
 
