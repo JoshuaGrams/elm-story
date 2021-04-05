@@ -143,10 +143,17 @@ const ComponentProperties: React.FC<{
       {editor.selectedGameOutlineComponent.type === COMPONENT_TYPE.SCENE && (
         <Panel header="Scene Details" key="scene-details">
           <div>{editor.selectedGameOutlineComponent.title}</div>
-          {editor.totalComponentEditorSceneViewSelectedNodes > 1 && (
+          {!editor.selectedComponentEditorSceneViewPassage &&
+            editor.totalComponentEditorSceneViewSelectedPassages > 0 && (
+              <div>
+                Selected Passages:{' '}
+                {editor.totalComponentEditorSceneViewSelectedPassages}
+              </div>
+            )}
+          {editor.totalComponentEditorSceneViewSelectedRoutes > 0 && (
             <div>
-              Selected nodes:{' '}
-              {editor.totalComponentEditorSceneViewSelectedNodes}
+              Selected Routes:{' '}
+              {editor.totalComponentEditorSceneViewSelectedRoutes}
             </div>
           )}
           {/* Nested Components */}

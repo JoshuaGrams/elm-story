@@ -27,7 +27,8 @@ interface EditorState {
     renaming: boolean
   }
   expandedGameOutlineComponents: ComponentId[]
-  totalComponentEditorSceneViewSelectedNodes: number
+  totalComponentEditorSceneViewSelectedPassages: number
+  totalComponentEditorSceneViewSelectedRoutes: number
   selectedComponentEditorSceneViewPassage: ComponentId | null
   selectedComponentEditorSceneViewChoice: ComponentId | null
   selectedComponentEditorComponents: {
@@ -43,7 +44,8 @@ export enum EDITOR_ACTION_TYPE {
   GAME_OUTLINE_SELECT = 'GAME_OUTLINE_SELECT',
   GAME_OUTLINE_RENAME = 'GAME_OUTLINE_RENAME',
   GAME_OUTLINE_EXPAND = 'GAME_OUTLINE_EXPAND',
-  COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES',
+  COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_PASSAGES = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_PASSAGES',
+  COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE',
   COMPONENT_EDITOR_SELECT = 'COMPONENT_EDITOR_SELECT'
@@ -93,8 +95,12 @@ type EditorActionType =
       expandedGameOutlineComponents: ComponentId[]
     }
   | {
-      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES
-      totalComponentEditorSceneViewSelectedNodes: number
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_PASSAGES
+      totalComponentEditorSceneViewSelectedPassages: number
+    }
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES
+      totalComponentEditorSceneViewSelectedRoutes: number
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE
@@ -147,11 +153,17 @@ const editorReducer = (
         ...state,
         expandedGameOutlineComponents: action.expandedGameOutlineComponents
       }
-    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES:
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_PASSAGES:
       return {
         ...state,
-        totalComponentEditorSceneViewSelectedNodes:
-          action.totalComponentEditorSceneViewSelectedNodes
+        totalComponentEditorSceneViewSelectedPassages:
+          action.totalComponentEditorSceneViewSelectedPassages
+      }
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES:
+      return {
+        ...state,
+        totalComponentEditorSceneViewSelectedRoutes:
+          action.totalComponentEditorSceneViewSelectedRoutes
       }
     case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE:
       return {
@@ -206,7 +218,8 @@ const defaultEditorState: EditorState = {
     renaming: false
   },
   expandedGameOutlineComponents: [],
-  totalComponentEditorSceneViewSelectedNodes: 0,
+  totalComponentEditorSceneViewSelectedPassages: 0,
+  totalComponentEditorSceneViewSelectedRoutes: 0,
   selectedComponentEditorSceneViewPassage: null,
   selectedComponentEditorSceneViewChoice: null,
   selectedComponentEditorComponents: []

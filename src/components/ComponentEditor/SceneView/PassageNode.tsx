@@ -377,16 +377,13 @@ const PassageNode: React.FC<NodeProps<{
           <div
             className={`${styles.addChoiceButton} nodrag`}
             onClick={async () => {
+              logger.info('PassageNode->addChoiceButton->onClick')
+
               if (
                 editor.selectedComponentEditorSceneViewPassage === passage.id
               ) {
                 try {
                   const choiceId = uuid()
-
-                  passage.id &&
-                    setSelectedElement([
-                      { id: passage.id, type: 'passageNode' }
-                    ])
 
                   await api().passages.saveChoiceRefsToPassage(
                     data.studioId,
@@ -419,7 +416,11 @@ const PassageNode: React.FC<NodeProps<{
               } else {
                 passage.id &&
                   setSelectedElement([
-                    { id: passage.id, type: 'passageNode' }
+                    cloneDeep(
+                      passageNodes.find(
+                        (passageNode) => passageNode.id === passage.id
+                      )
+                    )
                   ]) &&
                   editorDispatch({
                     type:

@@ -98,7 +98,8 @@ const SceneView: React.FC<{
   const { editor, editorDispatch } = useContext(EditorContext)
 
   const // TODO: Support multiple selected passages?
-    [totalSelectedNodes, setTotalSelectedNodes] = useState<number>(0),
+    [totalSelectedPassages, setTotalSelectedPassages] = useState<number>(0),
+    [totalSelectedRoutes, setTotalSelectedRoutes] = useState<number>(0),
     [selectedPassage, setSelectedPassage] = useState<ComponentId | null>(null),
     [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
     [elements, setElements] = useState<FlowElement[]>([])
@@ -237,7 +238,17 @@ const SceneView: React.FC<{
   function onSelectionChange(elements: Elements<any> | null) {
     logger.info('SceneView->onSelectionChange')
 
-    setTotalSelectedNodes((elements && elements.length) || 0)
+    let _totalSelectedPassages = 0,
+      _totalSelectedRoutes = 0
+
+    elements?.map((element) => {
+      element.data.type === COMPONENT_TYPE.PASSAGE && ++_totalSelectedPassages
+
+      element.data.type === COMPONENT_TYPE.ROUTE && ++_totalSelectedRoutes
+    })
+
+    setTotalSelectedPassages(_totalSelectedPassages)
+    setTotalSelectedRoutes(_totalSelectedRoutes)
 
     if (!elements || (elements && elements.length > 0)) {
       setSelectedPassage(null)
@@ -300,13 +311,22 @@ const SceneView: React.FC<{
 
   useEffect(() => {
     if (editor.selectedGameOutlineComponent.id === sceneId) {
-      totalSelectedNodes !==
-        editor.totalComponentEditorSceneViewSelectedNodes &&
+      totalSelectedPassages !==
+        editor.totalComponentEditorSceneViewSelectedPassages &&
         editorDispatch({
           type:
-            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_NODES,
-          totalComponentEditorSceneViewSelectedNodes: totalSelectedNodes
+            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_PASSAGES,
+          totalComponentEditorSceneViewSelectedPassages: totalSelectedPassages
         })
+
+      totalSelectedRoutes !==
+        editor.totalComponentEditorSceneViewSelectedRoutes &&
+        editorDispatch({
+          type:
+            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES,
+          totalComponentEditorSceneViewSelectedRoutes: totalSelectedRoutes
+        })
+
       selectedPassage !== editor.selectedComponentEditorSceneViewPassage &&
         editorDispatch({
           type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
@@ -321,7 +341,7 @@ const SceneView: React.FC<{
     }
   }, [
     editor.selectedGameOutlineComponent,
-    totalSelectedNodes,
+    totalSelectedPassages,
     selectedPassage,
     selectedChoice
   ])
