@@ -390,7 +390,7 @@ export class LibraryDatabase extends Dexie {
 
       if (scenes.length > 0) {
         logger.info(
-          `Removing ${scenes.length} scene(s) from chapter with ID: ${chapterId}`
+          `removeChapter->Removing ${scenes.length} scene(s) from chapter with ID: ${chapterId}`
         )
       }
 
@@ -403,15 +403,13 @@ export class LibraryDatabase extends Dexie {
 
             if (passages.length > 0) {
               logger.info(
-                `Removing ${passages.length} passage(s) from scene with ID: ${scene.id}`
+                `removeChapter->Removing ${passages.length} passage(s) from scene with ID: ${scene.id}`
               )
             }
 
-            passages.map(async (passage) => {
-              if (passage.id) {
-                await this.removePassage(passage.id)
-              }
-            })
+            for (let passage of passages) {
+              passage.id && (await this.removePassage(passage.id))
+            }
 
             await this.scenes.delete(scene.id)
           }
@@ -538,31 +536,31 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async removeScene(sceneId: ComponentId) {
+    logger.info(`LibraryDatabase->removeScene`)
+
     try {
       const passages = await this.passages.where({ sceneId }).toArray()
 
       if (passages.length > 0) {
         logger.info(
-          `Removing ${passages.length} passage(s) from scene with ID: ${sceneId}`
+          `LibraryDatabase->removeScene->Removing ${passages.length} passage(s) from scene with ID: ${sceneId}`
         )
       }
 
-      await Promise.all(
-        passages.map(async (passage) => {
-          if (passage.id) {
-            await this.removePassage(passage.id)
-          }
-        })
-      )
+      for (let passage of passages) {
+        passage.id && this.removePassage(passage.id)
+      }
 
       await this.transaction('rw', this.scenes, async () => {
         if (await this.getComponent(LIBRARY_TABLE.SCENES, sceneId)) {
-          logger.info(`Removing scene with ID: ${sceneId}`)
+          logger.info(
+            `LibraryDatabase->removeScene->Removing scene with ID: ${sceneId}`
+          )
 
           await this.scenes.delete(sceneId)
         } else {
           throw new Error(
-            `Unable to remove scene with ID: '${sceneId}'. Does not exist.`
+            `LibraryDatabase->removeScene->Unable to remove scene with ID: '${sceneId}'. Does not exist.`
           )
         }
       })
@@ -621,15 +619,19 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async removeRoute(routeId: ComponentId) {
+    logger.info(`LibraryDatabase->removeRoute`)
+
     try {
       await this.transaction('rw', this.routes, async () => {
         if (await this.getComponent(LIBRARY_TABLE.ROUTES, routeId)) {
-          logger.info(`Removing route with ID: ${routeId}`)
+          logger.info(
+            `LibraryDatabase->removeRoute->Removing route with ID: ${routeId}`
+          )
 
           await this.routes.delete(routeId)
         } else {
           throw new Error(
-            `Unable to remove route with ID: '${routeId}'. Does not exist.`
+            `LibraryDatabase->removeRoute->Unable to remove route with ID: '${routeId}'. Does not exist.`
           )
         }
       })
@@ -639,6 +641,8 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async removeRoutesByPassageRef(passageId: ComponentId) {
+    logger.info(`LibraryDatabase->removeRoutesByPassageRef`)
+
     try {
       const originRoutes = await this.routes
           .where({ originId: passageId })
@@ -647,7 +651,7 @@ export class LibraryDatabase extends Dexie {
           .where({ destinationId: passageId })
           .toArray()
 
-      Promise.all([
+      await Promise.all([
         originRoutes.map(
           async (originRoute) =>
             originRoute.id && (await this.removeRoute(originRoute.id))
@@ -666,7 +670,7 @@ export class LibraryDatabase extends Dexie {
     try {
       const routes = await this.routes.where({ choiceId }).toArray()
 
-      Promise.all(
+      await Promise.all(
         routes.map(
           async (route) => route.id && (await this.removeRoute(route.id))
         )
@@ -760,6 +764,8 @@ export class LibraryDatabase extends Dexie {
 
   public async removePassage(passageId: ComponentId) {
     try {
+      logger.info('LibraryDatabase->removePassage')
+
       const routes = await this.routes
           .where({ destinationId: passageId })
           .toArray(),
@@ -767,33 +773,34 @@ export class LibraryDatabase extends Dexie {
 
       if (routes.length > 0) {
         logger.info(
-          `Removing ${routes.length} route(s) from passage with ID: ${passageId}`
+          `LibraryDatabase->removePassage->Removing ${routes.length} route(s) from passage with ID: ${passageId}`
         )
+      }
+
+      for (let route of routes) {
+        route.id && (await this.removeRoute(route.id))
       }
 
       if (choices.length > 0) {
         logger.info(
-          `Removing ${choices.length} choices(s) from passage with ID: ${passageId}`
+          `LibraryDatabase->removePassage->Removing ${choices.length} choice(s) from passage with ID: ${passageId}`
         )
       }
 
-      await Promise.all([
-        routes.map(
-          async (route) => route.id && (await this.removeRoute(route.id))
-        ),
-        choices.map(
-          async (choice) => choice.id && (await this.removeChoice(choice.id))
-        )
-      ])
+      for (let choice of choices) {
+        choice.id && (await this.removeChoice(choice.id))
+      }
 
       await this.transaction('rw', this.passages, async () => {
         if (await this.getComponent(LIBRARY_TABLE.PASSAGES, passageId)) {
-          logger.info(`Removing passage with ID: ${passageId}`)
+          logger.info(
+            `LibraryDatabase->removePassage->Removing passage with ID: ${passageId}`
+          )
 
           await this.passages.delete(passageId)
         } else {
           throw new Error(
-            `Unable to remove passage with ID: '${passageId}'. Does not exist.`
+            `LibraryDatabase->removePassage->Unable to remove passage with ID: '${passageId}'. Does not exist.`
           )
         }
       })
@@ -843,7 +850,7 @@ export class LibraryDatabase extends Dexie {
 
       if (routes.length > 0) {
         logger.info(
-          `Removing ${routes.length} route(s) from choice with ID: ${choiceId}`
+          `removeChoice->Removing ${routes.length} route(s) from choice with ID: ${choiceId}`
         )
       }
 
@@ -857,12 +864,12 @@ export class LibraryDatabase extends Dexie {
 
       await this.transaction('rw', this.choices, async () => {
         if (await this.getComponent(LIBRARY_TABLE.CHOICES, choiceId)) {
-          logger.info(`Removing choice with ID: ${choiceId}`)
+          logger.info(`removeChoice->Removing choice with ID: ${choiceId}`)
 
           await this.choices.delete(choiceId)
         } else {
           throw new Error(
-            `Unable to remove choice with ID: '${choiceId}'. Does not exist.`
+            `removeChoice->Unable to remove choice with ID: '${choiceId}'. Does not exist.`
           )
         }
       })

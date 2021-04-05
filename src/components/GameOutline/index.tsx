@@ -679,6 +679,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   }
 
   async function onRemove(componentId: ComponentId) {
+    logger.info(`GameOutline->onRemove->${componentId}`)
+
     const item = treeData?.items[componentId],
       data = item?.data
 
