@@ -340,7 +340,11 @@ const SceneView: React.FC<{
           // TODO: fit to saved editor transform (pan/zoom)
           onLoad={(reactFlowInstance) => reactFlowInstance.fitView()}
           elements={elements}
-          onElementsRemove={onElementsRemove}
+          onElementsRemove={
+            editor.selectedGameOutlineComponent.id === scene?.id
+              ? onElementsRemove
+              : undefined
+          }
           onNodeDragStop={onNodeDragStop}
           onConnectStart={(
             event: React.MouseEvent<Element, MouseEvent>,
