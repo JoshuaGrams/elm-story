@@ -2,7 +2,7 @@ import React from 'react'
 
 import { ComponentId, COMPONENT_TYPE, StudioId } from '../../data/types'
 
-import { AlignLeftOutlined, BranchesOutlined } from '@ant-design/icons'
+import { AlignLeftOutlined, PartitionOutlined } from '@ant-design/icons'
 
 import SceneDetails from './SceneDetails'
 import PassageDetails from './PassageDetails'
@@ -21,7 +21,7 @@ const ComponentDetailView: React.FC<{
       {component.type === COMPONENT_TYPE.SCENE && (
         <>
           <div className={styles.componentDetailViewHeader}>
-            <BranchesOutlined className={styles.headerIcon} /> Scene Details
+            <PartitionOutlined className={styles.headerIcon} /> Scene Details
           </div>
           <SceneDetails studioId={studioId} sceneId={component.id} />
         </>
