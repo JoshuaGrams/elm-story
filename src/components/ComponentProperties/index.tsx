@@ -13,6 +13,7 @@ import api from '../../api'
 import styles from './styles.module.less'
 import ChoiceDetails from './ChoiceDetails'
 import PassageDetails from './PassageDetails'
+import ComponentDetailView from './ComponentDetailView'
 
 const { Panel } = Collapse
 
@@ -103,21 +104,8 @@ const ComponentProperties: React.FC<{
   }, [editor.selectedGameOutlineComponent])
 
   return (
-    <Collapse
-      className={styles.componentProperties}
-      // activeKey={activeKeys}
-      // onChange={(activeKeys) => setActiveKeys([...activeKeys])}
-    >
-      <Panel header="Game Details" key="game-details">
-        {selectedGame && (
-          <>
-            <div>Title: {selectedGame.title}</div>
-            <div>Directed by: {selectedGame.director}</div>
-          </>
-        )}
-      </Panel>
-
-      <Panel header="Component Details" key="component-details">
+    <div className={styles.componentProperties}>
+      {/* <Panel header="Component Details" key="component-details">
         {editor.selectedGameOutlineComponent.id ? (
           <>
             <Form
@@ -138,50 +126,19 @@ const ComponentProperties: React.FC<{
         ) : (
           <div>Select component...</div>
         )}
-      </Panel>
+      </Panel> */}
 
-      {editor.selectedGameOutlineComponent.type === COMPONENT_TYPE.SCENE && (
-        <Panel header="Scene Details" key="scene-details">
-          <div>{editor.selectedGameOutlineComponent.title}</div>
-          {!editor.selectedComponentEditorSceneViewPassage &&
-            editor.totalComponentEditorSceneViewSelectedPassages > 0 && (
-              <div>
-                Selected Passages:{' '}
-                {editor.totalComponentEditorSceneViewSelectedPassages}
-              </div>
-            )}
-          {editor.totalComponentEditorSceneViewSelectedRoutes > 0 && (
-            <div>
-              Selected Routes:{' '}
-              {editor.totalComponentEditorSceneViewSelectedRoutes}
-            </div>
-          )}
-          {/* Nested Components */}
-          {editor.selectedComponentEditorSceneViewPassage && (
-            <Collapse>
-              {/* Passage Panel */}
-              {editor.selectedComponentEditorSceneViewPassage && (
-                <Panel header="Passage Details" key="passage-details">
-                  <PassageDetails
-                    studioId={studioId}
-                    id={editor.selectedComponentEditorSceneViewPassage}
-                  />
-                </Panel>
-              )}
-              {/* Choice Panel */}
-              {editor.selectedComponentEditorSceneViewChoice && (
-                <Panel header="Choice Details" key="choice-details">
-                  <ChoiceDetails
-                    studioId={studioId}
-                    id={editor.selectedComponentEditorSceneViewChoice}
-                  />
-                </Panel>
-              )}
-            </Collapse>
-          )}
-        </Panel>
-      )}
-    </Collapse>
+      {editor.selectedGameOutlineComponent.id &&
+        editor.selectedGameOutlineComponent.type && (
+          <ComponentDetailView
+            studioId={studioId}
+            component={{
+              id: editor.selectedGameOutlineComponent.id,
+              type: editor.selectedGameOutlineComponent.type
+            }}
+          />
+        )}
+    </div>
   )
 }
 

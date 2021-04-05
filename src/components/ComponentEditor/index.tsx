@@ -19,7 +19,7 @@ import { find as findBox } from 'rc-dock/lib/Algorithm'
 import {
   AlignLeftOutlined,
   BookOutlined,
-  BranchesOutlined,
+  PartitionOutlined,
   CloseOutlined,
   PlayCircleFilled,
   QuestionOutlined
@@ -126,7 +126,7 @@ function getTabIcon(type: COMPONENT_TYPE | undefined): JSX.Element {
     case COMPONENT_TYPE.CHAPTER:
       return <BookOutlined className={styles.tabIcon} />
     case COMPONENT_TYPE.SCENE:
-      return <BranchesOutlined className={styles.tabIcon} />
+      return <PartitionOutlined className={styles.tabIcon} />
     case COMPONENT_TYPE.PASSAGE:
       return <AlignLeftOutlined className={styles.tabIcon} />
     default:

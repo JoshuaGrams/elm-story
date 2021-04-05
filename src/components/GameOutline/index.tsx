@@ -25,7 +25,7 @@ import { Badge, Button, Dropdown, Menu, Tooltip, Typography } from 'antd'
 import {
   DownOutlined,
   AlignLeftOutlined,
-  BranchesOutlined,
+  PartitionOutlined,
   BookOutlined,
   QuestionOutlined,
   RightOutlined,
@@ -237,7 +237,7 @@ const renderComponentItem = ({
       componentType === COMPONENT_TYPE.CHAPTER
         ? () => <BookOutlined className={componentIconClassNames} />
         : componentType === COMPONENT_TYPE.SCENE
-        ? () => <BranchesOutlined className={componentIconClassNames} />
+        ? () => <PartitionOutlined className={componentIconClassNames} />
         : componentType === COMPONENT_TYPE.PASSAGE
         ? () => (
             <AlignLeftOutlined

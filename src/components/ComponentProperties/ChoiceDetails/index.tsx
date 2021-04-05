@@ -4,21 +4,21 @@ import { ComponentId, StudioId } from '../../../data/types'
 
 import { useChoice } from '../../../hooks'
 
-const ChoiceDetails: React.FC<{ studioId: StudioId; id: ComponentId }> = ({
-  studioId,
-  id
-}) => {
-  const choice = useChoice(studioId, id, [id])
+import styles from '../styles.module.less'
+
+const ChoiceDetails: React.FC<{
+  studioId: StudioId
+  choiceId: ComponentId
+}> = ({ studioId, choiceId }) => {
+  const choice = useChoice(studioId, choiceId, [choiceId])
 
   return (
     <>
-      {choice ? (
-        <>
+      {choice && (
+        <div className={styles.componentDetailViewContent}>
           <div>Title: {choice.title}</div>
           <div>ID: {choice.id}</div>
-        </>
-      ) : (
-        <>...</>
+        </div>
       )}
     </>
   )
