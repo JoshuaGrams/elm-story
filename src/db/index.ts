@@ -638,6 +638,30 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async removeRoutesByPassageRef(passageId: ComponentId) {
+    try {
+      const originRoutes = await this.routes
+          .where({ originId: passageId })
+          .toArray(),
+        destinationRoutes = await this.routes
+          .where({ destinationId: passageId })
+          .toArray()
+
+      Promise.all([
+        originRoutes.map(
+          async (originRoute) =>
+            originRoute.id && (await this.removeRoute(originRoute.id))
+        ),
+        destinationRoutes.map(
+          async (destinationRoute) =>
+            destinationRoute.id && (await this.removeRoute(destinationRoute.id))
+        )
+      ])
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async removeRoutesByChoiceRef(choiceId: ComponentId) {
     try {
       const routes = await this.routes.where({ choiceId }).toArray()

@@ -438,6 +438,10 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               break
             case COMPONENT_TYPE.PASSAGE:
               await Promise.all([
+                api().routes.removeRoutesByPassageRef(
+                  studioId,
+                  movingComponent.id as ComponentId
+                ),
                 api().passages.saveSceneRefToPassage(
                   studioId,
                   destinationParent.id as ComponentId,

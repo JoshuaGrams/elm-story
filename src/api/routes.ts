@@ -26,6 +26,17 @@ export async function removeRoute(studioId: StudioId, routeId: ComponentId) {
   }
 }
 
+export async function removeRoutesByPassageRef(
+  studioId: StudioId,
+  passageId: ComponentId
+) {
+  try {
+    await new LibraryDatabase(studioId).removeRoutesByPassageRef(passageId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function removeRoutesByChoiceRef(
   studioId: StudioId,
   choiceId: ComponentId
