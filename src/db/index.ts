@@ -407,9 +407,12 @@ export class LibraryDatabase extends Dexie {
               )
             }
 
-            for (let passage of passages) {
-              passage.id && (await this.removePassage(passage.id))
-            }
+            await Promise.all(
+              passages.map(
+                async (passage) =>
+                  passage.id && (await this.removePassage(passage.id))
+              )
+            )
 
             await this.scenes.delete(scene.id)
           }
@@ -547,9 +550,11 @@ export class LibraryDatabase extends Dexie {
         )
       }
 
-      for (let passage of passages) {
-        passage.id && this.removePassage(passage.id)
-      }
+      await Promise.all(
+        passages.map(
+          async (passage) => passage.id && this.removePassage(passage.id)
+        )
+      )
 
       await this.transaction('rw', this.scenes, async () => {
         if (await this.getComponent(LIBRARY_TABLE.SCENES, sceneId)) {
@@ -630,7 +635,8 @@ export class LibraryDatabase extends Dexie {
 
           await this.routes.delete(routeId)
         } else {
-          throw new Error(
+          // TODO: #70; async issue - we can do things in order, but this is likely more efficent
+          logger.error(
             `LibraryDatabase->removeRoute->Unable to remove route with ID: '${routeId}'. Does not exist.`
           )
         }
@@ -777,9 +783,11 @@ export class LibraryDatabase extends Dexie {
         )
       }
 
-      for (let route of routes) {
-        route.id && (await this.removeRoute(route.id))
-      }
+      await Promise.all(
+        routes.map(
+          async (route) => route.id && (await this.removeRoute(route.id))
+        )
+      )
 
       if (choices.length > 0) {
         logger.info(
@@ -787,9 +795,11 @@ export class LibraryDatabase extends Dexie {
         )
       }
 
-      for (let choice of choices) {
-        choice.id && (await this.removeChoice(choice.id))
-      }
+      await Promise.all(
+        choices.map(
+          async (choice) => choice.id && (await this.removeChoice(choice.id))
+        )
+      )
 
       await this.transaction('rw', this.passages, async () => {
         if (await this.getComponent(LIBRARY_TABLE.PASSAGES, passageId)) {
@@ -873,11 +883,9 @@ export class LibraryDatabase extends Dexie {
       }
 
       await Promise.all(
-        routes.map(async (route) => {
-          if (route.id) {
-            await this.removeRoute(route.id)
-          }
-        })
+        routes.map(
+          async (route) => route.id && (await this.removeRoute(route.id))
+        )
       )
 
       await this.transaction('rw', this.choices, async () => {
