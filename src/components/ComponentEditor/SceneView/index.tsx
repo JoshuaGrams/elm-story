@@ -26,7 +26,8 @@ import ReactFlow, {
   Edge,
   Connection,
   Elements,
-  ArrowHeadType
+  ArrowHeadType,
+  useStoreActions
 } from 'react-flow-renderer'
 
 import { Button } from 'antd'
@@ -94,6 +95,10 @@ const SceneView: React.FC<{
   const scene = useScene(studioId, sceneId),
     routes = useRoutesBySceneRef(studioId, sceneId),
     passages = usePassagesBySceneRef(studioId, sceneId)
+
+  const setSelectedElements = useStoreActions(
+    (actions) => actions.setSelectedElements
+  )
 
   const { editor, editorDispatch } = useContext(EditorContext)
 
@@ -345,6 +350,23 @@ const SceneView: React.FC<{
     selectedPassage,
     selectedChoice
   ])
+
+  useEffect(() => {
+    if (editor.savedComponent.id) {
+      logger.info(`SceneView->editor.savedComponent,elements->useEffect`)
+
+      const foundElement = cloneDeep(
+        elements.find((element) => element.id === editor.savedComponent.id)
+      )
+
+      foundElement && setSelectedElements([foundElement])
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
+        savedComponent: { id: undefined, type: undefined }
+      })
+    }
+  }, [editor.savedComponent, elements])
 
   return (
     <>

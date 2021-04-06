@@ -11,7 +11,7 @@ const ComponentTitle: React.FC<{
   const [editComponentTitleForm] = Form.useForm()
 
   useEffect(() => {
-    logger.info(`title,editorComponentTitleForm useEffect`)
+    logger.info(`ComponentTitle->title,editorComponentTitleForm useEffect`)
     editComponentTitleForm.resetFields()
   }, [title, editComponentTitleForm])
 
