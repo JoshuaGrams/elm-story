@@ -56,6 +56,17 @@
   cursor: crosshair !important;
 }
 
+:global .react-flow__edge {
+  .react-flow__edge-path {
+    stroke: hsl(0, 0%, 40%);
+  }
+
+  &.selected .react-flow__edge-path {
+    stroke: var(--highlight-color);
+    stroke-width: 2px;
+  }
+}
+
 .sceneView {
   .background {
     background: hsl(0, 0%, 3%);

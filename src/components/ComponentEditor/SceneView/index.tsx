@@ -26,7 +26,6 @@ import ReactFlow, {
   Edge,
   Connection,
   Elements,
-  ArrowHeadType,
   useStoreActions,
   FlowTransform,
   useZoomPanHelper
@@ -324,7 +323,6 @@ const SceneView: React.FC<{
             target: route.destinationId,
             targetHandle: route.destinationId,
             type: 'default',
-            arrowHeadType: ArrowHeadType.ArrowClosed,
             animated: true,
             data: {
               type: COMPONENT_TYPE.ROUTE
