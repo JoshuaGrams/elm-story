@@ -2,6 +2,14 @@ import { Choice, ComponentId, StudioId } from '../data/types'
 import { v4 as uuid } from 'uuid'
 import { LibraryDatabase } from '../db'
 
+export async function getChoice(studioId: StudioId, choiceId: ComponentId) {
+  try {
+    return await new LibraryDatabase(studioId).getChoice(choiceId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function saveChoice(studioId: StudioId, choice: Choice) {
   if (!choice.id) choice.id = uuid()
 

@@ -817,6 +817,24 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async getChoice(choiceId: ComponentId): Promise<Choice> {
+    logger.info(`LibraryDatabase->getChoice`)
+
+    try {
+      const choice = await this.choices.get(choiceId)
+
+      if (choice) {
+        return choice
+      } else {
+        throw new Error(
+          `LibraryDatabase->getChoice->Unable to get choice with ID: ${choiceId}. Does not exist.`
+        )
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async saveChoice(choice: Choice): Promise<Choice> {
     if (!choice.gameId)
       throw new Error('Unable to save choice to database. Missing game ID.')

@@ -6,16 +6,13 @@ import { useGame } from '../../hooks'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
-import { Collapse, Form, Input } from 'antd'
+import { Form } from 'antd'
+
+import ComponentDetailView from './ComponentDetailView'
 
 import api from '../../api'
 
 import styles from './styles.module.less'
-import ChoiceDetails from './ChoiceDetails'
-import PassageDetails from './PassageDetails'
-import ComponentDetailView from './ComponentDetailView'
-
-const { Panel } = Collapse
 
 const ComponentProperties: React.FC<{
   studioId: StudioId

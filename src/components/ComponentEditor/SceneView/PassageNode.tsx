@@ -16,13 +16,6 @@ import {
   useRoutesBySceneRef
 } from '../../../hooks'
 
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  animals,
-  colors
-} from 'unique-names-generator'
-
 import { Handle, Position, NodeProps, Connection } from 'react-flow-renderer'
 
 import { Dropdown, Menu } from 'antd'
@@ -395,11 +388,7 @@ const PassageNode: React.FC<NodeProps<{
                     id: choiceId,
                     gameId: passage.gameId,
                     passageId: data.passageId,
-                    title: uniqueNamesGenerator({
-                      dictionaries: [adjectives, animals, colors],
-                      separator: ' ',
-                      length: 2
-                    }),
+                    title: 'Untitled Choice',
                     goto: [],
                     conditions: [],
                     tags: []

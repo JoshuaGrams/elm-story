@@ -4,7 +4,11 @@ import { ComponentId, StudioId } from '../../../data/types'
 
 import { useChoice } from '../../../hooks'
 
+import ComponentTitle from '../ComponentTitle'
+
 import styles from '../styles.module.less'
+
+import api from '../../../api'
 
 const ChoiceDetails: React.FC<{
   studioId: StudioId
@@ -16,8 +20,18 @@ const ChoiceDetails: React.FC<{
     <>
       {choice && (
         <div className={styles.componentDetailViewContent}>
-          <div>Title: {choice.title}</div>
-          <div>ID: {choice.id}</div>
+          <ComponentTitle
+            title={choice.title}
+            onUpdate={async (title) => {
+              if (choice.id) {
+                await api().choices.saveChoice(studioId, {
+                  ...(await api().choices.getChoice(studioId, choice.id)),
+                  title
+                })
+              }
+            }}
+          />
+          <div className={styles.componentId}>{choice.id}</div>
         </div>
       )}
     </>

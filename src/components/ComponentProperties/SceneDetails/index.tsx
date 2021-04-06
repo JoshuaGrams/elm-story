@@ -4,17 +4,23 @@ import { ComponentId, StudioId } from '../../../data/types'
 
 import { useScene } from '../../../hooks'
 
-import { EditorContext } from '../../../contexts/EditorContext'
+import {
+  EditorContext,
+  EDITOR_ACTION_TYPE
+} from '../../../contexts/EditorContext'
 
 import { Collapse } from 'antd'
+import { AlignLeftOutlined, BranchesOutlined } from '@ant-design/icons'
 
+import ComponentTitle from '../ComponentTitle'
 import PassageDetails from '../PassageDetails'
 import ChoiceDetails from '../ChoiceDetails'
 
 const { Panel } = Collapse
 
 import styles from '../styles.module.less'
-import { AlignLeftOutlined, BranchesOutlined } from '@ant-design/icons'
+
+import api from '../../../api'
 
 const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
   studioId,
@@ -22,15 +28,42 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
 }) => {
   const scene = useScene(studioId, sceneId, [sceneId])
 
-  const { editor } = useContext(EditorContext)
+  const { editor, editorDispatch } = useContext(EditorContext)
 
   return (
     <>
       {scene && (
         <>
           <div className={styles.componentDetailViewContent}>
-            <div>Title: {scene.title}</div>
-            <div>ID: {scene.id}</div>
+            <ComponentTitle
+              title={scene.title}
+              onUpdate={async (title) => {
+                if (scene.id) {
+                  await api().scenes.saveScene(studioId, {
+                    ...(await api().scenes.getScene(studioId, scene.id)),
+                    title
+                  })
+
+                  editorDispatch({
+                    type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
+                    renamedComponent: {
+                      id: scene.id,
+                      newTitle: title
+                    }
+                  })
+
+                  // TODO: Is this necessary?
+                  editorDispatch({
+                    type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+                    selectedGameOutlineComponent: {
+                      ...editor.selectedGameOutlineComponent,
+                      title
+                    }
+                  })
+                }
+              }}
+            />
+            <div className={styles.componentId}>{scene.id}</div>
 
             {!editor.selectedComponentEditorSceneViewPassage &&
               editor.totalComponentEditorSceneViewSelectedPassages > 0 && (
