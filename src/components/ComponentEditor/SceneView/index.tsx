@@ -1,7 +1,7 @@
 import logger from '../../../lib/logger'
 
 import React, { useContext, useEffect, useState } from 'react'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 
 import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
 

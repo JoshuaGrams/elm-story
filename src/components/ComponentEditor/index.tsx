@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 import logger from '../../lib/logger'
 
 import { ComponentId, COMPONENT_TYPE, Game, StudioId } from '../../data/types'
@@ -194,6 +194,8 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
     changingTabId?: string | undefined,
     direction?: DropDirection | undefined
   ) {
+    logger.info(`ComponentEditor->onLayoutChange`)
+
     if (dockLayout.current && changingTabId) {
       const oldLayoutParentPanel = dockLayout.current.find(changingTabId)
         ?.parent as PanelData | undefined

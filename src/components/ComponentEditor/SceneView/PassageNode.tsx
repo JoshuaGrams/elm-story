@@ -1,7 +1,7 @@
 import logger from '../../../lib/logger'
 
 import React, { memo, useContext, useEffect, useState } from 'react'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 import { v4 as uuid } from 'uuid'
 
 import { useStoreState, useStoreActions } from 'react-flow-renderer'
