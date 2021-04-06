@@ -754,45 +754,43 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   ) {
     if (treeData) {
       if (complete && title) {
-        switch (treeData.items[componentId].data.type) {
-          case COMPONENT_TYPE.CHAPTER:
-            await api().chapters.saveChapterTitle(studioId, componentId, title)
-            break
-          case COMPONENT_TYPE.SCENE:
-            await api().scenes.saveSceneTitle(studioId, componentId, title)
-            break
-          case COMPONENT_TYPE.PASSAGE:
-            await api().passages.savePassageTitle(studioId, componentId, title)
-            break
-          default:
-            break
-        }
+        // TODO: updating DB could fail; cache name if need revert on error
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
+          renamedComponent: {
+            id: componentId,
+            newTitle: title || treeData.items[componentId].data.title
+          }
+        })
 
-        setTreeData(
-          complete
-            ? mutateTree(treeData, componentId, {
-                data: {
-                  ...treeData.items[componentId].data,
-                  title: title || treeData.items[componentId].data.title,
-                  renaming: false
-                }
-              })
-            : mutateTree(treeData, componentId, {
-                data: { ...treeData.items[componentId].data, renaming: true }
-              })
-        )
-
-        if (complete) {
-          editorDispatch({
-            type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
-            renamedComponent: {
-              id: componentId,
-              newTitle: title || treeData.items[componentId].data.title
-            }
-          })
+        try {
+          switch (treeData.items[componentId].data.type) {
+            case COMPONENT_TYPE.CHAPTER:
+              await api().chapters.saveChapterTitle(
+                studioId,
+                componentId,
+                title
+              )
+              break
+            case COMPONENT_TYPE.SCENE:
+              await api().scenes.saveSceneTitle(studioId, componentId, title)
+              break
+            case COMPONENT_TYPE.PASSAGE:
+              await api().passages.savePassageTitle(
+                studioId,
+                componentId,
+                title
+              )
+              break
+            default:
+              break
+          }
+        } catch (error) {
+          throw new Error(error)
         }
 
         if (componentId === editor.selectedGameOutlineComponent.id) {
+          // TODO: results in unneeded call on selectComponent
           editorDispatch({
             type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
             selectedGameOutlineComponent: {
@@ -851,6 +849,28 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   }
 
   useEffect(selectComponent, [editor.selectedGameOutlineComponent])
+
+  useEffect(() => {
+    logger.info(`GameOutline->editor.renamedComponent->useEffect`)
+
+    if (
+      treeData &&
+      editor.renamedComponent.id &&
+      editor.renamedComponent.newTitle
+    ) {
+      setTreeData(
+        mutateTree(treeData, editor.renamedComponent.id, {
+          data: {
+            ...treeData.items[editor.renamedComponent.id].data,
+            title:
+              editor.renamedComponent.newTitle ||
+              treeData.items[editor.renamedComponent.id].data.title,
+            renaming: false
+          }
+        })
+      )
+    }
+  }, [editor.renamedComponent])
 
   useEffect(() => {
     async function updateTree() {
