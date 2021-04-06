@@ -1,3 +1,5 @@
+import useDebouncedResizeObserver from './useDebouncedResizeObserver'
+
 import useStudios, { useSelectedStudio } from './useStudios'
 import useGames, { useGame } from './useGames'
 import useChapters, { useChapter } from './useChapters'
@@ -11,6 +13,7 @@ import usePassages, { usePassagesBySceneRef, usePassage } from './usePassages'
 import useChoices, { useChoice, useChoicesByPassageRef } from './useChoices'
 
 export {
+  useDebouncedResizeObserver,
   useStudios,
   useSelectedStudio,
   useGames,
