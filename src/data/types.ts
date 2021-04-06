@@ -79,6 +79,11 @@ export interface Scene extends Component {
   gameId: GameId
   chapterId: ComponentId
   passages: ComponentId[]
+  editor?: {
+    componentEditorTransformX?: number
+    componentEditorTransformY?: number
+    componentEditorTransformZoom?: number
+  }
 }
 
 export interface Route extends Component {

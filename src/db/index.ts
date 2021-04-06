@@ -538,6 +538,36 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async saveSceneViewTransform(
+    sceneId: ComponentId,
+    transform: { x: number; y: number; zoom: number }
+  ) {
+    try {
+      await this.transaction('rw', this.scenes, async () => {
+        if (sceneId) {
+          const scene = await this.getComponent(LIBRARY_TABLE.SCENES, sceneId)
+
+          if (scene) {
+            this.scenes.update(sceneId, {
+              ...scene,
+              editor: {
+                componentEditorTransformX: transform.x,
+                componentEditorTransformY: transform.y,
+                componentEditorTransformZoom: transform.zoom
+              }
+            })
+          } else {
+            throw new Error(
+              `Unable to save scene view transform. Scene missing.`
+            )
+          }
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async removeScene(sceneId: ComponentId) {
     logger.info(`LibraryDatabase->removeScene`)
 

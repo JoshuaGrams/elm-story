@@ -27,7 +27,9 @@ import ReactFlow, {
   Connection,
   Elements,
   ArrowHeadType,
-  useStoreActions
+  useStoreActions,
+  FlowTransform,
+  useZoomPanHelper
 } from 'react-flow-renderer'
 
 import { Button } from 'antd'
@@ -97,12 +99,14 @@ const SceneView: React.FC<{
     passages = usePassagesBySceneRef(studioId, sceneId)
 
   const setSelectedElements = useStoreActions(
-    (actions) => actions.setSelectedElements
-  )
+      (actions) => actions.setSelectedElements
+    ),
+    { transform } = useZoomPanHelper()
 
   const { editor, editorDispatch } = useContext(EditorContext)
 
-  const // TODO: Support multiple selected passages?
+  const [ready, setReady] = useState(false),
+    // TODO: Support multiple selected passages?
     [totalSelectedPassages, setTotalSelectedPassages] = useState<number>(0),
     [totalSelectedRoutes, setTotalSelectedRoutes] = useState<number>(0),
     [selectedPassage, setSelectedPassage] = useState<ComponentId | null>(null),
@@ -266,8 +270,27 @@ const SceneView: React.FC<{
     }
   }
 
+  async function onMoveEnd(flowTransform?: FlowTransform | undefined) {
+    scene &&
+      scene.id &&
+      flowTransform &&
+      (await api().scenes.saveSceneViewTransform(
+        studioId,
+        scene.id,
+        flowTransform
+      ))
+  }
+
   useEffect(() => {
+    logger.info(`SceneView->scene,passages,routes->useEffect`)
+
     if (scene && passages && routes) {
+      logger.info(
+        `SceneView->scene,passages,routes->useEffect->have scene, passages and routes`
+      )
+
+      !ready && setReady(true)
+
       // TODO: optimize; this is re-rendering too much
       const nodes: Node[] = passages.map((passage) => {
           if (!passage.id)
@@ -312,7 +335,18 @@ const SceneView: React.FC<{
       // BUG: Unable to create edges on initial node render because choices aren't ready
       setElements([...nodes, ...edges])
     }
-  }, [scene, passages, routes])
+  }, [scene, passages, routes, ready])
+
+  useEffect(() => {
+    logger.info(`SceneView->sceneReady->useEffect`)
+
+    ready &&
+      transform({
+        x: scene?.editor?.componentEditorTransformX || 0,
+        y: scene?.editor?.componentEditorTransformY || 0,
+        zoom: scene?.editor?.componentEditorTransformZoom || 1
+      })
+  }, [ready])
 
   useEffect(() => {
     if (editor.selectedGameOutlineComponent.id === sceneId) {
@@ -401,6 +435,7 @@ const SceneView: React.FC<{
           elementsSelectable
           onSelectionDragStop={onSelectionDragStop}
           onSelectionChange={onSelectionChange}
+          onMoveEnd={onMoveEnd}
         >
           <Background
             size={1}

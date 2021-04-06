@@ -72,6 +72,21 @@ export async function saveSceneTitle(
   }
 }
 
+export async function saveSceneViewTransform(
+  studioId: StudioId,
+  sceneId: ComponentId,
+  transform: { x: number; y: number; zoom: number }
+) {
+  try {
+    await new LibraryDatabase(studioId).saveSceneViewTransform(
+      sceneId,
+      transform
+    )
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function saveChapterRefToScene(
   studioId: StudioId,
   chapterId: ComponentId,
