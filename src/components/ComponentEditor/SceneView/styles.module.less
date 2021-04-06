@@ -26,6 +26,7 @@
   background-color: hsl(0, 0%, 3%);
   border: solid 1px hsl(0, 0%, 20%);
   box-shadow: 0px 0px 20px hsla(0, 0%, 0%, 0.8);
+  pointer-events: none;
 
   .react-flow__minimap-mask {
     fill: hsla(0, 0%, 0%, 0.9);
@@ -33,7 +34,7 @@
 }
 
 :global .react-flow__node {
-  background: hsl(0, 0%, 0%);
+  // background: hsla(0, 0%, 0%);
   border-radius: 6px;
   border: 1px solid hsl(0, 0%, 0%);
   box-shadow: 0px 0px 20px hsla(0, 0%, 0%, 0.8);
@@ -76,7 +77,7 @@
     padding: 6px 10px;
     font-size: 16px;
     text-align: left;
-    background: hsl(0, 0%, 5%);
+    background: hsla(0, 0%, 5%, 80%);
     border-top-right-radius: 6px;
     border-top-left-radius: 6px;
   }
@@ -86,7 +87,7 @@
   }
 
   .choices {
-    background: hsl(0, 0%, 20%);
+    background: hsla(0, 0%, 20%, 80%);
 
     .choiceHandle {
       width: 8px;
@@ -101,7 +102,7 @@
       cursor: pointer;
 
       &.choiceSelected {
-        background: hsl(209, 100%, 55%);
+        background: hsla(209, 100%, 55%, 80%);
       }
     }
   }
@@ -109,7 +110,7 @@
   .addChoiceButton {
     width: 100%;
     height: 30px;
-    background: hsl(0, 0%, 10%);
+    background: hsla(0, 0%, 10%, 80%);
     border-radius: 0px;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
