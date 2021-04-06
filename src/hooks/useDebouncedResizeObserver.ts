@@ -13,7 +13,7 @@ const useDebouncedResizeObserver = (wait: number) => {
     ]),
     { ref } = useResizeObserver({ onResize })
 
-  return { ref, ...size }
+  return { ref, width: size.width || 0, height: size.height || 0 }
 }
 
 export default useDebouncedResizeObserver

@@ -1,6 +1,6 @@
 import logger from '../../../lib/logger'
 
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 
 import {
   Chapter,
@@ -12,7 +12,13 @@ import {
   StudioId
 } from '../../../data/types'
 
-import { useChapter, useGame, usePassage, useScene } from '../../../hooks'
+import {
+  useDebouncedResizeObserver,
+  useChapter,
+  useGame,
+  usePassage,
+  useScene
+} from '../../../hooks'
 
 import {
   EditorContext,
@@ -34,6 +40,12 @@ const TabContent: React.FC<{
     chapter: Chapter | undefined,
     scene: Scene | undefined,
     passage: Passage | undefined
+
+  const {
+    ref: tabContentViewRef,
+    width: tabContentViewWidth,
+    height: tabContentViewHeight
+  } = useDebouncedResizeObserver(1000)
 
   const { editor, editorDispatch } = useContext(EditorContext)
 
@@ -131,6 +143,13 @@ const TabContent: React.FC<{
     }
   }
 
+  useEffect(() => {
+    logger.info(
+      `TabContent->type,tabContentViewWidth,tabContentViewHeight->useEffect->
+       type: ${type} width: ${tabContentViewWidth} height: ${tabContentViewHeight}`
+    )
+  }, [type, tabContentViewWidth, tabContentViewHeight])
+
   return (
     <div className={styles.TabContent}>
       {/* This mask selects tab without interacting with tab content. */}
@@ -144,7 +163,9 @@ const TabContent: React.FC<{
         }}
       />
       <TabContentToolbar>{tools}</TabContentToolbar>
-      <div className={styles.TabContentView}>{view}</div>
+      <div ref={tabContentViewRef} className={styles.TabContentView}>
+        {view}
+      </div>
     </div>
   )
 }
