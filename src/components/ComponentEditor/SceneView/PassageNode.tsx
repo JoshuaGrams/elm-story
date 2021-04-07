@@ -216,6 +216,11 @@ const PassageNode: React.FC<NodeProps<{
     }
   }, [choicesByPassageRef])
 
+  useEffect(() => {
+    logger.info(`PassageNode->editor.selectedComponentEditorSceneViewChoice->
+                 useEffect->${editor.selectedComponentEditorSceneViewChoice}`)
+  }, [editor.selectedComponentEditorSceneViewChoice])
+
   return (
     <div className={styles.passageNode} key={passage?.id}>
       {passage && passage.id ? (
@@ -274,35 +279,36 @@ const PassageNode: React.FC<NodeProps<{
                           choice.id
                         }
                         onSelect={(passageId, choiceId) => {
-                          if (
-                            !editor.selectedComponentEditorComponents.find(
-                              (selectedComponent) => {
-                                selectedComponent.id === choiceId
-                              }
-                            )
-                          ) {
-                            logger.info(
-                              `PassageNode->onClick: choice: ${choiceId}`
-                            )
+                          logger.info(
+                            `PassageNode->onClick: choice: ${choiceId}`
+                          )
 
+                          editor.selectedComponentEditorSceneViewPassage !==
+                            passageId &&
+                            setSelectedElement([
+                              cloneDeep(
+                                passages.find(
+                                  (passageNode) => passageNode.id === passageId
+                                )
+                              )
+                            ]) &&
                             editorDispatch({
                               type:
                                 EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
                               selectedComponentEditorSceneViewPassage: passageId
                             })
 
-                            editor.selectedComponentEditorSceneViewPassage ===
-                              passageId &&
-                              editorDispatch({
-                                type:
-                                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                                selectedComponentEditorSceneViewChoice:
-                                  editor.selectedComponentEditorSceneViewChoice !==
-                                  choice.id
-                                    ? choiceId
-                                    : null
-                              })
-                          }
+                          editor.selectedComponentEditorSceneViewPassage ===
+                            passageId &&
+                            editorDispatch({
+                              type:
+                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                              selectedComponentEditorSceneViewChoice:
+                                editor.selectedComponentEditorSceneViewChoice !==
+                                choice.id
+                                  ? choiceId
+                                  : null
+                            })
                         }}
                         onDelete={async (choiceId, outgoingRoutes) => {
                           try {
