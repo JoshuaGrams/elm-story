@@ -114,6 +114,68 @@ const SceneView: React.FC<{
     [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
     [elements, setElements] = useState<FlowElement[]>([])
 
+  function highlightElements(elementsToHighlight: Elements<any> | null) {
+    logger.info(`SceneView->highlightElements`)
+
+    const clonedElements = cloneDeep(elements),
+      clonedPassages = clonedElements.filter(
+        (clonedElement): clonedElement is Node =>
+          clonedElement.data.type === COMPONENT_TYPE.PASSAGE
+      ),
+      clonedEdges = clonedElements.filter(
+        (clonedElement): clonedElement is Edge =>
+          clonedElement.data.type === COMPONENT_TYPE.ROUTE
+      )
+
+    if (elementsToHighlight) {
+      const selectedPassages = clonedPassages.filter((clonedPassage) =>
+          elementsToHighlight.find(
+            (selectedElement) => selectedElement.id === clonedPassage.id
+          )
+        ),
+        selectedEdges = clonedEdges.filter((clonedEdge) =>
+          elementsToHighlight.find(
+            (selectedElement) => selectedElement.id === clonedEdge.id
+          )
+        )
+
+      setElements([
+        ...clonedPassages,
+        ...clonedEdges.map((edge) => {
+          edge.className = styles.routeNotConnectedToPassage
+
+          selectedPassages.map((selectedPassage) => {
+            if (
+              edge.source === selectedPassage.id ||
+              edge.target === selectedPassage.id
+            ) {
+              edge.className = 'selected'
+            }
+          })
+
+          selectedEdges.map((selectedEdge) => {
+            if (edge.id === selectedEdge.id) {
+              edge.className = 'selected'
+            }
+          })
+
+          return edge
+        })
+      ])
+    }
+
+    if (!elementsToHighlight) {
+      setElements([
+        ...clonedPassages,
+        ...clonedEdges.map((edge) => {
+          edge.className = ''
+
+          return edge
+        })
+      ])
+    }
+  }
+
   async function onNodeDragStop(
     event: React.MouseEvent<Element, MouseEvent>,
     node: Node<any>
@@ -248,16 +310,6 @@ const SceneView: React.FC<{
   function onSelectionChange(selectedElements: Elements<any> | null) {
     logger.info('SceneView->onSelectionChange')
 
-    const clonedElements = cloneDeep(elements),
-      clonedPassages = clonedElements.filter(
-        (clonedElement): clonedElement is Node =>
-          clonedElement.data.type === COMPONENT_TYPE.PASSAGE
-      ),
-      clonedEdges = clonedElements.filter(
-        (clonedElement): clonedElement is Edge =>
-          clonedElement.data.type === COMPONENT_TYPE.ROUTE
-      )
-
     let _totalSelectedPassages = 0,
       _totalSelectedRoutes = 0
 
@@ -287,56 +339,7 @@ const SceneView: React.FC<{
       setSelectedChoice(null)
     }
 
-    if (selectedElements) {
-      const selectedPassages = clonedPassages.filter((clonedPassage) =>
-          selectedElements.find(
-            (selectedElement) => selectedElement.id === clonedPassage.id
-          )
-        ),
-        selectedEdges = clonedEdges.filter((clonedEdge) =>
-          selectedElements.find(
-            (selectedElement) => selectedElement.id === clonedEdge.id
-          )
-        )
-
-      setElements([
-        ...clonedPassages,
-        ...clonedEdges.map((edge) => {
-          edge.className = styles.routeNotConnectedToPassage
-
-          selectedPassages.map((selectedPassage) => {
-            if (
-              edge.source === selectedPassage.id ||
-              edge.target === selectedPassage.id
-            ) {
-              edge.className = 'selected'
-            }
-          })
-
-          selectedEdges.map((selectedEdge) => {
-            if (edge.id === selectedEdge.id) {
-              edge.className = 'selected'
-            }
-          })
-
-          return edge
-        })
-      ])
-    }
-
-    if (selectedElements && editor.selectedComponentEditorSceneViewChoice) {
-    }
-
-    if (!selectedElements) {
-      setElements([
-        ...clonedPassages,
-        ...clonedEdges.map((edge) => {
-          edge.className = ''
-
-          return edge
-        })
-      ])
-    }
+    highlightElements(selectedElements)
   }
 
   async function onMoveEnd(flowTransform?: FlowTransform | undefined) {
