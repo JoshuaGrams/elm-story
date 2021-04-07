@@ -63,8 +63,23 @@
     stroke: hsl(0, 0%, 40%);
   }
 
+  .react-flow__edge-path {
+    &:hover {
+      cursor: pointer;
+      stroke: white;
+    }
+  }
+
   &.selected .react-flow__edge-path {
     stroke: var(--highlight-color);
+  }
+}
+// ^^^
+.routeNotConnectedToPassage path {
+  stroke: hsl(0, 0%, 15%) !important;
+
+  &:hover {
+    stroke: white !important;
   }
 }
 
@@ -72,10 +87,6 @@
   .background {
     background: hsl(0, 0%, 3%);
   }
-}
-
-.routeNotConnectedToPassage path {
-  stroke: hsl(0, 0%, 15%) !important;
 }
 
 .passageNode {
