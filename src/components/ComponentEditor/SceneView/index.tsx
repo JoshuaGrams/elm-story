@@ -28,7 +28,8 @@ import ReactFlow, {
   Elements,
   useStoreActions,
   FlowTransform,
-  useZoomPanHelper
+  useZoomPanHelper,
+  useStoreState
 } from 'react-flow-renderer'
 
 import { Button } from 'antd'
@@ -97,7 +98,8 @@ const SceneView: React.FC<{
     routes = useRoutesBySceneRef(studioId, sceneId),
     passages = usePassagesBySceneRef(studioId, sceneId)
 
-  const setSelectedElements = useStoreActions(
+  const selectedElements = useStoreState((state) => state.selectedElements),
+    setSelectedElements = useStoreActions(
       (actions) => actions.setSelectedElements
     ),
     { transform } = useZoomPanHelper()
@@ -243,13 +245,23 @@ const SceneView: React.FC<{
     // }
   }
 
-  function onSelectionChange(elements: Elements<any> | null) {
+  function onSelectionChange(selectedElements: Elements<any> | null) {
     logger.info('SceneView->onSelectionChange')
+
+    const clonedElements = cloneDeep(elements),
+      clonedPassages = clonedElements.filter(
+        (clonedElement): clonedElement is Node =>
+          clonedElement.data.type === COMPONENT_TYPE.PASSAGE
+      ),
+      clonedEdges = clonedElements.filter(
+        (clonedElement): clonedElement is Edge =>
+          clonedElement.data.type === COMPONENT_TYPE.ROUTE
+      )
 
     let _totalSelectedPassages = 0,
       _totalSelectedRoutes = 0
 
-    elements?.map((element) => {
+    selectedElements?.map((element) => {
       element.data.type === COMPONENT_TYPE.PASSAGE && ++_totalSelectedPassages
 
       element.data.type === COMPONENT_TYPE.ROUTE && ++_totalSelectedRoutes
@@ -258,14 +270,72 @@ const SceneView: React.FC<{
     setTotalSelectedPassages(_totalSelectedPassages)
     setTotalSelectedRoutes(_totalSelectedRoutes)
 
-    if (!elements || (elements && elements.length > 0)) {
+    if (
+      !selectedElements ||
+      (selectedElements && selectedElements.length > 0)
+    ) {
       setSelectedPassage(null)
       setSelectedChoice(null)
     }
 
-    if (elements && elements.length === 1) {
-      setSelectedPassage(elements[0].id)
+    if (
+      selectedElements &&
+      selectedElements.length === 1 &&
+      selectedElements[0].data.type === COMPONENT_TYPE.PASSAGE
+    ) {
+      setSelectedPassage(selectedElements[0].id)
       setSelectedChoice(null)
+    }
+
+    if (selectedElements) {
+      const selectedPassages = clonedPassages.filter((clonedPassage) =>
+          selectedElements.find(
+            (selectedElement) => selectedElement.id === clonedPassage.id
+          )
+        ),
+        selectedEdges = clonedEdges.filter((clonedEdge) =>
+          selectedElements.find(
+            (selectedElement) => selectedElement.id === clonedEdge.id
+          )
+        )
+
+      setElements([
+        ...clonedPassages,
+        ...clonedEdges.map((edge) => {
+          edge.className = styles.routeNotConnectedToPassage
+
+          selectedPassages.map((selectedPassage) => {
+            if (
+              edge.source === selectedPassage.id ||
+              edge.target === selectedPassage.id
+            ) {
+              edge.className = 'selected'
+            }
+          })
+
+          selectedEdges.map((selectedEdge) => {
+            if (edge.id === selectedEdge.id) {
+              edge.className = 'selected'
+            }
+          })
+
+          return edge
+        })
+      ])
+    }
+
+    if (selectedElements && editor.selectedComponentEditorSceneViewChoice) {
+    }
+
+    if (!selectedElements) {
+      setElements([
+        ...clonedPassages,
+        ...clonedEdges.map((edge) => {
+          edge.className = ''
+
+          return edge
+        })
+      ])
     }
   }
 
@@ -347,6 +417,15 @@ const SceneView: React.FC<{
   }, [ready])
 
   useEffect(() => {
+    logger.info(
+      `SceneView->
+       editor.selectedGameOutlineComponent,
+       totalSelectedPassages,
+       selectedPassage,
+       selectedChoice
+       ->useEffect`
+    )
+
     if (editor.selectedGameOutlineComponent.id === sceneId) {
       totalSelectedPassages !==
         editor.totalComponentEditorSceneViewSelectedPassages &&
@@ -382,6 +461,10 @@ const SceneView: React.FC<{
     selectedPassage,
     selectedChoice
   ])
+
+  useEffect(() => {
+    logger.info(`SceneView->selectedElements->useEffect`)
+  }, [selectedElements])
 
   useEffect(() => {
     if (editor.savedComponent.id) {

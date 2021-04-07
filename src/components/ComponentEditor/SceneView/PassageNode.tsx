@@ -176,7 +176,8 @@ const PassageNode: React.FC<NodeProps<{
   const passage = usePassage(data.studioId, data.passageId),
     choicesByPassageRef = useChoicesByPassageRef(data.studioId, data.passageId)
 
-  const passageNodes = useStoreState((state) => state.nodes),
+  const passages = useStoreState((state) => state.nodes),
+    routes = useStoreState((state) => state.edges),
     setSelectedElement = useStoreActions(
       (actions) => actions.setSelectedElements
     )
@@ -283,14 +284,6 @@ const PassageNode: React.FC<NodeProps<{
                             logger.info(
                               `PassageNode->onClick: choice: ${choiceId}`
                             )
-
-                            setSelectedElement([
-                              cloneDeep(
-                                passageNodes.find(
-                                  (passageNode) => passageNode.id === passageId
-                                )
-                              )
-                            ])
 
                             editorDispatch({
                               type:
@@ -406,7 +399,7 @@ const PassageNode: React.FC<NodeProps<{
                 passage.id &&
                   setSelectedElement([
                     cloneDeep(
-                      passageNodes.find(
+                      passages.find(
                         (passageNode) => passageNode.id === passage.id
                       )
                     )

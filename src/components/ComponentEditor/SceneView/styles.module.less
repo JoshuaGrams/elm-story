@@ -38,6 +38,7 @@
   border-radius: 6px;
   border: 1px solid hsl(0, 0%, 0%);
   box-shadow: 0px 0px 20px hsla(0, 0%, 0%, 0.8);
+  transition: border 0.25s;
 
   &.selected {
     border: 1px hsl(209, 100%, 55%) solid;
@@ -58,12 +59,12 @@
 
 :global .react-flow__edge {
   .react-flow__edge-path {
+    transition: stroke 0.25s;
     stroke: hsl(0, 0%, 40%);
   }
 
   &.selected .react-flow__edge-path {
     stroke: var(--highlight-color);
-    stroke-width: 2px;
   }
 }
 
@@ -71,6 +72,10 @@
   .background {
     background: hsl(0, 0%, 3%);
   }
+}
+
+.routeNotConnectedToPassage path {
+  stroke: hsl(0, 0%, 15%) !important;
 }
 
 .passageNode {
@@ -111,9 +116,10 @@
       font-size: 12px;
       padding: 4px 10px;
       cursor: pointer;
+      transition: background-color 0.25s;
 
       &.choiceSelected {
-        background: hsla(209, 100%, 55%, 80%);
+        background-color: hsla(209, 100%, 55%, 80%);
       }
     }
   }
