@@ -1,7 +1,7 @@
 import logger from '../../../lib/logger'
 
 import React, { useContext, useEffect, useState } from 'react'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, isObject, isUndefined } from 'lodash-es'
 
 import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
 
@@ -98,7 +98,9 @@ const SceneView: React.FC<{
     routes = useRoutesBySceneRef(studioId, sceneId),
     passages = usePassagesBySceneRef(studioId, sceneId)
 
-  const selectedElements = useStoreState((state) => state.selectedElements),
+  const edges = useStoreState((state) => state.edges),
+    setInternalElements = useStoreActions((state) => state.setElements),
+    selectedElements = useStoreState((state) => state.selectedElements),
     setSelectedElements = useStoreActions(
       (actions) => actions.setSelectedElements
     ),
@@ -114,6 +116,7 @@ const SceneView: React.FC<{
     [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
     [elements, setElements] = useState<FlowElement[]>([])
 
+  // This is not selection.
   function highlightElements(elementsToHighlight: Elements<any> | null) {
     logger.info(`SceneView->highlightElements`)
 
@@ -133,25 +136,32 @@ const SceneView: React.FC<{
             (selectedElement) => selectedElement.id === clonedPassage.id
           )
         ),
-        selectedEdges = clonedEdges.filter((clonedEdge) =>
-          elementsToHighlight.find(
-            (selectedElement) => selectedElement.id === clonedEdge.id
-          )
-        )
+        selectedEdges = editor.selectedComponentEditorSceneViewChoice
+          ? clonedEdges.filter(
+              (clonedEdge) =>
+                clonedEdge.sourceHandle ===
+                editor.selectedComponentEditorSceneViewChoice
+            )
+          : clonedEdges.filter((clonedEdge) =>
+              elementsToHighlight.find(
+                (selectedElement) => selectedElement.id === clonedEdge.id
+              )
+            )
 
-      setElements([
+      setInternalElements([
         ...clonedPassages,
         ...clonedEdges.map((edge) => {
           edge.className = styles.routeNotConnectedToPassage
 
-          selectedPassages.map((selectedPassage) => {
-            if (
-              edge.source === selectedPassage.id ||
-              edge.target === selectedPassage.id
-            ) {
-              edge.className = 'selected'
-            }
-          })
+          !editor.selectedComponentEditorSceneViewChoice &&
+            selectedPassages.map((selectedPassage) => {
+              if (
+                edge.source === selectedPassage.id ||
+                edge.target === selectedPassage.id
+              ) {
+                edge.className = 'selected'
+              }
+            })
 
           selectedEdges.map((selectedEdge) => {
             if (edge.id === selectedEdge.id) {
@@ -165,7 +175,7 @@ const SceneView: React.FC<{
     }
 
     if (!elementsToHighlight) {
-      setElements([
+      setInternalElements([
         ...clonedPassages,
         ...clonedEdges.map((edge) => {
           edge.className = ''
@@ -470,9 +480,23 @@ const SceneView: React.FC<{
   }, [selectedElements])
 
   useEffect(() => {
-    if (editor.savedComponent.id) {
-      logger.info(`SceneView->editor.savedComponent,elements->useEffect`)
+    logger.info(`SceneView->elements->useEffect`)
 
+    highlightElements(selectedElements)
+  }, [elements])
+
+  useEffect(() => {
+    logger.info(
+      `SceneView->editor.selectedComponentEditorSceneViewChoice->useEffect`
+    )
+
+    highlightElements(selectedElements)
+  }, [editor.selectedComponentEditorSceneViewChoice])
+
+  useEffect(() => {
+    logger.info(`SceneView->editor.savedComponent,elements->useEffect`)
+
+    if (editor.savedComponent.id) {
       const foundElement = cloneDeep(
         elements.find((element) => element.id === editor.savedComponent.id)
       )
