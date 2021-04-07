@@ -761,6 +761,10 @@ export class LibraryDatabase extends Dexie {
     sceneId: ComponentId,
     passageId: ComponentId
   ) {
+    logger.info(
+      `LibraryDatabase->saveSceneRefToPassage->scene: ${sceneId}->passage: ${passageId}`
+    )
+
     try {
       const passage = await this.getComponent(LIBRARY_TABLE.PASSAGES, passageId)
 

@@ -371,6 +371,12 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       movingComponent = movingComponentId && treeData.items[movingComponentId]
 
     if (
+      sourceParent.id === destinationParent.id &&
+      source.index === destination.index
+    )
+      return
+
+    if (
       movingComponent &&
       sourceParent.data.type === destinationParent.data.type
     ) {
@@ -391,7 +397,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
       setTreeData(newTreeData)
 
-      editor.selectedGameOutlineComponent === movingComponent.id &&
+      editor.selectedGameOutlineComponent.id === movingComponent.id &&
         editorDispatch({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
           selectedGameOutlineComponent: {
@@ -402,7 +408,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           }
         })
 
-      if (game.id && source.index !== destination.index) {
+      if (game.id) {
         try {
           switch (movingComponent.data.type) {
             case COMPONENT_TYPE.CHAPTER:
@@ -434,11 +440,13 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               ])
               break
             case COMPONENT_TYPE.PASSAGE:
-              await Promise.all([
-                api().routes.removeRoutesByPassageRef(
+              sourceParent.id !== destinationParent.id &&
+                (await api().routes.removeRoutesByPassageRef(
                   studioId,
                   movingComponent.id as ComponentId
-                ),
+                ))
+
+              await Promise.all([
                 api().passages.saveSceneRefToPassage(
                   studioId,
                   destinationParent.id as ComponentId,
@@ -469,18 +477,6 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       logger.info(
         `Unable to move component type '${movingComponent.data.type}' to type '${destinationParent.data.type}'`
       )
-
-      movingComponent.isExpanded = false
-
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-        selectedGameOutlineComponent: {
-          id: movingComponent.id as string,
-          expanded: movingComponent.isExpanded,
-          type: movingComponent.data.type,
-          title: movingComponent.data.title
-        }
-      })
     }
   }
 
