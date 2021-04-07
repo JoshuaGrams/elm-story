@@ -1,8 +1,8 @@
+import logger from '../../lib/logger'
+
 import React, { useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import { cloneDeep } from 'lodash-es'
-
-import logger from '../../lib/logger'
 
 import createGameOutlineTreeData from '../../lib/createGameOutlineTreeData'
 
@@ -339,18 +339,13 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   }
 
   function onDragStart(itemId: React.ReactText) {
-    if (treeData && editor.renamingGameOutlineComponent.id) {
-      if (editor.selectedGameOutlineComponent.id) {
-        treeData.items[
-          editor.selectedGameOutlineComponent.id
-        ].data.selected = false
-      }
+    logger.info(`GameOutline->onDragStart->${itemId}`)
 
+    if (treeData && editor.renamingGameOutlineComponent.id) {
       setTreeData(
         mutateTree(treeData, editor.renamingGameOutlineComponent.id, {
           data: {
             ...treeData.items[editor.renamingGameOutlineComponent.id].data,
-            selected: false,
             renaming: false
           }
         })
@@ -391,19 +386,21 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
       if (!destinationParent.isExpanded) destinationParent.isExpanded = true
 
-      movingComponent.data.selected = true
+      movingComponent.data.selected =
+        editor.selectedGameOutlineComponent.id === movingComponent.id
 
       setTreeData(newTreeData)
 
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-        selectedGameOutlineComponent: {
-          id: movingComponent.id as string,
-          expanded: movingComponent.isExpanded || false,
-          type: movingComponent.data.type,
-          title: movingComponent.data.title
-        }
-      })
+      editor.selectedGameOutlineComponent === movingComponent.id &&
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+          selectedGameOutlineComponent: {
+            id: movingComponent.id as string,
+            expanded: movingComponent.isExpanded || false,
+            type: movingComponent.data.type,
+            title: movingComponent.data.title
+          }
+        })
 
       if (game.id && source.index !== destination.index) {
         try {
