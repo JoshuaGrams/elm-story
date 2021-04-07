@@ -98,9 +98,8 @@ const SceneView: React.FC<{
     routes = useRoutesBySceneRef(studioId, sceneId),
     passages = usePassagesBySceneRef(studioId, sceneId)
 
-  const edges = useStoreState((state) => state.edges),
-    setInternalElements = useStoreActions((state) => state.setElements),
-    selectedElements = useStoreState((state) => state.selectedElements),
+  const selectedElements = useStoreState((state) => state.selectedElements),
+    setInternalElements = useStoreActions((actions) => actions.setElements),
     setSelectedElements = useStoreActions(
       (actions) => actions.setSelectedElements
     ),
@@ -119,71 +118,89 @@ const SceneView: React.FC<{
   // This is not selection.
   function highlightElements(elementsToHighlight: Elements<any> | null) {
     logger.info(`SceneView->highlightElements`)
-
-    const clonedElements = cloneDeep(elements),
-      clonedPassages = clonedElements.filter(
-        (clonedElement): clonedElement is Node =>
-          clonedElement.data.type === COMPONENT_TYPE.PASSAGE
-      ),
-      clonedEdges = clonedElements.filter(
-        (clonedElement): clonedElement is Edge =>
-          clonedElement.data.type === COMPONENT_TYPE.ROUTE
-      )
-
-    if (elementsToHighlight) {
-      const selectedPassages = clonedPassages.filter((clonedPassage) =>
-          elementsToHighlight.find(
-            (selectedElement) => selectedElement.id === clonedPassage.id
-          )
+    if (editor.selectedGameOutlineComponent.id === sceneId) {
+      const clonedElements = cloneDeep(elements),
+        clonedPassages = clonedElements.filter(
+          (clonedElement): clonedElement is Node =>
+            clonedElement.data.type === COMPONENT_TYPE.PASSAGE
         ),
-        selectedEdges = editor.selectedComponentEditorSceneViewChoice
-          ? clonedEdges.filter(
-              (clonedEdge) =>
-                clonedEdge.sourceHandle ===
-                editor.selectedComponentEditorSceneViewChoice
+        clonedRoutes = clonedElements.filter(
+          (clonedElement): clonedElement is Edge =>
+            clonedElement.data.type === COMPONENT_TYPE.ROUTE
+        )
+
+      if (elementsToHighlight) {
+        const selectedPassages = clonedPassages.filter((clonedPassage) =>
+            elementsToHighlight.find(
+              (selectedElement) => selectedElement.id === clonedPassage.id
             )
-          : clonedEdges.filter((clonedEdge) =>
-              elementsToHighlight.find(
-                (selectedElement) => selectedElement.id === clonedEdge.id
+          ),
+          selectedEdges = selectedChoice
+            ? clonedRoutes.filter(
+                (clonedEdge) => clonedEdge.sourceHandle === selectedChoice
               )
-            )
+            : clonedRoutes.filter((clonedEdge) =>
+                elementsToHighlight.find(
+                  (selectedElement) => selectedElement.id === clonedEdge.id
+                )
+              )
 
-      setInternalElements([
-        ...clonedPassages,
-        ...clonedEdges.map((edge) => {
-          edge.className = styles.routeNotConnectedToPassage
+        if (selectedChoice) {
+          clonedPassages.map((clonedPassage) => {
+            clonedPassage.data.selectedChoice =
+              clonedPassage.id === selectedPassage ? selectedChoice : null
+          })
+        }
 
-          !editor.selectedComponentEditorSceneViewChoice &&
-            selectedPassages.map((selectedPassage) => {
-              if (
-                edge.source === selectedPassage.id ||
-                edge.target === selectedPassage.id
-              ) {
+        setInternalElements([
+          ...clonedPassages,
+          ...clonedRoutes.map((edge) => {
+            edge.className = styles.routeNotConnectedToPassage
+
+            !selectedChoice &&
+              selectedPassages.map((selectedPassage) => {
+                if (
+                  edge.source === selectedPassage.id ||
+                  edge.target === selectedPassage.id
+                ) {
+                  edge.className = 'selected'
+                }
+              })
+
+            selectedEdges.map((selectedEdge) => {
+              if (edge.id === selectedEdge.id) {
                 edge.className = 'selected'
               }
             })
 
-          selectedEdges.map((selectedEdge) => {
-            if (edge.id === selectedEdge.id) {
-              edge.className = 'selected'
-            }
+            return edge
           })
+        ])
+      }
 
-          return edge
-        })
-      ])
+      if (!elementsToHighlight) {
+        setInternalElements([
+          ...clonedPassages,
+          ...clonedRoutes.map((edge) => {
+            edge.className = ''
+
+            return edge
+          })
+        ])
+      }
     }
+  }
 
-    if (!elementsToHighlight) {
-      setInternalElements([
-        ...clonedPassages,
-        ...clonedEdges.map((edge) => {
-          edge.className = ''
+  function onChoiceSelect(
+    passageId: ComponentId,
+    choiceId: ComponentId | null
+  ) {
+    logger.info(
+      `Sceneview->onChoiceSelect->
+       passageId: ${passageId} choiceId: ${choiceId}`
+    )
 
-          return edge
-        })
-      ])
-    }
+    setSelectedChoice(choiceId)
   }
 
   async function onNodeDragStop(
@@ -378,12 +395,15 @@ const SceneView: React.FC<{
           if (!passage.id)
             throw new Error('Unable to set nodes. Missing passage ID.')
 
+          // TODO: improve types
           return {
             id: passage.id,
             data: {
               studioId,
               sceneId: scene.id,
               passageId: passage.id,
+              selectedChoice: null,
+              onChoiceSelect,
               type: COMPONENT_TYPE.PASSAGE
             },
             type: 'passageNode',
@@ -399,6 +419,7 @@ const SceneView: React.FC<{
           if (!route.id)
             throw new Error('Unable to generate edge. Missing route ID.')
 
+          // TODO: improve types
           return {
             id: route.id,
             source: route.originId,
@@ -462,11 +483,12 @@ const SceneView: React.FC<{
           selectedComponentEditorSceneViewPassage: selectedPassage
         })
 
-      selectedChoice !== editor.selectedComponentEditorSceneViewChoice &&
-        editorDispatch({
-          type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-          selectedComponentEditorSceneViewChoice: selectedChoice
-        })
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+        selectedComponentEditorSceneViewChoice: selectedChoice
+      })
+
+      highlightElements(selectedElements)
     }
   }, [
     editor.selectedGameOutlineComponent,
@@ -484,14 +506,6 @@ const SceneView: React.FC<{
 
     highlightElements(selectedElements)
   }, [elements])
-
-  useEffect(() => {
-    logger.info(
-      `SceneView->editor.selectedComponentEditorSceneViewChoice->useEffect`
-    )
-
-    highlightElements(selectedElements)
-  }, [editor.selectedComponentEditorSceneViewChoice])
 
   useEffect(() => {
     logger.info(`SceneView->editor.savedComponent,elements->useEffect`)

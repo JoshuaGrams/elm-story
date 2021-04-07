@@ -6,7 +6,13 @@ import { v4 as uuid } from 'uuid'
 
 import { useStoreState, useStoreActions } from 'react-flow-renderer'
 
-import { Choice, ComponentId, Route, StudioId } from '../../../data/types'
+import {
+  Choice,
+  ComponentId,
+  COMPONENT_TYPE,
+  Route,
+  StudioId
+} from '../../../data/types'
 
 import {
   useChoice,
@@ -172,12 +178,16 @@ const PassageNode: React.FC<NodeProps<{
   studioId: StudioId
   sceneId: ComponentId
   passageId: ComponentId
+  selectedChoice: ComponentId | null
+  onChoiceSelect: (passageId: ComponentId, choiceId: ComponentId | null) => void
+  type: COMPONENT_TYPE
 }>> = ({ data }) => {
   const passage = usePassage(data.studioId, data.passageId),
     choicesByPassageRef = useChoicesByPassageRef(data.studioId, data.passageId)
 
   const passages = useStoreState((state) => state.nodes),
     routes = useStoreState((state) => state.edges),
+    setInternalElements = useStoreActions((actions) => actions.setElements),
     setSelectedElement = useStoreActions(
       (actions) => actions.setSelectedElements
     )
@@ -220,6 +230,12 @@ const PassageNode: React.FC<NodeProps<{
     logger.info(`PassageNode->editor.selectedComponentEditorSceneViewChoice->
                  useEffect->${editor.selectedComponentEditorSceneViewChoice}`)
   }, [editor.selectedComponentEditorSceneViewChoice])
+
+  useEffect(() => {
+    logger.info(
+      `PassageNode->useEffect->selectedChoice: ${data.selectedChoice}`
+    )
+  }, [data.selectedChoice])
 
   return (
     <div className={styles.passageNode} key={passage?.id}>
@@ -274,10 +290,7 @@ const PassageNode: React.FC<NodeProps<{
                         title={choice.title}
                         showDivider={choices.length - 1 !== index}
                         handle={choice.handle}
-                        selected={
-                          editor.selectedComponentEditorSceneViewChoice ===
-                          choice.id
-                        }
+                        selected={data.selectedChoice === choice.id}
                         onSelect={(passageId, choiceId) => {
                           logger.info(
                             `PassageNode->onClick: choice: ${choiceId}`
@@ -300,15 +313,13 @@ const PassageNode: React.FC<NodeProps<{
 
                           editor.selectedComponentEditorSceneViewPassage ===
                             passageId &&
-                            editorDispatch({
-                              type:
-                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                              selectedComponentEditorSceneViewChoice:
-                                editor.selectedComponentEditorSceneViewChoice !==
+                            data.onChoiceSelect(
+                              passageId,
+                              editor.selectedComponentEditorSceneViewChoice !==
                                 choice.id
-                                  ? choiceId
-                                  : null
-                            })
+                                ? choiceId
+                                : null
+                            )
                         }}
                         onDelete={async (choiceId, outgoingRoutes) => {
                           try {
@@ -393,11 +404,7 @@ const PassageNode: React.FC<NodeProps<{
                     tags: []
                   })
 
-                  editorDispatch({
-                    type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                    selectedComponentEditorSceneViewChoice: choiceId
-                  })
+                  data.onChoiceSelect(passage.id, choiceId)
                 } catch (error) {
                   throw new Error(error)
                 }
