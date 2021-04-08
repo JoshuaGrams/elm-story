@@ -1,13 +1,13 @@
 import logger from '../../lib/logger'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { debounce } from 'lodash-es'
 
 import { ComponentId, GameId, StudioId, VARIABLE_TYPE } from '../../data/types'
 
 import { useVariable, useVariables } from '../../hooks'
 
-import { Input, Select } from 'antd'
+import { Form, Input, InputNumber, Select } from 'antd'
 
 import styles from './styles.module.less'
 
@@ -19,7 +19,10 @@ const VariableRow: React.FC<{
   studioId: StudioId
   variableId: ComponentId
 }> = ({ studioId, variableId }) => {
-  const variable = useVariable(studioId, variableId, [studioId, variableId])
+  const variable = useVariable(studioId, variableId, [studioId, variableId]),
+    [editDefaultValueForm] = Form.useForm()
+
+  const defaultValueInputRef = useRef<Input | null>(null)
 
   const [variableType, setVariableType] = useState<VARIABLE_TYPE | undefined>(
       variable?.type
@@ -56,20 +59,37 @@ const VariableRow: React.FC<{
       ))
   }
 
-  async function onDefaultValueChangeFromInput(
-    event: React.ChangeEvent<HTMLInputElement>
-  ) {
+  async function onDefaultValueChangeFromInput(changedValues: {
+    defaultValue: string
+  }) {
     logger.info(
-      `VariableRow->onDefaultValueChangeFromInput->${event.target.value}`
+      `VariableRow->onDefaultValueChangeFromInput->${changedValues.defaultValue}`
     )
 
-    variable?.id &&
-      event.target.value !== variableDefaultValue &&
-      (await api().variables.saveVariableDefaultValue(
-        studioId,
-        variable.id,
-        event.target.value
-      ))
+    if (variable?.id && changedValues.defaultValue !== variableDefaultValue) {
+      variableType === VARIABLE_TYPE.STRING &&
+        (await api().variables.saveVariableDefaultValue(
+          studioId,
+          variable.id,
+          changedValues.defaultValue
+        ))
+
+      if (variableType === VARIABLE_TYPE.NUMBER) {
+        if (
+          typeof changedValues.defaultValue === 'number' ||
+          changedValues.defaultValue === ''
+        ) {
+          await api().variables.saveVariableDefaultValue(
+            studioId,
+            variable.id,
+            changedValues.defaultValue
+          )
+        } else {
+          editDefaultValueForm.resetFields()
+          defaultValueInputRef.current?.focus()
+        }
+      }
+    }
   }
 
   useEffect(() => {
@@ -82,6 +102,8 @@ const VariableRow: React.FC<{
     logger.info(`VariableRow->variable.type->useEffect->${variable?.type}`)
 
     variable?.type && setVariableType(variable.type)
+
+    editDefaultValueForm.resetFields()
   }, [variable?.type])
 
   return (
@@ -109,10 +131,27 @@ const VariableRow: React.FC<{
 
           {(variable.type === VARIABLE_TYPE.STRING ||
             variable.type === VARIABLE_TYPE.NUMBER) && (
-            <Input
-              onChange={debounce(onDefaultValueChangeFromInput, 500)}
-              placeholder="Undefined"
-            />
+            <Form
+              form={editDefaultValueForm}
+              initialValues={{ defaultValue: variable.defaultValue }}
+              onValuesChange={debounce(onDefaultValueChangeFromInput, 100)}
+              onFinish={() => defaultValueInputRef.current?.blur()}
+            >
+              {variable.type === VARIABLE_TYPE.STRING && (
+                <Form.Item name="defaultValue">
+                  <Input placeholder="Undefined" ref={defaultValueInputRef} />
+                </Form.Item>
+              )}
+
+              {variable.type === VARIABLE_TYPE.NUMBER && (
+                <Form.Item name="defaultValue">
+                  <InputNumber
+                    placeholder="Undefined"
+                    ref={defaultValueInputRef}
+                  />
+                </Form.Item>
+              )}
+            </Form>
           )}
         </>
       )}
