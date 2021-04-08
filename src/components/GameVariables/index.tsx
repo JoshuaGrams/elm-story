@@ -13,6 +13,13 @@ import styles from './styles.module.less'
 
 import api from '../../api'
 
+import {
+  uniqueNamesGenerator,
+  adjectives,
+  colors,
+  animals
+} from 'unique-names-generator'
+
 const { Option } = Select
 
 const VariableRow: React.FC<{
@@ -166,9 +173,24 @@ const GameVariables: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   const variables = useVariables(studioId, gameId, [studioId, gameId])
 
   async function onAddVariable() {
+    const uniqueNames = uniqueNamesGenerator({
+      dictionaries: [adjectives, colors, animals],
+      length: 3
+    })
+
     await api().variables.saveVariable(studioId, {
       gameId,
-      title: 'Untitled Variable',
+      title: uniqueNames
+        .split('_')
+        .map((uniqueName, index) => {
+          return index === 0
+            ? uniqueName
+            : `${uniqueName.charAt(0).toUpperCase()}${uniqueName.substr(
+                1,
+                uniqueName.length - 1
+              )}`
+        })
+        .join(''),
       type: VARIABLE_TYPE.BOOLEAN,
       defaultValue: 'false',
       tags: []
