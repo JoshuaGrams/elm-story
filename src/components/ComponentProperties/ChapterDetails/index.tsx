@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 
 import { ComponentId, StudioId } from '../../../data/types'
 
-import { usePassage } from '../../../hooks'
+import { useChapter } from '../../../hooks'
 
 import {
   EditorContext,
@@ -15,42 +15,42 @@ import styles from '../styles.module.less'
 
 import api from '../../../api'
 
-const PassageDetails: React.FC<{
+const ChapterDetails: React.FC<{
   studioId: StudioId
-  passageId: ComponentId
-}> = ({ studioId, passageId }) => {
-  const passage = usePassage(studioId, passageId, [passageId])
+  chapterId: ComponentId
+}> = ({ studioId, chapterId }) => {
+  const chapter = useChapter(studioId, chapterId, [chapterId])
 
   const { editorDispatch } = useContext(EditorContext)
 
   return (
     <>
-      {passage && (
+      {chapter && (
         <div className={styles.componentDetailViewContent}>
           <ComponentTitle
-            title={passage.title}
+            title={chapter.title}
             onUpdate={async (title) => {
-              if (passage.id) {
-                await api().passages.savePassage(studioId, {
-                  ...(await api().passages.getPassage(studioId, passage.id)),
+              if (chapter.id) {
+                await api().chapters.saveChapter(studioId, {
+                  ...(await api().chapters.getChapter(studioId, chapter.id)),
                   title
                 })
 
                 editorDispatch({
                   type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
                   renamedComponent: {
-                    id: passage.id,
+                    id: chapter.id,
                     newTitle: title
                   }
                 })
               }
             }}
           />
-          <div className={styles.componentId}>{passage.id}</div>
+          <div className={styles.componentId}>{chapter.id}</div>
         </div>
       )}
     </>
   )
 }
 
-export default PassageDetails
+export default ChapterDetails

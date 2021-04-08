@@ -2,8 +2,15 @@ import React from 'react'
 
 import { ComponentId, COMPONENT_TYPE, StudioId } from '../../data/types'
 
-import { AlignLeftOutlined, PartitionOutlined } from '@ant-design/icons'
+import {
+  AlignLeftOutlined,
+  BookOutlined,
+  PartitionOutlined,
+  PlayCircleFilled
+} from '@ant-design/icons'
 
+import GameDetails from './GameDetails'
+import ChapterDetails from './ChapterDetails'
 import SceneDetails from './SceneDetails'
 import PassageDetails from './PassageDetails'
 
@@ -18,6 +25,24 @@ const ComponentDetailView: React.FC<{
 }> = ({ studioId, component }) => {
   return (
     <div className={styles.ComponentDetailView}>
+      {component.type === COMPONENT_TYPE.GAME && (
+        <>
+          <div className={styles.componentDetailViewHeader}>
+            <PlayCircleFilled className={styles.headerIcon} /> Game Details
+          </div>
+          <GameDetails studioId={studioId} gameId={component.id} />
+        </>
+      )}
+
+      {component.type === COMPONENT_TYPE.CHAPTER && (
+        <>
+          <div className={styles.componentDetailViewHeader}>
+            <BookOutlined className={styles.headerIcon} /> Chapter Details
+          </div>
+          <ChapterDetails studioId={studioId} chapterId={component.id} />
+        </>
+      )}
+
       {component.type === COMPONENT_TYPE.SCENE && (
         <>
           <div className={styles.componentDetailViewHeader}>

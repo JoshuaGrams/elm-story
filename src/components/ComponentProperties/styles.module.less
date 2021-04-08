@@ -34,6 +34,7 @@
     :global .ant-collapse {
       border-right: none;
       border-left: none;
+      background: none !important;
 
       .ant-collapse-header {
         font-size: 12px;
@@ -52,9 +53,13 @@
         }
       }
 
-      .ant-collapse-content {
-        background: none !important;
+      .ant-collapse-item {
+        border-bottom: 1px solid hsl(0, 0%, 15%);
+      }
 
+      .ant-collapse-content {
+        border-top: 1px solid hsl(0, 0%, 15%);
+        background: none !important;
         .ant-collapse-content-box {
           padding: 0px;
         }
