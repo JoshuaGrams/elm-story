@@ -152,7 +152,7 @@ export class LibraryDatabase extends Dexie {
       choices: '&id,gameId,passageId,title,*tags,updated',
       conditions: '&id,title,*tags,updated',
       effects: '&id,title,*tags,updated',
-      variables: '&id,title,*tags,updated'
+      variables: '&id,gameId,title,type,*tags,updated'
     })
 
     this.tables.map((table) => table.name)
@@ -936,5 +936,46 @@ export class LibraryDatabase extends Dexie {
     } catch (error) {
       throw new Error(error)
     }
+  }
+
+  public async getVariable(variableId: ComponentId): Promise<Variable> {
+    try {
+      const variable = await this.variables.get(variableId)
+
+      if (variable) {
+        return variable
+      } else {
+        throw new Error(
+          `Unable to get variable with ID: ${variableId}. Does not exist.`
+        )
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async saveVariable(variable: Variable): Promise<ComponentId> {
+    if (!variable.gameId)
+      throw new Error('Unable to save variable to databse. Missing game ID.')
+    if (!variable.id)
+      throw new Error('Unable to save variable to database. Missing ID.')
+
+    try {
+      await this.transaction('rw', this.variables, async () => {
+        if (variable.id) {
+          if (await this.getComponent(LIBRARY_TABLE.VARIABLES, variable.id)) {
+            await this.variables.update(variable.id, variable)
+          } else {
+            await this.variables.add(variable)
+          }
+        } else {
+          throw new Error('Unable to save variable to database. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    return variable.id
   }
 }

@@ -11,6 +11,7 @@ import useRoutes, {
 } from './useRoutes'
 import usePassages, { usePassagesBySceneRef, usePassage } from './usePassages'
 import useChoices, { useChoice, useChoicesByPassageRef } from './useChoices'
+import useVariables, { useVariable } from './useVariables'
 
 export {
   useDebouncedResizeObserver,
@@ -31,5 +32,7 @@ export {
   usePassage,
   useChoices,
   useChoice,
-  useChoicesByPassageRef
+  useChoicesByPassageRef,
+  useVariables,
+  useVariable
 }

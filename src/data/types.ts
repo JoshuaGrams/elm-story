@@ -16,7 +16,7 @@ export enum GAME_TEMPLATE {
   OPEN_WORLD = 'OPEN_WORLD'
 }
 
-export enum VARIABLE {
+export enum VARIABLE_TYPE {
   STRING = 'STRING',
   NUMBER = 'NUMBER',
   BOOLEAN = 'BOOLEAN',
@@ -128,6 +128,7 @@ export interface Effect extends Component {
 }
 
 export interface Variable extends Component {
-  var_type: VARIABLE
-  default?: string
+  gameId: GameId
+  type: VARIABLE_TYPE
+  defaultValue?: string
 }

@@ -10,7 +10,7 @@ import * as passages from './passages'
 import * as choices from './choices'
 // import * as conditions from './conditions'
 // import * as effects from './effects'
-// import * as variables from './variables'
+import * as variables from './variables'
 
 export default () => ({
   studios,
@@ -19,8 +19,8 @@ export default () => ({
   scenes,
   routes,
   passages,
-  choices
+  choices,
   // conditions,
   // effects,
-  // variables
+  variables
 })
