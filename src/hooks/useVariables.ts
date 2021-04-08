@@ -5,10 +5,13 @@ import { ComponentId, GameId, StudioId, Variable } from '../data/types'
 
 const useVariables = (
   studioId: StudioId,
-  gameId: GameId
+  gameId: GameId,
+  deps?: any[]
 ): Variable[] | undefined => {
-  const variables = useLiveQuery(() =>
-    new LibraryDatabase(studioId).variables.where({ gameId }).toArray()
+  const variables = useLiveQuery(
+    () => new LibraryDatabase(studioId).variables.where({ gameId }).toArray(),
+    deps || [],
+    undefined
   )
 
   // TODO: sort by how user has ordered them in the editor?

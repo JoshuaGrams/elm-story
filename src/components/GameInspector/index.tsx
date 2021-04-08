@@ -7,6 +7,8 @@ import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 import ComponentProperties from '../ComponentProperties'
 import GameProblems from '../GameProblems'
 
+import GameVariables from '../GameVariables'
+
 import styles from './styles.module.less'
 
 const GameInspector: React.FC<{
@@ -18,24 +20,47 @@ const GameInspector: React.FC<{
       mode: 'horizontal',
       children: [
         {
-          tabs: [
+          mode: 'vertical',
+          children: [
             {
-              id: 'propertiesTab',
-              title: 'Properties',
-              content: (
-                <>
-                  {studioId && (
-                    <ComponentProperties studioId={studioId} gameId={gameId} />
-                  )}
-                </>
-              ),
-              group: 'default'
+              tabs: [
+                {
+                  id: 'propertiesTab',
+                  title: 'Properties',
+                  minHeight: 30,
+                  content: (
+                    <>
+                      {studioId && (
+                        <ComponentProperties
+                          studioId={studioId}
+                          gameId={gameId}
+                        />
+                      )}
+                    </>
+                  ),
+                  group: 'default'
+                },
+                {
+                  id: 'problemsTab',
+                  title: 'Problems',
+                  minHeight: 30,
+                  content: <GameProblems />,
+                  group: 'default'
+                }
+              ]
             },
             {
-              id: 'problemsTab',
-              title: 'Problems',
-              content: <GameProblems />,
-              group: 'default'
+              tabs: [
+                {
+                  id: 'variablesTab',
+                  title: 'Variables',
+                  minHeight: 30,
+                  content: (
+                    <GameVariables studioId={studioId} gameId={gameId} />
+                  ),
+                  group: 'default'
+                }
+              ]
             }
           ]
         }

@@ -20,7 +20,8 @@ export enum VARIABLE_TYPE {
   STRING = 'STRING',
   NUMBER = 'NUMBER',
   BOOLEAN = 'BOOLEAN',
-  IMAGE = 'IMAGE'
+  IMAGE = 'IMAGE',
+  URL = 'URL'
 }
 
 export enum COMPARE_OPERATOR {
@@ -130,5 +131,5 @@ export interface Effect extends Component {
 export interface Variable extends Component {
   gameId: GameId
   type: VARIABLE_TYPE
-  defaultValue?: string
+  defaultValue: string
 }

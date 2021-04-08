@@ -15,7 +15,8 @@ import {
   Condition,
   Effect,
   Variable,
-  Route
+  Route,
+  VARIABLE_TYPE
 } from '../data/types'
 
 export enum DATABASE {
@@ -977,5 +978,55 @@ export class LibraryDatabase extends Dexie {
     }
 
     return variable.id
+  }
+
+  public async saveVariableType(variableId: ComponentId, type: VARIABLE_TYPE) {
+    await this.transaction('rw', this.variables, async () => {
+      if (variableId) {
+        const component = await this.getComponent(
+          LIBRARY_TABLE.VARIABLES,
+          variableId
+        )
+
+        if (component) {
+          await this.variables.update(variableId, {
+            ...component,
+            type,
+            defaultValue: type === VARIABLE_TYPE.BOOLEAN ? 'false' : ''
+          })
+        } else {
+          throw new Error('Unable to save variable type. Variable missing.')
+        }
+      } else {
+        throw new Error('Unable to save variable type. Missing ID.')
+      }
+    })
+  }
+
+  public async saveVariableDefaultValue(
+    variableId: ComponentId,
+    defaultValue: string
+  ) {
+    await this.transaction('rw', this.variables, async () => {
+      if (variableId) {
+        const component = await this.getComponent(
+          LIBRARY_TABLE.VARIABLES,
+          variableId
+        )
+
+        if (component) {
+          await this.variables.update(variableId, {
+            ...component,
+            defaultValue
+          })
+        } else {
+          throw new Error(
+            'Unable to save variable defaultValue. Variable missing.'
+          )
+        }
+      } else {
+        throw new Error('Unable to save variable defaultValue. Missing ID.')
+      }
+    })
   }
 }
