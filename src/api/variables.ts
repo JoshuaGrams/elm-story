@@ -11,7 +11,7 @@ export async function getVariable(studioId: StudioId, variableId: ComponentId) {
   }
 }
 
-export async function saveScene(
+export async function saveVariable(
   studioId: StudioId,
   variable: Variable
 ): Promise<ComponentId> {
