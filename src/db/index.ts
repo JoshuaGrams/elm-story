@@ -980,6 +980,28 @@ export class LibraryDatabase extends Dexie {
     return variable.id
   }
 
+  public async removeVariable(variableId: ComponentId) {
+    logger.info(`LibraryDatabase->removeVariable:${variableId}`)
+
+    try {
+      await this.transaction('rw', this.variables, async () => {
+        if (await this.getComponent(LIBRARY_TABLE.VARIABLES, variableId)) {
+          logger.info(
+            `LibraryDatabase->removeVariable->Removing variable with ID: ${variableId}`
+          )
+
+          await this.variables.delete(variableId)
+        } else {
+          throw new Error(
+            `LibraryDatabase->removeVariable->Unable to remove variable with ID: '${variableId}'. Does not exist.`
+          )
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async saveVariableType(variableId: ComponentId, type: VARIABLE_TYPE) {
     await this.transaction('rw', this.variables, async () => {
       if (variableId) {

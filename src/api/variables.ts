@@ -1,4 +1,4 @@
-import { LibraryDatabase } from '../db'
+import { LibraryDatabase, LIBRARY_TABLE } from '../db'
 import { v4 as uuid } from 'uuid'
 
 import { ComponentId, StudioId, Variable, VARIABLE_TYPE } from '../data/types'
@@ -21,6 +21,33 @@ export async function saveVariable(
 
   try {
     return await new LibraryDatabase(studioId).saveVariable(variable)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function removeVariable(
+  studioId: StudioId,
+  variableId: ComponentId
+) {
+  try {
+    await new LibraryDatabase(studioId).removeVariable(variableId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function saveVariableTitle(
+  studioId: StudioId,
+  variableId: ComponentId,
+  title: string
+) {
+  try {
+    await new LibraryDatabase(studioId).saveComponentTitle(
+      variableId,
+      LIBRARY_TABLE.VARIABLES,
+      title
+    )
   } catch (error) {
     throw new Error(error)
   }
