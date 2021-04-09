@@ -2,23 +2,23 @@ import logger from '../../lib/logger'
 
 import React, { useEffect, useRef, useState } from 'react'
 import { debounce } from 'lodash-es'
-
-import { ComponentId, GameId, StudioId, VARIABLE_TYPE } from '../../data/types'
-
-import { useVariable, useVariables } from '../../hooks'
-
-import { Form, Input, InputNumber, Select } from 'antd'
-
-import styles from './styles.module.less'
-
-import api from '../../api'
-
 import {
   uniqueNamesGenerator,
   adjectives,
   colors,
   animals
 } from 'unique-names-generator'
+
+import { ComponentId, GameId, StudioId, VARIABLE_TYPE } from '../../data/types'
+
+import { useVariable, useVariables } from '../../hooks'
+
+import { Col, Form, Input, InputNumber, Row, Select } from 'antd'
+import { DeleteOutlined } from '@ant-design/icons'
+
+import styles from './styles.module.less'
+
+import api from '../../api'
 
 const { Option } = Select
 
@@ -27,16 +27,37 @@ const VariableRow: React.FC<{
   variableId: ComponentId
 }> = ({ studioId, variableId }) => {
   const variable = useVariable(studioId, variableId, [studioId, variableId]),
-    [editDefaultValueForm] = Form.useForm()
+    [editVariableTitleForm] = Form.useForm(),
+    [editVariableDefaultValueForm] = Form.useForm()
 
-  const defaultValueInputRef = useRef<Input | null>(null)
+  const variableTitleInputRef = useRef<Input | null>(null),
+    variableDefaultValueInputRef = useRef<Input | null>(null)
 
-  const [variableType, setVariableType] = useState<VARIABLE_TYPE | undefined>(
+  const [variableTitle, setVariableTitle] = useState<string | undefined>(
+      variable?.type
+    ),
+    [variableType, setVariableType] = useState<VARIABLE_TYPE | undefined>(
       variable?.type
     ),
     [variableDefaultValue, setVariableDefaultValue] = useState<
       string | undefined
     >(variable?.defaultValue)
+
+  async function onVariableTitleChange(values: { title: string }) {
+    logger.info(`VariableRow->onVariableTitleChange->${values.title}`)
+
+    values.title.length === 0 && editVariableTitleForm.resetFields()
+
+    variable?.id &&
+      values.title.length > 0 &&
+      values.title !== variableTitle &&
+      (await api().variables.saveVariableTitle(
+        studioId,
+        variable.id,
+        // remove all numbers and special characters
+        values.title.replace(/\d+/g, '').replace(/[\W_]/g, '')
+      ))
+  }
 
   async function onVariableTypeChange(selectedVariableType: VARIABLE_TYPE) {
     logger.info(`VariableRow->onVariableTypeChange->${selectedVariableType}`)
@@ -66,7 +87,7 @@ const VariableRow: React.FC<{
       ))
   }
 
-  async function onDefaultValueChangeFromInput(changedValues: {
+  async function onVariableDefaultValueChangeFromInput(changedValues: {
     defaultValue: string
   }) {
     logger.info(
@@ -84,7 +105,8 @@ const VariableRow: React.FC<{
       if (variableType === VARIABLE_TYPE.NUMBER) {
         if (
           typeof changedValues.defaultValue === 'number' ||
-          changedValues.defaultValue === ''
+          changedValues.defaultValue === '' ||
+          !changedValues.defaultValue
         ) {
           await api().variables.saveVariableDefaultValue(
             studioId,
@@ -92,12 +114,33 @@ const VariableRow: React.FC<{
             changedValues.defaultValue
           )
         } else {
-          editDefaultValueForm.resetFields()
-          defaultValueInputRef.current?.focus()
+          editVariableDefaultValueForm.resetFields()
+          variableDefaultValueInputRef.current?.focus()
         }
       }
     }
   }
+
+  async function onRemoveVariable() {
+    variable?.id &&
+      (await api().variables.removeVariable(studioId, variable.id))
+  }
+
+  useEffect(() => {
+    logger.info(`VariableRow->variable.title->${variable?.title}`)
+
+    variable?.title && setVariableTitle(variable.title)
+
+    editVariableTitleForm.resetFields()
+  }, [variable?.title])
+
+  useEffect(() => {
+    logger.info(`VariableRow->variable.type->useEffect->${variable?.type}`)
+
+    variable?.type && setVariableType(variable.type)
+
+    editVariableDefaultValueForm.resetFields()
+  }, [variable?.type])
 
   useEffect(() => {
     logger.info(`VariableRow->variable.defaultValue->${variable?.defaultValue}`)
@@ -105,61 +148,82 @@ const VariableRow: React.FC<{
     variable?.defaultValue && setVariableDefaultValue(variable.defaultValue)
   }, [variable?.defaultValue])
 
-  useEffect(() => {
-    logger.info(`VariableRow->variable.type->useEffect->${variable?.type}`)
-
-    variable?.type && setVariableType(variable.type)
-
-    editDefaultValueForm.resetFields()
-  }, [variable?.type])
-
   return (
     <>
       {variable && (
         <>
-          <div>{variable.title}</div>
-          <div>{variable.id}</div>
-
-          <Select value={variableType} onChange={onVariableTypeChange}>
-            <Option value={VARIABLE_TYPE.BOOLEAN}>Boolean</Option>
-            <Option value={VARIABLE_TYPE.STRING}>String</Option>
-            <Option value={VARIABLE_TYPE.NUMBER}>Number</Option>
-          </Select>
-
-          {variable.type === VARIABLE_TYPE.BOOLEAN && (
-            <Select
-              value={variableDefaultValue}
-              onChange={onDefaultValueChangeFromSelect}
-            >
-              <Option value={'true'}>True</Option>
-              <Option value={'false'}>False</Option>
-            </Select>
-          )}
-
-          {(variable.type === VARIABLE_TYPE.STRING ||
-            variable.type === VARIABLE_TYPE.NUMBER) && (
-            <Form
-              form={editDefaultValueForm}
-              initialValues={{ defaultValue: variable.defaultValue }}
-              onValuesChange={debounce(onDefaultValueChangeFromInput, 100)}
-              onFinish={() => defaultValueInputRef.current?.blur()}
-            >
-              {variable.type === VARIABLE_TYPE.STRING && (
-                <Form.Item name="defaultValue">
-                  <Input placeholder="Undefined" ref={defaultValueInputRef} />
+          <Row className={styles.variableRow}>
+            <Col className={styles.titleCol}>
+              <Form
+                form={editVariableTitleForm}
+                initialValues={{ title: variable.title }}
+                onFinish={onVariableTitleChange}
+                onBlur={() => {
+                  variableTitleInputRef.current?.blur()
+                  editVariableTitleForm.resetFields()
+                }}
+              >
+                <Form.Item name="title">
+                  <Input ref={variableTitleInputRef} spellCheck={false} />
                 </Form.Item>
+              </Form>
+            </Col>
+            <Col className={styles.typeCol}>
+              <Select value={variableType} onChange={onVariableTypeChange}>
+                <Option value={VARIABLE_TYPE.BOOLEAN}>Boolean</Option>
+                <Option value={VARIABLE_TYPE.STRING}>String</Option>
+                <Option value={VARIABLE_TYPE.NUMBER}>Number</Option>
+              </Select>
+            </Col>
+            <Col className={styles.defaultValueCol}>
+              {variable.type === VARIABLE_TYPE.BOOLEAN && (
+                <Select
+                  value={variableDefaultValue}
+                  onChange={onDefaultValueChangeFromSelect}
+                >
+                  <Option value={'true'}>True</Option>
+                  <Option value={'false'}>False</Option>
+                </Select>
               )}
 
-              {variable.type === VARIABLE_TYPE.NUMBER && (
-                <Form.Item name="defaultValue">
-                  <InputNumber
-                    placeholder="Undefined"
-                    ref={defaultValueInputRef}
-                  />
-                </Form.Item>
+              {(variable.type === VARIABLE_TYPE.STRING ||
+                variable.type === VARIABLE_TYPE.NUMBER) && (
+                <Form
+                  form={editVariableDefaultValueForm}
+                  initialValues={{ defaultValue: variable.defaultValue }}
+                  onValuesChange={debounce(
+                    onVariableDefaultValueChangeFromInput,
+                    100
+                  )}
+                  onFinish={() => variableDefaultValueInputRef.current?.blur()}
+                >
+                  {variable.type === VARIABLE_TYPE.STRING && (
+                    <Form.Item name="defaultValue">
+                      <Input
+                        placeholder="Undefined"
+                        ref={variableDefaultValueInputRef}
+                      />
+                    </Form.Item>
+                  )}
+
+                  {variable.type === VARIABLE_TYPE.NUMBER && (
+                    <Form.Item name="defaultValue">
+                      <InputNumber
+                        placeholder="Undefined"
+                        ref={variableDefaultValueInputRef}
+                      />
+                    </Form.Item>
+                  )}
+                </Form>
               )}
-            </Form>
-          )}
+            </Col>
+            <Col
+              className={`${styles.deleteVariableCol} ${styles.deleteCell}`}
+              onClick={onRemoveVariable}
+            >
+              <DeleteOutlined style={{ fontSize: 12 }} />
+            </Col>
+          </Row>
         </>
       )}
     </>
@@ -199,17 +263,34 @@ const GameVariables: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
 
   return (
     <div className={styles.GameVariables}>
-      {variables &&
-        variables.map(
-          (variable) =>
-            variable.id && (
-              <VariableRow
-                key={variable.id}
-                studioId={studioId}
-                variableId={variable.id}
-              />
-            )
-        )}
+      <div className={styles.variableTable}>
+        <Row className={styles.headerRow}>
+          <Col className={`${styles.titleCol} ${styles.titleHeader}`}>
+            Title
+          </Col>
+          <Col className={`${styles.typeCol} ${styles.typeHeader}`}>Type</Col>
+          <Col
+            className={`${styles.defaultValueCol} ${styles.defaultValueHeader}`}
+          >
+            Default
+          </Col>
+          <Col className={`${styles.deleteVariableCol}`} />
+        </Row>
+
+        <div className={styles.variableRows}>
+          {variables &&
+            variables.map(
+              (variable) =>
+                variable.id && (
+                  <VariableRow
+                    key={variable.id}
+                    studioId={studioId}
+                    variableId={variable.id}
+                  />
+                )
+            )}
+        </div>
+      </div>
 
       <div className={styles.addVariableButton} onClick={onAddVariable}>
         Add Variable

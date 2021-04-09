@@ -2,6 +2,100 @@
   position: relative;
   height: 100%;
 
+  .variableTable {
+    .titleCol {
+      width: 35%;
+      border-right: 1px solid hsl(0, 0%, 15%);
+    }
+
+    .typeCol {
+      width: 30%;
+      border-right: 1px solid hsl(0, 0%, 15%);
+    }
+
+    .defaultValueCol {
+      width: 30%;
+      border-right: 1px solid hsl(0, 0%, 15%);
+    }
+
+    .deleteVariableCol {
+      width: 5%;
+    }
+
+    .headerRow {
+      font-size: 12px;
+      text-transform: uppercase;
+      text-align: left;
+      background: hsl(0, 0%, 0%);
+      border-bottom: 1px solid hsl(0, 0%, 15%);
+      height: 32px;
+      line-height: 32px;
+      position: sticky;
+      top: 0px;
+      z-index: 1;
+
+      .titleHeader {
+        padding-left: 10px;
+      }
+
+      .typeHeader {
+        padding-left: 10px;
+      }
+
+      .defaultValueHeader {
+        padding-left: 10px;
+      }
+    }
+
+    .variableRows {
+      .variableRow {
+        border-bottom: 1px solid hsl(0, 0%, 15%);
+
+        :global .ant-form-item {
+          margin: 0px;
+
+          .ant-form-item-control-input {
+            min-height: 25px;
+          }
+        }
+
+        :global .ant-input,
+        :global .ant-input-number {
+          font-size: 10px;
+          height: 25px;
+          border-radius: 0px;
+          border: none;
+
+          .ant-input-number-input {
+            height: 25px;
+          }
+        }
+
+        :global .ant-select {
+          font-size: 10px;
+          width: 100%;
+
+          .ant-select-selector {
+            height: 25px;
+            border-radius: 0px !important;
+            border: none;
+
+            .ant-select-selection-item {
+              line-height: 25px !important;
+            }
+          }
+        }
+
+        .deleteCell {
+          display: grid;
+          place-items: center;
+          text-align: center;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
   .addVariableButton {
     position: absolute;
     bottom: 0px;
