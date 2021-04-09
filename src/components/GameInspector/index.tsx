@@ -30,7 +30,7 @@ const GameInspector: React.FC<{
                   minHeight: 30,
                   content: (
                     <>
-                      {studioId && (
+                      {gameId && (
                         <ComponentProperties
                           studioId={studioId}
                           gameId={gameId}
@@ -38,13 +38,6 @@ const GameInspector: React.FC<{
                       )}
                     </>
                   ),
-                  group: 'default'
-                },
-                {
-                  id: 'problemsTab',
-                  title: 'Problems',
-                  minHeight: 30,
-                  content: <GameProblems />,
                   group: 'default'
                 }
               ]
@@ -56,8 +49,19 @@ const GameInspector: React.FC<{
                   title: 'Variables',
                   minHeight: 30,
                   content: (
-                    <GameVariables studioId={studioId} gameId={gameId} />
+                    <>
+                      {gameId && (
+                        <GameVariables studioId={studioId} gameId={gameId} />
+                      )}
+                    </>
                   ),
+                  group: 'default'
+                },
+                {
+                  id: 'problemsTab',
+                  title: 'Problems',
+                  minHeight: 30,
+                  content: <GameProblems />,
                   group: 'default'
                 }
               ]
