@@ -2,12 +2,6 @@ import logger from '../../lib/logger'
 
 import React, { useEffect, useRef, useState } from 'react'
 import { debounce } from 'lodash-es'
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  colors,
-  animals
-} from 'unique-names-generator'
 
 import { ComponentId, GameId, StudioId, VARIABLE_TYPE } from '../../data/types'
 
@@ -236,31 +230,6 @@ const GameVariables: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
 }) => {
   const variables = useVariables(studioId, gameId, [studioId, gameId])
 
-  async function onAddVariable() {
-    const uniqueNames = uniqueNamesGenerator({
-      dictionaries: [adjectives, colors, animals],
-      length: 3
-    })
-
-    await api().variables.saveVariable(studioId, {
-      gameId,
-      title: uniqueNames
-        .split('_')
-        .map((uniqueName, index) => {
-          return index === 0
-            ? uniqueName
-            : `${uniqueName.charAt(0).toUpperCase()}${uniqueName.substr(
-                1,
-                uniqueName.length - 1
-              )}`
-        })
-        .join(''),
-      type: VARIABLE_TYPE.BOOLEAN,
-      defaultValue: 'false',
-      tags: []
-    })
-  }
-
   return (
     <div className={styles.GameVariables}>
       <div className={styles.variableTable}>
@@ -290,10 +259,6 @@ const GameVariables: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
                 )
             )}
         </div>
-      </div>
-
-      <div className={styles.addVariableButton} onClick={onAddVariable}>
-        Add Variable
       </div>
     </div>
   )

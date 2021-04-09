@@ -1,15 +1,24 @@
 import React, { useState } from 'react'
+import {
+  adjectives,
+  animals,
+  colors,
+  uniqueNamesGenerator
+} from 'unique-names-generator'
 
-import { GameId, StudioId } from '../../data/types'
+import { GameId, StudioId, VARIABLE_TYPE } from '../../data/types'
 
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 
+import { PlusOutlined } from '@ant-design/icons'
+
 import ComponentProperties from '../ComponentProperties'
+import GameVariables from '../GameVariables'
 import GameProblems from '../GameProblems'
 
-import GameVariables from '../GameVariables'
-
 import styles from './styles.module.less'
+
+import api from '../../api'
 
 const GameInspector: React.FC<{
   studioId: StudioId
@@ -46,7 +55,43 @@ const GameInspector: React.FC<{
               tabs: [
                 {
                   id: 'variablesTab',
-                  title: 'Variables',
+                  title: (
+                    <div>
+                      Variables
+                      {gameId && (
+                        <PlusOutlined
+                          className={styles.tabAddVariableButton}
+                          onClick={async () => {
+                            // TODO: Fire only when tab is active #92
+                            const uniqueNames = uniqueNamesGenerator({
+                              dictionaries: [adjectives, colors, animals],
+                              length: 3
+                            })
+
+                            await api().variables.saveVariable(studioId, {
+                              gameId,
+                              title: uniqueNames
+                                .split('_')
+                                .map((uniqueName, index) => {
+                                  return index === 0
+                                    ? uniqueName
+                                    : `${uniqueName
+                                        .charAt(0)
+                                        .toUpperCase()}${uniqueName.substr(
+                                        1,
+                                        uniqueName.length - 1
+                                      )}`
+                                })
+                                .join(''),
+                              type: VARIABLE_TYPE.BOOLEAN,
+                              defaultValue: 'false',
+                              tags: []
+                            })
+                          }}
+                        />
+                      )}
+                    </div>
+                  ),
                   minHeight: 30,
                   content: (
                     <>
