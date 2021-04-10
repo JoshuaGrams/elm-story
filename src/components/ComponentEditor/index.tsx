@@ -236,6 +236,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
 
         setTabs(clonedTabs)
 
+        // TODO: This should be the next available
         editorDispatch({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
           selectedGameOutlineComponent: {}

@@ -426,11 +426,28 @@ export class LibraryDatabase extends Dexie {
 
           await this.jumps.delete(jumpId)
         } else {
-          throw new Error(
+          // TODO: WHY
+          logger.error(
             `LibraryDatabase->removeJump->Unable to remove jump with ID: '${jumpId}'. Does not exist.`
           )
         }
       })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getJumpsBySceneRef(sceneId: ComponentId): Promise<Jump[]> {
+    try {
+      return await this.jumps.where({ route: sceneId }).toArray()
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getJumpsByPassageRef(passageId: ComponentId): Promise<Jump[]> {
+    try {
+      return await this.jumps.where({ route: passageId }).toArray()
     } catch (error) {
       throw new Error(error)
     }
@@ -503,7 +520,18 @@ export class LibraryDatabase extends Dexie {
 
   public async removeChapter(chapterId: ComponentId) {
     try {
-      const scenes = await this.scenes.where({ chapterId }).toArray()
+      const jumps = await this.jumps.where({ route: chapterId }).toArray(),
+        scenes = await this.scenes.where({ chapterId }).toArray()
+
+      if (jumps.length > 0) {
+        logger.info(
+          `LibraryDatabase->removeChapter->Updating ${jumps.length} jumps(s) from chapter with ID: ${chapterId}`
+        )
+      }
+
+      await Promise.all(
+        jumps.map(async (jump) => jump.id && (await this.removeJump(jump.id)))
+      )
 
       if (scenes.length > 0) {
         logger.info(
@@ -698,18 +726,18 @@ export class LibraryDatabase extends Dexie {
         )
       }
 
-      if (passages.length > 0) {
-        logger.info(
-          `LibraryDatabase->removeScene->Removing ${passages.length} passage(s) from scene with ID: ${sceneId}`
-        )
-      }
-
       await Promise.all(
         jumps.map(
           async (jump) =>
             jump.id && (await this.saveJumpRoute(jump.id, [jump.route[0]]))
         )
       )
+
+      if (passages.length > 0) {
+        logger.info(
+          `LibraryDatabase->removeScene->Removing ${passages.length} passage(s) from scene with ID: ${sceneId}`
+        )
+      }
 
       await Promise.all(
         passages.map(

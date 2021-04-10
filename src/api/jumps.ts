@@ -42,3 +42,25 @@ export async function removeJump(studioId: StudioId, jumpId: ComponentId) {
     throw new Error(error)
   }
 }
+
+export async function getJumpsBySceneRef(
+  studioId: StudioId,
+  sceneId: ComponentId
+): Promise<Jump[]> {
+  try {
+    return await new LibraryDatabase(studioId).getJumpsBySceneRef(sceneId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function getJumpsByPassageRef(
+  studioId: StudioId,
+  passageId: ComponentId
+): Promise<Jump[]> {
+  try {
+    return await new LibraryDatabase(studioId).getJumpsByPassageRef(passageId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}

@@ -420,6 +420,23 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               )
               break
             case COMPONENT_TYPE.SCENE:
+              if (sourceParent.id !== destinationParent.id) {
+                const jumps = await api().jumps.getJumpsBySceneRef(
+                  studioId,
+                  movingComponent.id as string
+                )
+
+                await Promise.all(
+                  jumps.map(
+                    async (jump) =>
+                      jump.id &&
+                      (await api().jumps.saveJumpRoute(studioId, jump.id, [
+                        jump.route[0]
+                      ]))
+                  )
+                )
+              }
+
               await Promise.all([
                 api().scenes.saveChapterRefToScene(
                   studioId,
@@ -440,11 +457,28 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               ])
               break
             case COMPONENT_TYPE.PASSAGE:
-              sourceParent.id !== destinationParent.id &&
-                (await api().routes.removeRoutesByPassageRef(
+              if (sourceParent.id !== destinationParent.id) {
+                const jumps = await api().jumps.getJumpsByPassageRef(
+                  studioId,
+                  movingComponent.id as string
+                )
+
+                await Promise.all(
+                  jumps.map(
+                    async (jump) =>
+                      jump.id &&
+                      (await api().jumps.saveJumpRoute(studioId, jump.id, [
+                        jump.route[0],
+                        jump.route[1]
+                      ]))
+                  )
+                )
+
+                await api().routes.removeRoutesByPassageRef(
                   studioId,
                   movingComponent.id as ComponentId
-                ))
+                )
+              }
 
               await Promise.all([
                 api().passages.saveSceneRefToPassage(
