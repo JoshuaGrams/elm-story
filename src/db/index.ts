@@ -393,6 +393,10 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveJumpRoute(jumpId: ComponentId, route: JumpRoute) {
+    logger.info(
+      `LibraryDatabase->saveJumpRoute->jumpId: ${jumpId} route: ${route}`
+    )
+
     try {
       await this.transaction('rw', this.jumps, async () => {
         if (jumpId) {
@@ -685,7 +689,14 @@ export class LibraryDatabase extends Dexie {
     logger.info(`LibraryDatabase->removeScene`)
 
     try {
-      const passages = await this.passages.where({ sceneId }).toArray()
+      const jumps = await this.jumps.where({ route: sceneId }).toArray(),
+        passages = await this.passages.where({ sceneId }).toArray()
+
+      if (jumps.length > 0) {
+        logger.info(
+          `LibraryDatabase->removeScene->Updating ${jumps.length} jumps(s) from scene with ID: ${sceneId}`
+        )
+      }
 
       if (passages.length > 0) {
         logger.info(
@@ -694,8 +705,16 @@ export class LibraryDatabase extends Dexie {
       }
 
       await Promise.all(
+        jumps.map(
+          async (jump) =>
+            jump.id && (await this.saveJumpRoute(jump.id, [jump.route[0]]))
+        )
+      )
+
+      await Promise.all(
         passages.map(
-          async (passage) => passage.id && this.removePassage(passage.id)
+          async (passage) =>
+            passage.id && (await this.removePassage(passage.id))
         )
       )
 
@@ -919,10 +938,25 @@ export class LibraryDatabase extends Dexie {
     try {
       logger.info('LibraryDatabase->removePassage')
 
-      const routes = await this.routes
+      const jumps = await this.jumps.where({ route: passageId }).toArray(),
+        routes = await this.routes
           .where({ destinationId: passageId })
           .toArray(),
         choices = await this.choices.where({ passageId }).toArray()
+
+      if (routes.length > 0) {
+        logger.info(
+          `LibraryDatabase->removePassage->Updating ${jumps.length} jump(s) from passage with ID: ${passageId}`
+        )
+      }
+
+      await Promise.all(
+        jumps.map(
+          async (jump) =>
+            jump.id &&
+            (await this.saveJumpRoute(jump.id, [jump.route[0], jump.route[1]]))
+        )
+      )
 
       if (routes.length > 0) {
         logger.info(
