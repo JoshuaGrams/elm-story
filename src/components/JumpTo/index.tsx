@@ -116,7 +116,7 @@ const JumpSelect: React.FC<{
         </>
       )}
 
-      {scenes && (
+      {scenes && scenes.length > 0 && (
         <>
           <Divider>
             <h2>Scene</h2>
@@ -134,7 +134,7 @@ const JumpSelect: React.FC<{
         </>
       )}
 
-      {passages && (
+      {passages && passages.length > 0 && (
         <>
           <Divider>
             <h2>Passage</h2>

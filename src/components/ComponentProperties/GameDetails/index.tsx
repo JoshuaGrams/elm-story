@@ -72,7 +72,7 @@ const GameDetails: React.FC<{
 
           <div className={parentStyles.componentDetailViewNestedCollapse}>
             <Collapse defaultActiveKey={['jump-panel']}>
-              <Collapse.Panel header="Jump to on Game Start" key="jump-panel">
+              <Collapse.Panel header="Jump on Game Start" key="jump-panel">
                 <div className={`${parentStyles.content} ${styles.jumpPanel}`}>
                   {game.chapters.length === 0 && (
                     <div>
@@ -86,7 +86,7 @@ const GameDetails: React.FC<{
                       {!game.jump && (
                         <>
                           <div>
-                            By default, games jump to the first chapter, scene
+                            By default, games start on the first chapter, scene
                             and passage.
                           </div>
                           <Button onClick={onCreateJump}>Create Jump</Button>
