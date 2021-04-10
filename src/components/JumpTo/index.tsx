@@ -239,7 +239,8 @@ const JumpSelect: React.FC<{
 const JumpTo: React.FC<{
   studioId: StudioId
   jumpId: ComponentId
-}> = ({ studioId, jumpId }) => {
+  onRemove?: (jumpId: ComponentId) => Promise<void>
+}> = ({ studioId, jumpId, onRemove }) => {
   const jump = useJump(studioId, jumpId, [studioId, jumpId])
 
   async function onChangeRoutePart(
@@ -256,6 +257,8 @@ const JumpTo: React.FC<{
             await api().games.saveJumpRefToGame(studioId, jump.gameId, null)
 
             await api().jumps.removeJump(studioId, jump.id)
+
+            onRemove && (await onRemove(jumpId))
           }
 
           break

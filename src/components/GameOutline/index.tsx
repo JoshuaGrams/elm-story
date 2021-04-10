@@ -722,6 +722,14 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       try {
         switch (data.type) {
           case COMPONENT_TYPE.CHAPTER:
+            if (game.jump) {
+              const jump = await api().jumps.getJump(studioId, game.jump)
+
+              if (componentId === jump.route[0]) {
+                await api().games.saveJumpRefToGame(studioId, game.id, null)
+              }
+            }
+
             await Promise.all([
               await api().games.saveChapterRefsToGame(
                 studioId,

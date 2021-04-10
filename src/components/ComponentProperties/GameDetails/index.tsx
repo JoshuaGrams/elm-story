@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react'
-import { clone } from 'lodash'
+import React from 'react'
 
 import { GameId, StudioId } from '../../../data/types'
 
@@ -33,10 +32,6 @@ const GameDetails: React.FC<{
       jumpId && (await api().games.saveJumpRefToGame(studioId, gameId, jumpId))
     }
   }
-
-  useEffect(() => {
-    game && game.chapters.length === 0 && game.jump && onRemoveJump()
-  }, [game?.chapters])
 
   return (
     <>
@@ -84,7 +79,18 @@ const GameDetails: React.FC<{
 
                       {game.jump && (
                         <>
-                          <JumpTo studioId={studioId} jumpId={game.jump} />
+                          <JumpTo
+                            studioId={studioId}
+                            jumpId={game.jump}
+                            onRemove={async () => {
+                              game.id &&
+                                api().games.saveJumpRefToGame(
+                                  studioId,
+                                  game.id,
+                                  null
+                                )
+                            }}
+                          />
                         </>
                       )}
                     </>
