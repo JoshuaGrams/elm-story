@@ -19,7 +19,8 @@ import {
   useScenesByChapterRef
 } from '../../hooks'
 
-import { Divider, Select } from 'antd'
+import { Button, Col, Divider, Row, Select } from 'antd'
+import { RollbackOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
@@ -33,7 +34,7 @@ const JumpSelect: React.FC<{
   selectedId: ComponentId | undefined
   onChangeRoutePart: (
     componentType: COMPONENT_TYPE,
-    componentId: ComponentId
+    componentId: ComponentId | null
   ) => Promise<void>
 }> = ({
   studioId,
@@ -96,6 +97,7 @@ const JumpSelect: React.FC<{
       )
   }, [passages, selectedId])
 
+  // TODO: abstract
   return (
     <div className={styles.JumpSelect}>
       {chapters && (
@@ -103,16 +105,31 @@ const JumpSelect: React.FC<{
           <Divider>
             <h2>Chapter</h2>
           </Divider>
-          <Select value={selectedChapterId} onChange={onChange}>
-            {chapters.map(
-              (chapter) =>
-                chapter.id && (
-                  <Select.Option value={chapter.id} key={chapter.id}>
-                    {chapter.title}
-                  </Select.Option>
-                )
+
+          <div className={styles.selectWrapper}>
+            {selectedChapterId && (
+              <>
+                <Select value={selectedChapterId} onChange={onChange}>
+                  {chapters.map(
+                    (chapter) =>
+                      chapter.id && (
+                        <Select.Option value={chapter.id} key={chapter.id}>
+                          {chapter.title}
+                        </Select.Option>
+                      )
+                  )}
+                </Select>
+
+                <Button className={styles.rollBackBtn}>
+                  <RollbackOutlined
+                    onClick={() =>
+                      onChangeRoutePart(COMPONENT_TYPE.CHAPTER, null)
+                    }
+                  />
+                </Button>
+              </>
             )}
-          </Select>
+          </div>
         </>
       )}
 
@@ -121,16 +138,48 @@ const JumpSelect: React.FC<{
           <Divider>
             <h2>Scene</h2>
           </Divider>
-          <Select value={selectedSceneId} onChange={onChange}>
-            {scenes.map(
-              (scene) =>
-                scene.id && (
-                  <Select.Option value={scene.id} key={scene.id}>
-                    {scene.title}
-                  </Select.Option>
-                )
+
+          <div className={styles.selectWrapper}>
+            {selectedSceneId && (
+              <>
+                <Select value={selectedSceneId} onChange={onChange}>
+                  {scenes.map(
+                    (scene) =>
+                      scene.id && (
+                        <Select.Option value={scene.id} key={scene.id}>
+                          {scene.title}
+                        </Select.Option>
+                      )
+                  )}
+                </Select>
+
+                <Button className={styles.rollBackBtn}>
+                  <RollbackOutlined
+                    onClick={() =>
+                      onChangeRoutePart(COMPONENT_TYPE.SCENE, null)
+                    }
+                  />
+                </Button>
+              </>
             )}
-          </Select>
+
+            {!selectedSceneId && (
+              <Button
+                onClick={async () => {
+                  if (scenes) {
+                    const chapter = await api().chapters.getChapter(
+                      studioId,
+                      scenes[0].chapterId
+                    )
+
+                    onChange(chapter.scenes[0])
+                  }
+                }}
+              >
+                Jump to Scene
+              </Button>
+            )}
+          </div>
         </>
       )}
 
@@ -139,16 +188,48 @@ const JumpSelect: React.FC<{
           <Divider>
             <h2>Passage</h2>
           </Divider>
-          <Select value={selectedPassageId} onChange={onChange}>
-            {passages.map(
-              (passage) =>
-                passage.id && (
-                  <Select.Option value={passage.id} key={passage.id}>
-                    {passage.title}
-                  </Select.Option>
-                )
+
+          <div className={styles.selectWrapper}>
+            {selectedPassageId && (
+              <>
+                <Select value={selectedPassageId} onChange={onChange}>
+                  {passages.map(
+                    (passage) =>
+                      passage.id && (
+                        <Select.Option value={passage.id} key={passage.id}>
+                          {passage.title}
+                        </Select.Option>
+                      )
+                  )}
+                </Select>
+
+                <Button className={styles.rollBackBtn}>
+                  <RollbackOutlined
+                    onClick={() =>
+                      onChangeRoutePart(COMPONENT_TYPE.PASSAGE, null)
+                    }
+                  />
+                </Button>
+              </>
             )}
-          </Select>
+
+            {!selectedPassageId && (
+              <Button
+                onClick={async () => {
+                  if (passages) {
+                    const scene = await api().scenes.getScene(
+                      studioId,
+                      passages[0].sceneId
+                    )
+
+                    onChange(scene.passages[0])
+                  }
+                }}
+              >
+                Jump to Passage
+              </Button>
+            )}
+          </div>
         </>
       )}
     </div>
@@ -163,25 +244,36 @@ const JumpTo: React.FC<{
 
   async function onChangeRoutePart(
     componentType: COMPONENT_TYPE,
-    componentId: ComponentId
+    componentId: ComponentId | null
   ) {
     if (jump?.id) {
       switch (componentType) {
         case COMPONENT_TYPE.CHAPTER:
-          await api().jumps.saveJumpRoute(studioId, jump.id, [componentId])
+          componentId &&
+            (await api().jumps.saveJumpRoute(studioId, jump.id, [componentId]))
+
+          if (!componentId) {
+            await api().games.saveJumpRefToGame(studioId, jump.gameId, null)
+
+            await api().jumps.removeJump(studioId, jump.id)
+          }
+
           break
         case COMPONENT_TYPE.SCENE:
-          await api().jumps.saveJumpRoute(studioId, jump.id, [
-            jump.route[0],
-            componentId
-          ])
+          await api().jumps.saveJumpRoute(
+            studioId,
+            jump.id,
+            componentId ? [jump.route[0], componentId] : [jump.route[0]]
+          )
           break
         case COMPONENT_TYPE.PASSAGE:
-          await api().jumps.saveJumpRoute(studioId, jump.id, [
-            jump.route[0],
-            jump.route[1],
+          await api().jumps.saveJumpRoute(
+            studioId,
+            jump.id,
             componentId
-          ])
+              ? [jump.route[0], jump.route[1], componentId]
+              : [jump.route[0], jump.route[1]]
+          )
           break
         default:
           break

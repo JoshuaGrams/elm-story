@@ -34,17 +34,6 @@ const GameDetails: React.FC<{
     }
   }
 
-  async function onRemoveJump() {
-    if (game?.id && game.jump) {
-      const cachedGameJumpRef = clone(game.jump)
-
-      Promise.all([
-        await api().jumps.removeJump(studioId, cachedGameJumpRef),
-        await api().games.saveJumpRefToGame(studioId, game.id, null)
-      ])
-    }
-  }
-
   useEffect(() => {
     game && game.chapters.length === 0 && game.jump && onRemoveJump()
   }, [game?.chapters])
@@ -96,7 +85,6 @@ const GameDetails: React.FC<{
                       {game.jump && (
                         <>
                           <JumpTo studioId={studioId} jumpId={game.jump} />
-                          <Button onClick={onRemoveJump}>Remove Jump</Button>
                         </>
                       )}
                     </>
