@@ -69,6 +69,14 @@ export interface Game extends Component {
   version: string
   engine: string
   chapters: ComponentId[]
+  jump: ComponentId | null // Jump
+}
+
+export type JumpRoute = [ComponentId?, ComponentId?, ComponentId?] // [chapterId, sceneId, passageId]
+
+export interface Jump extends Component {
+  gameId: GameId
+  route: JumpRoute
 }
 
 export interface Chapter extends Component {
@@ -80,6 +88,7 @@ export interface Scene extends Component {
   gameId: GameId
   chapterId: ComponentId
   passages: ComponentId[]
+  jumps: ComponentId[] // Jumps
   editor?: {
     componentEditorTransformX?: number
     componentEditorTransformY?: number

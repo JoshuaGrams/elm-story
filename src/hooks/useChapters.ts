@@ -5,10 +5,13 @@ import { StudioId, GameId, Chapter, ComponentId } from '../data/types'
 
 const useChapters = (
   studioId: StudioId,
-  gameId: GameId
+  gameId: GameId,
+  deps?: any[]
 ): Chapter[] | undefined => {
-  const chapters = useLiveQuery(() =>
-    new LibraryDatabase(studioId).chapters.where({ gameId }).toArray()
+  const chapters = useLiveQuery(
+    () => new LibraryDatabase(studioId).chapters.where({ gameId }).toArray(),
+    deps || [],
+    undefined
   )
 
   // TODO: sort by how user has ordered them in the editor?

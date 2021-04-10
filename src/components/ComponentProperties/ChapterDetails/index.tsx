@@ -26,27 +26,29 @@ const ChapterDetails: React.FC<{
   return (
     <>
       {chapter && (
-        <div className={styles.componentDetailViewContent}>
-          <ComponentTitle
-            title={chapter.title}
-            onUpdate={async (title) => {
-              if (chapter.id) {
-                await api().chapters.saveChapter(studioId, {
-                  ...(await api().chapters.getChapter(studioId, chapter.id)),
-                  title
-                })
+        <div className={styles.componentDetailViewWrapper}>
+          <div className={styles.content}>
+            <ComponentTitle
+              title={chapter.title}
+              onUpdate={async (title) => {
+                if (chapter.id) {
+                  await api().chapters.saveChapter(studioId, {
+                    ...(await api().chapters.getChapter(studioId, chapter.id)),
+                    title
+                  })
 
-                editorDispatch({
-                  type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
-                  renamedComponent: {
-                    id: chapter.id,
-                    newTitle: title
-                  }
-                })
-              }
-            }}
-          />
-          <div className={styles.componentId}>{chapter.id}</div>
+                  editorDispatch({
+                    type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
+                    renamedComponent: {
+                      id: chapter.id,
+                      newTitle: title
+                    }
+                  })
+                }
+              }}
+            />
+            <div className={styles.componentId}>{chapter.id}</div>
+          </div>
         </div>
       )}
     </>

@@ -2,8 +2,9 @@ import useDebouncedResizeObserver from './useDebouncedResizeObserver'
 
 import useStudios, { useSelectedStudio } from './useStudios'
 import useGames, { useGame } from './useGames'
+import useJumps, { useJump } from './useJumps'
 import useChapters, { useChapter } from './useChapters'
-import useScenes, { useScene } from './useScenes'
+import useScenes, { useScenesByChapterRef, useScene } from './useScenes'
 import useRoutes, {
   useRoutesBySceneRef,
   useRoutesByPassageRef,
@@ -19,9 +20,12 @@ export {
   useSelectedStudio,
   useGames,
   useGame,
+  useJumps,
+  useJump,
   useChapters,
   useChapter,
   useScenes,
+  useScenesByChapterRef,
   useScene,
   useRoutes,
   useRoutesBySceneRef,

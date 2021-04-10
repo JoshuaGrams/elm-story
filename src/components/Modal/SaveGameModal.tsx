@@ -72,7 +72,8 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
                     // TODO: Move to defines/types.
                     engine: '1.0.0',
                     version: '1.0.0',
-                    chapters: []
+                    chapters: [],
+                    jump: null
                   }
             )
 

@@ -15,6 +15,20 @@ const useScenes = (studioId: StudioId, gameId: GameId): Scene[] | undefined => {
   return scenes
 }
 
+const useScenesByChapterRef = (
+  studioId: StudioId,
+  chapterId: ComponentId,
+  deps?: any[]
+): Scene[] | undefined => {
+  const passages = useLiveQuery(
+    () => new LibraryDatabase(studioId).scenes.where({ chapterId }).toArray(),
+    deps || [],
+    undefined
+  )
+
+  return passages
+}
+
 const useScene = (
   studioId: StudioId,
   sceneId: ComponentId,
@@ -26,6 +40,6 @@ const useScene = (
     undefined
   )
 
-export { useScene }
+export { useScenesByChapterRef, useScene }
 
 export default useScenes

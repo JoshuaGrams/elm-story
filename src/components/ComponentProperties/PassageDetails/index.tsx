@@ -26,27 +26,29 @@ const PassageDetails: React.FC<{
   return (
     <>
       {passage && (
-        <div className={styles.componentDetailViewContent}>
-          <ComponentTitle
-            title={passage.title}
-            onUpdate={async (title) => {
-              if (passage.id) {
-                await api().passages.savePassage(studioId, {
-                  ...(await api().passages.getPassage(studioId, passage.id)),
-                  title
-                })
+        <div className={styles.componentDetailViewWrapper}>
+          <div className={styles.content}>
+            <ComponentTitle
+              title={passage.title}
+              onUpdate={async (title) => {
+                if (passage.id) {
+                  await api().passages.savePassage(studioId, {
+                    ...(await api().passages.getPassage(studioId, passage.id)),
+                    title
+                  })
 
-                editorDispatch({
-                  type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
-                  renamedComponent: {
-                    id: passage.id,
-                    newTitle: title
-                  }
-                })
-              }
-            }}
-          />
-          <div className={styles.componentId}>{passage.id}</div>
+                  editorDispatch({
+                    type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
+                    renamedComponent: {
+                      id: passage.id,
+                      newTitle: title
+                    }
+                  })
+                }
+              }}
+            />
+            <div className={styles.componentId}>{passage.id}</div>
+          </div>
         </div>
       )}
     </>

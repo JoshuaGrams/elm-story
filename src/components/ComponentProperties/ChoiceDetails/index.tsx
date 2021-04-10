@@ -19,19 +19,21 @@ const ChoiceDetails: React.FC<{
   return (
     <>
       {choice && (
-        <div className={styles.componentDetailViewContent}>
-          <ComponentTitle
-            title={choice.title}
-            onUpdate={async (title) => {
-              if (choice.id) {
-                await api().choices.saveChoice(studioId, {
-                  ...(await api().choices.getChoice(studioId, choice.id)),
-                  title
-                })
-              }
-            }}
-          />
-          <div className={styles.componentId}>{choice.id}</div>
+        <div className={styles.componentDetailViewWrapper}>
+          <div className={styles.content}>
+            <ComponentTitle
+              title={choice.title}
+              onUpdate={async (title) => {
+                if (choice.id) {
+                  await api().choices.saveChoice(studioId, {
+                    ...(await api().choices.getChoice(studioId, choice.id)),
+                    title
+                  })
+                }
+              }}
+            />
+            <div className={styles.componentId}>{choice.id}</div>
+          </div>
         </div>
       )}
     </>

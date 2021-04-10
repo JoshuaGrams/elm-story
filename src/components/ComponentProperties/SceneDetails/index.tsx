@@ -16,8 +16,6 @@ import ComponentTitle from '../ComponentTitle'
 import PassageDetails from '../PassageDetails'
 import ChoiceDetails from '../ChoiceDetails'
 
-const { Panel } = Collapse
-
 import styles from '../styles.module.less'
 
 import api from '../../../api'
@@ -34,36 +32,38 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
     <>
       {scene && (
         <>
-          <div className={styles.componentDetailViewContent}>
-            <ComponentTitle
-              title={scene.title}
-              onUpdate={async (title) => {
-                if (scene.id) {
-                  await api().scenes.saveScene(studioId, {
-                    ...(await api().scenes.getScene(studioId, scene.id)),
-                    title
-                  })
-
-                  editorDispatch({
-                    type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
-                    renamedComponent: {
-                      id: scene.id,
-                      newTitle: title
-                    }
-                  })
-
-                  // TODO: Is this necessary?
-                  editorDispatch({
-                    type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-                    selectedGameOutlineComponent: {
-                      ...editor.selectedGameOutlineComponent,
+          <div className={styles.componentDetailViewWrapper}>
+            <div className={styles.content}>
+              <ComponentTitle
+                title={scene.title}
+                onUpdate={async (title) => {
+                  if (scene.id) {
+                    await api().scenes.saveScene(studioId, {
+                      ...(await api().scenes.getScene(studioId, scene.id)),
                       title
-                    }
-                  })
-                }
-              }}
-            />
-            <div className={styles.componentId}>{scene.id}</div>
+                    })
+
+                    editorDispatch({
+                      type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
+                      renamedComponent: {
+                        id: scene.id,
+                        newTitle: title
+                      }
+                    })
+
+                    // TODO: Is this necessary?
+                    editorDispatch({
+                      type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+                      selectedGameOutlineComponent: {
+                        ...editor.selectedGameOutlineComponent,
+                        title
+                      }
+                    })
+                  }
+                }}
+              />
+              <div className={styles.componentId}>{scene.id}</div>
+            </div>
 
             {!editor.selectedComponentEditorSceneViewPassage &&
               editor.totalComponentEditorSceneViewSelectedPassages > 0 && (
@@ -78,46 +78,47 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
                 {editor.totalComponentEditorSceneViewSelectedRoutes}
               </div>
             )}
-          </div>
 
-          <div className={styles.componentDetailViewNestedCollapse}>
             {editor.selectedComponentEditorSceneViewPassage && (
               <Collapse
-                defaultActiveKey={['passage-details', 'choice-details']}
+                defaultActiveKey={[
+                  'passage-details-panel',
+                  'choice-details-panel'
+                ]}
               >
                 {/* Passage Panel */}
                 {editor.selectedComponentEditorSceneViewPassage && (
-                  <Panel
+                  <Collapse.Panel
                     header={
                       <>
                         <AlignLeftOutlined className={styles.headerIcon} />{' '}
                         Selected Passage
                       </>
                     }
-                    key="passage-details"
+                    key="passage-details-panel"
                   >
                     <PassageDetails
                       studioId={studioId}
                       passageId={editor.selectedComponentEditorSceneViewPassage}
                     />
-                  </Panel>
+                  </Collapse.Panel>
                 )}
                 {/* Choice Panel */}
                 {editor.selectedComponentEditorSceneViewChoice && (
-                  <Panel
+                  <Collapse.Panel
                     header={
                       <>
                         <BranchesOutlined className={styles.headerIcon} />{' '}
                         Selected Choice
                       </>
                     }
-                    key="choice-details"
+                    key="choice-details-panel"
                   >
                     <ChoiceDetails
                       studioId={studioId}
                       choiceId={editor.selectedComponentEditorSceneViewChoice}
                     />
-                  </Panel>
+                  </Collapse.Panel>
                 )}
               </Collapse>
             )}

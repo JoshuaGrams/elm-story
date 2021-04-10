@@ -16,7 +16,9 @@ import {
   Effect,
   Variable,
   Route,
-  VARIABLE_TYPE
+  VARIABLE_TYPE,
+  Jump,
+  JumpRoute
 } from '../data/types'
 
 export enum DATABASE {
@@ -31,6 +33,7 @@ export enum APP_TABLE {
 
 export enum LIBRARY_TABLE {
   GAMES = 'games',
+  JUMPS = 'jumps',
   CHAPTERS = 'chapters',
   SCENES = 'scenes',
   ROUTES = 'routes',
@@ -131,6 +134,7 @@ export class AppDatabase extends Dexie {
 
 export class LibraryDatabase extends Dexie {
   public games: Dexie.Table<Game, string>
+  public jumps: Dexie.Table<Jump, string>
   public chapters: Dexie.Table<Chapter, string>
   public scenes: Dexie.Table<Scene, string>
   public routes: Dexie.Table<Route, string>
@@ -145,6 +149,7 @@ export class LibraryDatabase extends Dexie {
 
     this.version(1).stores({
       games: '&id,title,*tags,updated,template,director,version,engine',
+      jumps: '&id,gameId,title,*tags,updated,*route',
       chapters: '&id,gameId,title,*tags,updated',
       scenes: '&id,gameId,chapterId,title,*tags,updated',
       routes:
@@ -159,6 +164,7 @@ export class LibraryDatabase extends Dexie {
     this.tables.map((table) => table.name)
 
     this.games = this.table(LIBRARY_TABLE.GAMES)
+    this.jumps = this.table(LIBRARY_TABLE.JUMPS)
     this.chapters = this.table(LIBRARY_TABLE.CHAPTERS)
     this.scenes = this.table(LIBRARY_TABLE.SCENES)
     this.routes = this.table(LIBRARY_TABLE.ROUTES)
@@ -270,25 +276,50 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async saveJumpRefToGame(gameId: GameId, jumpId: ComponentId | null) {
+    try {
+      await this.transaction('rw', this.games, async () => {
+        if (gameId) {
+          const game = await this.getComponent(LIBRARY_TABLE.GAMES, gameId)
+
+          if (game) {
+            this.games.update(gameId, { ...game, jump: jumpId })
+          } else {
+            throw new Error('Unable to save jump ref. Game missing.')
+          }
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async removeGame(gameId: GameId) {
     if (!gameId) throw new Error('Unable to remove game. Missing ID.')
 
     try {
-      const chapters = await this.chapters.where({ gameId }).toArray(),
+      const jumps = await this.jumps.where({ gameId }).toArray(),
+        chapters = await this.chapters.where({ gameId }).toArray(),
         scenes = await this.scenes.where({ gameId }).toArray(),
         passages = await this.passages.where({ gameId }).toArray(),
         routes = await this.routes.where({ gameId }).toArray(),
-        choices = await this.choices.where({ gameId }).toArray()
+        choices = await this.choices.where({ gameId }).toArray(),
+        variables = await this.variables.where({ gameId }).toArray()
 
       logger.info(`Removing game with ID: ${gameId}`)
+      logger.info(`JUMPS: Removing ${jumps.length}...`)
       logger.info(`CHAPTERS: Removing ${chapters.length}...`)
       logger.info(`SCENES: Removing ${scenes.length}...`)
       logger.info(`PASSAGES: Removing ${passages.length}...`)
       logger.info(`ROUTES: Remove ${routes.length}...`)
       logger.info(`CHOICES: Removing ${choices.length}...`)
+      logger.info(`VARIABLES: Removing ${variables.length}...`)
 
       // TODO: replace 'delete' method with methods that handle children
       await Promise.all([
+        jumps.map(async (jump) => {
+          if (jump.id) await this.jumps.delete(jump.id)
+        }),
         chapters.map(async (chapter) => {
           if (chapter.id) await this.chapters.delete(chapter.id)
         }),
@@ -312,6 +343,87 @@ export class LibraryDatabase extends Dexie {
         } else {
           throw new Error(
             `Unable to remove game with ID: '${gameId}'. Does not exist.`
+          )
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getJump(jumpId: ComponentId): Promise<Jump> {
+    try {
+      const jump = await this.jumps.get(jumpId)
+
+      if (jump) {
+        return jump
+      } else {
+        throw new Error(
+          `Unable to get jump with ID: ${jumpId}. Does not exist.`
+        )
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async saveJump(jump: Jump): Promise<Jump> {
+    if (!jump.gameId)
+      throw new Error('Unable to save jump to database. Missing game ID.')
+    if (!jump.id)
+      throw new Error('Unable to save jump to database. Missing ID.')
+
+    try {
+      await this.transaction('rw', this.jumps, async () => {
+        if (jump.id) {
+          if (await this.getComponent(LIBRARY_TABLE.JUMPS, jump.id)) {
+            await this.jumps.update(jump.id, jump)
+          } else {
+            await this.jumps.add(jump)
+          }
+        } else {
+          throw new Error('Unable to save jump to database. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    return jump
+  }
+
+  public async saveJumpRoute(jumpId: ComponentId, route: JumpRoute) {
+    try {
+      await this.transaction('rw', this.jumps, async () => {
+        if (jumpId) {
+          const jump = await this.getComponent(LIBRARY_TABLE.JUMPS, jumpId)
+
+          if (jump) {
+            this.jumps.update(jumpId, { ...jump, route })
+          } else {
+            throw new Error('Unable to save jump route. Jump missing.')
+          }
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async removeJump(jumpId: ComponentId) {
+    logger.info(`LibraryDatabase->removeJump:${jumpId}`)
+
+    try {
+      await this.transaction('rw', this.jumps, async () => {
+        if (await this.getComponent(LIBRARY_TABLE.JUMPS, jumpId)) {
+          logger.info(
+            `LibraryDatabase->removeJump->Removing jump with ID: ${jumpId}`
+          )
+
+          await this.jumps.delete(jumpId)
+        } else {
+          throw new Error(
+            `LibraryDatabase->removeJump->Unable to remove jump with ID: '${jumpId}'. Does not exist.`
           )
         }
       })

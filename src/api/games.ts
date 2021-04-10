@@ -49,6 +49,18 @@ export async function saveChapterRefsToGame(
   }
 }
 
+export async function saveJumpRefToGame(
+  studioId: StudioId,
+  gameId: GameId,
+  jumpId: ComponentId | null
+) {
+  try {
+    await new LibraryDatabase(studioId).saveJumpRefToGame(gameId, jumpId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function removeGame(studioId: StudioId, gameId: GameId) {
   try {
     await api().studios.removeGameRef(studioId, gameId)
