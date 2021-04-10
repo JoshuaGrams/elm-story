@@ -247,25 +247,11 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
         direction !== 'remove' &&
         changingTabId !== editor.selectedGameOutlineComponent.id
       ) {
-        if (clonedTabIndex !== -1) {
-          const foundTab = cloneDeep(tabs[clonedTabIndex])
-
-          console.log('test')
-          console.log(tabs[clonedTabIndex])
-
-          editorDispatch({
-            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-            selectedGameOutlineComponent:
-              foundTab.type !== COMPONENT_TYPE.GAME
-                ? cloneDeep(tabs[clonedTabIndex])
-                : {}
-          })
-        } else {
-          editorDispatch({
-            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-            selectedGameOutlineComponent: {}
-          })
-        }
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+          selectedGameOutlineComponent:
+            clonedTabIndex !== -1 ? cloneDeep(tabs[clonedTabIndex]) : {}
+        })
       }
     }
   }
