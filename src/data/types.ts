@@ -1,6 +1,7 @@
 export enum COMPONENT_TYPE {
   STUDIO = 'STUDIO',
   GAME = 'GAME',
+  JUMP = 'JUMP',
   CHAPTER = 'CHAPTER',
   SCENE = 'SCENE',
   ROUTE = 'ROUTE',
@@ -53,6 +54,15 @@ export interface Component {
   title: string
   tags: string[] | []
   updated?: number // UTC timestamp
+  editor?: {
+    // SceneView transform
+    componentEditorTransformX?: number
+    componentEditorTransformY?: number
+    componentEditorTransformZoom?: number
+    // SceneView node position
+    componentEditorPosX?: number
+    componentEditorPosY?: number
+  }
 }
 
 export interface Studio extends Component {
@@ -89,11 +99,6 @@ export interface Scene extends Component {
   chapterId: ComponentId
   passages: ComponentId[]
   jumps: ComponentId[] // Jumps
-  editor?: {
-    componentEditorTransformX?: number
-    componentEditorTransformY?: number
-    componentEditorTransformZoom?: number
-  }
 }
 
 export interface Route extends Component {
@@ -111,10 +116,6 @@ export interface Passage extends Component {
   sceneId: ComponentId
   choices: ComponentId[]
   content: string
-  editor?: {
-    componentEditorPosX?: number
-    componentEditorPosY?: number
-  }
 }
 
 export interface Choice extends Component {

@@ -683,6 +683,24 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async saveJumpRefsToScene(sceneId: ComponentId, jumps: ComponentId[]) {
+    try {
+      await this.transaction('rw', this.scenes, async () => {
+        if (sceneId) {
+          const scene = await this.getComponent(LIBRARY_TABLE.SCENES, sceneId)
+
+          if (scene) {
+            this.scenes.update(sceneId, { ...scene, jumps })
+          } else {
+            throw new Error('Unable to save jump refs. Scene missing.')
+          }
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async saveSceneViewTransform(
     sceneId: ComponentId,
     transform: { x: number; y: number; zoom: number }
@@ -717,17 +735,29 @@ export class LibraryDatabase extends Dexie {
     logger.info(`LibraryDatabase->removeScene`)
 
     try {
-      const jumps = await this.jumps.where({ route: sceneId }).toArray(),
+      const scene = await this.scenes.get(sceneId)
+
+      scene?.jumps &&
+        logger.info(
+          `LibraryDatabase->removeScene->Removing ${scene.jumps.length}jump(s) from scene with ID: ${sceneId}`
+        ) &&
+        (await Promise.all(
+          scene.jumps.map(async (jumpId) => await this.removeJump(jumpId))
+        ))
+
+      const jumpsRefScene = await this.jumps
+          .where({ route: sceneId })
+          .toArray(),
         passages = await this.passages.where({ sceneId }).toArray()
 
-      if (jumps.length > 0) {
+      if (jumpsRefScene.length > 0) {
         logger.info(
-          `LibraryDatabase->removeScene->Updating ${jumps.length} jumps(s) from scene with ID: ${sceneId}`
+          `LibraryDatabase->removeScene->Updating ${jumpsRefScene.length} jumpsRefScene(s) from scene with ID: ${sceneId}`
         )
       }
 
       await Promise.all(
-        jumps.map(
+        jumpsRefScene.map(
           async (jump) =>
             jump.id && (await this.saveJumpRoute(jump.id, [jump.route[0]]))
         )

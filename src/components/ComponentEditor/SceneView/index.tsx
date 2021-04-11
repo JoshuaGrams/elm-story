@@ -51,16 +51,51 @@ export const SceneViewTools: React.FC<{
   return (
     <>
       {scene && (
-        <Button
-          size="small"
-          onClick={async () => {
-            try {
-              const passage = await api().passages.savePassage(studioId, {
+        <>
+          <Button
+            onClick={async () => {
+              try {
+                const passage = await api().passages.savePassage(studioId, {
+                  gameId: scene.gameId,
+                  sceneId: sceneId,
+                  title: 'Untitled Passage',
+                  choices: [],
+                  content: '',
+                  tags: [],
+                  editor: {
+                    componentEditorPosX: 0,
+                    componentEditorPosY: 0
+                  }
+                })
+
+                passage.id &&
+                  (await api().scenes.savePassageRefsToScene(
+                    studioId,
+                    sceneId,
+                    [...scene.passages, passage.id]
+                  ))
+
+                editorDispatch({
+                  type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
+                  savedComponent: {
+                    id: passage.id,
+                    type: COMPONENT_TYPE.PASSAGE
+                  }
+                })
+              } catch (error) {
+                throw new Error(error)
+              }
+            }}
+          >
+            New Passage
+          </Button>
+
+          <Button
+            onClick={async () => {
+              const jump = await api().jumps.saveJump(studioId, {
                 gameId: scene.gameId,
-                sceneId: sceneId,
-                title: 'Untitled Passage',
-                choices: [],
-                content: '',
+                title: '',
+                route: [scene.chapterId],
                 tags: [],
                 editor: {
                   componentEditorPosX: 0,
@@ -68,23 +103,24 @@ export const SceneViewTools: React.FC<{
                 }
               })
 
-              passage.id &&
-                (await api().scenes.savePassageRefsToScene(studioId, sceneId, [
-                  ...scene.passages,
-                  passage.id
+              jump.id &&
+                (await api().scenes.saveJumpRefsToScene(studioId, sceneId, [
+                  ...scene.jumps,
+                  jump.id
                 ]))
 
               editorDispatch({
                 type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
-                savedComponent: { id: passage.id, type: COMPONENT_TYPE.PASSAGE }
+                savedComponent: {
+                  id: jump.id,
+                  type: COMPONENT_TYPE.JUMP
+                }
               })
-            } catch (error) {
-              throw new Error(error)
-            }
-          }}
-        >
-          New Passage
-        </Button>
+            }}
+          >
+            New Jump
+          </Button>
+        </>
       )}
     </>
   )

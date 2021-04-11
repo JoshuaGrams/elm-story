@@ -592,7 +592,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               chapterId: item.id as ComponentId,
               title: 'Untitled Scene',
               tags: [],
-              passages: []
+              passages: [],
+              jumps: []
             })
           } catch (error) {
             throw new Error(error)

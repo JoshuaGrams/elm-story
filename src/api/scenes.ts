@@ -116,3 +116,15 @@ export async function savePassageRefsToScene(
     throw new Error(error)
   }
 }
+
+export async function saveJumpRefsToScene(
+  studioId: StudioId,
+  sceneId: ComponentId,
+  jumps: ComponentId[]
+) {
+  try {
+    await new LibraryDatabase(studioId).saveJumpRefsToScene(sceneId, jumps)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
