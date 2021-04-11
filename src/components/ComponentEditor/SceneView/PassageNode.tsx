@@ -186,8 +186,6 @@ const PassageNode: React.FC<NodeProps<{
     choicesByPassageRef = useChoicesByPassageRef(data.studioId, data.passageId)
 
   const passages = useStoreState((state) => state.nodes),
-    routes = useStoreState((state) => state.edges),
-    setInternalElements = useStoreActions((actions) => actions.setElements),
     setSelectedElement = useStoreActions(
       (actions) => actions.setSelectedElements
     )
