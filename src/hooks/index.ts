@@ -2,7 +2,7 @@ import useDebouncedResizeObserver from './useDebouncedResizeObserver'
 
 import useStudios, { useSelectedStudio } from './useStudios'
 import useGames, { useGame } from './useGames'
-import useJumps, { useJump } from './useJumps'
+import useJumps, { useJump, useJumpsBySceneRef } from './useJumps'
 import useChapters, { useChapter } from './useChapters'
 import useScenes, { useScenesByChapterRef, useScene } from './useScenes'
 import useRoutes, {
@@ -22,6 +22,7 @@ export {
   useGame,
   useJumps,
   useJump,
+  useJumpsBySceneRef,
   useChapters,
   useChapter,
   useScenes,

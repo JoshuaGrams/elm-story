@@ -1,7 +1,7 @@
 import logger from '../../../lib/logger'
 
 import React, { useContext, useEffect, useState } from 'react'
-import { cloneDeep, isObject, isUndefined } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
 
@@ -11,6 +11,7 @@ import {
 } from '../../../contexts/EditorContext'
 
 import {
+  useJumpsBySceneRef,
   usePassagesBySceneRef,
   useRoutesBySceneRef,
   useScene
@@ -35,6 +36,7 @@ import ReactFlow, {
 import { Button } from 'antd'
 
 import PassageNode from './PassageNode'
+import JumpNode from './JumpNode'
 
 import styles from './styles.module.less'
 
@@ -94,6 +96,7 @@ export const SceneViewTools: React.FC<{
             onClick={async () => {
               const jump = await api().jumps.saveJump(studioId, {
                 gameId: scene.gameId,
+                sceneId,
                 title: '',
                 route: [scene.chapterId],
                 tags: [],
@@ -130,7 +133,10 @@ const SceneView: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
 }> = ({ studioId, sceneId }) => {
-  const scene = useScene(studioId, sceneId),
+  const { editor, editorDispatch } = useContext(EditorContext)
+
+  const jumps = useJumpsBySceneRef(studioId, sceneId),
+    scene = useScene(studioId, sceneId),
     routes = useRoutesBySceneRef(studioId, sceneId),
     passages = usePassagesBySceneRef(studioId, sceneId)
 
@@ -140,8 +146,6 @@ const SceneView: React.FC<{
       (actions) => actions.setSelectedElements
     ),
     { transform } = useZoomPanHelper()
-
-  const { editor, editorDispatch } = useContext(EditorContext)
 
   const [ready, setReady] = useState(false),
     // TODO: Support multiple selected passages?
@@ -158,7 +162,8 @@ const SceneView: React.FC<{
       const clonedElements = cloneDeep(elements),
         clonedPassages = clonedElements.filter(
           (clonedElement): clonedElement is Node =>
-            clonedElement.data.type === COMPONENT_TYPE.PASSAGE
+            clonedElement.data.type === COMPONENT_TYPE.PASSAGE ||
+            clonedElement.data.type === COMPONENT_TYPE.JUMP
         ),
         clonedRoutes = clonedElements.filter(
           (clonedElement): clonedElement is Edge =>
@@ -419,7 +424,7 @@ const SceneView: React.FC<{
   useEffect(() => {
     logger.info(`SceneView->scene,passages,routes->useEffect`)
 
-    if (scene && passages && routes) {
+    if (jumps && scene && passages && routes) {
       logger.info(
         `SceneView->scene,passages,routes->useEffect->have scene, passages and routes`
       )
@@ -427,12 +432,13 @@ const SceneView: React.FC<{
       !ready && setReady(true)
 
       // TODO: optimize; this is re-rendering too much
-      const nodes: Node[] = passages.map((passage) => {
-          if (!passage.id)
-            throw new Error('Unable to set nodes. Missing passage ID.')
+      const nodes: Node[] = []
 
-          // TODO: improve types
-          return {
+      passages.map((passage) => {
+        // TODO: improve types
+
+        passage.id &&
+          nodes.push({
             id: passage.id,
             data: {
               studioId,
@@ -449,31 +455,44 @@ const SceneView: React.FC<{
                   y: passage.editor.componentEditorPosY || 0
                 }
               : { x: 0, y: 0 }
-          }
-        }),
-        edges: Edge[] = routes.map((route) => {
-          if (!route.id)
-            throw new Error('Unable to generate edge. Missing route ID.')
+          })
+      })
 
-          // TODO: improve types
-          return {
-            id: route.id,
-            source: route.originId,
-            sourceHandle: route.choiceId, // TODO: this will change with entrances / exits
-            target: route.destinationId,
-            targetHandle: route.destinationId,
-            type: 'default',
-            animated: true,
-            data: {
-              type: COMPONENT_TYPE.ROUTE
-            }
+      jumps.map((jump) => {
+        // TODO: improve types
+
+        jump.id &&
+          nodes.push({
+            id: jump.id,
+            data: { type: COMPONENT_TYPE.JUMP },
+            type: 'jumpNode',
+            position: { x: 0, y: 0 }
+          })
+      })
+
+      const edges: Edge[] = routes.map((route) => {
+        if (!route.id)
+          throw new Error('Unable to generate edge. Missing route ID.')
+
+        // TODO: improve types
+        return {
+          id: route.id,
+          source: route.originId,
+          sourceHandle: route.choiceId, // TODO: this will change with entrances / exits
+          target: route.destinationId,
+          targetHandle: route.destinationId,
+          type: 'default',
+          animated: true,
+          data: {
+            type: COMPONENT_TYPE.ROUTE
           }
-        })
+        }
+      })
 
       // BUG: Unable to create edges on initial node render because choices aren't ready
       setElements([...nodes, ...edges])
     }
-  }, [scene, passages, routes, ready])
+  }, [jumps, scene, passages, routes, ready])
 
   useEffect(() => {
     logger.info(`SceneView->sceneReady->useEffect`)
@@ -567,7 +586,8 @@ const SceneView: React.FC<{
           className={styles.sceneView}
           snapToGrid
           nodeTypes={{
-            passageNode: PassageNode
+            passageNode: PassageNode,
+            jumpNode: JumpNode
           }}
           snapGrid={[4, 4]}
           onlyRenderVisibleElements={false}

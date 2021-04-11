@@ -86,6 +86,7 @@ export type JumpRoute = [ComponentId?, ComponentId?, ComponentId?] // [chapterId
 
 export interface Jump extends Component {
   gameId: GameId
+  sceneId?: ComponentId
   route: JumpRoute
 }
 

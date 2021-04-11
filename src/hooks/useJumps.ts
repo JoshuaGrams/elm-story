@@ -28,6 +28,17 @@ const useJump = (
     undefined
   )
 
-export { useJump }
+const useJumpsBySceneRef = (
+  studioId: StudioId,
+  sceneId: ComponentId,
+  deps?: any[]
+): Jump[] | undefined =>
+  useLiveQuery(
+    () => new LibraryDatabase(studioId).jumps.where({ sceneId }).toArray(),
+    deps || [],
+    undefined
+  )
+
+export { useJump, useJumpsBySceneRef }
 
 export default useJumps

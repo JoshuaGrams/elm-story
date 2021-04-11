@@ -149,7 +149,7 @@ export class LibraryDatabase extends Dexie {
 
     this.version(1).stores({
       games: '&id,title,*tags,updated,template,director,version,engine',
-      jumps: '&id,gameId,title,*tags,updated,*route',
+      jumps: '&id,gameId,sceneId,title,*tags,updated,*route',
       chapters: '&id,gameId,title,*tags,updated',
       scenes: '&id,gameId,chapterId,title,*tags,updated',
       routes:
