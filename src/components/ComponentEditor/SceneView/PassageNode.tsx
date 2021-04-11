@@ -237,7 +237,7 @@ const PassageNode: React.FC<NodeProps<{
 
   return (
     <div className={styles.passageNode} key={passage?.id}>
-      {passage && passage.id ? (
+      {passage?.id ? (
         <>
           <div
             onMouseDown={() => {

@@ -97,7 +97,7 @@ export const SceneViewTools: React.FC<{
               const jump = await api().jumps.saveJump(studioId, {
                 gameId: scene.gameId,
                 sceneId,
-                title: '',
+                title: 'Untitled Jump',
                 route: [scene.chapterId],
                 tags: [],
                 editor: {
@@ -464,7 +464,7 @@ const SceneView: React.FC<{
         jump.id &&
           nodes.push({
             id: jump.id,
-            data: { type: COMPONENT_TYPE.JUMP },
+            data: { studioId, jumpId: jump.id, type: COMPONENT_TYPE.JUMP },
             type: 'jumpNode',
             position: { x: 0, y: 0 }
           })

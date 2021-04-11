@@ -24,7 +24,7 @@ const GameDetails: React.FC<{
     if (game?.id) {
       const { id: jumpId } = await api().jumps.saveJump(studioId, {
         gameId: game.id,
-        title: '',
+        title: 'On Game Start Jump',
         route: [game.chapters[0]],
         tags: []
       })

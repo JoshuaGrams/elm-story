@@ -19,7 +19,7 @@ import {
   useScenesByChapterRef
 } from '../../hooks'
 
-import { Button, Col, Divider, Row, Select } from 'antd'
+import { Button, Divider, Select } from 'antd'
 import { RollbackOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
@@ -175,6 +175,7 @@ const JumpSelect: React.FC<{
                     onChange(chapter.scenes[0])
                   }
                 }}
+                className={styles.jumpToBtn}
               >
                 Jump to Scene
               </Button>
@@ -225,6 +226,7 @@ const JumpSelect: React.FC<{
                     onChange(scene.passages[0])
                   }
                 }}
+                className={styles.jumpToBtn}
               >
                 Jump to Passage
               </Button>
