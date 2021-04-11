@@ -787,16 +787,11 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     title: string | undefined,
     complete: boolean
   ) {
+    logger.info(`GameOutline->onEditName`)
+
     if (treeData) {
       if (complete && title) {
-        // TODO: updating DB could fail; cache name if need revert on error
-        editorDispatch({
-          type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
-          renamedComponent: {
-            id: componentId,
-            newTitle: title || treeData.items[componentId].data.title
-          }
-        })
+        logger.info(`GameOutline->onEditName->complete && title:'${title}'`)
 
         try {
           switch (treeData.items[componentId].data.type) {
@@ -824,7 +819,17 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           throw new Error(error)
         }
 
+        // TODO: updating DB could fail; cache name if need revert on error
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
+          renamedComponent: {
+            id: componentId,
+            newTitle: title || treeData.items[componentId].data.title
+          }
+        })
+
         if (componentId === editor.selectedGameOutlineComponent.id) {
+          console.log('test')
           // TODO: results in unneeded call on selectComponent
           editorDispatch({
             type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
@@ -835,6 +840,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           })
         }
       } else {
+        logger.info(`GameOutline->onEditName->else`)
+
         setTreeData(
           mutateTree(treeData, componentId, {
             data: { ...treeData.items[componentId].data, renaming: true }
@@ -886,7 +893,10 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   useEffect(selectComponent, [editor.selectedGameOutlineComponent])
 
   useEffect(() => {
-    logger.info(`GameOutline->editor.renamedComponent->useEffect`)
+    logger.info(
+      `GameOutline->editor.renamedComponent->useEffect->
+       id:${editor.renamedComponent.id} newTitle:'${editor.renamedComponent.newTitle}'`
+    )
 
     if (
       treeData &&

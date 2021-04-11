@@ -327,7 +327,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
         dockLayout.current.find(editor.renamedComponent.id)
       ) as TabData | undefined
 
-      logger.info(`ComponentEditor: editor.renamedComponent`)
+      logger.info(`ComponentEditor->editor.renamedComponent->useEffect`)
 
       if (tabToUpdate) {
         const clonedTabs = cloneDeep(tabs),
@@ -368,7 +368,20 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
 
           setTabs(clonedTabs)
 
-          dockLayout.current.updateTab(editor.renamedComponent.id, tabToUpdate)
+          // BUG: This is a call stack hack to ensure tab
+          //      state isn't stale when onLayoutChange fires.
+          //      This could possibly be improved by doing the
+          //      tab update in a useEffect.
+          setTimeout(
+            () =>
+              dockLayout.current &&
+              editor.renamedComponent.id &&
+              dockLayout.current.updateTab(
+                editor.renamedComponent.id,
+                tabToUpdate
+              ),
+            0
+          )
         }
       }
     }
