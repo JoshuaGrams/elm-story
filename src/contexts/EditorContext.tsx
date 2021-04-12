@@ -112,7 +112,7 @@ type EditorActionType =
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP
-      selectedComponentEditorSceneViewJUMP: ComponentId | null
+      selectedComponentEditorSceneViewJump: ComponentId | null
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE
@@ -187,7 +187,7 @@ const editorReducer = (
       return {
         ...state,
         selectedComponentEditorSceneViewJump:
-          action.selectedComponentEditorSceneViewJUMP
+          action.selectedComponentEditorSceneViewJump
       }
     case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE:
       return {

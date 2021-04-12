@@ -148,9 +148,11 @@ const SceneView: React.FC<{
     { transform } = useZoomPanHelper()
 
   const [ready, setReady] = useState(false),
-    // TODO: Support multiple selected passages?
+    // TODO: Support multiple selected jump and passages?
+    [totalSelectedJumps, setTotalSelectedJumps] = useState<number>(0),
     [totalSelectedPassages, setTotalSelectedPassages] = useState<number>(0),
     [totalSelectedRoutes, setTotalSelectedRoutes] = useState<number>(0),
+    [selectedJump, setSelectedJump] = useState<ComponentId | null>(null),
     [selectedPassage, setSelectedPassage] = useState<ComponentId | null>(null),
     [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
     [elements, setElements] = useState<FlowElement[]>([])
@@ -158,12 +160,16 @@ const SceneView: React.FC<{
   // This is not selection.
   function highlightElements(elementsToHighlight: Elements<any> | null) {
     logger.info(`SceneView->highlightElements`)
+
     if (editor.selectedGameOutlineComponent.id === sceneId) {
       const clonedElements = cloneDeep(elements),
+        clonedJumps = clonedElements.filter(
+          (clonedElement): clonedElement is Node =>
+            clonedElement.data.type === COMPONENT_TYPE.JUMP
+        ),
         clonedPassages = clonedElements.filter(
           (clonedElement): clonedElement is Node =>
-            clonedElement.data.type === COMPONENT_TYPE.PASSAGE ||
-            clonedElement.data.type === COMPONENT_TYPE.JUMP
+            clonedElement.data.type === COMPONENT_TYPE.PASSAGE
         ),
         clonedRoutes = clonedElements.filter(
           (clonedElement): clonedElement is Edge =>
@@ -171,7 +177,12 @@ const SceneView: React.FC<{
         )
 
       if (elementsToHighlight) {
-        const selectedPassages = clonedPassages.filter((clonedPassage) =>
+        const selectedJumps = clonedJumps.filter((clonedJump) =>
+            elementsToHighlight.find(
+              (selectedElement) => selectedElement.id === clonedJump.id
+            )
+          ),
+          selectedPassages = clonedPassages.filter((clonedPassage) =>
             elementsToHighlight.find(
               (selectedElement) => selectedElement.id === clonedPassage.id
             )
@@ -194,25 +205,35 @@ const SceneView: React.FC<{
         }
 
         setInternalElements([
+          ...clonedJumps,
           ...clonedPassages,
           ...clonedRoutes.map((edge) => {
-            edge.className = styles.routeNotConnectedToPassage
+            edge.className = styles.routeNotConnected
 
             !selectedChoice &&
+              selectedJumps.map((selectedJump) => {
+                if (
+                  edge.source === selectedJump.id ||
+                  edge.target === selectedJump.id
+                ) {
+                  edge.className = 'selected jump'
+                }
+              }) &&
               selectedPassages.map((selectedPassage) => {
                 if (
                   edge.source === selectedPassage.id ||
                   edge.target === selectedPassage.id
                 ) {
-                  edge.className = 'selected'
+                  edge.className = 'selected passage'
                 }
               })
 
-            selectedEdges.map((selectedEdge) => {
-              if (edge.id === selectedEdge.id) {
-                edge.className = 'selected'
-              }
-            })
+            selectedChoice &&
+              selectedEdges.map((selectedEdge) => {
+                if (edge.id === selectedEdge.id) {
+                  edge.className = 'selected'
+                }
+              })
 
             return edge
           })
@@ -221,6 +242,7 @@ const SceneView: React.FC<{
 
       if (!elementsToHighlight) {
         setInternalElements([
+          ...clonedJumps,
           ...clonedPassages,
           ...clonedRoutes.map((edge) => {
             edge.className = ''
@@ -437,15 +459,27 @@ const SceneView: React.FC<{
   function onSelectionChange(selectedElements: Elements<any> | null) {
     logger.info('SceneView->onSelectionChange')
 
-    let _totalSelectedPassages = 0,
+    let _totalSelectedJumps = 0,
+      _totalSelectedPassages = 0,
       _totalSelectedRoutes = 0
 
     selectedElements?.map((element) => {
-      element.data.type === COMPONENT_TYPE.PASSAGE && ++_totalSelectedPassages
-
-      element.data.type === COMPONENT_TYPE.ROUTE && ++_totalSelectedRoutes
+      switch (element.data.type) {
+        case COMPONENT_TYPE.JUMP:
+          _totalSelectedJumps++
+          break
+        case COMPONENT_TYPE.PASSAGE:
+          _totalSelectedPassages++
+          break
+        case COMPONENT_TYPE.ROUTE:
+          _totalSelectedRoutes++
+          break
+        default:
+          break
+      }
     })
 
+    setTotalSelectedJumps(_totalSelectedJumps)
     setTotalSelectedPassages(_totalSelectedPassages)
     setTotalSelectedRoutes(_totalSelectedRoutes)
 
@@ -453,16 +487,18 @@ const SceneView: React.FC<{
       !selectedElements ||
       (selectedElements && selectedElements.length > 0)
     ) {
+      setSelectedJump(null)
       setSelectedPassage(null)
       setSelectedChoice(null)
     }
 
-    if (
-      selectedElements &&
-      selectedElements.length === 1 &&
-      selectedElements[0].data.type === COMPONENT_TYPE.PASSAGE
-    ) {
-      setSelectedPassage(selectedElements[0].id)
+    if (selectedElements && selectedElements.length === 1) {
+      selectedElements[0].data.type === COMPONENT_TYPE.JUMP &&
+        setSelectedJump(selectedElements[0].id)
+
+      selectedElements[0].data.type === COMPONENT_TYPE.PASSAGE &&
+        setSelectedPassage(selectedElements[0].id)
+
       setSelectedChoice(null)
     }
 
@@ -580,12 +616,21 @@ const SceneView: React.FC<{
       `SceneView->
        editor.selectedGameOutlineComponent,
        totalSelectedPassages,
+       selectedJump,
        selectedPassage,
        selectedChoice
        ->useEffect`
     )
 
     if (editor.selectedGameOutlineComponent.id === sceneId) {
+      totalSelectedJumps !==
+        editor.totalComponentEditorSceneViewSelectedJumps &&
+        editorDispatch({
+          type:
+            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS,
+          totalComponentEditorSceneViewSelectedJumps: totalSelectedJumps
+        })
+
       totalSelectedPassages !==
         editor.totalComponentEditorSceneViewSelectedPassages &&
         editorDispatch({
@@ -600,6 +645,12 @@ const SceneView: React.FC<{
           type:
             EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES,
           totalComponentEditorSceneViewSelectedRoutes: totalSelectedRoutes
+        })
+
+      selectedJump !== editor.selectedComponentEditorSceneViewJump &&
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+          selectedComponentEditorSceneViewJump: selectedJump
         })
 
       selectedPassage !== editor.selectedComponentEditorSceneViewPassage &&
@@ -617,13 +668,15 @@ const SceneView: React.FC<{
     }
   }, [
     editor.selectedGameOutlineComponent,
+    totalSelectedJumps,
     totalSelectedPassages,
+    selectedJump,
     selectedPassage,
     selectedChoice
   ])
 
   useEffect(() => {
-    logger.info(`SceneView->selectedElements->useEffect`)
+    logger.info(`SceneView->selectedElements->useEffect->nothing`)
   }, [selectedElements])
 
   useEffect(() => {

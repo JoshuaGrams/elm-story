@@ -4,7 +4,7 @@ import React, { memo, useContext, useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash-es'
 import { v4 as uuid } from 'uuid'
 
-import { useStoreState, useStoreActions } from 'react-flow-renderer'
+import { useStoreState, useStoreActions, Node } from 'react-flow-renderer'
 
 import {
   Choice,
@@ -185,7 +185,12 @@ const PassageNode: React.FC<NodeProps<{
   const passage = usePassage(data.studioId, data.passageId),
     choicesByPassageRef = useChoicesByPassageRef(data.studioId, data.passageId)
 
-  const passages = useStoreState((state) => state.nodes),
+  const passages = useStoreState((state) =>
+      state.nodes.filter(
+        (node: Node<{ type: COMPONENT_TYPE }>) =>
+          node?.data?.type === COMPONENT_TYPE.PASSAGE
+      )
+    ),
     setSelectedElement = useStoreActions(
       (actions) => actions.setSelectedElements
     )

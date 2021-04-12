@@ -70,12 +70,22 @@
     }
   }
 
+  &.selected {
+    &.jump .react-flow__edge-path {
+      stroke: hsl(160, 100%, 55%);
+    }
+
+    &.passage .react-flow__edge-path {
+      stroke: var(--highlight-color);
+    }
+  }
+
   &.selected .react-flow__edge-path {
     stroke: var(--highlight-color);
   }
 }
 // ^^^
-.routeNotConnectedToPassage path {
+.routeNotConnected path {
   stroke: hsl(0, 0%, 15%) !important;
 
   &:hover {

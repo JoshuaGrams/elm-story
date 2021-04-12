@@ -65,6 +65,13 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
               <div className={styles.componentId}>{scene.id}</div>
             </div>
 
+            {!editor.selectedComponentEditorSceneViewJump &&
+              editor.totalComponentEditorSceneViewSelectedJumps > 0 && (
+                <div>
+                  Selected Jumps:{' '}
+                  {editor.totalComponentEditorSceneViewSelectedJumps}
+                </div>
+              )}
             {!editor.selectedComponentEditorSceneViewPassage &&
               editor.totalComponentEditorSceneViewSelectedPassages > 0 && (
                 <div>

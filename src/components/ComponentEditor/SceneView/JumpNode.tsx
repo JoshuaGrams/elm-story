@@ -1,12 +1,24 @@
 import logger from '../../../lib/logger'
 
-import React, { memo } from 'react'
+import React, { memo, useContext } from 'react'
 
-import { ComponentId } from '../../../data/types'
+import { ComponentId, COMPONENT_TYPE } from '../../../data/types'
 
 import { useJump } from '../../../hooks'
 
-import { Handle, NodeProps, Position } from 'react-flow-renderer'
+import {
+  EditorContext,
+  EDITOR_ACTION_TYPE
+} from '../../../contexts/EditorContext'
+
+import {
+  Handle,
+  Node,
+  NodeProps,
+  Position,
+  useStoreActions,
+  useStoreState
+} from 'react-flow-renderer'
 
 import { DeleteOutlined, ForwardOutlined } from '@ant-design/icons'
 
@@ -15,6 +27,7 @@ import JumpTo from '../../JumpTo'
 import styles from './styles.module.less'
 
 import api from '../../../api'
+import { cloneDeep } from 'lodash'
 
 const JumpHandle: React.FC<{ jumpId: ComponentId }> = ({ jumpId }) => {
   return (
@@ -30,6 +43,18 @@ const JumpHandle: React.FC<{ jumpId: ComponentId }> = ({ jumpId }) => {
 
 const JumpNode: React.FC<NodeProps> = ({ data }) => {
   const jump = useJump(data.studioId, data.jumpId)
+
+  const jumps = useStoreState((state) =>
+      state.nodes.filter(
+        (node: Node<{ type: COMPONENT_TYPE }>) =>
+          node?.data?.type === COMPONENT_TYPE.PASSAGE
+      )
+    ),
+    setSelectedElement = useStoreActions(
+      (actions) => actions.setSelectedElements
+    )
+
+  const { editor, editorDispatch } = useContext(EditorContext)
 
   return (
     <div className={styles.jumpNode} key={jump?.id}>
@@ -56,7 +81,36 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
             </div>
           )}
 
-          <div className={`${styles.removeJumpBtn} nodrag`}>
+          <div
+            className={`${styles.removeJumpBtn} nodrag`}
+            onClick={async () => {
+              logger.info(`JumpNode->removeJumpBtn->onClick`)
+
+              if (editor.selectedComponentEditorSceneViewPassage === jump.id) {
+                // remove jump
+              } else {
+                jump.id &&
+                  setSelectedElement([
+                    cloneDeep(jumps.find((jumpNode) => jumpNode.id === jump.id))
+                  ]) &&
+                  editorDispatch({
+                    type:
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+                    selectedComponentEditorSceneViewJump: jump.id
+                  }) &&
+                  editorDispatch({
+                    type:
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                    selectedComponentEditorSceneViewPassage: null
+                  }) &&
+                  editorDispatch({
+                    type:
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                    selectedComponentEditorSceneViewChoice: null
+                  })
+              }
+            }}
+          >
             <DeleteOutlined />
           </div>
         </>
