@@ -47,7 +47,7 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
   const jumps = useStoreState((state) =>
       state.nodes.filter(
         (node: Node<{ type: COMPONENT_TYPE }>) =>
-          node?.data?.type === COMPONENT_TYPE.PASSAGE
+          node?.data?.type === COMPONENT_TYPE.JUMP
       )
     ),
     setSelectedElement = useStoreActions(
@@ -86,8 +86,29 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
             onClick={async () => {
               logger.info(`JumpNode->removeJumpBtn->onClick`)
 
-              if (editor.selectedComponentEditorSceneViewPassage === jump.id) {
-                // remove jump
+              if (editor.selectedComponentEditorSceneViewJump === jump.id) {
+                if (jump.sceneId) {
+                  const scene = await api().scenes.getScene(
+                      data.studioId,
+                      jump.sceneId
+                    ),
+                    clonedJumpRefs = [...scene.jumps],
+                    jumpRefIndex = clonedJumpRefs.findIndex(
+                      (clonedJumpRef) => clonedJumpRef === jump.id
+                    )
+
+                  if (jumpRefIndex !== -1) {
+                    clonedJumpRefs.splice(jumpRefIndex, 1)
+
+                    await api().scenes.saveJumpRefsToScene(
+                      data.studioId,
+                      jump.sceneId,
+                      clonedJumpRefs
+                    )
+                  }
+                }
+
+                await api().jumps.removeJump(data.studioId, jump.id)
               } else {
                 jump.id &&
                   setSelectedElement([

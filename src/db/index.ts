@@ -417,6 +417,20 @@ export class LibraryDatabase extends Dexie {
   public async removeJump(jumpId: ComponentId) {
     logger.info(`LibraryDatabase->removeJump:${jumpId}`)
 
+    const routes = await this.routes.where({ destinationId: jumpId }).toArray()
+
+    if (routes.length > 0) {
+      logger.info(
+        `removeJump->Removing ${routes.length} route(s) from jump with ID: ${jumpId}`
+      )
+    }
+
+    await Promise.all(
+      routes.map(
+        async (route) => route.id && (await this.removeRoute(route.id))
+      )
+    )
+
     try {
       await this.transaction('rw', this.jumps, async () => {
         if (await this.getComponent(LIBRARY_TABLE.JUMPS, jumpId)) {

@@ -425,6 +425,11 @@ const PassageNode: React.FC<NodeProps<{
                   ]) &&
                   editorDispatch({
                     type:
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+                    selectedComponentEditorSceneViewJump: null
+                  }) &&
+                  editorDispatch({
+                    type:
                       EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
                     selectedComponentEditorSceneViewPassage: passage.id
                   }) &&
