@@ -376,18 +376,23 @@ const SceneView: React.FC<{
     logger.info('onElementsRemove')
 
     if (!editor.selectedComponentEditorSceneViewChoice) {
-      const routeRefs: ComponentId[] = [],
+      const jumpRefs: ComponentId[] = [],
+        routeRefs: ComponentId[] = [],
         passageRefs: ComponentId[] = []
 
       elements.map((element) => {
-        // TODO: improve types
-        switch (element.data.type as COMPONENT_TYPE) {
+        switch (element.data.type) {
+          // TODO: #45
+          // case COMPONENT_TYPE.JUMP:
+          //   jumpRefs.push(element.id)
+          //   break
           case COMPONENT_TYPE.ROUTE:
             routeRefs.push(element.id)
             break
-          case COMPONENT_TYPE.PASSAGE:
-            passageRefs.push(element.id)
-            break
+          // TODO: #45
+          // case COMPONENT_TYPE.PASSAGE:
+          //   passageRefs.push(element.id)
+          //   break
           default:
             logger.info('Unknown element type.')
             return
@@ -409,7 +414,7 @@ const SceneView: React.FC<{
     }
 
     // TODO: issue #45
-    // It's not currently possible to remove multiple passages, choices from SceneView
+    // It's not currently possible to remove multiple jumps, passages, choices from SceneView
 
     // const clonedScene = cloneDeep(scene)
 
