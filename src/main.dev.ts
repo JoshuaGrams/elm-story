@@ -30,6 +30,8 @@ export default class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null
 
+logger.info(`ENV: ${process.env.NODE_ENV}`)
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support')
   sourceMapSupport.install()
@@ -47,12 +49,14 @@ const installExtensions = async () => {
   const forceDownload = !!process.env.UPGRADE_EXTENSIONS
   const extensions = ['REACT_DEVELOPER_TOOLS']
 
+  logger.info(`Installing dev tools...`)
+
   return installer
     .default(
       extensions.map((name) => installer[name]),
-      forceDownload
+      { forceDownload, loadExtensionOptions: { allowFileAccess: true } }
     )
-    .catch(logger.info)
+    .catch(console.log)
 }
 
 const createWindow = async () => {
@@ -77,7 +81,8 @@ const createWindow = async () => {
     height: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      contextIsolation: false
     },
     frame: false,
     backgroundColor: '#0a0a0a'
