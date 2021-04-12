@@ -299,17 +299,25 @@ const SceneView: React.FC<{
       connection.sourceHandle &&
       connection.targetHandle
     ) {
-      api().routes.saveRoute(studioId, {
-        title: '',
-        gameId: scene.gameId,
-        sceneId,
-        originId: connection.source,
-        choiceId: connection.sourceHandle,
-        originType: COMPONENT_TYPE.CHOICE,
-        destinationId: connection.targetHandle,
-        destinationType: COMPONENT_TYPE.PASSAGE,
-        tags: []
-      })
+      const foundDestinationNode:
+        | FlowElement<{ type: COMPONENT_TYPE }>
+        | undefined = elements.find(
+        (element) => element.id === connection.targetHandle
+      )
+
+      if (foundDestinationNode?.data?.type) {
+        api().routes.saveRoute(studioId, {
+          title: '',
+          gameId: scene.gameId,
+          sceneId,
+          originId: connection.source,
+          choiceId: connection.sourceHandle,
+          originType: COMPONENT_TYPE.CHOICE,
+          destinationId: connection.targetHandle,
+          destinationType: foundDestinationNode.data.type,
+          tags: []
+        })
+      }
     }
   }
 
