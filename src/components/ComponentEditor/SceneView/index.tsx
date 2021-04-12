@@ -486,11 +486,35 @@ const SceneView: React.FC<{
       !ready && setReady(true)
 
       // TODO: optimize; this is re-rendering too much
-      const nodes: Node[] = []
+      const nodes: Node<{
+        studioId: StudioId
+        sceneId?: ComponentId
+        jumpId?: ComponentId
+        passageId?: ComponentId
+        selectedChoice?: ComponentId | null
+        onChoiceSelect?: (
+          passageId: ComponentId,
+          choiceId: ComponentId | null
+        ) => void
+        type: COMPONENT_TYPE
+      }>[] = []
+
+      jumps.map((jump) => {
+        jump.id &&
+          nodes.push({
+            id: jump.id,
+            data: { studioId, jumpId: jump.id, type: COMPONENT_TYPE.JUMP },
+            type: 'jumpNode',
+            position: jump.editor
+              ? {
+                  x: jump.editor.componentEditorPosX || 0,
+                  y: jump.editor.componentEditorPosY || 0
+                }
+              : { x: 0, y: 0 }
+          })
+      })
 
       passages.map((passage) => {
-        // TODO: improve types
-
         passage.id &&
           nodes.push({
             id: passage.id,
@@ -512,32 +536,14 @@ const SceneView: React.FC<{
           })
       })
 
-      jumps.map((jump) => {
-        // TODO: improve types
-
-        jump.id &&
-          nodes.push({
-            id: jump.id,
-            data: { studioId, jumpId: jump.id, type: COMPONENT_TYPE.JUMP },
-            type: 'jumpNode',
-            position: jump.editor
-              ? {
-                  x: jump.editor.componentEditorPosX || 0,
-                  y: jump.editor.componentEditorPosY || 0
-                }
-              : { x: 0, y: 0 }
-          })
-      })
-
-      const edges: Edge[] = routes.map((route) => {
+      const edges: Edge<{ type: COMPONENT_TYPE }>[] = routes.map((route) => {
         if (!route.id)
           throw new Error('Unable to generate edge. Missing route ID.')
 
-        // TODO: improve types
         return {
           id: route.id,
           source: route.originId,
-          sourceHandle: route.choiceId, // TODO: this will change with entrances / exits
+          sourceHandle: route.choiceId,
           target: route.destinationId,
           targetHandle: route.destinationId,
           type: 'default',
