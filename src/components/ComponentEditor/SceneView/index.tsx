@@ -246,21 +246,47 @@ const SceneView: React.FC<{
 
   async function onNodeDragStop(
     event: React.MouseEvent<Element, MouseEvent>,
-    node: Node<any>
+    node: Node<{
+      type: COMPONENT_TYPE
+    }>
   ) {
-    if (passages) {
-      const { id, position } = node,
-        clonedPassage = cloneDeep(passages.find((passage) => passage.id === id))
+    const { id, position, data } = node
 
-      if (clonedPassage) {
-        await api().passages.savePassage(studioId, {
-          ...clonedPassage,
-          editor: {
-            componentEditorPosX: position.x,
-            componentEditorPosY: position.y
-          }
-        })
-      }
+    logger.info(`SceneView->onNodeDragStop->type:${data?.type}`)
+
+    switch (data?.type) {
+      case COMPONENT_TYPE.PASSAGE:
+        if (passages) {
+          const clonedPassage = cloneDeep(
+            passages.find((passage) => passage.id === id)
+          )
+
+          clonedPassage &&
+            (await api().passages.savePassage(studioId, {
+              ...clonedPassage,
+              editor: {
+                componentEditorPosX: position.x,
+                componentEditorPosY: position.y
+              }
+            }))
+        }
+        break
+      case COMPONENT_TYPE.JUMP:
+        if (jumps) {
+          const clonedJump = cloneDeep(jumps.find((jump) => jump.id === id))
+
+          clonedJump &&
+            (await api().jumps.saveJump(studioId, {
+              ...clonedJump,
+              editor: {
+                componentEditorPosX: position.x,
+                componentEditorPosY: position.y
+              }
+            }))
+        }
+        break
+      default:
+        break
     }
   }
 
@@ -466,7 +492,12 @@ const SceneView: React.FC<{
             id: jump.id,
             data: { studioId, jumpId: jump.id, type: COMPONENT_TYPE.JUMP },
             type: 'jumpNode',
-            position: { x: 0, y: 0 }
+            position: jump.editor
+              ? {
+                  x: jump.editor.componentEditorPosX || 0,
+                  y: jump.editor.componentEditorPosY || 0
+                }
+              : { x: 0, y: 0 }
           })
       })
 
