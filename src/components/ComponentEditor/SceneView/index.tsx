@@ -255,6 +255,20 @@ const SceneView: React.FC<{
     logger.info(`SceneView->onNodeDragStop->type:${data?.type}`)
 
     switch (data?.type) {
+      case COMPONENT_TYPE.JUMP:
+        if (jumps) {
+          const clonedJump = cloneDeep(jumps.find((jump) => jump.id === id))
+
+          clonedJump &&
+            (await api().jumps.saveJump(studioId, {
+              ...clonedJump,
+              editor: {
+                componentEditorPosX: position.x,
+                componentEditorPosY: position.y
+              }
+            }))
+        }
+        break
       case COMPONENT_TYPE.PASSAGE:
         if (passages) {
           const clonedPassage = cloneDeep(
@@ -271,20 +285,7 @@ const SceneView: React.FC<{
             }))
         }
         break
-      case COMPONENT_TYPE.JUMP:
-        if (jumps) {
-          const clonedJump = cloneDeep(jumps.find((jump) => jump.id === id))
 
-          clonedJump &&
-            (await api().jumps.saveJump(studioId, {
-              ...clonedJump,
-              editor: {
-                componentEditorPosX: position.x,
-                componentEditorPosY: position.y
-              }
-            }))
-        }
-        break
       default:
         break
     }
@@ -323,18 +324,37 @@ const SceneView: React.FC<{
 
   async function onSelectionDragStop(
     event: React.MouseEvent<Element, MouseEvent>,
-    nodes: Node<any>[]
+    nodes: Node<{ type: COMPONENT_TYPE }>[]
   ) {
-    if (passages) {
-      const clonedPassages =
-        cloneDeep(
-          passages.filter(
-            (passage) =>
-              nodes.find((node) => node.id === passage.id) !== undefined
-          )
-        ) || []
+    if (jumps && passages) {
+      const clonedJumps =
+          cloneDeep(
+            jumps.filter(
+              (jump) => nodes.find((node) => node.id == jump.id) !== undefined
+            )
+          ) || [],
+        clonedPassages =
+          cloneDeep(
+            passages.filter(
+              (passage) =>
+                nodes.find((node) => node.id === passage.id) !== undefined
+            )
+          ) || []
 
-      Promise.all(
+      await Promise.all([
+        clonedJumps.map(async (clonedJump) => {
+          // TODO: cache this
+          const foundNode = nodes.find((node) => node.id === clonedJump.id)
+
+          foundNode &&
+            (await api().jumps.saveJump(studioId, {
+              ...clonedJump,
+              editor: {
+                componentEditorPosX: foundNode.position.x,
+                componentEditorPosY: foundNode.position.y
+              }
+            }))
+        }),
         clonedPassages.map(async (clonedPassage) => {
           // TODO: cache this
           const foundNode = nodes.find((node) => node.id === clonedPassage.id)
@@ -348,7 +368,7 @@ const SceneView: React.FC<{
               }
             }))
         })
-      )
+      ])
     }
   }
 
