@@ -25,7 +25,7 @@ import {
 import { Handle, Position, NodeProps, Connection } from 'react-flow-renderer'
 
 import { Dropdown, Menu } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { AlignLeftOutlined, PlusOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
@@ -130,7 +130,7 @@ const PassageHandle: React.FC<{
           return false
         }
       }}
-    ></Handle>
+    />
   )
 }
 
@@ -170,7 +170,7 @@ const ChoiceHandle: React.FC<{
           return false
         }
       }}
-    ></Handle>
+    />
   )
 }
 
@@ -267,7 +267,10 @@ const PassageNode: React.FC<NodeProps<{
               passageId={passage.id}
             />
 
-            <h1>{passage.title}</h1>
+            <h1>
+              <AlignLeftOutlined className={styles.headerIcon} />
+              {passage.title}
+            </h1>
           </div>
 
           <div className={styles.choices}>
