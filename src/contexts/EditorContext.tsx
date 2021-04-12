@@ -27,8 +27,10 @@ interface EditorState {
     renaming: boolean
   }
   expandedGameOutlineComponents: ComponentId[]
+  totalComponentEditorSceneViewSelectedJumps: number
   totalComponentEditorSceneViewSelectedPassages: number
   totalComponentEditorSceneViewSelectedRoutes: number
+  selectedComponentEditorSceneViewJump: ComponentId | null
   selectedComponentEditorSceneViewPassage: ComponentId | null
   selectedComponentEditorSceneViewChoice: ComponentId | null
   selectedComponentEditorComponents: {
@@ -44,8 +46,10 @@ export enum EDITOR_ACTION_TYPE {
   GAME_OUTLINE_SELECT = 'GAME_OUTLINE_SELECT',
   GAME_OUTLINE_RENAME = 'GAME_OUTLINE_RENAME',
   GAME_OUTLINE_EXPAND = 'GAME_OUTLINE_EXPAND',
+  COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS',
   COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_PASSAGES = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_PASSAGES',
   COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES',
+  COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE',
   COMPONENT_EDITOR_SELECT = 'COMPONENT_EDITOR_SELECT'
@@ -95,12 +99,20 @@ type EditorActionType =
       expandedGameOutlineComponents: ComponentId[]
     }
   | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS
+      totalComponentEditorSceneViewSelectedJumps: number
+    }
+  | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_PASSAGES
       totalComponentEditorSceneViewSelectedPassages: number
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES
       totalComponentEditorSceneViewSelectedRoutes: number
+    }
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP
+      selectedComponentEditorSceneViewJUMP: ComponentId | null
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE
@@ -153,6 +165,12 @@ const editorReducer = (
         ...state,
         expandedGameOutlineComponents: action.expandedGameOutlineComponents
       }
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS:
+      return {
+        ...state,
+        totalComponentEditorSceneViewSelectedJumps:
+          action.totalComponentEditorSceneViewSelectedJumps
+      }
     case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_PASSAGES:
       return {
         ...state,
@@ -164,6 +182,12 @@ const editorReducer = (
         ...state,
         totalComponentEditorSceneViewSelectedRoutes:
           action.totalComponentEditorSceneViewSelectedRoutes
+      }
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP:
+      return {
+        ...state,
+        selectedComponentEditorSceneViewJump:
+          action.selectedComponentEditorSceneViewJUMP
       }
     case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE:
       return {
@@ -218,8 +242,10 @@ const defaultEditorState: EditorState = {
     renaming: false
   },
   expandedGameOutlineComponents: [],
+  totalComponentEditorSceneViewSelectedJumps: 0,
   totalComponentEditorSceneViewSelectedPassages: 0,
   totalComponentEditorSceneViewSelectedRoutes: 0,
+  selectedComponentEditorSceneViewJump: null,
   selectedComponentEditorSceneViewPassage: null,
   selectedComponentEditorSceneViewChoice: null,
   selectedComponentEditorComponents: []
