@@ -228,12 +228,11 @@ const SceneView: React.FC<{
                 }
               })
 
-            selectedChoice &&
-              selectedEdges.map((selectedEdge) => {
-                if (edge.id === selectedEdge.id) {
-                  edge.className = 'selected'
-                }
-              })
+            selectedEdges.map((selectedEdge) => {
+              if (edge.id === selectedEdge.id) {
+                edge.className = 'selected'
+              }
+            })
 
             return edge
           })
