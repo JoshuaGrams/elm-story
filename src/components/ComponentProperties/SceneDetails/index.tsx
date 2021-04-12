@@ -10,9 +10,14 @@ import {
 } from '../../../contexts/EditorContext'
 
 import { Collapse } from 'antd'
-import { AlignLeftOutlined, BranchesOutlined } from '@ant-design/icons'
+import {
+  AlignLeftOutlined,
+  BranchesOutlined,
+  ForwardOutlined
+} from '@ant-design/icons'
 
 import ComponentTitle from '../ComponentTitle'
+import JumpDetails from '../JumpDetails'
 import PassageDetails from '../PassageDetails'
 import ChoiceDetails from '../ChoiceDetails'
 
@@ -86,6 +91,26 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
               </div>
             )}
 
+            {/* Jump Panel */}
+            {editor.selectedComponentEditorSceneViewJump && (
+              <Collapse defaultActiveKey={['jump-details-panel']}>
+                <Collapse.Panel
+                  header={
+                    <>
+                      <ForwardOutlined className={styles.headerIcon} /> Selected
+                      Jump
+                    </>
+                  }
+                  key="jump-details-panel"
+                >
+                  <JumpDetails
+                    studioId={studioId}
+                    jumpId={editor.selectedComponentEditorSceneViewJump}
+                  />
+                </Collapse.Panel>
+              </Collapse>
+            )}
+
             {editor.selectedComponentEditorSceneViewPassage && (
               <Collapse
                 defaultActiveKey={[
@@ -110,6 +135,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
                     />
                   </Collapse.Panel>
                 )}
+
                 {/* Choice Panel */}
                 {editor.selectedComponentEditorSceneViewChoice && (
                   <Collapse.Panel
