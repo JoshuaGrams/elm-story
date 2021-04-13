@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+
 import { EngineContext } from '../../contexts/EngineContext'
 
 import { ComponentId, GameId, StudioId } from '../../data/types'
@@ -10,11 +11,9 @@ import SceneRenderer from './SceneRenderer'
 const ChapterRenderer: React.FC<{
   studioId: StudioId
   gameId: GameId
-  chapterId: ComponentId | null
+  chapterId: ComponentId
 }> = ({ studioId, gameId, chapterId }) => {
-  const chapter = chapterId
-    ? useChapter(studioId, chapterId, [studioId, chapterId])
-    : undefined
+  const chapter = useChapter(studioId, chapterId, [studioId, chapterId])
 
   const { engine } = useContext(EngineContext)
 
@@ -25,13 +24,19 @@ const ChapterRenderer: React.FC<{
       )}
 
       {chapter && (
-        <SceneRenderer
-          studioId={studioId}
-          gameId={gameId}
-          sceneId={
-            engine.currentScene || engine.startingScene || chapter.scenes[0]
-          }
-        />
+        <>
+          {(engine.currentScene ||
+            engine.startingScene ||
+            chapter.scenes[0]) && (
+            <SceneRenderer
+              studioId={studioId}
+              gameId={gameId}
+              sceneId={
+                engine.currentScene || engine.startingScene || chapter.scenes[0]
+              }
+            />
+          )}
+        </>
       )}
     </>
   )

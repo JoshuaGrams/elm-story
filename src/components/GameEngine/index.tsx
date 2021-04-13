@@ -78,11 +78,16 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   return (
     <>
       {game && jumps && (
-        <ChapterRenderer
-          studioId={studioId}
-          gameId={gameId}
-          chapterId={engine.currentChapter || engine.startingChapter}
-        />
+        <>
+          {engine.currentChapter ||
+            (engine.startingChapter && (
+              <ChapterRenderer
+                studioId={studioId}
+                gameId={gameId}
+                chapterId={engine.currentChapter || engine.startingChapter}
+              />
+            ))}
+        </>
       )}
     </>
   )

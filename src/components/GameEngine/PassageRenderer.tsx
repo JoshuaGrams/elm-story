@@ -1,23 +1,30 @@
+import logger from '../../lib/logger'
+
 import React, { useContext } from 'react'
 
 import { ComponentId, GameId, StudioId } from '../../data/types'
 
 import { EngineContext } from '../../contexts/EngineContext'
 
-import { usePassage } from '../../hooks'
+import { usePassage, useRoutesByPassageRef } from '../../hooks'
 
 import ChoicesRenderer from './ChoicesRenderer'
 
 const PassageRenderer: React.FC<{
   studioId: StudioId
   gameId: GameId
-  passageId: ComponentId | null
+  passageId: ComponentId
 }> = ({ studioId, gameId, passageId }) => {
-  const passage = passageId
-    ? usePassage(studioId, passageId, [studioId, passageId])
-    : undefined
+  const passage = usePassage(studioId, passageId, [studioId, passageId]),
+    routes = passageId
+      ? useRoutesByPassageRef(studioId, passageId, [studioId, passageId])
+      : undefined
 
   const { engine } = useContext(EngineContext)
+
+  function onChoice(choiceId: ComponentId) {
+    logger.info(`PassageRenderer->onChoice->${choiceId}`)
+  }
 
   return (
     <>
@@ -32,6 +39,7 @@ const PassageRenderer: React.FC<{
               studioId={studioId}
               gameId={gameId}
               passageId={passageId}
+              onChoice={onChoice}
             />
           )}
         </>

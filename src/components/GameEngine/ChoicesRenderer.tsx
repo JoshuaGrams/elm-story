@@ -9,11 +9,13 @@ import { useChoicesByPassageRef } from '../../hooks'
 const ChoicesRenderer: React.FC<{
   studioId: StudioId
   gameId: GameId
-  passageId: ComponentId | null
-}> = ({ studioId, gameId, passageId }) => {
-  const choices = passageId
-    ? useChoicesByPassageRef(studioId, passageId, [studioId, passageId])
-    : undefined
+  passageId: ComponentId
+  onChoice: (choiceId: ComponentId) => void
+}> = ({ studioId, gameId, passageId, onChoice }) => {
+  const choices = useChoicesByPassageRef(studioId, passageId, [
+    studioId,
+    passageId
+  ])
 
   const { engine } = useContext(EngineContext)
 
@@ -22,7 +24,12 @@ const ChoicesRenderer: React.FC<{
       {choices && (
         <div>
           {choices.map((choice) => (
-            <div key={choice.id}>{choice.title}</div>
+            <div
+              key={choice.id}
+              onClick={() => choice.id && onChoice(choice.id)}
+            >
+              {choice.title}
+            </div>
           ))}
         </div>
       )}

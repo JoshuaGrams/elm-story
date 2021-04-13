@@ -11,11 +11,9 @@ import PassageRenderer from './PassageRenderer'
 const SceneRenderer: React.FC<{
   studioId: StudioId
   gameId: GameId
-  sceneId: ComponentId | null
+  sceneId: ComponentId
 }> = ({ studioId, gameId, sceneId }) => {
-  const scene = sceneId
-    ? useScene(studioId, sceneId, [studioId, sceneId])
-    : undefined
+  const scene = useScene(studioId, sceneId, [studioId, sceneId])
 
   const { engine } = useContext(EngineContext)
 
