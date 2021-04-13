@@ -79,14 +79,28 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
     <>
       {game && jumps && (
         <>
-          {engine.currentChapter ||
-            (engine.startingChapter && (
-              <ChapterRenderer
-                studioId={studioId}
-                gameId={gameId}
-                chapterId={engine.currentChapter || engine.startingChapter}
-              />
-            ))}
+          {(engine.currentChapter || engine.startingChapter) && (
+            <ChapterRenderer
+              studioId={studioId}
+              gameId={gameId}
+              // @ts-ignore: We are checking this.
+              chapterId={engine.currentChapter || engine.startingChapter}
+            />
+          )}
+
+          <div
+            onClick={() =>
+              engineDispatch({ type: ENGINE_ACTION_TYPE.GAME_RESTART })
+            }
+          >
+            Restart Game
+          </div>
+
+          {game.chapters.length === 0 && (
+            <div>
+              Game requires at least 1 chapter, scene and passage to play.
+            </div>
+          )}
         </>
       )}
     </>

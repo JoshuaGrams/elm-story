@@ -1,8 +1,10 @@
-import React, { useContext } from 'react'
+import logger from '../../lib/logger'
+
+import React, { useContext, useEffect } from 'react'
 
 import { ComponentId, GameId, StudioId } from '../../data/types'
 
-import { EngineContext } from '../../contexts/EngineContext'
+import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
 import { useScene } from '../../hooks'
 
@@ -15,7 +17,20 @@ const SceneRenderer: React.FC<{
 }> = ({ studioId, gameId, sceneId }) => {
   const scene = useScene(studioId, sceneId, [studioId, sceneId])
 
-  const { engine } = useContext(EngineContext)
+  const { engine, engineDispatch } = useContext(EngineContext)
+
+  useEffect(() => {
+    logger.info(`SceneRenderer->scene,sceneId->useEffect`)
+
+    // Scene has been removed.
+    !scene &&
+      sceneId &&
+      engine.currentScene &&
+      engineDispatch({
+        type: ENGINE_ACTION_TYPE.SCENE_CURRENT,
+        currentScene: null
+      })
+  }, [scene, sceneId])
 
   return (
     <>
@@ -24,13 +39,21 @@ const SceneRenderer: React.FC<{
       )}
 
       {scene && (
-        <PassageRenderer
-          studioId={studioId}
-          gameId={gameId}
-          passageId={
-            engine.currentPassage || engine.startingPassage || scene.passages[0]
-          }
-        />
+        <>
+          {(engine.currentPassage ||
+            engine.startingPassage ||
+            scene.passages[0]) && (
+            <PassageRenderer
+              studioId={studioId}
+              gameId={gameId}
+              passageId={
+                engine.currentPassage ||
+                engine.startingPassage ||
+                scene.passages[0]
+              }
+            />
+          )}
+        </>
       )}
     </>
   )

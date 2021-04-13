@@ -1,36 +1,83 @@
 import logger from '../../lib/logger'
 
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 
-import { ComponentId, GameId, StudioId } from '../../data/types'
+import { ComponentId, COMPONENT_TYPE, GameId, StudioId } from '../../data/types'
 
-import { EngineContext } from '../../contexts/EngineContext'
+import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
-import { usePassage, useRoutesByPassageRef } from '../../hooks'
+import { usePassage } from '../../hooks'
 
 import ChoicesRenderer from './ChoicesRenderer'
+import api from '../../api'
 
 const PassageRenderer: React.FC<{
   studioId: StudioId
   gameId: GameId
   passageId: ComponentId
 }> = ({ studioId, gameId, passageId }) => {
-  const passage = usePassage(studioId, passageId, [studioId, passageId]),
-    routes = passageId
-      ? useRoutesByPassageRef(studioId, passageId, [studioId, passageId])
-      : undefined
+  console.log(passageId)
+  const passage = usePassage(studioId, passageId, [studioId, passageId])
 
-  const { engine } = useContext(EngineContext)
+  const { engine, engineDispatch } = useContext(EngineContext)
 
-  function onChoice(choiceId: ComponentId) {
-    logger.info(`PassageRenderer->onChoice->${choiceId}`)
+  async function onChoice(
+    choiceId: ComponentId,
+    destinationId: ComponentId,
+    destinationType: COMPONENT_TYPE
+  ) {
+    logger.info(
+      `PassageRenderer->onChoice->${choiceId}
+      destinationId: ${destinationId}
+      destinationType: ${destinationType}`
+    )
+
+    if (destinationType === COMPONENT_TYPE.PASSAGE) {
+      engineDispatch({
+        type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
+        currentPassage: destinationId
+      })
+    }
+
+    if (destinationType === COMPONENT_TYPE.JUMP) {
+      const jump = await api().jumps.getJump(studioId, destinationId)
+      console.log(jump)
+
+      engineDispatch({
+        type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
+        currentPassage: jump.route[2] || engine.currentPassage || null
+      })
+
+      engineDispatch({
+        type: ENGINE_ACTION_TYPE.SCENE_CURRENT,
+        currentScene: jump.route[1] || engine.currentScene || null
+      })
+
+      engineDispatch({
+        type: ENGINE_ACTION_TYPE.CHAPTER_CURRENT,
+        currentChapter: jump.route[0] || engine.currentChapter || null
+      })
+    }
   }
+
+  useEffect(() => {
+    logger.info(`PassageRenderer->passage,passageId->useEffect`)
+
+    // Passage has been removed.
+    !passage &&
+      passageId &&
+      engine.currentPassage &&
+      engineDispatch({
+        type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
+        currentPassage: null
+      })
+  }, [passage, passageId])
 
   return (
     <>
       {passage && (
         <>
-          <div>{passage.title}</div>
+          <div>Passage Title: {passage.title}</div>
 
           {passage.choices.length === 0 && <div>Game Over</div>}
 

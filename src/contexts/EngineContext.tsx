@@ -1,4 +1,5 @@
 import React, { useMemo, createContext, useReducer } from 'react'
+import { start } from 'repl'
 import { ComponentId } from '../data/types'
 
 interface EngineState {
@@ -11,6 +12,7 @@ interface EngineState {
 }
 
 export enum ENGINE_ACTION_TYPE {
+  GAME_RESTART = 'GAME_RESTART',
   CHAPTER_START = 'CHAPTER_START',
   CHAPTER_CURRENT = 'CHAPTER_CURRENT',
   SCENE_START = 'SCENE_START',
@@ -20,6 +22,7 @@ export enum ENGINE_ACTION_TYPE {
 }
 
 type EngineActionType =
+  | { type: ENGINE_ACTION_TYPE.GAME_RESTART }
   | {
       type: ENGINE_ACTION_TYPE.CHAPTER_START
       startingChapter: ComponentId | null
@@ -50,6 +53,13 @@ const engineReducer = (
   action: EngineActionType
 ): EngineState => {
   switch (action.type) {
+    case ENGINE_ACTION_TYPE.GAME_RESTART:
+      return {
+        ...state,
+        currentChapter: null,
+        currentScene: null,
+        currentPassage: null
+      }
     case ENGINE_ACTION_TYPE.CHAPTER_START:
       return {
         ...state,
