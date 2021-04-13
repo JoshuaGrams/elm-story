@@ -5,7 +5,11 @@ import { GameId, StudioId } from '../../../data/types'
 
 import { useGame } from '../../../hooks'
 
+import EngineProvider from '../../../contexts/EngineContext'
+
 import { Table } from 'antd'
+
+import GameEngine from '../../GameEngine'
 
 export const GameViewTools: React.FC<{
   studioId: StudioId
@@ -27,26 +31,32 @@ const GameView: React.FC<{
   return (
     <>
       {game && (
-        <Table
-          columns={[
-            { title: 'ID', key: 'id', dataIndex: 'id' },
-            { title: 'Title', key: 'title', dataIndex: 'title' },
-            {
-              title: 'Chapters',
-              key: 'chapterTotal',
-              dataIndex: 'chapterTotal'
-            }
-          ]}
-          dataSource={[
-            {
-              key: game.id,
-              id: game.id,
-              title: game.title,
-              chapterTotal: game.chapters.length
-            }
-          ]}
-          pagination={false}
-        />
+        <>
+          <Table
+            columns={[
+              { title: 'ID', key: 'id', dataIndex: 'id' },
+              { title: 'Title', key: 'title', dataIndex: 'title' },
+              {
+                title: 'Chapters',
+                key: 'chapterTotal',
+                dataIndex: 'chapterTotal'
+              }
+            ]}
+            dataSource={[
+              {
+                key: game.id,
+                id: game.id,
+                title: game.title,
+                chapterTotal: game.chapters.length
+              }
+            ]}
+            pagination={false}
+          />
+
+          <EngineProvider>
+            <GameEngine studioId={studioId} gameId={gameId} />
+          </EngineProvider>
+        </>
       )}
     </>
   )
