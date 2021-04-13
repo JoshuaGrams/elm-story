@@ -4,11 +4,19 @@ import { ComponentId } from '../data/types'
 interface EngineState {
   startingChapter: ComponentId | null
   currentChapter: ComponentId | null
+  startingScene: ComponentId | null
+  currentScene: ComponentId | null
+  startingPassage: ComponentId | null
+  currentPassage: ComponentId | null
 }
 
 export enum ENGINE_ACTION_TYPE {
   CHAPTER_START = 'CHAPTER_START',
-  CHAPTER_CURRENT = 'CHAPTER_CURRENT'
+  CHAPTER_CURRENT = 'CHAPTER_CURRENT',
+  SCENE_START = 'SCENE_START',
+  SCENE_CURRENT = 'SCENE_CURRENT',
+  PASSAGE_START = 'PASSAGE_START',
+  PASSAGE_CURRENT = 'PASSAGE_CURRENT'
 }
 
 type EngineActionType =
@@ -19,6 +27,22 @@ type EngineActionType =
   | {
       type: ENGINE_ACTION_TYPE.CHAPTER_CURRENT
       currentChapter: ComponentId | null
+    }
+  | {
+      type: ENGINE_ACTION_TYPE.SCENE_START
+      startingScene: ComponentId | null
+    }
+  | {
+      type: ENGINE_ACTION_TYPE.SCENE_CURRENT
+      currentScene: ComponentId | null
+    }
+  | {
+      type: ENGINE_ACTION_TYPE.PASSAGE_START
+      startingPassage: ComponentId | null
+    }
+  | {
+      type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT
+      currentPassage: ComponentId | null
     }
 
 const engineReducer = (
@@ -36,6 +60,26 @@ const engineReducer = (
         ...state,
         currentChapter: action.currentChapter
       }
+    case ENGINE_ACTION_TYPE.SCENE_START:
+      return {
+        ...state,
+        startingScene: action.startingScene
+      }
+    case ENGINE_ACTION_TYPE.SCENE_CURRENT:
+      return {
+        ...state,
+        currentScene: action.currentScene
+      }
+    case ENGINE_ACTION_TYPE.PASSAGE_START:
+      return {
+        ...state,
+        startingPassage: action.startingPassage
+      }
+    case ENGINE_ACTION_TYPE.PASSAGE_CURRENT:
+      return {
+        ...state,
+        currentPassage: action.currentPassage
+      }
     default:
       return state
   }
@@ -48,7 +92,11 @@ interface EngineContextType {
 
 const defaultEngineState: EngineState = {
   startingChapter: null,
-  currentChapter: null
+  currentChapter: null,
+  startingScene: null,
+  currentScene: null,
+  startingPassage: null,
+  currentPassage: null
 }
 
 export const EngineContext = createContext<EngineContextType>({
