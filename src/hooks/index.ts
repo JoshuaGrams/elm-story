@@ -11,7 +11,10 @@ import useRoutes, {
   useRoutesByPassageRef,
   useRoutesByChoiceRef
 } from './useRoutes'
-import useEffects, { useEffect } from './useEffects'
+import useRouteEffects, {
+  useRouteEffect,
+  useRouteEffectsByRouteRef
+} from './useRouteEffects'
 import usePassages, { usePassagesBySceneRef, usePassage } from './usePassages'
 import useChoices, { useChoice, useChoicesByPassageRef } from './useChoices'
 import useVariables, { useVariable } from './useVariables'
@@ -32,8 +35,9 @@ export {
   useScenesByChapterRef,
   useRoutes,
   useRoute,
-  useEffects,
-  useEffect,
+  useRouteEffects,
+  useRouteEffect,
+  useRouteEffectsByRouteRef,
   useRoutesBySceneRef,
   useRoutesByPassageRef,
   useRoutesByChoiceRef,

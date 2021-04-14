@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 
 import { ComponentId, Effect, GameId, StudioId } from '../data/types'
 
-const useEffects = (
+const useRouteEffects = (
   studioId: StudioId,
   gameId: GameId,
   deps?: any[]
@@ -17,7 +17,7 @@ const useEffects = (
   return effects
 }
 
-const useEffect = (
+const useRouteEffect = (
   studioId: StudioId,
   effectId: ComponentId,
   deps?: any[]
@@ -28,6 +28,17 @@ const useEffect = (
     undefined
   )
 
-export { useEffect }
+const useRouteEffectsByRouteRef = (
+  studioId: StudioId,
+  routeId: ComponentId,
+  deps?: any[]
+): Effect | undefined =>
+  useLiveQuery(
+    () => new LibraryDatabase(studioId).effects.where({ id: routeId }).first(),
+    deps || [],
+    undefined
+  )
 
-export default useEffects
+export { useRouteEffect, useRouteEffectsByRouteRef }
+
+export default useRouteEffects
