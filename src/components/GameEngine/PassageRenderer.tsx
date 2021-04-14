@@ -11,6 +11,8 @@ import { usePassage } from '../../hooks'
 import ChoicesRenderer from './ChoicesRenderer'
 
 import api from '../../api'
+import { Descendant } from 'slate'
+import { CustomElement } from '../ComponentEditor/PassageView'
 
 const PassageRenderer: React.FC<{
   studioId: StudioId
@@ -78,7 +80,14 @@ const PassageRenderer: React.FC<{
     <>
       {passage && (
         <>
-          <div>Passage Title: {passage.title}</div>
+          <div>
+            {passage.content &&
+              JSON.parse(passage.content).map((descendant: CustomElement) => (
+                <p className="passage-paragraph">
+                  {descendant.children[0].text || <>&#65279;</>}
+                </p>
+              ))}
+          </div>
 
           {passage.choices.length === 0 && <div>Game Over</div>}
 

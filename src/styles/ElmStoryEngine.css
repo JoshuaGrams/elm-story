@@ -24,6 +24,10 @@ html {
   color: var(--text-color);
 }
 
+.passage-paragraph {
+  margin-bottom: 0.8rem;
+}
+
 .choices-container {
   width: calc(100% - 10rem);
   margin: 0 auto;

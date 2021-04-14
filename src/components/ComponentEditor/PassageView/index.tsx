@@ -13,8 +13,8 @@ import { Slate, Editable, withReact, ReactEditor } from 'slate-react'
 
 import api from '../../../api'
 
-type CustomElement = { type: 'paragraph'; children: CustomText[] }
-type CustomText = { text: string }
+export type CustomElement = { type: 'paragraph'; children: CustomText[] }
+export type CustomText = { text: string }
 
 declare module 'slate' {
   interface CustomTypes {
@@ -72,6 +72,7 @@ const PassageView: React.FC<{
           editor={editor}
           value={passageContent}
           onChange={async (newContent) => {
+            console.log(newContent)
             setPassageContent(newContent)
 
             await api().passages.savePassageContent(
