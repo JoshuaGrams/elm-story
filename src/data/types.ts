@@ -47,10 +47,8 @@ export type StudioId = string
 export type GameId = string
 export type ComponentId = string
 
-type VariableId = string
-
 export interface Component {
-  id?: ComponentId | VariableId
+  id?: ComponentId
   title: string
   tags: string[] | []
   updated?: number // UTC timestamp
@@ -112,6 +110,13 @@ export interface Route extends Component {
   destinationType: COMPONENT_TYPE
 }
 
+// Effect of Route
+export interface Effect extends Component {
+  gameId: GameId
+  routeId: ComponentId
+  set: [ComponentId, SET_OPERATOR, string] // variable ref
+}
+
 export interface Passage extends Component {
   gameId: GameId
   sceneId: ComponentId
@@ -131,12 +136,11 @@ export interface Choice extends Component {
   conditions: Condition[] | string[]
 }
 
+// Condition of Choice
 export interface Condition extends Component {
-  compare: [VariableId, COMPARE_OPERATOR, VariableId | string]
-}
-
-export interface Effect extends Component {
-  set: [VariableId, SET_OPERATOR, VariableId | string]
+  gameId: GameId
+  choiceId: ComponentId
+  check: [ComponentId, COMPARE_OPERATOR, string] // variable ref
 }
 
 export interface Variable extends Component {

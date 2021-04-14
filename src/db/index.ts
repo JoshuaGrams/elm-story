@@ -154,10 +154,10 @@ export class LibraryDatabase extends Dexie {
       scenes: '&id,gameId,chapterId,title,*tags,updated',
       routes:
         '&id,gameId,sceneId,title,originId,choiceId,originType,destinationId,destinationType,*tags,updated',
+      effects: '&id,routeId,title,*tags,updated',
       passages: '&id,gameId,sceneId,title,*tags,updated',
       choices: '&id,gameId,passageId,title,*tags,updated',
-      conditions: '&id,title,*tags,updated',
-      effects: '&id,title,*tags,updated',
+      conditions: '&id,choiceId,title,*tags,updated',
       variables: '&id,gameId,title,type,*tags,updated'
     })
 
@@ -168,10 +168,10 @@ export class LibraryDatabase extends Dexie {
     this.chapters = this.table(LIBRARY_TABLE.CHAPTERS)
     this.scenes = this.table(LIBRARY_TABLE.SCENES)
     this.routes = this.table(LIBRARY_TABLE.ROUTES)
+    this.effects = this.table(LIBRARY_TABLE.EFFECTS)
     this.passages = this.table(LIBRARY_TABLE.PASSAGES)
     this.choices = this.table(LIBRARY_TABLE.CHOICES)
     this.conditions = this.table(LIBRARY_TABLE.CONDITIONS)
-    this.effects = this.table(LIBRARY_TABLE.EFFECTS)
     this.variables = this.table(LIBRARY_TABLE.VARIABLES)
   }
 
@@ -931,6 +931,70 @@ export class LibraryDatabase extends Dexie {
           async (route) => route.id && (await this.removeRoute(route.id))
         )
       )
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getEffect(effectId: ComponentId): Promise<Effect> {
+    try {
+      const effect = await this.effects.get(effectId)
+
+      if (effect) {
+        return effect
+      } else {
+        throw new Error(
+          `Unable to get effect with ID: ${effectId}. Does not exist.`
+        )
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async saveEffect(effect: Effect): Promise<ComponentId> {
+    if (!effect.routeId)
+      throw new Error('Unable to save effect to databse. Missing route ID.')
+    if (!effect.id)
+      throw new Error('Unable to save effect to database. Missing ID.')
+
+    try {
+      await this.transaction('rw', this.effects, async () => {
+        if (effect.id) {
+          if (await this.getComponent(LIBRARY_TABLE.EFFECTS, effect.id)) {
+            await this.effects.update(effect.id, effect)
+          } else {
+            await this.effects.add(effect)
+          }
+        } else {
+          throw new Error('Unable to save effect to database. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    return effect.id
+  }
+
+  public async removeEffect(effectId: ComponentId) {
+    logger.info(`LibraryDatabase->removeEffect`)
+
+    try {
+      await this.transaction('rw', this.effects, async () => {
+        if (await this.getComponent(LIBRARY_TABLE.EFFECTS, effectId)) {
+          logger.info(
+            `LibraryDatabase->removeEffect->Removing effect with ID: ${effectId}`
+          )
+
+          await this.effects.delete(effectId)
+        } else {
+          // TODO: #70; async issue - we can do things in order, but this is likely more efficent
+          logger.error(
+            `LibraryDatabase->removeEffect->Unable to remove effect with ID: '${effectId}'. Does not exist.`
+          )
+        }
+      })
     } catch (error) {
       throw new Error(error)
     }
