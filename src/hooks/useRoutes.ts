@@ -1,7 +1,32 @@
 import { LibraryDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import { ComponentId, Route, StudioId } from '../data/types'
+import { ComponentId, GameId, Route, StudioId } from '../data/types'
+
+const useRoutes = (
+  studioId: StudioId,
+  gameId: GameId,
+  deps?: any[]
+): Route[] | undefined => {
+  const routes = useLiveQuery(
+    () => new LibraryDatabase(studioId).routes.where({ gameId }).toArray(),
+    deps || [],
+    undefined
+  )
+
+  return routes
+}
+
+const useRoute = (
+  studioId: StudioId,
+  routeId: ComponentId,
+  deps?: any[]
+): Route | undefined =>
+  useLiveQuery(
+    () => new LibraryDatabase(studioId).routes.where({ id: routeId }).first(),
+    deps || [],
+    undefined
+  )
 
 const useRoutesBySceneRef = (
   studioId: StudioId,
@@ -48,17 +73,6 @@ const useRoutesByChoiceRef = (
   return routes
 }
 
-const useRoute = (
-  studioId: StudioId,
-  routeId: ComponentId,
-  deps?: any[]
-): Route | undefined =>
-  useLiveQuery(
-    () => new LibraryDatabase(studioId).routes.where({ id: routeId }).first(),
-    deps || [],
-    undefined
-  )
-
 export {
   useRoute,
   useRoutesBySceneRef,
@@ -66,4 +80,4 @@ export {
   useRoutesByChoiceRef
 }
 
-export default useRoute
+export default useRoutes
