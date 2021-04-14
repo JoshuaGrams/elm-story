@@ -10,7 +10,7 @@ import {
   useRoutesByChoiceRef
 } from '../../hooks'
 
-const ChoiceRowRenderer: React.FC<{
+const ChoiceButtonRenderer: React.FC<{
   studioId: StudioId
   choiceId: ComponentId
   onChoice: (
@@ -25,10 +25,12 @@ const ChoiceRowRenderer: React.FC<{
   return (
     <>
       {choice && routes && (
-        <div
+        <a
+          className="choice-button"
           onClick={() => {
             // TODO: Choice may point to multiple passages and jumps.
             // Track, calculate probability. For now, we'll go to the first.
+            // #110, #111
             choice.id &&
               routes[0] &&
               onChoice(
@@ -39,7 +41,7 @@ const ChoiceRowRenderer: React.FC<{
           }}
         >
           {choice.title} {routes.length === 0 && <span>(No Route)</span>}
-        </div>
+        </a>
       )}
     </>
   )
@@ -65,11 +67,11 @@ const ChoicesRenderer: React.FC<{
   return (
     <>
       {choices && (
-        <div>
+        <div className="choices-container">
           {choices.map(
             (choice) =>
               choice.id && (
-                <ChoiceRowRenderer
+                <ChoiceButtonRenderer
                   key={choice.id}
                   studioId={studioId}
                   choiceId={choice.id}

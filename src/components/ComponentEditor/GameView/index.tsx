@@ -1,13 +1,16 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import logger from '../../../lib/logger'
 
 import { GameId, StudioId } from '../../../data/types'
 
 import { useGame } from '../../../hooks'
 
-import EngineProvider from '../../../contexts/EngineContext'
+import {
+  EngineContext,
+  ENGINE_ACTION_TYPE
+} from '../../../contexts/EngineContext'
 
-import { Table } from 'antd'
+import { Button } from 'antd'
 
 import GameEngine from '../../GameEngine'
 
@@ -15,7 +18,20 @@ export const GameViewTools: React.FC<{
   studioId: StudioId
   gameId: GameId
 }> = () => {
-  return <div>Game View Tools</div>
+  const { engine, engineDispatch } = useContext(EngineContext)
+
+  function onRestartGame() {
+    engineDispatch({ type: ENGINE_ACTION_TYPE.GAME_RESTART })
+  }
+
+  return (
+    <div>
+      <Button>Edit Styles</Button>
+      <Button>Edit State</Button>
+      <Button onClick={onRestartGame}>Restart Game</Button>
+      <Button>Export</Button>
+    </div>
+  )
 }
 
 const GameView: React.FC<{
@@ -25,37 +41,14 @@ const GameView: React.FC<{
   const game = useGame(studioId, gameId)
 
   useEffect(() => {
-    logger.info('GameView mount effect')
+    logger.info(`GameView->useEffect`)
   }, [])
 
   return (
     <>
       {game && (
         <>
-          <Table
-            columns={[
-              { title: 'ID', key: 'id', dataIndex: 'id' },
-              { title: 'Title', key: 'title', dataIndex: 'title' },
-              {
-                title: 'Chapters',
-                key: 'chapterTotal',
-                dataIndex: 'chapterTotal'
-              }
-            ]}
-            dataSource={[
-              {
-                key: game.id,
-                id: game.id,
-                title: game.title,
-                chapterTotal: game.chapters.length
-              }
-            ]}
-            pagination={false}
-          />
-
-          <EngineProvider>
-            <GameEngine studioId={studioId} gameId={gameId} />
-          </EngineProvider>
+          <GameEngine studioId={studioId} gameId={gameId} />
         </>
       )}
     </>

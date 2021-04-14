@@ -78,7 +78,7 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   return (
     <>
       {game && jumps && (
-        <>
+        <div className="elm-story-engine">
           {(engine.currentChapter || engine.startingChapter) && (
             <ChapterRenderer
               studioId={studioId}
@@ -88,20 +88,12 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
             />
           )}
 
-          <div
-            onClick={() =>
-              engineDispatch({ type: ENGINE_ACTION_TYPE.GAME_RESTART })
-            }
-          >
-            Restart Game
-          </div>
-
           {game.chapters.length === 0 && (
             <div>
               Game requires at least 1 chapter, scene and passage to play.
             </div>
           )}
-        </>
+        </div>
       )}
     </>
   )

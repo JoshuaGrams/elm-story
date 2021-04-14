@@ -1,0 +1,46 @@
+html {
+  font-size: 62.5% !important;
+}
+
+.elm-story-engine {
+  width: calc(100% - 4rem);
+  margin: 0 auto;
+
+  --text-color: white;
+  --button-color: hsl(209, 100%, 55%);
+  --button-color-hover: hsl(209, 100%, 60%);
+  --button-height: 3.2rem;
+}
+
+.elm-story-engine * {
+  padding: 0;
+  margin: 0;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: none;
+}
+
+.elm-story-engine *:hover {
+  color: var(--text-color);
+}
+
+.choices-container {
+  width: calc(100% - 10rem);
+  margin: 0 auto;
+}
+
+.choice-button {
+  display: block;
+  font-size: 1.4rem;
+  height: var(--button-height);
+  line-height: var(--button-height);
+  cursor: pointer;
+  text-align: center;
+  background: var(--button-color);
+  border-radius: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.choice-button:hover {
+  background: var(--button-color-hover);
+}
