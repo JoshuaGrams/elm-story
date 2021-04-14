@@ -961,6 +961,31 @@ export class LibraryDatabase extends Dexie {
     return passage
   }
 
+  public async savePassageContent(passageId: ComponentId, content: string) {
+    try {
+      await this.transaction('rw', this.passages, async () => {
+        if (passageId) {
+          const component = await this.getComponent(
+            LIBRARY_TABLE.PASSAGES,
+            passageId
+          )
+
+          if (component) {
+            await this.passages.update(passageId, { ...component, content })
+          } else {
+            throw new Error(
+              'Unable to save content to passage. Passage missing.'
+            )
+          }
+        } else {
+          throw new Error('Unable to save content to passage. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async saveSceneRefToPassage(
     sceneId: ComponentId,
     passageId: ComponentId
