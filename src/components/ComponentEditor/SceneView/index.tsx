@@ -318,7 +318,7 @@ const SceneView: React.FC<{
 
       if (foundDestinationNode?.data?.type) {
         api().routes.saveRoute(studioId, {
-          title: 'Untitiled Route',
+          title: 'Untitled Route',
           gameId: scene.gameId,
           sceneId,
           originId: connection.source,
