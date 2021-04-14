@@ -154,6 +154,7 @@ const SceneView: React.FC<{
     [totalSelectedRoutes, setTotalSelectedRoutes] = useState<number>(0),
     [selectedJump, setSelectedJump] = useState<ComponentId | null>(null),
     [selectedPassage, setSelectedPassage] = useState<ComponentId | null>(null),
+    [selectedRoute, setSelectedRoute] = useState<ComponentId | null>(null),
     [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
     [elements, setElements] = useState<FlowElement[]>([])
 
@@ -253,18 +254,6 @@ const SceneView: React.FC<{
     }
   }
 
-  function onChoiceSelect(
-    passageId: ComponentId,
-    choiceId: ComponentId | null
-  ) {
-    logger.info(
-      `Sceneview->onChoiceSelect->
-       passageId: ${passageId} choiceId: ${choiceId}`
-    )
-
-    setSelectedChoice(choiceId)
-  }
-
   async function onNodeDragStop(
     event: React.MouseEvent<Element, MouseEvent>,
     node: Node<{
@@ -329,7 +318,7 @@ const SceneView: React.FC<{
 
       if (foundDestinationNode?.data?.type) {
         api().routes.saveRoute(studioId, {
-          title: '',
+          title: 'Untitiled Route',
           gameId: scene.gameId,
           sceneId,
           originId: connection.source,
@@ -340,56 +329,6 @@ const SceneView: React.FC<{
           tags: []
         })
       }
-    }
-  }
-
-  async function onSelectionDragStop(
-    event: React.MouseEvent<Element, MouseEvent>,
-    nodes: Node<{ type: COMPONENT_TYPE }>[]
-  ) {
-    if (jumps && passages) {
-      const clonedJumps =
-          cloneDeep(
-            jumps.filter(
-              (jump) => nodes.find((node) => node.id == jump.id) !== undefined
-            )
-          ) || [],
-        clonedPassages =
-          cloneDeep(
-            passages.filter(
-              (passage) =>
-                nodes.find((node) => node.id === passage.id) !== undefined
-            )
-          ) || []
-
-      await Promise.all([
-        clonedJumps.map(async (clonedJump) => {
-          // TODO: cache this
-          const foundNode = nodes.find((node) => node.id === clonedJump.id)
-
-          foundNode &&
-            (await api().jumps.saveJump(studioId, {
-              ...clonedJump,
-              editor: {
-                componentEditorPosX: foundNode.position.x,
-                componentEditorPosY: foundNode.position.y
-              }
-            }))
-        }),
-        clonedPassages.map(async (clonedPassage) => {
-          // TODO: cache this
-          const foundNode = nodes.find((node) => node.id === clonedPassage.id)
-
-          foundNode &&
-            (await api().passages.savePassage(studioId, {
-              ...clonedPassage,
-              editor: {
-                componentEditorPosX: foundNode.position.x,
-                componentEditorPosY: foundNode.position.y
-              }
-            }))
-        })
-      ])
     }
   }
 
@@ -455,6 +394,68 @@ const SceneView: React.FC<{
     // }
   }
 
+  function onChoiceSelect(
+    passageId: ComponentId,
+    choiceId: ComponentId | null
+  ) {
+    logger.info(
+      `Sceneview->onChoiceSelect->
+       passageId: ${passageId} choiceId: ${choiceId}`
+    )
+
+    setSelectedChoice(choiceId)
+  }
+
+  async function onSelectionDragStop(
+    event: React.MouseEvent<Element, MouseEvent>,
+    nodes: Node<{ type: COMPONENT_TYPE }>[]
+  ) {
+    if (jumps && passages) {
+      const clonedJumps =
+          cloneDeep(
+            jumps.filter(
+              (jump) => nodes.find((node) => node.id == jump.id) !== undefined
+            )
+          ) || [],
+        clonedPassages =
+          cloneDeep(
+            passages.filter(
+              (passage) =>
+                nodes.find((node) => node.id === passage.id) !== undefined
+            )
+          ) || []
+
+      await Promise.all([
+        clonedJumps.map(async (clonedJump) => {
+          // TODO: cache this
+          const foundNode = nodes.find((node) => node.id === clonedJump.id)
+
+          foundNode &&
+            (await api().jumps.saveJump(studioId, {
+              ...clonedJump,
+              editor: {
+                componentEditorPosX: foundNode.position.x,
+                componentEditorPosY: foundNode.position.y
+              }
+            }))
+        }),
+        clonedPassages.map(async (clonedPassage) => {
+          // TODO: cache this
+          const foundNode = nodes.find((node) => node.id === clonedPassage.id)
+
+          foundNode &&
+            (await api().passages.savePassage(studioId, {
+              ...clonedPassage,
+              editor: {
+                componentEditorPosX: foundNode.position.x,
+                componentEditorPosY: foundNode.position.y
+              }
+            }))
+        })
+      ])
+    }
+  }
+
   function onSelectionChange(selectedElements: Elements<any> | null) {
     logger.info('SceneView->onSelectionChange')
 
@@ -488,6 +489,7 @@ const SceneView: React.FC<{
     ) {
       setSelectedJump(null)
       setSelectedPassage(null)
+      setSelectedRoute(null)
       setSelectedChoice(null)
     }
 
@@ -497,6 +499,9 @@ const SceneView: React.FC<{
 
       selectedElements[0].data.type === COMPONENT_TYPE.PASSAGE &&
         setSelectedPassage(selectedElements[0].id)
+
+      selectedElements[0].data.type === COMPONENT_TYPE.ROUTE &&
+        setSelectedRoute(selectedElements[0].id)
 
       setSelectedChoice(null)
     }
@@ -658,6 +663,12 @@ const SceneView: React.FC<{
           selectedComponentEditorSceneViewPassage: selectedPassage
         })
 
+      selectedRoute !== editor.selectedComponentEditorSceneViewRoute &&
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE,
+          selectedComponentEditorSceneViewRoute: selectedRoute
+        })
+
       editorDispatch({
         type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
         selectedComponentEditorSceneViewChoice: selectedChoice
@@ -671,6 +682,7 @@ const SceneView: React.FC<{
     totalSelectedPassages,
     selectedJump,
     selectedPassage,
+    selectedRoute,
     selectedChoice
   ])
 

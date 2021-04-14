@@ -59,6 +59,11 @@ const useRoute = (
     undefined
   )
 
-export { useRoutesBySceneRef, useRoutesByPassageRef, useRoutesByChoiceRef }
+export {
+  useRoute,
+  useRoutesBySceneRef,
+  useRoutesByPassageRef,
+  useRoutesByChoiceRef
+}
 
 export default useRoute

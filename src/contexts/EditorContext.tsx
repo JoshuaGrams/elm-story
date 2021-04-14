@@ -32,6 +32,7 @@ interface EditorState {
   totalComponentEditorSceneViewSelectedRoutes: number
   selectedComponentEditorSceneViewJump: ComponentId | null
   selectedComponentEditorSceneViewPassage: ComponentId | null
+  selectedComponentEditorSceneViewRoute: ComponentId | null
   selectedComponentEditorSceneViewChoice: ComponentId | null
   selectedComponentEditorComponents: {
     id?: ComponentId
@@ -51,6 +52,7 @@ export enum EDITOR_ACTION_TYPE {
   COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE',
+  COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE',
   COMPONENT_EDITOR_SELECT = 'COMPONENT_EDITOR_SELECT'
 }
@@ -117,6 +119,10 @@ type EditorActionType =
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE
       selectedComponentEditorSceneViewPassage: ComponentId | null
+    }
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE
+      selectedComponentEditorSceneViewRoute: ComponentId | null
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE
@@ -195,6 +201,12 @@ const editorReducer = (
         selectedComponentEditorSceneViewPassage:
           action.selectedComponentEditorSceneViewPassage
       }
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE:
+      return {
+        ...state,
+        selectedComponentEditorSceneViewRoute:
+          action.selectedComponentEditorSceneViewRoute
+      }
     case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE:
       return {
         ...state,
@@ -247,6 +259,7 @@ const defaultEditorState: EditorState = {
   totalComponentEditorSceneViewSelectedRoutes: 0,
   selectedComponentEditorSceneViewJump: null,
   selectedComponentEditorSceneViewPassage: null,
+  selectedComponentEditorSceneViewRoute: null,
   selectedComponentEditorSceneViewChoice: null,
   selectedComponentEditorComponents: []
 }

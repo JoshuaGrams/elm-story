@@ -6,6 +6,7 @@ import useJumps, { useJump, useJumpsBySceneRef } from './useJumps'
 import useChapters, { useChapter } from './useChapters'
 import useScenes, { useScenesByChapterRef, useScene } from './useScenes'
 import useRoutes, {
+  useRoute,
   useRoutesBySceneRef,
   useRoutesByPassageRef,
   useRoutesByChoiceRef
@@ -26,15 +27,16 @@ export {
   useChapters,
   useChapter,
   useScenes,
-  useScenesByChapterRef,
   useScene,
+  useScenesByChapterRef,
   useRoutes,
+  useRoute,
   useRoutesBySceneRef,
   useRoutesByPassageRef,
   useRoutesByChoiceRef,
   usePassages,
-  usePassagesBySceneRef,
   usePassage,
+  usePassagesBySceneRef,
   useChoices,
   useChoice,
   useChoicesByPassageRef,

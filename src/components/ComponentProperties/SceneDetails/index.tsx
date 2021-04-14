@@ -13,12 +13,14 @@ import { Collapse } from 'antd'
 import {
   AlignLeftOutlined,
   BranchesOutlined,
-  ForwardOutlined
+  ForwardOutlined,
+  NodeIndexOutlined
 } from '@ant-design/icons'
 
 import ComponentTitle from '../ComponentTitle'
 import JumpDetails from '../JumpDetails'
 import PassageDetails from '../PassageDetails'
+import RouteDetails from '../RouteDetails'
 import ChoiceDetails from '../ChoiceDetails'
 
 import styles from '../styles.module.less'
@@ -84,12 +86,13 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
                   {editor.totalComponentEditorSceneViewSelectedPassages}
                 </div>
               )}
-            {editor.totalComponentEditorSceneViewSelectedRoutes > 0 && (
-              <div>
-                Selected Routes:{' '}
-                {editor.totalComponentEditorSceneViewSelectedRoutes}
-              </div>
-            )}
+            {!editor.selectedComponentEditorSceneViewRoute &&
+              editor.totalComponentEditorSceneViewSelectedRoutes > 0 && (
+                <div>
+                  Selected Routes:{' '}
+                  {editor.totalComponentEditorSceneViewSelectedRoutes}
+                </div>
+              )}
 
             {/* Jump Panel */}
             {editor.selectedComponentEditorSceneViewJump && (
@@ -106,6 +109,26 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
                   <JumpDetails
                     studioId={studioId}
                     jumpId={editor.selectedComponentEditorSceneViewJump}
+                  />
+                </Collapse.Panel>
+              </Collapse>
+            )}
+
+            {/* Route Panel */}
+            {editor.selectedComponentEditorSceneViewRoute && (
+              <Collapse defaultActiveKey={['route-details-panel']}>
+                <Collapse.Panel
+                  header={
+                    <>
+                      <NodeIndexOutlined className={styles.headerIcon} />{' '}
+                      Selected Route
+                    </>
+                  }
+                  key="route-details-panel"
+                >
+                  <RouteDetails
+                    studioId={studioId}
+                    routeId={editor.selectedComponentEditorSceneViewRoute}
                   />
                 </Collapse.Panel>
               </Collapse>

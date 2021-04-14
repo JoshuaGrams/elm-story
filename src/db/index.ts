@@ -832,6 +832,22 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async getRoute(routeId: ComponentId): Promise<Route> {
+    try {
+      const route = await this.routes.get(routeId)
+
+      if (route) {
+        return route
+      } else {
+        throw new Error(
+          `Unable to get route with ID: ${routeId}. Does not exist.`
+        )
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async saveRoute(route: Route): Promise<ComponentId> {
     if (!route.sceneId)
       throw new Error('Unable to save route to databse. Missing scene ID.')

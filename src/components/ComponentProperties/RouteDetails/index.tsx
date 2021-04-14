@@ -2,7 +2,7 @@ import React from 'react'
 
 import { ComponentId, StudioId } from '../../../data/types'
 
-import { useChoice } from '../../../hooks'
+import { useRoute } from '../../../hooks'
 
 import ComponentTitle from '../ComponentTitle'
 
@@ -10,28 +10,28 @@ import styles from '../styles.module.less'
 
 import api from '../../../api'
 
-const ChoiceDetails: React.FC<{
+const RouteDetails: React.FC<{
   studioId: StudioId
-  choiceId: ComponentId
-}> = ({ studioId, choiceId }) => {
-  const choice = useChoice(studioId, choiceId, [choiceId])
+  routeId: ComponentId
+}> = ({ studioId, routeId }) => {
+  const route = useRoute(studioId, routeId, [routeId])
 
   return (
     <>
-      {choice && (
+      {route && (
         <div className={styles.componentDetailViewWrapper}>
           <div className={styles.content}>
             <ComponentTitle
-              title={choice.title}
+              title={route.title}
               onUpdate={async (title) =>
-                choice.id &&
-                (await api().choices.saveChoice(studioId, {
-                  ...(await api().choices.getChoice(studioId, choice.id)),
+                route.id &&
+                (await api().routes.saveRoute(studioId, {
+                  ...(await api().routes.getRoute(studioId, route.id)),
                   title
                 }))
               }
             />
-            <div className={styles.componentId}>{choice.id}</div>
+            <div className={styles.componentId}>{route.id}</div>
           </div>
         </div>
       )}
@@ -39,4 +39,4 @@ const ChoiceDetails: React.FC<{
   )
 }
 
-export default ChoiceDetails
+export default RouteDetails
