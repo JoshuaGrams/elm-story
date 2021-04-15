@@ -7,7 +7,7 @@ import { ComponentId, GameId, StudioId, VARIABLE_TYPE } from '../../data/types'
 
 import { useVariable, useVariables } from '../../hooks'
 
-import { Col, Form, Input, InputNumber, Row, Select } from 'antd'
+import { Col, Form, Input, InputNumber, Row, Select, Typography } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
@@ -178,7 +178,10 @@ export const VariableRow: React.FC<{
       {variable && (
         <>
           <Row className={styles.variableRow}>
-            <Col className={styles.titleCol}>
+            <Col
+              className={styles.titleCol}
+              style={{ width: !allowTypeChange ? '65%' : '' }}
+            >
               {allowRename && (
                 <Form
                   form={editVariableTitleForm}
@@ -210,10 +213,7 @@ export const VariableRow: React.FC<{
               </Col>
             )}
 
-            <Col
-              className={styles.defaultValueCol}
-              style={{ width: !allowTypeChange ? '60%' : '' }}
-            >
+            <Col className={styles.defaultValueCol}>
               {variable.type === VARIABLE_TYPE.BOOLEAN && (
                 <Select
                   value={value || variableDefaultValue}
