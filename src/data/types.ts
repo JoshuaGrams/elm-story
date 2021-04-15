@@ -47,6 +47,15 @@ export type StudioId = string
 export type GameId = string
 export type ComponentId = string
 
+export interface GameState {
+  [variableId: string]: {
+    title: string
+    type: VARIABLE_TYPE
+    defaultValue: string
+    currentValue: string
+  }
+}
+
 export interface Component {
   id?: ComponentId
   title: string

@@ -11,12 +11,25 @@ export async function getEffect(studioId: StudioId, effectId: ComponentId) {
   }
 }
 
+export async function getEffectsByRouteRef(
+  studioId: StudioId,
+  routeId: ComponentId
+): Promise<Effect[]> {
+  try {
+    return await new LibraryDatabase(studioId).getEffectsByRouteRef(routeId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function getEffectsByVariableRef(
   studioId: StudioId,
   variableId: ComponentId
 ): Promise<Effect[]> {
   try {
-    return await new LibraryDatabase(studioId).getEffectsByVariableRef(variableId)
+    return await new LibraryDatabase(studioId).getEffectsByVariableRef(
+      variableId
+    )
   } catch (error) {
     throw new Error(error)
   }

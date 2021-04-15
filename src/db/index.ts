@@ -154,7 +154,7 @@ export class LibraryDatabase extends Dexie {
       scenes: '&id,gameId,chapterId,title,*tags,updated',
       routes:
         '&id,gameId,sceneId,title,originId,choiceId,originType,destinationId,destinationType,*tags,updated',
-      effects: '&id,routeId,variableId,title,*tags,updated',
+      effects: '&id,gameId,routeId,variableId,title,*tags,updated',
       passages: '&id,gameId,sceneId,title,*tags,updated',
       choices: '&id,gameId,passageId,title,*tags,updated',
       conditions: '&id,choiceId,title,*tags,updated',
@@ -953,6 +953,14 @@ export class LibraryDatabase extends Dexie {
           `Unable to get effect with ID: ${effectId}. Does not exist.`
         )
       }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getEffectsByRouteRef(routeId: ComponentId): Promise<Effect[]> {
+    try {
+      return await this.effects.where({ routeId }).toArray()
     } catch (error) {
       throw new Error(error)
     }
