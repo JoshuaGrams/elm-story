@@ -877,6 +877,12 @@ export class LibraryDatabase extends Dexie {
     logger.info(`LibraryDatabase->removeRoute`)
 
     try {
+      const effects = await this.effects.where({ routeId }).toArray()
+
+      await Promise.all(
+        effects.map(async (effect) => effect.id && this.removeEffect(effect.id))
+      )
+
       await this.transaction('rw', this.routes, async () => {
         if (await this.getComponent(LIBRARY_TABLE.ROUTES, routeId)) {
           logger.info(
