@@ -16,10 +16,23 @@ import api from '../../api'
 
 const { Option } = Select
 
-const VariableRow: React.FC<{
+export const VariableRow: React.FC<{
   studioId: StudioId
   variableId: ComponentId
-}> = ({ studioId, variableId }) => {
+  allowRename?: boolean
+  allowTypeChange?: boolean
+  allowDelete?: boolean
+  value?: string
+  onChangeValue?: (newValue: string) => void
+}> = ({
+  studioId,
+  variableId,
+  allowRename = true,
+  allowTypeChange = true,
+  allowDelete = true,
+  value,
+  onChangeValue
+}) => {
   const variable = useVariable(studioId, variableId, [studioId, variableId]),
     [editVariableTitleForm] = Form.useForm(),
     [editVariableDefaultValueForm] = Form.useForm()
@@ -148,32 +161,40 @@ const VariableRow: React.FC<{
         <>
           <Row className={styles.variableRow}>
             <Col className={styles.titleCol}>
-              <Form
-                form={editVariableTitleForm}
-                initialValues={{ title: variable.title }}
-                onFinish={onVariableTitleChange}
-                onBlur={() => {
-                  variableTitleInputRef.current?.blur()
-                  editVariableTitleForm.resetFields()
-                }}
-              >
-                <Form.Item name="title">
-                  <Input ref={variableTitleInputRef} spellCheck={false} />
-                </Form.Item>
-              </Form>
+              {allowRename && (
+                <Form
+                  form={editVariableTitleForm}
+                  initialValues={{ title: variable.title }}
+                  onFinish={onVariableTitleChange}
+                  onBlur={() => {
+                    variableTitleInputRef.current?.blur()
+                    editVariableTitleForm.resetFields()
+                  }}
+                >
+                  <Form.Item name="title">
+                    <Input ref={variableTitleInputRef} spellCheck={false} />
+                  </Form.Item>
+                </Form>
+              )}
+
+              {!allowRename && <span>{variableTitle}</span>}
             </Col>
-            <Col className={styles.typeCol}>
-              <Select value={variableType} onChange={onVariableTypeChange}>
-                <Option value={VARIABLE_TYPE.BOOLEAN}>Boolean</Option>
-                <Option value={VARIABLE_TYPE.STRING}>String</Option>
-                <Option value={VARIABLE_TYPE.NUMBER}>Number</Option>
-              </Select>
-            </Col>
+
+            {allowTypeChange && (
+              <Col className={styles.typeCol}>
+                <Select value={variableType} onChange={onVariableTypeChange}>
+                  <Option value={VARIABLE_TYPE.BOOLEAN}>Boolean</Option>
+                  <Option value={VARIABLE_TYPE.STRING}>String</Option>
+                  <Option value={VARIABLE_TYPE.NUMBER}>Number</Option>
+                </Select>
+              </Col>
+            )}
+
             <Col className={styles.defaultValueCol}>
               {variable.type === VARIABLE_TYPE.BOOLEAN && (
                 <Select
-                  value={variableDefaultValue}
-                  onChange={onDefaultValueChangeFromSelect}
+                  value={value || variableDefaultValue}
+                  onChange={onChangeValue || onDefaultValueChangeFromSelect}
                 >
                   <Option value={'true'}>True</Option>
                   <Option value={'false'}>False</Option>
@@ -211,12 +232,15 @@ const VariableRow: React.FC<{
                 </Form>
               )}
             </Col>
-            <Col
-              className={`${styles.deleteVariableCol} ${styles.deleteCell}`}
-              onClick={onRemoveVariable}
-            >
-              <DeleteOutlined style={{ fontSize: 12 }} />
-            </Col>
+
+            {allowDelete && (
+              <Col
+                className={`${styles.deleteVariableCol} ${styles.deleteCell}`}
+                onClick={onRemoveVariable}
+              >
+                <DeleteOutlined style={{ fontSize: 12 }} />
+              </Col>
+            )}
           </Row>
         </>
       )}

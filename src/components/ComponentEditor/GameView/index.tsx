@@ -26,10 +26,9 @@ export const GameViewTools: React.FC<{
 
   return (
     <div>
-      <Button>Edit Styles</Button>
-      <Button>Edit State</Button>
+      <Button>Styles...</Button>
+      <Button>State...</Button>
       <Button onClick={onRestartGame}>Restart Game</Button>
-      <Button>Export</Button>
     </div>
   )
 }

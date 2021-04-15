@@ -7,10 +7,10 @@ import * as jumps from './jumps'
 import * as chapters from './chapters'
 import * as scenes from './scenes'
 import * as routes from './routes'
+import * as effects from './effects'
 import * as passages from './passages'
 import * as choices from './choices'
 // import * as conditions from './conditions'
-// import * as effects from './effects'
 import * as variables from './variables'
 
 export default () => ({
@@ -20,9 +20,9 @@ export default () => ({
   chapters,
   scenes,
   routes,
+  effects,
   passages,
   choices,
   // conditions,
-  // effects,
   variables
 })

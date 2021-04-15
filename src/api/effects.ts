@@ -26,6 +26,14 @@ export async function saveEffect(
   }
 }
 
+export async function saveEffectValue(studioId: StudioId, effectId: ComponentId, newValue: string) {
+  try {
+    await new LibraryDatabase(studioId).saveEffectValue(effectId, newValue)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function removeEffect(studioId: StudioId, effectId: ComponentId) {
   try {
     await new LibraryDatabase(studioId).removeEffect(effectId)

@@ -37,10 +37,10 @@ export enum LIBRARY_TABLE {
   CHAPTERS = 'chapters',
   SCENES = 'scenes',
   ROUTES = 'routes',
+  EFFECTS = 'effects',
   PASSAGES = 'passages',
   CHOICES = 'choices',
   CONDITIONS = 'conditions',
-  EFFECTS = 'effects',
   VARIABLES = 'variables'
 }
 
@@ -975,6 +975,29 @@ export class LibraryDatabase extends Dexie {
     }
 
     return effect.id
+  }
+
+  public async saveEffectValue(effectId: ComponentId, newValue: string) {
+    try {
+      await this.transaction('rw', this.effects, async () => {
+        if (effectId) {
+          const effect = await this.effects.where({ id: effectId }).first()
+
+          if (effect) {
+            await this.effects.update(effectId, {
+              ...effect,
+              set: [effect.set[0], effect.set[1], newValue]
+            })
+          } else {
+            throw new Error('Unable to set effect value. Component missing.')
+          }
+        } else {
+          throw new Error('Unable to set effect value. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 
   public async removeEffect(effectId: ComponentId) {

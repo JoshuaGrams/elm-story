@@ -32,9 +32,9 @@ const useRouteEffectsByRouteRef = (
   studioId: StudioId,
   routeId: ComponentId,
   deps?: any[]
-): Effect | undefined =>
+): Effect[] | undefined =>
   useLiveQuery(
-    () => new LibraryDatabase(studioId).effects.where({ id: routeId }).first(),
+    () => new LibraryDatabase(studioId).effects.where({ routeId }).toArray(),
     deps || [],
     undefined
   )

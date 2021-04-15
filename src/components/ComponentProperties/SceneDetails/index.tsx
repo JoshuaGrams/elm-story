@@ -128,6 +128,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
                 >
                   <RouteDetails
                     studioId={studioId}
+                    gameId={scene.gameId}
                     routeId={editor.selectedComponentEditorSceneViewRoute}
                   />
                 </Collapse.Panel>
