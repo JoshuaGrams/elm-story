@@ -82,11 +82,13 @@ const PassageRenderer: React.FC<{
         <>
           <div>
             {passage.content &&
-              JSON.parse(passage.content).map((descendant: CustomElement) => (
-                <p className="passage-paragraph">
-                  {descendant.children[0].text || <>&#65279;</>}
-                </p>
-              ))}
+              JSON.parse(passage.content).map(
+                (descendant: CustomElement, index: number) => (
+                  <p className="passage-paragraph" key={`p-${index}`}>
+                    {descendant.children[0].text || <>&#65279;</>}
+                  </p>
+                )
+              )}
           </div>
 
           {passage.choices.length === 0 && <div>Game Over</div>}
