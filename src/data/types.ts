@@ -114,6 +114,7 @@ export interface Route extends Component {
 export interface Effect extends Component {
   gameId: GameId
   routeId: ComponentId
+  variableId: ComponentId
   set: [ComponentId, SET_OPERATOR, string] // variable ref
 }
 

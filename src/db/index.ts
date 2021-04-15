@@ -154,7 +154,7 @@ export class LibraryDatabase extends Dexie {
       scenes: '&id,gameId,chapterId,title,*tags,updated',
       routes:
         '&id,gameId,sceneId,title,originId,choiceId,originType,destinationId,destinationType,*tags,updated',
-      effects: '&id,routeId,title,*tags,updated',
+      effects: '&id,routeId,variableId,title,*tags,updated',
       passages: '&id,gameId,sceneId,title,*tags,updated',
       choices: '&id,gameId,passageId,title,*tags,updated',
       conditions: '&id,choiceId,title,*tags,updated',

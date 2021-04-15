@@ -101,6 +101,7 @@ const RouteDetails: React.FC<{
       (await api().effects.saveEffect(studioId, {
         gameId: route.gameId,
         routeId,
+        variableId: foundVariable.id,
         title: 'Untitled Effect',
         set: [
           foundVariable.id,
