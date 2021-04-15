@@ -286,99 +286,91 @@ const PassageNode: React.FC<NodeProps<{
                   passage.choices.findIndex((choiceId) => b.id === choiceId)
               )
               .map((choice, index) => {
-                return (
-                  <>
-                    {choice.id && (
-                      <ChoiceRow
-                        key={choice.id}
-                        studioId={data.studioId}
-                        choiceId={choice.id}
-                        title={choice.title}
-                        showDivider={choices.length - 1 !== index}
-                        handle={choice.handle}
-                        selected={data.selectedChoice === choice.id}
-                        onSelect={(passageId, choiceId) => {
-                          logger.info(
-                            `PassageNode->onClick: choice: ${choiceId}`
+                choice.id && (
+                  <ChoiceRow
+                    key={choice.id}
+                    studioId={data.studioId}
+                    choiceId={choice.id}
+                    title={choice.title}
+                    showDivider={choices.length - 1 !== index}
+                    handle={choice.handle}
+                    selected={data.selectedChoice === choice.id}
+                    onSelect={(passageId, choiceId) => {
+                      logger.info(`PassageNode->onClick: choice: ${choiceId}`)
+
+                      editor.selectedComponentEditorSceneViewPassage !==
+                        passageId &&
+                        setSelectedElement([
+                          cloneDeep(
+                            passages.find(
+                              (passageNode) => passageNode.id === passageId
+                            )
+                          )
+                        ]) &&
+                        editorDispatch({
+                          type:
+                            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                          selectedComponentEditorSceneViewPassage: passageId
+                        })
+
+                      editor.selectedComponentEditorSceneViewPassage ===
+                        passageId &&
+                        data.onChoiceSelect(
+                          passageId,
+                          editor.selectedComponentEditorSceneViewChoice !==
+                            choice.id
+                            ? choiceId
+                            : null
+                        )
+                    }}
+                    onDelete={async (choiceId, outgoingRoutes) => {
+                      try {
+                        editor.selectedComponentEditorSceneViewChoice ===
+                          choice.id &&
+                          editorDispatch({
+                            type:
+                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                            selectedComponentEditorSceneViewChoice: null
+                          })
+
+                        const clonedChoices = cloneDeep(choices),
+                          foundChoiceIndex = clonedChoices.findIndex(
+                            (clonedChoice) => clonedChoice.id === choiceId
                           )
 
-                          editor.selectedComponentEditorSceneViewPassage !==
-                            passageId &&
-                            setSelectedElement([
-                              cloneDeep(
-                                passages.find(
-                                  (passageNode) => passageNode.id === passageId
+                        if (foundChoiceIndex !== -1) {
+                          await Promise.all(
+                            outgoingRoutes.map(async (outgoingRoute) => {
+                              if (!outgoingRoute.id)
+                                throw new Error(
+                                  'Unable to remove route. Missing ID'
                                 )
+
+                              await api().routes.removeRoute(
+                                data.studioId,
+                                outgoingRoute.id
                               )
-                            ]) &&
-                            editorDispatch({
-                              type:
-                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                              selectedComponentEditorSceneViewPassage: passageId
                             })
+                          )
 
-                          editor.selectedComponentEditorSceneViewPassage ===
-                            passageId &&
-                            data.onChoiceSelect(
-                              passageId,
-                              editor.selectedComponentEditorSceneViewChoice !==
-                                choice.id
-                                ? choiceId
-                                : null
-                            )
-                        }}
-                        onDelete={async (choiceId, outgoingRoutes) => {
-                          try {
-                            editor.selectedComponentEditorSceneViewChoice ===
-                              choice.id &&
-                              editorDispatch({
-                                type:
-                                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                                selectedComponentEditorSceneViewChoice: null
-                              })
+                          await api().choices.removeChoice(
+                            data.studioId,
+                            clonedChoices[foundChoiceIndex].id
+                          )
 
-                            const clonedChoices = cloneDeep(choices),
-                              foundChoiceIndex = clonedChoices.findIndex(
-                                (clonedChoice) => clonedChoice.id === choiceId
-                              )
+                          clonedChoices.splice(foundChoiceIndex, 1)
 
-                            if (foundChoiceIndex !== -1) {
-                              await Promise.all(
-                                outgoingRoutes.map(async (outgoingRoute) => {
-                                  if (!outgoingRoute.id)
-                                    throw new Error(
-                                      'Unable to remove route. Missing ID'
-                                    )
-
-                                  await api().routes.removeRoute(
-                                    data.studioId,
-                                    outgoingRoute.id
-                                  )
-                                })
-                              )
-
-                              await api().choices.removeChoice(
-                                data.studioId,
-                                clonedChoices[foundChoiceIndex].id
-                              )
-
-                              clonedChoices.splice(foundChoiceIndex, 1)
-
-                              await api().passages.saveChoiceRefsToPassage(
-                                data.studioId,
-                                data.passageId,
-                                clonedChoices.map(
-                                  (clonedChoice) => clonedChoice.id
-                                )
-                              )
-                            }
-                          } catch (error) {
-                            throw new Error(error)
-                          }
-                        }}
-                      />
-                    )}
-                  </>
+                          await api().passages.saveChoiceRefsToPassage(
+                            data.studioId,
+                            data.passageId,
+                            clonedChoices.map((clonedChoice) => clonedChoice.id)
+                          )
+                        }
+                      } catch (error) {
+                        throw new Error(error)
+                      }
+                    }}
+                  />
                 )
               })}
           </div>
