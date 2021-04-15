@@ -15,10 +15,38 @@
     }
 
     .effectsList {
-      padding: 6px;
+      .noVariables {
+        padding: 4px 11px;
+        font-size: 12px;
+      }
 
       .newEffectSelect {
         width: 100%;
+        font-size: 12px;
+
+        :global .ant-select-selector {
+          border: none;
+          border-bottom: 3px solid hsl(0, 0%, 15%);
+        }
+
+        &.noEffects :global .ant-select-selector {
+          border-bottom: none;
+        }
+      }
+
+      .titleCol {
+        padding: 10px;
+      }
+
+      .effectDefaultValueMsg {
+        color: hsl(50, 100%, 50%);
+        border-bottom: 3px solid hsl(0, 0%, 15%);
+        font-size: 12px;
+        padding: 4px 10px;
+
+        &:last-of-type {
+          border: none;
+        }
       }
     }
   }

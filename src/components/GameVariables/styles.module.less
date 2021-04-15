@@ -3,25 +3,6 @@
   height: 100%;
 
   .variableTable {
-    .titleCol {
-      width: 35%;
-      border-right: 1px solid hsl(0, 0%, 15%);
-    }
-
-    .typeCol {
-      width: 30%;
-      border-right: 1px solid hsl(0, 0%, 15%);
-    }
-
-    .defaultValueCol {
-      width: 30%;
-      border-right: 1px solid hsl(0, 0%, 15%);
-    }
-
-    .deleteVariableCol {
-      width: 5%;
-    }
-
     .headerRow {
       font-size: 12px;
       text-transform: uppercase;
@@ -46,53 +27,79 @@
         padding-left: 10px;
       }
     }
+  }
+}
 
-    .variableRows {
-      .variableRow {
-        border-bottom: 1px solid hsl(0, 0%, 15%);
+// Access from other components
+.titleCol {
+  width: 35%;
+  border-right: 1px solid hsl(0, 0%, 15%);
+}
 
-        :global .ant-form-item {
-          margin: 0px;
+.typeCol {
+  width: 30%;
+  border-right: 1px solid hsl(0, 0%, 15%);
+}
 
-          .ant-form-item-control-input {
-            min-height: 25px;
-          }
-        }
+.defaultValueCol {
+  width: 30%;
+  border-right: 1px solid hsl(0, 0%, 15%);
+}
 
-        :global .ant-input,
-        :global .ant-input-number {
-          font-size: 10px;
-          height: 25px;
-          border-radius: 0px;
-          border: none;
+.deleteVariableCol {
+  width: 5%;
+}
 
-          .ant-input-number-input {
-            height: 25px;
-          }
-        }
+.variableRows {
+  .variableRow {
+    border-bottom: 1px solid hsl(0, 0%, 15%);
 
-        :global .ant-select {
-          font-size: 10px;
-          width: 100%;
+    .variableTitle {
+      font-size: 10px;
+      padding: 4px 11px;
+    }
 
-          .ant-select-selector {
-            height: 25px;
-            border-radius: 0px !important;
-            border: none;
+    :global .ant-form-item {
+      margin: 0px;
 
-            .ant-select-selection-item {
-              line-height: 25px !important;
-            }
-          }
-        }
+      .ant-form-item-control-input {
+        min-height: 25px;
+      }
+    }
 
-        .deleteCell {
-          display: grid;
-          place-items: center;
-          text-align: center;
-          cursor: pointer;
+    :global .ant-input,
+    :global .ant-input-number {
+      font-size: 10px;
+      height: 25px;
+      border-radius: 0px;
+      border: none;
+      width: 100%;
+
+      .ant-input-number-input {
+        height: 25px;
+      }
+    }
+
+    :global .ant-select {
+      font-size: 10px;
+      width: 100%;
+
+      .ant-select-selector {
+        height: 25px;
+        border-radius: 0px !important;
+        border: none;
+
+        .ant-select-selection-item {
+          line-height: 25px !important;
         }
       }
+    }
+
+    .deleteCell {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      cursor: pointer;
     }
   }
 }

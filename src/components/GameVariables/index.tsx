@@ -21,17 +21,17 @@ export const VariableRow: React.FC<{
   variableId: ComponentId
   allowRename?: boolean
   allowTypeChange?: boolean
-  allowDelete?: boolean
   value?: string
   onChangeValue?: (newValue: string) => void
+  onDelete?: (variableId: ComponentId) => void
 }> = ({
   studioId,
   variableId,
   allowRename = true,
   allowTypeChange = true,
-  allowDelete = true,
   value,
-  onChangeValue
+  onChangeValue,
+  onDelete
 }) => {
   const variable = useVariable(studioId, variableId, [studioId, variableId]),
     [editVariableTitleForm] = Form.useForm(),
@@ -195,7 +195,9 @@ export const VariableRow: React.FC<{
                 </Form>
               )}
 
-              {!allowRename && <span>{variableTitle}</span>}
+              {!allowRename && (
+                <span className={styles.variableTitle}>{variableTitle}</span>
+              )}
             </Col>
 
             {allowTypeChange && (
@@ -208,7 +210,10 @@ export const VariableRow: React.FC<{
               </Col>
             )}
 
-            <Col className={styles.defaultValueCol}>
+            <Col
+              className={styles.defaultValueCol}
+              style={{ width: !allowTypeChange ? '60%' : '' }}
+            >
               {variable.type === VARIABLE_TYPE.BOOLEAN && (
                 <Select
                   value={value || variableDefaultValue}
@@ -255,14 +260,16 @@ export const VariableRow: React.FC<{
               )}
             </Col>
 
-            {allowDelete && (
-              <Col
-                className={`${styles.deleteVariableCol} ${styles.deleteCell}`}
-                onClick={onRemoveVariable}
-              >
-                <DeleteOutlined style={{ fontSize: 12 }} />
-              </Col>
-            )}
+            <Col
+              className={`${styles.deleteVariableCol} ${styles.deleteCell}`}
+              onClick={
+                onDelete
+                  ? () => variable.id && onDelete(variable.id)
+                  : onRemoveVariable
+              }
+            >
+              <DeleteOutlined style={{ fontSize: 12 }} />
+            </Col>
           </Row>
         </>
       )}

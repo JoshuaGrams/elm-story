@@ -18,12 +18,12 @@ import {
 } from '../../../hooks'
 
 import { Select } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
 
 import ComponentTitle from '../ComponentTitle'
 import { VariableRow } from '../../GameVariables'
 
 import parentStyles from '../styles.module.less'
+import gameVariablesStyles from '../../GameVariables/styles.module.less'
 import styles from './styles.module.less'
 
 import api from '../../../api'
@@ -58,7 +58,6 @@ const RouteEffectRow: React.FC<{
             variableId={variable.id}
             allowRename={false}
             allowTypeChange={false}
-            allowDelete={false}
             value={effectValue}
             onChangeValue={async (newValue: string) => {
               effect.id &&
@@ -70,11 +69,13 @@ const RouteEffectRow: React.FC<{
 
               setEffectValue(newValue)
             }}
+            onDelete={onRemoveEffect}
           />
-          <DeleteOutlined onClick={onRemoveEffect} />
 
           {effectValue === variable.defaultValue && (
-            <div>Effect set to default value.</div>
+            <div className={styles.effectDefaultValueMsg}>
+              Effect set to default value.
+            </div>
           )}
         </>
       )}
@@ -147,7 +148,9 @@ const RouteDetails: React.FC<{
                   {effects && variables && variables.length > 0 && (
                     <Select
                       value="Select New Effect..."
-                      className={styles.newEffectSelect}
+                      className={`${styles.newEffectSelect} ${
+                        effects.length === 0 ? styles.noEffects : ''
+                      }`}
                       onChange={onNewEffect}
                     >
                       {variables
@@ -173,25 +176,28 @@ const RouteDetails: React.FC<{
                   )}
 
                   {variables && variables.length === 0 && (
-                    <div>
+                    <div className={styles.noVariables}>
                       At least 1 game variable is required to create a route
                       effect.
                     </div>
                   )}
                 </>
 
-                {effects &&
-                  effects.map(
-                    (effect) =>
-                      effect.id && (
-                        <RouteEffectRow
-                          studioId={studioId}
-                          effectId={effect.id}
-                          variableId={effect.set[0]}
-                          key={effect.id}
-                        />
-                      )
-                  )}
+                {effects && (
+                  <div className={gameVariablesStyles.variableRows}>
+                    {effects.map(
+                      (effect) =>
+                        effect.id && (
+                          <RouteEffectRow
+                            studioId={studioId}
+                            effectId={effect.id}
+                            variableId={effect.set[0]}
+                            key={effect.id}
+                          />
+                        )
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
