@@ -1,26 +1,65 @@
 import logger from '../../lib/logger'
 
 import React, { useContext, useEffect } from 'react'
+import { cloneDeep } from 'lodash'
 
 import { ComponentId, COMPONENT_TYPE, GameId, StudioId } from '../../data/types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
-import { usePassage } from '../../hooks'
+import {
+  usePassage,
+  useRouteEffectsByRouteRef,
+  useRoutesByPassageRef
+} from '../../hooks'
 
 import ChoicesRenderer from './ChoicesRenderer'
 
 import api from '../../api'
-import { Descendant } from 'slate'
 import { CustomElement } from '../ComponentEditor/PassageView'
+
+const EffectHandler: React.FC<{
+  studioId: StudioId
+  routeId: ComponentId
+}> = ({ studioId, routeId }) => {
+  const effects = useRouteEffectsByRouteRef(studioId, routeId, [
+    studioId,
+    routeId
+  ])
+
+  const { engine, engineDispatch } = useContext(EngineContext)
+
+  useEffect(() => {
+    async function executeEffect() {
+      if (effects) {
+        const newGameState = cloneDeep(engine.gameState)
+
+        effects.map((effect) => {
+          if (effect.id && newGameState[effect.variableId]) {
+            newGameState[effect.variableId].currentValue = effect.set[2]
+          }
+        })
+
+        engineDispatch({
+          type: ENGINE_ACTION_TYPE.GAME_STATE,
+          gameState: newGameState
+        })
+      }
+    }
+
+    effects && executeEffect()
+  }, [effects])
+
+  return null
+}
 
 const PassageRenderer: React.FC<{
   studioId: StudioId
   gameId: GameId
   passageId: ComponentId
 }> = ({ studioId, gameId, passageId }) => {
-  console.log(passageId)
-  const passage = usePassage(studioId, passageId, [studioId, passageId])
+  const passage = usePassage(studioId, passageId, [studioId, passageId]),
+    routes = useRoutesByPassageRef(studioId, passageId, [studioId, passageId])
 
   const { engine, engineDispatch } = useContext(EngineContext)
 
@@ -44,7 +83,6 @@ const PassageRenderer: React.FC<{
 
     if (destinationType === COMPONENT_TYPE.JUMP) {
       const jump = await api().jumps.getJump(studioId, destinationId)
-      console.log(jump)
 
       engineDispatch({
         type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
@@ -78,8 +116,19 @@ const PassageRenderer: React.FC<{
 
   return (
     <>
-      {passage && (
+      {passage && routes && (
         <>
+          {routes.map(
+            (route) =>
+              route.id && (
+                <EffectHandler
+                  studioId={studioId}
+                  routeId={route.id}
+                  key={route.id}
+                />
+              )
+          )}
+
           <div>
             {passage.content &&
               JSON.parse(passage.content).map(

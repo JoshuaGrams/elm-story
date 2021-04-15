@@ -7,7 +7,7 @@ import { ComponentId, GameId, StudioId, VARIABLE_TYPE } from '../../data/types'
 
 import { useVariable, useVariables } from '../../hooks'
 
-import { Col, Form, Input, InputNumber, Row, Select, Typography } from 'antd'
+import { Col, Form, Input, InputNumber, Row, Select } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'

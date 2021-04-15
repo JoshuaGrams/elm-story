@@ -1,8 +1,9 @@
 import React, { useMemo, createContext, useReducer } from 'react'
-import { start } from 'repl'
-import { ComponentId } from '../data/types'
+
+import { ComponentId, GameState } from '../data/types'
 
 interface EngineState {
+  gameState: GameState
   startingChapter: ComponentId | null
   currentChapter: ComponentId | null
   startingScene: ComponentId | null
@@ -12,6 +13,7 @@ interface EngineState {
 }
 
 export enum ENGINE_ACTION_TYPE {
+  GAME_STATE = 'GAME_STATE',
   GAME_RESTART = 'GAME_RESTART',
   CHAPTER_START = 'CHAPTER_START',
   CHAPTER_CURRENT = 'CHAPTER_CURRENT',
@@ -22,6 +24,7 @@ export enum ENGINE_ACTION_TYPE {
 }
 
 type EngineActionType =
+  | { type: ENGINE_ACTION_TYPE.GAME_STATE; gameState: GameState }
   | { type: ENGINE_ACTION_TYPE.GAME_RESTART }
   | {
       type: ENGINE_ACTION_TYPE.CHAPTER_START
@@ -53,9 +56,24 @@ const engineReducer = (
   action: EngineActionType
 ): EngineState => {
   switch (action.type) {
-    case ENGINE_ACTION_TYPE.GAME_RESTART:
+    case ENGINE_ACTION_TYPE.GAME_STATE:
       return {
         ...state,
+        gameState: action.gameState
+      }
+    case ENGINE_ACTION_TYPE.GAME_RESTART:
+      const resetGameState: GameState = {}
+
+      Object.keys(state.gameState).map((key) => {
+        resetGameState[key] = {
+          ...state.gameState[key],
+          currentValue: state.gameState[key].defaultValue
+        }
+      })
+
+      return {
+        ...state,
+        gameState: resetGameState,
         currentChapter: null,
         currentScene: null,
         currentPassage: null
@@ -101,6 +119,7 @@ interface EngineContextType {
 }
 
 const defaultEngineState: EngineState = {
+  gameState: {},
   startingChapter: null,
   currentChapter: null,
   startingScene: null,

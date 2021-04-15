@@ -1,8 +1,6 @@
-import React, { useContext } from 'react'
+import React from 'react'
 
 import { ComponentId, COMPONENT_TYPE, GameId, StudioId } from '../../data/types'
-
-import { EngineContext } from '../../contexts/EngineContext'
 
 import {
   useChoice,
@@ -27,7 +25,7 @@ const ChoiceButtonRenderer: React.FC<{
       {choice && routes && (
         <a
           className="choice-button"
-          onClick={() => {
+          onClick={async () => {
             // TODO: Choice may point to multiple passages and jumps.
             // Track, calculate probability. For now, we'll go to the first.
             // #110, #111
@@ -61,8 +59,6 @@ const ChoicesRenderer: React.FC<{
     studioId,
     passageId
   ])
-
-  const { engine } = useContext(EngineContext)
 
   return (
     <>

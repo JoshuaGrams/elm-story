@@ -2,19 +2,21 @@ import logger from '../../lib/logger'
 
 import React, { useContext, useEffect } from 'react'
 
-import { GameId, StudioId } from '../../data/types'
+import { GameId, GameState, StudioId } from '../../data/types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
-import { useGame, useJumps } from '../../hooks'
+import { useGame, useJumps, useVariables } from '../../hooks'
 
 import ChapterRenderer from './ChapterRenderer'
+import GameStateView from './GameStateView'
 
 const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   studioId,
   gameId
 }) => {
   const game = useGame(studioId, gameId, [studioId, gameId]),
+    variables = useVariables(studioId, gameId, [studioId, gameId]),
     jumps = useJumps(studioId, gameId, [studioId, gameId])
 
   const { engine, engineDispatch } = useContext(EngineContext)
@@ -22,7 +24,7 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   useEffect(() => {
     logger.info(`GameEngine->game,jumps->useEffect`)
 
-    if (game && jumps) {
+    if (game && variables && jumps) {
       if (game.jump) {
         const foundJump = jumps?.find((jump) => jump.id === game.jump)
 
@@ -75,9 +77,38 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
     }
   }, [game, jumps])
 
+  useEffect(() => {
+    logger.info(`GameEngine->variables->useEffect`)
+
+    if (variables) {
+      const newGameState: GameState = {}
+
+      variables.map((variable) => {
+        if (variable.id) {
+          newGameState[variable.id] = {
+            title: variable.title,
+            type: variable.type,
+            defaultValue: variable.defaultValue,
+            currentValue:
+              newGameState[variable.id]?.currentValue || variable.defaultValue
+          }
+        }
+      })
+
+      engineDispatch({
+        type: ENGINE_ACTION_TYPE.GAME_STATE,
+        gameState: newGameState
+      })
+    }
+  }, [variables])
+
+  useEffect(() => {
+    logger.info(`GameEngine->engine.gameState->useEffect`)
+  }, [variables, engine.gameState])
+
   return (
     <>
-      {game && jumps && (
+      {game && variables && jumps && (
         <div className="elm-story-engine">
           {(engine.currentChapter || engine.startingChapter) && (
             <ChapterRenderer
@@ -93,6 +124,8 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
               Game requires at least 1 chapter, scene and passage to play.
             </div>
           )}
+
+          <GameStateView />
         </div>
       )}
     </>
