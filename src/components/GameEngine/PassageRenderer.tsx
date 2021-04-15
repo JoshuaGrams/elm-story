@@ -3,7 +3,13 @@ import logger from '../../lib/logger'
 import React, { useContext, useEffect } from 'react'
 import { cloneDeep } from 'lodash'
 
-import { ComponentId, COMPONENT_TYPE, GameId, StudioId } from '../../data/types'
+import {
+  ComponentId,
+  COMPONENT_TYPE,
+  GameId,
+  SET_OPERATOR_TYPE,
+  StudioId
+} from '../../data/types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
@@ -36,7 +42,31 @@ const EffectHandler: React.FC<{
 
         effects.map((effect) => {
           if (effect.id && newGameState[effect.variableId]) {
-            newGameState[effect.variableId].currentValue = effect.set[2]
+            switch (effect.set[1]) {
+              case SET_OPERATOR_TYPE.ASSIGN:
+                newGameState[effect.variableId].currentValue = effect.set[2]
+                break
+              case SET_OPERATOR_TYPE.ADD:
+                newGameState[effect.variableId].currentValue = `${
+                  Number(newGameState[effect.variableId].currentValue) +
+                  Number(effect.set[2])
+                }`
+                break
+              case SET_OPERATOR_TYPE.SUBTRACT:
+                newGameState[effect.variableId].currentValue = `${
+                  Number(newGameState[effect.variableId].currentValue) -
+                  Number(effect.set[2])
+                }`
+                break
+              case SET_OPERATOR_TYPE.DIVIDE:
+                newGameState[effect.variableId].currentValue = `${
+                  Number(newGameState[effect.variableId].currentValue) /
+                  Number(effect.set[2])
+                }`
+                break
+              default:
+                break
+            }
           }
         })
 

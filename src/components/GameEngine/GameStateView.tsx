@@ -56,8 +56,8 @@ const GameStateView: React.FC = () => {
         id: key,
         title: engine.gameState[key].title,
         type: engine.gameState[key].type,
-        default: engine.gameState[key].defaultValue || 'undefined',
-        current: engine.gameState[key].currentValue || 'undefined'
+        default: `${engine.gameState[key].defaultValue || 'undefined'}`,
+        current: `${engine.gameState[key].currentValue || 'undefined'}`
       })
     )
 

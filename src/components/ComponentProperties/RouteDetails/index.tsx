@@ -5,8 +5,9 @@ import React, { useEffect, useState } from 'react'
 import {
   ComponentId,
   GameId,
-  SET_OPERATOR,
-  StudioId
+  SET_OPERATOR_TYPE,
+  StudioId,
+  VARIABLE_TYPE
 } from '../../../data/types'
 
 import {
@@ -37,6 +38,9 @@ const RouteEffectRow: React.FC<{
     variable = useVariable(studioId, variableId, [studioId, variableId])
 
   const [ready, setReady] = useState(false),
+    [effectSetOperatorType, setEffectSetOperatorType] = useState<
+      SET_OPERATOR_TYPE | undefined
+    >(undefined),
     [effectValue, setEffectValue] = useState<string | undefined>(undefined)
 
   async function onRemoveEffect() {
@@ -46,7 +50,11 @@ const RouteEffectRow: React.FC<{
   useEffect(() => {
     logger.info(`RouteEffectRow->effect->useEffect`)
 
-    effect && !ready && setEffectValue(effect.set[2]) && setReady(true)
+    effect &&
+      !ready &&
+      setEffectSetOperatorType(effect.set[1]) &&
+      setEffectValue(effect.set[2]) &&
+      setReady(true)
   }, [effect])
 
   return (
@@ -58,7 +66,21 @@ const RouteEffectRow: React.FC<{
             variableId={variable.id}
             allowRename={false}
             allowTypeChange={false}
-            value={effectValue}
+            allowSetOperator={variable.type === VARIABLE_TYPE.NUMBER}
+            setOperatorType={effectSetOperatorType}
+            value={effectValue || effect.set[2]}
+            onSetOperatorTypeChange={async (
+              newSetOperatorType: SET_OPERATOR_TYPE
+            ) => {
+              effect.id &&
+                (await api().effects.saveEffectSetOperatorType(
+                  studioId,
+                  effect.id,
+                  newSetOperatorType
+                ))
+
+              setEffectSetOperatorType(newSetOperatorType)
+            }}
             onChangeValue={async (newValue: string) => {
               effect.id &&
                 (await api().effects.saveEffectValue(
@@ -106,7 +128,7 @@ const RouteDetails: React.FC<{
         title: 'Untitled Effect',
         set: [
           foundVariable.id,
-          SET_OPERATOR.ASSIGN,
+          SET_OPERATOR_TYPE.ASSIGN,
           foundVariable.defaultValue
         ],
         tags: []

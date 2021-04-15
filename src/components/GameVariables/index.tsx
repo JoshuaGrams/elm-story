@@ -3,7 +3,13 @@ import logger from '../../lib/logger'
 import React, { useEffect, useRef, useState } from 'react'
 import { debounce } from 'lodash-es'
 
-import { ComponentId, GameId, StudioId, VARIABLE_TYPE } from '../../data/types'
+import {
+  ComponentId,
+  GameId,
+  SET_OPERATOR_TYPE,
+  StudioId,
+  VARIABLE_TYPE
+} from '../../data/types'
 
 import { useVariable, useVariables } from '../../hooks'
 
@@ -21,15 +27,21 @@ export const VariableRow: React.FC<{
   variableId: ComponentId
   allowRename?: boolean
   allowTypeChange?: boolean
+  allowSetOperator?: boolean
   value?: string
+  setOperatorType?: SET_OPERATOR_TYPE
   onChangeValue?: (newValue: string) => void
+  onSetOperatorTypeChange?: (newSetOperatorType: SET_OPERATOR_TYPE) => void
   onDelete?: (variableId: ComponentId) => void
 }> = ({
   studioId,
   variableId,
   allowRename = true,
   allowTypeChange = true,
+  allowSetOperator = false,
   value,
+  setOperatorType,
+  onSetOperatorTypeChange,
   onChangeValue,
   onDelete
 }) => {
@@ -173,6 +185,10 @@ export const VariableRow: React.FC<{
     variable?.defaultValue && setVariableDefaultValue(variable.defaultValue)
   }, [variable?.defaultValue])
 
+  useEffect(() => {
+    // value && editVariableDefaultValueForm.resetFields()
+  }, [value])
+
   return (
     <>
       {variable && (
@@ -180,7 +196,9 @@ export const VariableRow: React.FC<{
           <Row className={styles.variableRow}>
             <Col
               className={styles.titleCol}
-              style={{ width: !allowTypeChange ? '65%' : '' }}
+              style={{
+                width: !allowTypeChange && !allowSetOperator ? '65%' : ''
+              }}
             >
               {allowRename && (
                 <Form
@@ -213,6 +231,28 @@ export const VariableRow: React.FC<{
               </Col>
             )}
 
+            {allowSetOperator && (
+              <Col className={styles.typeCol}>
+                <Select
+                  value={setOperatorType}
+                  onChange={onSetOperatorTypeChange}
+                >
+                  <Option value={SET_OPERATOR_TYPE.ASSIGN}>
+                    {SET_OPERATOR_TYPE.ASSIGN}
+                  </Option>
+                  <Option value={SET_OPERATOR_TYPE.ADD}>
+                    {SET_OPERATOR_TYPE.ADD}
+                  </Option>
+                  <Option value={SET_OPERATOR_TYPE.SUBTRACT}>
+                    {SET_OPERATOR_TYPE.SUBTRACT}
+                  </Option>
+                  <Option value={SET_OPERATOR_TYPE.DIVIDE}>
+                    {SET_OPERATOR_TYPE.DIVIDE}
+                  </Option>
+                </Select>
+              </Col>
+            )}
+
             <Col className={styles.defaultValueCol}>
               {variable.type === VARIABLE_TYPE.BOOLEAN && (
                 <Select
@@ -228,7 +268,9 @@ export const VariableRow: React.FC<{
                 variable.type === VARIABLE_TYPE.NUMBER) && (
                 <Form
                   form={editVariableDefaultValueForm}
-                  initialValues={{ defaultValue: variable.defaultValue }}
+                  initialValues={{
+                    defaultValue: value || variable.defaultValue
+                  }}
                   onValuesChange={debounce(
                     onChangeValue
                       ? (changedValues: { defaultValue: string }) => {
