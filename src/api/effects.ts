@@ -1,7 +1,7 @@
 import { LibraryDatabase } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { ComponentId, Effect, StudioId } from '../data/types'
+import { ComponentId, Effect, SET_OPERATOR_TYPE, StudioId } from '../data/types'
 
 export async function getEffect(studioId: StudioId, effectId: ComponentId) {
   try {
@@ -45,6 +45,21 @@ export async function saveEffect(
 
   try {
     return await new LibraryDatabase(studioId).saveEffect(effect)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function saveEffectSetOperatorType(
+  studioId: StudioId,
+  effectId: ComponentId,
+  newSetOperatorType: SET_OPERATOR_TYPE
+) {
+  try {
+    await new LibraryDatabase(studioId).saveEffectSetOperatorType(
+      effectId,
+      newSetOperatorType
+    )
   } catch (error) {
     throw new Error(error)
   }

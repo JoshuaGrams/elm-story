@@ -25,7 +25,7 @@ export enum VARIABLE_TYPE {
   URL = 'URL'
 }
 
-export enum COMPARE_OPERATOR {
+export enum COMPARE_OPERATOR_TYPE {
   EQ = '===', // equal to
   NE = '!==', // not equal to
   GTE = '>=', // greater than or equal to
@@ -36,7 +36,7 @@ export enum COMPARE_OPERATOR {
   NX = '=== undefined' // does not exist
 }
 
-export enum SET_OPERATOR {
+export enum SET_OPERATOR_TYPE {
   ASSIGN = '=',
   ADD = '+',
   SUBTRACT = '-',
@@ -124,7 +124,7 @@ export interface Effect extends Component {
   gameId: GameId
   routeId: ComponentId
   variableId: ComponentId
-  set: [ComponentId, SET_OPERATOR, string] // variable ref
+  set: [ComponentId, SET_OPERATOR_TYPE, string] // variable ref
 }
 
 export interface Passage extends Component {

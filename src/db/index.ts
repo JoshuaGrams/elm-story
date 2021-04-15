@@ -18,7 +18,8 @@ import {
   Route,
   VARIABLE_TYPE,
   Jump,
-  JumpRoute
+  JumpRoute,
+  SET_OPERATOR_TYPE
 } from '../data/types'
 
 export enum DATABASE {
@@ -999,6 +1000,34 @@ export class LibraryDatabase extends Dexie {
     }
 
     return effect.id
+  }
+
+  public async saveEffectSetOperatorType(
+    effectId: ComponentId,
+    newSetOperatorType: SET_OPERATOR_TYPE
+  ) {
+    try {
+      await this.transaction('rw', this.effects, async () => {
+        if (effectId) {
+          const effect = await this.effects.where({ id: effectId }).first()
+
+          if (effect) {
+            await this.effects.update(effectId, {
+              ...effect,
+              set: [effect.set[0], newSetOperatorType, effect.set[2]]
+            })
+          } else {
+            throw new Error(
+              'Unable to set effect set operator type. Component missing.'
+            )
+          }
+        } else {
+          throw new Error('Unable to set effect set operator type. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 
   public async saveEffectValue(effectId: ComponentId, newValue: string) {
