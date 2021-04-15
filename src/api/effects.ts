@@ -11,6 +11,17 @@ export async function getEffect(studioId: StudioId, effectId: ComponentId) {
   }
 }
 
+export async function getEffectsByVariableRef(
+  studioId: StudioId,
+  variableId: ComponentId
+): Promise<Effect[]> {
+  try {
+    return await new LibraryDatabase(studioId).getEffectsByVariableRef(variableId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function saveEffect(
   studioId: StudioId,
   effect: Effect
@@ -26,7 +37,11 @@ export async function saveEffect(
   }
 }
 
-export async function saveEffectValue(studioId: StudioId, effectId: ComponentId, newValue: string) {
+export async function saveEffectValue(
+  studioId: StudioId,
+  effectId: ComponentId,
+  newValue: string
+) {
   try {
     await new LibraryDatabase(studioId).saveEffectValue(effectId, newValue)
   } catch (error) {

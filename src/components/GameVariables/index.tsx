@@ -69,13 +69,31 @@ export const VariableRow: React.FC<{
   async function onVariableTypeChange(selectedVariableType: VARIABLE_TYPE) {
     logger.info(`VariableRow->onVariableTypeChange->${selectedVariableType}`)
 
-    variable?.id &&
-      selectedVariableType !== variableType &&
-      (await api().variables.saveVariableType(
+    if (variable?.id && selectedVariableType !== variableType) {
+      const relatedEffects = await api().effects.getEffectsByVariableRef(
+        studioId,
+        variable.id
+      )
+
+      await Promise.all(
+        relatedEffects.map(
+          async (relatedEffect) =>
+            relatedEffect.id &&
+            (await api().effects.saveEffectValue(
+              studioId,
+              relatedEffect.id,
+              // TODO: Use better method that doesn't dupe DB code
+              selectedVariableType === VARIABLE_TYPE.BOOLEAN ? 'false' : ''
+            ))
+        )
+      )
+
+      await api().variables.saveVariableType(
         studioId,
         variable.id,
         selectedVariableType
-      ))
+      )
+    }
   }
 
   async function onDefaultValueChangeFromSelect(

@@ -958,6 +958,16 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async getEffectsByVariableRef(
+    variableId: ComponentId
+  ): Promise<Effect[]> {
+    try {
+      return await this.effects.where({ variableId }).toArray()
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async saveEffect(effect: Effect): Promise<ComponentId> {
     if (!effect.routeId)
       throw new Error('Unable to save effect to databse. Missing route ID.')
