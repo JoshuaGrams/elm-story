@@ -1330,6 +1330,12 @@ export class LibraryDatabase extends Dexie {
     logger.info(`LibraryDatabase->removeVariable:${variableId}`)
 
     try {
+      const effects = await this.effects.where({ variableId }).toArray()
+
+      await Promise.all(
+        effects.map(async (effect) => effect.id && this.removeEffect(effect.id))
+      )
+
       await this.transaction('rw', this.variables, async () => {
         if (await this.getComponent(LIBRARY_TABLE.VARIABLES, variableId)) {
           logger.info(
