@@ -225,7 +225,11 @@ export const VariableRow: React.FC<{
                   form={editVariableDefaultValueForm}
                   initialValues={{ defaultValue: variable.defaultValue }}
                   onValuesChange={debounce(
-                    onVariableDefaultValueChangeFromInput,
+                    onChangeValue
+                      ? (changedValues: { defaultValue: string }) => {
+                          onChangeValue(changedValues.defaultValue)
+                        }
+                      : onVariableDefaultValueChangeFromInput,
                     100
                   )}
                   onFinish={() => variableDefaultValueInputRef.current?.blur()}
