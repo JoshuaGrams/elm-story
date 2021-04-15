@@ -143,33 +143,42 @@ const RouteDetails: React.FC<{
               <div className={styles.header}>Effects</div>
 
               <div className={styles.effectsList}>
-                {variables && (
-                  <Select
-                    value="Select New Effect..."
-                    className={styles.newEffectSelect}
-                    onChange={onNewEffect}
-                  >
-                    {variables
-                      .filter(
-                        (variable) =>
-                          effects?.length === 0 ||
-                          effects?.find(
-                            (effect) => effect.set[0] !== variable?.id
-                          )
-                      )
-                      .map(
-                        (variable) =>
-                          variable.id && (
-                            <Select.Option
-                              value={variable.id}
-                              key={variable.id}
-                            >
-                              {variable.title}
-                            </Select.Option>
-                          )
-                      )}
-                  </Select>
-                )}
+                <>
+                  {variables && variables.length > 0 && (
+                    <Select
+                      value="Select New Effect..."
+                      className={styles.newEffectSelect}
+                      onChange={onNewEffect}
+                    >
+                      {variables
+                        .filter(
+                          (variable) =>
+                            effects?.length === 0 ||
+                            effects?.find(
+                              (effect) => effect.set[0] !== variable?.id
+                            )
+                        )
+                        .map(
+                          (variable) =>
+                            variable.id && (
+                              <Select.Option
+                                value={variable.id}
+                                key={variable.id}
+                              >
+                                {variable.title}
+                              </Select.Option>
+                            )
+                        )}
+                    </Select>
+                  )}
+
+                  {variables && variables.length === 0 && (
+                    <div>
+                      At least 1 game variable is required to create a route
+                      effect.
+                    </div>
+                  )}
+                </>
 
                 {effects &&
                   effects.map(
