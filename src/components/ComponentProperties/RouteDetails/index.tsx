@@ -144,7 +144,7 @@ const RouteDetails: React.FC<{
 
               <div className={styles.effectsList}>
                 <>
-                  {variables && variables.length > 0 && (
+                  {effects && variables && variables.length > 0 && (
                     <Select
                       value="Select New Effect..."
                       className={styles.newEffectSelect}
@@ -153,9 +153,9 @@ const RouteDetails: React.FC<{
                       {variables
                         .filter(
                           (variable) =>
-                            effects?.length === 0 ||
-                            effects?.find(
-                              (effect) => effect.set[0] !== variable?.id
+                            effects.length === 0 ||
+                            !effects.find(
+                              (effect) => effect.variableId === variable.id
                             )
                         )
                         .map(
