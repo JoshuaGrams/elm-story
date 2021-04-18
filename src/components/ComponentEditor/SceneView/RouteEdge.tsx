@@ -2,7 +2,10 @@ import React, { memo } from 'react'
 
 import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
 
-import { useRouteEffectsCountByRouteRef } from '../../../hooks'
+import {
+  useRouteConditionsCountByRouteRef,
+  useRouteEffectsCountByRouteRef
+} from '../../../hooks'
 
 import {
   EdgeProps,
@@ -79,13 +82,20 @@ export default memo(
     markerEndId,
     data
   }: EdgeProps<RouteEdgeData>) => {
-    const effectsCount =
-      (data &&
-        useRouteEffectsCountByRouteRef(data.studioId, data.routeId, [
-          data.studioId,
-          data.routeId
-        ])) ||
-      undefined
+    const conditionsCount =
+        (data &&
+          useRouteConditionsCountByRouteRef(data.studioId, data.routeId, [
+            data.studioId,
+            data.routeId
+          ])) ||
+        undefined,
+      effectsCount =
+        (data &&
+          useRouteEffectsCountByRouteRef(data.studioId, data.routeId, [
+            data.studioId,
+            data.routeId
+          ])) ||
+        undefined
 
     const [centerX, centerY] = getEdgeCenter({
       sourceX,
@@ -117,7 +127,7 @@ export default memo(
         <RouteEdgeLabel
           x={centerX}
           y={centerY}
-          totalConditions={0}
+          totalConditions={conditionsCount || 0}
           totalEffects={effectsCount || 0}
           onClick={() => console.log(data)}
         />
