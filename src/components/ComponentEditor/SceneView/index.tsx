@@ -35,6 +35,7 @@ import ReactFlow, {
 
 import { Button } from 'antd'
 
+import RouteEdge, { RouteEdgeData } from './RouteEdge'
 import PassageNode from './PassageNode'
 import JumpNode from './JumpNode'
 
@@ -581,7 +582,7 @@ const SceneView: React.FC<{
           })
       })
 
-      const edges: Edge<{ type: COMPONENT_TYPE }>[] = routes.map((route) => {
+      const edges: Edge<RouteEdgeData>[] = routes.map((route) => {
         if (!route.id)
           throw new Error('Unable to generate edge. Missing route ID.')
 
@@ -591,10 +592,12 @@ const SceneView: React.FC<{
           sourceHandle: route.choiceId,
           target: route.destinationId,
           targetHandle: route.destinationId,
-          type: 'default',
+          type: 'routeEdge',
           animated: true,
           data: {
-            type: COMPONENT_TYPE.ROUTE
+            type: COMPONENT_TYPE.ROUTE,
+            studioId,
+            routeId: route.id
           }
         }
       })
@@ -722,6 +725,9 @@ const SceneView: React.FC<{
           nodeTypes={{
             passageNode: PassageNode,
             jumpNode: JumpNode
+          }}
+          edgeTypes={{
+            routeEdge: RouteEdge
           }}
           snapGrid={[4, 4]}
           onlyRenderVisibleElements={false}
