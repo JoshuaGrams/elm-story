@@ -62,7 +62,7 @@ export async function saveCondition(
   }
 }
 
-export async function saveEffectSetOperatorType(
+export async function saveConditionCompareOperatorType(
   studioId: StudioId,
   conditionId: ComponentId,
   newCompareOperatorType: COMPARE_OPERATOR_TYPE

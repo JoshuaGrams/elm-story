@@ -879,11 +879,18 @@ export class LibraryDatabase extends Dexie {
     logger.info(`LibraryDatabase->removeRoute`)
 
     try {
-      const effects = await this.effects.where({ routeId }).toArray()
+      const conditions = await this.conditions.where({ routeId }).toArray(),
+        effects = await this.effects.where({ routeId }).toArray()
 
-      await Promise.all(
-        effects.map(async (effect) => effect.id && this.removeEffect(effect.id))
-      )
+      await Promise.all([
+        conditions.map(
+          async (condition) =>
+            condition.id && (await this.removeCondition(condition.id))
+        ),
+        effects.map(
+          async (effect) => effect.id && (await this.removeEffect(effect.id))
+        )
+      ])
 
       await this.transaction('rw', this.routes, async () => {
         if (await this.getComponent(LIBRARY_TABLE.ROUTES, routeId)) {
@@ -1537,11 +1544,18 @@ export class LibraryDatabase extends Dexie {
     logger.info(`LibraryDatabase->removeVariable:${variableId}`)
 
     try {
-      const effects = await this.effects.where({ variableId }).toArray()
+      const conditions = await this.conditions.where({ variableId }).toArray(),
+        effects = await this.effects.where({ variableId }).toArray()
 
-      await Promise.all(
-        effects.map(async (effect) => effect.id && this.removeEffect(effect.id))
-      )
+      await Promise.all([
+        conditions.map(
+          async (condition) =>
+            condition.id && (await this.removeCondition(condition.id))
+        ),
+        effects.map(
+          async (effect) => effect.id && (await this.removeEffect(effect.id))
+        )
+      ])
 
       await this.transaction('rw', this.variables, async () => {
         if (await this.getComponent(LIBRARY_TABLE.VARIABLES, variableId)) {

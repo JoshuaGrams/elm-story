@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { debounce } from 'lodash-es'
 
 import {
+  COMPARE_OPERATOR_TYPE,
   ComponentId,
   GameId,
   SET_OPERATOR_TYPE,
@@ -27,10 +28,15 @@ export const VariableRow: React.FC<{
   variableId: ComponentId
   allowRename?: boolean
   allowTypeChange?: boolean
+  allowCompareOperator?: boolean
   allowSetOperator?: boolean
   value?: string
+  compareOperatorType?: COMPARE_OPERATOR_TYPE
   setOperatorType?: SET_OPERATOR_TYPE
   onChangeValue?: (newValue: string) => void
+  onCompareOperatorTypeChange?: (
+    newCompareOperatorType: COMPARE_OPERATOR_TYPE
+  ) => void
   onSetOperatorTypeChange?: (newSetOperatorType: SET_OPERATOR_TYPE) => void
   onDelete?: (variableId: ComponentId) => void
 }> = ({
@@ -38,9 +44,12 @@ export const VariableRow: React.FC<{
   variableId,
   allowRename = true,
   allowTypeChange = true,
+  allowCompareOperator = false,
   allowSetOperator = false,
   value,
+  compareOperatorType,
   setOperatorType,
+  onCompareOperatorTypeChange,
   onSetOperatorTypeChange,
   onChangeValue,
   onDelete

@@ -1,8 +1,8 @@
 .RouteDetails {
-  .routeEffects {
+  .routeFeature {
     border: 1px solid hsl(0, 0%, 15%);
 
-    .header {
+    .featureHeader {
       font-size: 12px;
       text-transform: uppercase;
       text-align: left;
@@ -14,13 +14,13 @@
       line-height: 32px;
     }
 
-    .effectsList {
+    .featureList {
       .noVariables {
         padding: 4px 11px;
         font-size: 12px;
       }
 
-      .newEffectSelect {
+      .select {
         width: 100%;
         font-size: 12px;
 
@@ -29,16 +29,13 @@
           border-bottom: 3px solid hsl(0, 0%, 15%);
         }
 
+        &.noConditions :global .ant-select-selector,
         &.noEffects :global .ant-select-selector {
           border-bottom: none;
         }
       }
 
-      .titleCol {
-        padding: 10px;
-      }
-
-      .effectDefaultValueMsg {
+      .defaultValueMsg {
         color: hsl(50, 100%, 50%);
         border-bottom: 3px solid hsl(0, 0%, 15%);
         font-size: 12px;

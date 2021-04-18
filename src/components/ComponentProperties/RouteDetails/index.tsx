@@ -3,6 +3,7 @@ import logger from '../../../lib/logger'
 import React, { useEffect, useState } from 'react'
 
 import {
+  COMPARE_OPERATOR_TYPE,
   ComponentId,
   GameId,
   SET_OPERATOR_TYPE,
@@ -15,7 +16,9 @@ import {
   useRoute,
   useVariables,
   useRouteEffect,
-  useVariable
+  useVariable,
+  useRouteConditionsByRouteRef,
+  useRouteCondition
 } from '../../../hooks'
 
 import { Select } from 'antd'
@@ -28,6 +31,88 @@ import gameVariablesStyles from '../../GameVariables/styles.module.less'
 import styles from './styles.module.less'
 
 import api from '../../../api'
+
+const RouteConditionRow: React.FC<{
+  studioId: StudioId
+  conditionId: ComponentId
+  variableId: ComponentId
+}> = ({ studioId, conditionId, variableId }) => {
+  const condition = useRouteCondition(studioId, conditionId, [
+      studioId,
+      conditionId
+    ]),
+    variable = useVariable(studioId, variableId, [studioId, variableId])
+
+  const [ready, setReady] = useState(false),
+    [conditionCompareOperatorType, setConditionCompareOperatorType] = useState<
+      COMPARE_OPERATOR_TYPE | undefined
+    >(undefined),
+    [conditionValue, setConditionValue] = useState<string | undefined>(
+      undefined
+    )
+
+  async function onRemoveCondition() {
+    condition?.id &&
+      (await api().conditions.removeCondition(studioId, condition.id))
+  }
+
+  useEffect(() => {
+    logger.info(`RouteConditionRow->condition->useEffect`)
+
+    condition &&
+      !ready &&
+      setConditionCompareOperatorType(condition.compare[1]) &&
+      setConditionValue(condition.compare[2]) &&
+      setReady(true)
+  }, [condition])
+
+  return (
+    <>
+      {condition && variable?.id && (
+        <>
+          <VariableRow
+            studioId={studioId}
+            variableId={variable.id}
+            allowRename={false}
+            allowTypeChange={false}
+            allowCompareOperator={variable.type === VARIABLE_TYPE.NUMBER}
+            compareOperatorType={conditionCompareOperatorType}
+            value={conditionValue || condition.compare[2]}
+            onCompareOperatorTypeChange={async (
+              newCompareOperatorType: COMPARE_OPERATOR_TYPE
+            ) => {
+              condition.id &&
+                (await api().conditions.saveConditionCompareOperatorType(
+                  studioId,
+                  condition.id,
+                  newCompareOperatorType
+                ))
+
+              setConditionCompareOperatorType(newCompareOperatorType)
+            }}
+            onChangeValue={async (newValue: string) => {
+              condition.id &&
+                (await api().effects.saveEffectValue(
+                  studioId,
+                  condition.id,
+                  newValue
+                ))
+
+              setConditionValue(newValue)
+            }}
+            onDelete={onRemoveCondition}
+          />
+
+          {conditionValue === variable.defaultValue && (
+            <div className={styles.defaultValueMsg}>
+              Condition set to default value.
+            </div>
+          )}
+        </>
+      )}
+    </>
+  )
+}
 
 const RouteEffectRow: React.FC<{
   studioId: StudioId
@@ -95,7 +180,7 @@ const RouteEffectRow: React.FC<{
           />
 
           {effectValue === variable.defaultValue && (
-            <div className={styles.effectDefaultValueMsg}>
+            <div className={styles.defaultValueMsg}>
               Effect set to default value.
             </div>
           )}
@@ -111,8 +196,33 @@ const RouteDetails: React.FC<{
   routeId: ComponentId
 }> = ({ studioId, gameId, routeId }) => {
   const route = useRoute(studioId, routeId, [studioId, routeId]),
+    conditions = useRouteConditionsByRouteRef(studioId, routeId, [
+      studioId,
+      routeId
+    ]),
     effects = useRouteEffectsByRouteRef(studioId, routeId, [studioId, routeId]),
     variables = useVariables(studioId, gameId, [studioId, gameId, effects])
+
+  async function onNewCondition(variableId: ComponentId) {
+    const foundVariable = variables?.find(
+      (variable) => variable.id === variableId
+    )
+
+    route?.gameId &&
+      foundVariable?.id &&
+      (await api().conditions.saveCondition(studioId, {
+        gameId: route.gameId,
+        routeId,
+        variableId: foundVariable.id,
+        title: 'Untitled Condition',
+        compare: [
+          foundVariable.id,
+          COMPARE_OPERATOR_TYPE.EQ,
+          foundVariable.defaultValue
+        ],
+        tags: []
+      }))
+  }
 
   async function onNewEffect(variableId: ComponentId) {
     const foundVariable = variables?.find(
@@ -162,15 +272,77 @@ const RouteDetails: React.FC<{
             />
             <div className={parentStyles.componentId}>{route.id}</div>
 
-            <div className={styles.routeEffects}>
-              <div className={styles.header}>Effects</div>
+            <div className={styles.routeFeature}>
+              <div className={styles.featureHeader}>Conditions</div>
 
-              <div className={styles.effectsList}>
+              <div className={styles.featureList}>
+                <>
+                  {conditions && variables && variables.length > 0 && (
+                    <Select
+                      value="Select New Condition..."
+                      className={`${styles.select} ${
+                        conditions.length === 0 ? styles.noConditions : ''
+                      }`}
+                      onChange={onNewCondition}
+                    >
+                      {variables
+                        .filter(
+                          (variable) =>
+                            conditions.length === 0 ||
+                            !conditions.find(
+                              (condition) =>
+                                condition.variableId === variable.id
+                            )
+                        )
+                        .map(
+                          (variable) =>
+                            variable.id && (
+                              <Select.Option
+                                value={variable.id}
+                                key={variable.id}
+                              >
+                                {variable.title}
+                              </Select.Option>
+                            )
+                        )}
+                    </Select>
+                  )}
+
+                  {variables && variables.length === 0 && (
+                    <div className={styles.noVariables}>
+                      At least 1 game variable is required to create a
+                      condition.
+                    </div>
+                  )}
+
+                  {conditions && (
+                    <div className={gameVariablesStyles.variableRows}>
+                      {conditions.map(
+                        (condition) =>
+                          condition.id && (
+                            <RouteConditionRow
+                              studioId={studioId}
+                              conditionId={condition.id}
+                              variableId={condition.compare[0]}
+                              key={condition.id}
+                            />
+                          )
+                      )}
+                    </div>
+                  )}
+                </>
+              </div>
+            </div>
+
+            <div className={styles.routeFeature}>
+              <div className={styles.featureHeader}>Effects</div>
+
+              <div className={styles.featureList}>
                 <>
                   {effects && variables && variables.length > 0 && (
                     <Select
                       value="Select New Effect..."
-                      className={`${styles.newEffectSelect} ${
+                      className={`${styles.select} ${
                         effects.length === 0 ? styles.noEffects : ''
                       }`}
                       onChange={onNewEffect}
@@ -199,8 +371,7 @@ const RouteDetails: React.FC<{
 
                   {variables && variables.length === 0 && (
                     <div className={styles.noVariables}>
-                      At least 1 game variable is required to create a route
-                      effect.
+                      At least 1 game variable is required to create an effect.
                     </div>
                   )}
                 </>
