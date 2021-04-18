@@ -13,10 +13,14 @@ export async function getEffect(studioId: StudioId, effectId: ComponentId) {
 
 export async function getEffectsByRouteRef(
   studioId: StudioId,
-  routeId: ComponentId
-): Promise<Effect[]> {
+  routeId: ComponentId,
+  countOnly?: boolean
+): Promise<number | Effect[]> {
   try {
-    return await new LibraryDatabase(studioId).getEffectsByRouteRef(routeId)
+    return await new LibraryDatabase(studioId).getEffectsByRouteRef(
+      routeId,
+      countOnly || false
+    )
   } catch (error) {
     throw new Error(error)
   }

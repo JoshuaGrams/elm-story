@@ -39,6 +39,21 @@ const useRouteEffectsByRouteRef = (
     undefined
   )
 
-export { useRouteEffect, useRouteEffectsByRouteRef }
+const useRouteEffectsCountByRouteRef = (
+  studioId: StudioId,
+  routeId: ComponentId,
+  deps?: any[]
+): number | undefined =>
+  useLiveQuery(
+    () => new LibraryDatabase(studioId).effects.where({ routeId }).count(),
+    deps || [],
+    undefined
+  )
+
+export {
+  useRouteEffect,
+  useRouteEffectsByRouteRef,
+  useRouteEffectsCountByRouteRef
+}
 
 export default useRouteEffects

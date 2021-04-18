@@ -959,9 +959,14 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getEffectsByRouteRef(routeId: ComponentId): Promise<Effect[]> {
+  public async getEffectsByRouteRef(
+    routeId: ComponentId,
+    countOnly?: boolean
+  ): Promise<number | Effect[]> {
     try {
-      return await this.effects.where({ routeId }).toArray()
+      return countOnly
+        ? await this.effects.where({ routeId }).count()
+        : await this.effects.where({ routeId }).toArray()
     } catch (error) {
       throw new Error(error)
     }
