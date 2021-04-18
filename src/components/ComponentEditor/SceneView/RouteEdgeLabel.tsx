@@ -109,7 +109,9 @@ const EdgeText: React.FC<RouteEdgeLabelProps> = ({
         />
 
         <rect
-          className={styles.conditions}
+          className={`${styles.conditions} ${
+            totalConditions === 0 ? styles.none : ''
+          }`}
           width={
             horizontalPadding / 2 + conditionsTextBbox.width + textSpacing / 2
           }
@@ -129,7 +131,9 @@ const EdgeText: React.FC<RouteEdgeLabelProps> = ({
         </text>
 
         <rect
-          className={styles.effects}
+          className={`${styles.effects} ${
+            totalEffects === 0 ? styles.none : ''
+          }`}
           width={
             horizontalPadding / 2 + effectsTextBbox.width + textSpacing / 2
           }
