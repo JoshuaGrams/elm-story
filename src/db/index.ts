@@ -19,7 +19,8 @@ import {
   VARIABLE_TYPE,
   Jump,
   JumpRoute,
-  SET_OPERATOR_TYPE
+  SET_OPERATOR_TYPE,
+  COMPARE_OPERATOR_TYPE
 } from '../data/types'
 
 export enum DATABASE {
@@ -139,10 +140,10 @@ export class LibraryDatabase extends Dexie {
   public chapters: Dexie.Table<Chapter, string>
   public scenes: Dexie.Table<Scene, string>
   public routes: Dexie.Table<Route, string>
-  public passages: Dexie.Table<Passage, string>
-  public choices: Dexie.Table<Choice, string>
   public conditions: Dexie.Table<Condition, string>
   public effects: Dexie.Table<Effect, string>
+  public passages: Dexie.Table<Passage, string>
+  public choices: Dexie.Table<Choice, string>
   public variables: Dexie.Table<Variable, string>
 
   public constructor(studioId: string) {
@@ -155,10 +156,10 @@ export class LibraryDatabase extends Dexie {
       scenes: '&id,gameId,chapterId,title,*tags,updated',
       routes:
         '&id,gameId,sceneId,title,originId,choiceId,originType,destinationId,destinationType,*tags,updated',
+      conditions: '&id,gameId,routeId,variableId,title,*tags,updated',
       effects: '&id,gameId,routeId,variableId,title,*tags,updated',
       passages: '&id,gameId,sceneId,title,*tags,updated',
       choices: '&id,gameId,passageId,title,*tags,updated',
-      conditions: '&id,choiceId,title,*tags,updated',
       variables: '&id,gameId,title,type,*tags,updated'
     })
 
@@ -169,10 +170,10 @@ export class LibraryDatabase extends Dexie {
     this.chapters = this.table(LIBRARY_TABLE.CHAPTERS)
     this.scenes = this.table(LIBRARY_TABLE.SCENES)
     this.routes = this.table(LIBRARY_TABLE.ROUTES)
+    this.conditions = this.table(LIBRARY_TABLE.CONDITIONS)
     this.effects = this.table(LIBRARY_TABLE.EFFECTS)
     this.passages = this.table(LIBRARY_TABLE.PASSAGES)
     this.choices = this.table(LIBRARY_TABLE.CHOICES)
-    this.conditions = this.table(LIBRARY_TABLE.CONDITIONS)
     this.variables = this.table(LIBRARY_TABLE.VARIABLES)
   }
 
@@ -938,6 +939,154 @@ export class LibraryDatabase extends Dexie {
           async (route) => route.id && (await this.removeRoute(route.id))
         )
       )
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getCondition(conditionId: ComponentId): Promise<Condition> {
+    try {
+      const condition = await this.conditions.get(conditionId)
+
+      if (condition) {
+        return condition
+      } else {
+        throw new Error(
+          `Unable to get condition with ID: ${conditionId}. Does not exist.`
+        )
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getConditionsByRouteRef(
+    routeId: ComponentId,
+    countOnly?: boolean
+  ): Promise<number | Condition[]> {
+    try {
+      return countOnly
+        ? await this.conditions.where({ routeId }).count()
+        : await this.conditions.where({ routeId }).toArray()
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getConditionsByVariableRef(
+    variableId: ComponentId
+  ): Promise<Condition[]> {
+    try {
+      return await this.conditions.where({ variableId }).toArray()
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async saveCondition(condition: Condition): Promise<ComponentId> {
+    if (!condition.routeId)
+      throw new Error('Unable to save condition to databse. Missing route ID.')
+    if (!condition.id)
+      throw new Error('Unable to save condition to database. Missing ID.')
+
+    try {
+      await this.transaction('rw', this.conditions, async () => {
+        if (condition.id) {
+          if (await this.getComponent(LIBRARY_TABLE.CONDITIONS, condition.id)) {
+            await this.conditions.update(condition.id, condition)
+          } else {
+            await this.conditions.add(condition)
+          }
+        } else {
+          throw new Error('Unable to save condition to database. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    return condition.id
+  }
+
+  public async saveConditionCompareOperatorType(
+    condtionId: ComponentId,
+    newCompareOperatorType: COMPARE_OPERATOR_TYPE
+  ) {
+    try {
+      await this.transaction('rw', this.conditions, async () => {
+        if (condtionId) {
+          const condition = await this.conditions
+            .where({ id: condtionId })
+            .first()
+
+          if (condition) {
+            await this.conditions.update(condtionId, {
+              ...condition,
+              compare: [
+                condition.compare[0],
+                newCompareOperatorType,
+                condition.compare[2]
+              ]
+            })
+          } else {
+            throw new Error(
+              'Unable to set condition compare operator type. Component missing.'
+            )
+          }
+        } else {
+          throw new Error(
+            'Unable to set condition compare operator type. Missing ID.'
+          )
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async saveConditionValue(conditionId: ComponentId, newValue: string) {
+    try {
+      await this.transaction('rw', this.conditions, async () => {
+        if (conditionId) {
+          const condition = await this.conditions
+            .where({ id: conditionId })
+            .first()
+
+          if (condition) {
+            await this.conditions.update(conditionId, {
+              ...condition,
+              compare: [condition.compare[0], condition.compare[1], newValue]
+            })
+          } else {
+            throw new Error('Unable to set condition value. Component missing.')
+          }
+        } else {
+          throw new Error('Unable to set condition value. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async removeCondition(conditionId: ComponentId) {
+    logger.info(`LibraryDatabase->removeCondition`)
+
+    try {
+      await this.transaction('rw', this.conditions, async () => {
+        if (await this.getComponent(LIBRARY_TABLE.CONDITIONS, conditionId)) {
+          logger.info(
+            `LibraryDatabase->removeCondition->Removing condition with ID: ${conditionId}`
+          )
+
+          await this.conditions.delete(conditionId)
+        } else {
+          // TODO: #70; async issue - we can do things in order, but this is likely more efficent
+          logger.error(
+            `LibraryDatabase->removeCondition->Unable to remove condition with ID: '${conditionId}'. Does not exist.`
+          )
+        }
+      })
     } catch (error) {
       throw new Error(error)
     }

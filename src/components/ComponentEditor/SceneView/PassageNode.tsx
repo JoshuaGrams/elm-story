@@ -400,8 +400,6 @@ const PassageNode: React.FC<NodeProps<{
                     gameId: passage.gameId,
                     passageId: data.passageId,
                     title: 'Untitled Choice',
-                    goto: [],
-                    conditions: [],
                     tags: []
                   })
 

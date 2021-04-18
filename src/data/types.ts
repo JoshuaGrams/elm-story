@@ -26,14 +26,12 @@ export enum VARIABLE_TYPE {
 }
 
 export enum COMPARE_OPERATOR_TYPE {
-  EQ = '===', // equal to
-  NE = '!==', // not equal to
+  EQ = '=', // equal to
+  NE = '!=', // not equal to
   GTE = '>=', // greater than or equal to
   GT = '>', // greater than
   LT = '<', // less than
-  LTE = '<=', // less than or equal to
-  EX = '!== undefined', // exits
-  NX = '=== undefined' // does not exist
+  LTE = '<=' // less than or equal to
 }
 
 export enum SET_OPERATOR_TYPE {
@@ -119,7 +117,15 @@ export interface Route extends Component {
   destinationType: COMPONENT_TYPE
 }
 
-// Effect of Route
+// Route Condition
+export interface Condition extends Component {
+  gameId: GameId
+  routeId: ComponentId
+  variableId: ComponentId
+  compare: [ComponentId, COMPARE_OPERATOR_TYPE, string] // variable ref
+}
+
+// Route Condition
 export interface Effect extends Component {
   gameId: GameId
   routeId: ComponentId
@@ -137,20 +143,6 @@ export interface Passage extends Component {
 export interface Choice extends Component {
   gameId: GameId
   passageId: ComponentId
-  goto:
-    | [
-        COMPONENT_TYPE.CHAPTER | COMPONENT_TYPE.SCENE | COMPONENT_TYPE.PASSAGE,
-        ComponentId
-      ]
-    | []
-  conditions: Condition[] | string[]
-}
-
-// Condition of Choice
-export interface Condition extends Component {
-  gameId: GameId
-  choiceId: ComponentId
-  check: [ComponentId, COMPARE_OPERATOR, string] // variable ref
 }
 
 export interface Variable extends Component {

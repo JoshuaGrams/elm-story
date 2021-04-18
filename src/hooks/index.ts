@@ -11,6 +11,11 @@ import useRoutes, {
   useRoutesByPassageRef,
   useRoutesByChoiceRef
 } from './useRoutes'
+import useRouteConditions, {
+  useRouteCondition,
+  useRouteConditionsByRouteRef,
+  useRouteConditionsCountByRouteRef
+} from './useRouteConditions'
 import useRouteEffects, {
   useRouteEffect,
   useRouteEffectsByRouteRef,
@@ -36,6 +41,10 @@ export {
   useScenesByChapterRef,
   useRoutes,
   useRoute,
+  useRouteConditions,
+  useRouteCondition,
+  useRouteConditionsByRouteRef,
+  useRouteConditionsCountByRouteRef,
   useRouteEffects,
   useRouteEffect,
   useRouteEffectsByRouteRef,
