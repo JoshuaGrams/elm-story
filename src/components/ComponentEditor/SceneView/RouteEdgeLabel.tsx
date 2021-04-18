@@ -1,18 +1,12 @@
-import React, {
-  memo,
-  useRef,
-  useState,
-  useEffect,
-  HTMLAttributes,
-  ReactNode
-} from 'react'
+import React, { memo, useRef, useState, useEffect, HTMLAttributes } from 'react'
 
 import { Rect } from 'react-flow-renderer'
 
 export interface RouteEdgeLabelProps extends HTMLAttributes<SVGElement> {
   x: number
   y: number
-  label?: string | ReactNode
+  totalConditions: number
+  totalEffects: number
 }
 
 import styles from './styles.module.less'
@@ -20,6 +14,8 @@ import styles from './styles.module.less'
 const EdgeText: React.FC<RouteEdgeLabelProps> = ({
   x,
   y,
+  totalConditions = 0,
+  totalEffects = 0,
   children,
   ...rest
 }) => {
@@ -51,9 +47,6 @@ const EdgeText: React.FC<RouteEdgeLabelProps> = ({
     height: rectHeight
   })
 
-  const [conditionTotal, setConditionTotal] = useState('-'),
-    [effectTotal, setEffectTotal] = useState('-')
-
   useEffect(() => {
     if (conditionsTextRef.current && effectsTextRef.current) {
       const conditionsTextBbox = conditionsTextRef.current.getBBox(),
@@ -83,7 +76,7 @@ const EdgeText: React.FC<RouteEdgeLabelProps> = ({
         height: effectsTextBbox.height
       })
     }
-  }, [conditionTotal, effectTotal])
+  }, [totalConditions, totalEffects])
 
   return (
     <>
@@ -132,7 +125,7 @@ const EdgeText: React.FC<RouteEdgeLabelProps> = ({
           ref={conditionsTextRef}
           className={styles.label}
         >
-          {conditionTotal}
+          {totalConditions === 0 ? '-' : `${totalConditions}`}
         </text>
 
         <rect
@@ -152,7 +145,7 @@ const EdgeText: React.FC<RouteEdgeLabelProps> = ({
           ref={effectsTextRef}
           className={styles.label}
         >
-          {effectTotal}
+          {totalEffects === 0 ? '-' : `${totalEffects}`}
         </text>
 
         <rect
