@@ -42,6 +42,21 @@ const useRouteConditionsByRouteRef = (
     undefined
   )
 
+const useRouteConditionsByRouteRefs = (
+  studioId: StudioId,
+  routeIds: ComponentId[],
+  deps?: any[]
+): Condition[] | undefined =>
+  useLiveQuery(
+    () =>
+      new LibraryDatabase(studioId).conditions
+        .where('routeId')
+        .anyOf(routeIds)
+        .toArray(),
+    deps || [],
+    undefined
+  )
+
 const useRouteConditionsCountByRouteRef = (
   studioId: StudioId,
   routeId: ComponentId,
@@ -56,6 +71,7 @@ const useRouteConditionsCountByRouteRef = (
 export {
   useRouteCondition,
   useRouteConditionsByRouteRef,
+  useRouteConditionsByRouteRefs,
   useRouteConditionsCountByRouteRef
 }
 

@@ -14,6 +14,7 @@ import useRoutes, {
 import useRouteConditions, {
   useRouteCondition,
   useRouteConditionsByRouteRef,
+  useRouteConditionsByRouteRefs,
   useRouteConditionsCountByRouteRef
 } from './useRouteConditions'
 import useRouteEffects, {
@@ -44,6 +45,7 @@ export {
   useRouteConditions,
   useRouteCondition,
   useRouteConditionsByRouteRef,
+  useRouteConditionsByRouteRefs,
   useRouteConditionsCountByRouteRef,
   useRouteEffects,
   useRouteEffect,
