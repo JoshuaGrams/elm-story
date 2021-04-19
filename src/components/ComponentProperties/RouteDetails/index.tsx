@@ -24,7 +24,7 @@ import {
 import { Select } from 'antd'
 
 import ComponentTitle from '../ComponentTitle'
-import { VariableRow } from '../../GameVariables'
+import { VariableRow, VARIABLE_ROW_TYPE } from '../../GameVariables'
 
 import parentStyles from '../styles.module.less'
 import gameVariablesStyles from '../../GameVariables/styles.module.less'
@@ -73,11 +73,12 @@ const RouteConditionRow: React.FC<{
           <VariableRow
             studioId={studioId}
             variableId={variable.id}
+            rowType={VARIABLE_ROW_TYPE.CONDITION}
             allowRename={false}
             allowTypeChange={false}
-            allowCompareOperator={variable.type === VARIABLE_TYPE.NUMBER}
+            allowCompareOperator={true}
             compareOperatorType={conditionCompareOperatorType}
-            value={conditionValue || condition.compare[2]}
+            value={condition.compare[2]}
             onCompareOperatorTypeChange={async (
               newCompareOperatorType: COMPARE_OPERATOR_TYPE
             ) => {
@@ -88,11 +89,13 @@ const RouteConditionRow: React.FC<{
                   newCompareOperatorType
                 ))
 
+              console.log('wtf indeed')
+
               setConditionCompareOperatorType(newCompareOperatorType)
             }}
             onChangeValue={async (newValue: string) => {
               condition.id &&
-                (await api().effects.saveEffectValue(
+                (await api().conditions.saveConditionValue(
                   studioId,
                   condition.id,
                   newValue
@@ -149,11 +152,12 @@ const RouteEffectRow: React.FC<{
           <VariableRow
             studioId={studioId}
             variableId={variable.id}
+            rowType={VARIABLE_ROW_TYPE.EFFECT}
             allowRename={false}
             allowTypeChange={false}
             allowSetOperator={variable.type === VARIABLE_TYPE.NUMBER}
             setOperatorType={effectSetOperatorType}
-            value={effectValue || effect.set[2]}
+            value={effect.set[2]}
             onSetOperatorTypeChange={async (
               newSetOperatorType: SET_OPERATOR_TYPE
             ) => {
