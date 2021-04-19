@@ -114,7 +114,6 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
           {(engine.currentChapter || engine.startingChapter) && (
             <ChapterRenderer
               studioId={studioId}
-              gameId={gameId}
               // @ts-ignore: We are checking this.
               chapterId={engine.currentChapter || engine.startingChapter}
             />

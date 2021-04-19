@@ -2,7 +2,7 @@ import logger from '../../lib/logger'
 
 import React, { useContext, useEffect } from 'react'
 
-import { ComponentId, GameId, StudioId } from '../../data/types'
+import { ComponentId, StudioId } from '../../data/types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
@@ -12,9 +12,8 @@ import PassageRenderer from './PassageRenderer'
 
 const SceneRenderer: React.FC<{
   studioId: StudioId
-  gameId: GameId
   sceneId: ComponentId
-}> = ({ studioId, gameId, sceneId }) => {
+}> = ({ studioId, sceneId }) => {
   const scene = useScene(studioId, sceneId, [studioId, sceneId])
 
   const { engine, engineDispatch } = useContext(EngineContext)
@@ -45,7 +44,6 @@ const SceneRenderer: React.FC<{
             scene.passages[0]) && (
             <PassageRenderer
               studioId={studioId}
-              gameId={gameId}
               passageId={
                 engine.currentPassage ||
                 engine.startingPassage ||

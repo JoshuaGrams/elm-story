@@ -1,93 +1,22 @@
 import logger from '../../lib/logger'
 
 import React, { useContext, useEffect } from 'react'
-import { cloneDeep } from 'lodash'
 
-import {
-  ComponentId,
-  COMPONENT_TYPE,
-  GameId,
-  SET_OPERATOR_TYPE,
-  StudioId
-} from '../../data/types'
+import { ComponentId, COMPONENT_TYPE, StudioId } from '../../data/types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
-import {
-  usePassage,
-  useRouteEffectsByRouteRef,
-  useRoutesByPassageRef
-} from '../../hooks'
+import { usePassage, useRoutesByPassageRef } from '../../hooks'
 
 import ChoicesRenderer from './ChoicesRenderer'
 
 import api from '../../api'
 import { CustomElement } from '../ComponentEditor/PassageView'
 
-const EffectHandler: React.FC<{
-  studioId: StudioId
-  routeId: ComponentId
-}> = ({ studioId, routeId }) => {
-  const effects = useRouteEffectsByRouteRef(studioId, routeId, [
-    studioId,
-    routeId
-  ])
-
-  const { engine, engineDispatch } = useContext(EngineContext)
-
-  useEffect(() => {
-    async function executeEffect() {
-      if (effects) {
-        const newGameState = cloneDeep(engine.gameState)
-
-        effects.map((effect) => {
-          if (effect.id && newGameState[effect.variableId]) {
-            switch (effect.set[1]) {
-              case SET_OPERATOR_TYPE.ASSIGN:
-                newGameState[effect.variableId].currentValue = effect.set[2]
-                break
-              case SET_OPERATOR_TYPE.ADD:
-                newGameState[effect.variableId].currentValue = `${
-                  Number(newGameState[effect.variableId].currentValue) +
-                  Number(effect.set[2])
-                }`
-                break
-              case SET_OPERATOR_TYPE.SUBTRACT:
-                newGameState[effect.variableId].currentValue = `${
-                  Number(newGameState[effect.variableId].currentValue) -
-                  Number(effect.set[2])
-                }`
-                break
-              case SET_OPERATOR_TYPE.DIVIDE:
-                newGameState[effect.variableId].currentValue = `${
-                  Number(newGameState[effect.variableId].currentValue) /
-                  Number(effect.set[2])
-                }`
-                break
-              default:
-                break
-            }
-          }
-        })
-
-        engineDispatch({
-          type: ENGINE_ACTION_TYPE.GAME_STATE,
-          gameState: newGameState
-        })
-      }
-    }
-
-    effects && executeEffect()
-  }, [effects])
-
-  return null
-}
-
 const PassageRenderer: React.FC<{
   studioId: StudioId
-  gameId: GameId
   passageId: ComponentId
-}> = ({ studioId, gameId, passageId }) => {
+}> = ({ studioId, passageId }) => {
   const passage = usePassage(studioId, passageId, [studioId, passageId]),
     routes = useRoutesByPassageRef(studioId, passageId, [studioId, passageId])
 
@@ -148,17 +77,6 @@ const PassageRenderer: React.FC<{
     <>
       {passage && routes && (
         <>
-          {routes.map(
-            (route) =>
-              route.id && (
-                <EffectHandler
-                  studioId={studioId}
-                  routeId={route.id}
-                  key={route.id}
-                />
-              )
-          )}
-
           <div>
             {passage.content &&
               JSON.parse(passage.content).map(
@@ -175,7 +93,6 @@ const PassageRenderer: React.FC<{
           {passage.choices.length > 0 && (
             <ChoicesRenderer
               studioId={studioId}
-              gameId={gameId}
               passageId={passageId}
               onChoice={onChoice}
             />

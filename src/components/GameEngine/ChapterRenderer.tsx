@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 
 import { EngineContext } from '../../contexts/EngineContext'
 
-import { ComponentId, GameId, StudioId } from '../../data/types'
+import { ComponentId, StudioId } from '../../data/types'
 
 import { useChapter } from '../../hooks'
 
@@ -10,9 +10,8 @@ import SceneRenderer from './SceneRenderer'
 
 const ChapterRenderer: React.FC<{
   studioId: StudioId
-  gameId: GameId
   chapterId: ComponentId
-}> = ({ studioId, gameId, chapterId }) => {
+}> = ({ studioId, chapterId }) => {
   const chapter = useChapter(studioId, chapterId, [studioId, chapterId])
 
   const { engine } = useContext(EngineContext)
@@ -30,7 +29,6 @@ const ChapterRenderer: React.FC<{
             chapter.scenes[0]) && (
             <SceneRenderer
               studioId={studioId}
-              gameId={gameId}
               sceneId={
                 engine.currentScene || engine.startingScene || chapter.scenes[0]
               }

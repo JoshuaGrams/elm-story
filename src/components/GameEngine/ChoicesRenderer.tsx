@@ -9,13 +9,14 @@ import {
   ComponentId,
   COMPONENT_TYPE,
   Condition,
-  GameId,
+  Effect,
   GameState,
   Route,
+  SET_OPERATOR_TYPE,
   StudioId
 } from '../../data/types'
 
-import { EngineContext } from '../../contexts/EngineContext'
+import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
 import {
   useChoice,
@@ -23,6 +24,7 @@ import {
   useRoutesByChoiceRef,
   useRouteConditionsByRouteRefs
 } from '../../hooks'
+import api from '../../api'
 
 function isRouteOpen(gameState: GameState, conditions: Condition[]): boolean {
   let isOpen = conditions.length === 0 ? true : false
@@ -57,6 +59,55 @@ function isRouteOpen(gameState: GameState, conditions: Condition[]): boolean {
     })
 
   return isOpen
+}
+
+async function processEffectsByRoute(
+  studioId: StudioId,
+  gameState: GameState,
+  routeId: ComponentId
+): Promise<GameState | null> {
+  const effects = (await api().effects.getEffectsByRouteRef(
+    studioId,
+    routeId
+  )) as Effect[]
+
+  if (effects.length > 0) {
+    const newGameState = cloneDeep(gameState)
+
+    effects.map((effect) => {
+      if (effect.id && newGameState[effect.variableId]) {
+        switch (effect.set[1]) {
+          case SET_OPERATOR_TYPE.ASSIGN:
+            newGameState[effect.variableId].currentValue = effect.set[2]
+            break
+          case SET_OPERATOR_TYPE.ADD:
+            newGameState[effect.variableId].currentValue = `${
+              Number(newGameState[effect.variableId].currentValue) +
+              Number(effect.set[2])
+            }`
+            break
+          case SET_OPERATOR_TYPE.SUBTRACT:
+            newGameState[effect.variableId].currentValue = `${
+              Number(newGameState[effect.variableId].currentValue) -
+              Number(effect.set[2])
+            }`
+            break
+          case SET_OPERATOR_TYPE.DIVIDE:
+            newGameState[effect.variableId].currentValue = `${
+              Number(newGameState[effect.variableId].currentValue) /
+              Number(effect.set[2])
+            }`
+            break
+          default:
+            break
+        }
+      }
+    })
+
+    return newGameState
+  } else {
+    return null
+  }
 }
 
 const SelectedRouteHandler: React.FC<{
@@ -112,6 +163,8 @@ const ChoiceButtonRenderer: React.FC<{
   const choice = useChoice(studioId, choiceId, [studioId, choiceId]),
     routes = useRoutesByChoiceRef(studioId, choiceId, [studioId, choiceId])
 
+  const { engine, engineDispatch } = useContext(EngineContext)
+
   const [selectedRoute, setSelectedRoute] = useState<string | undefined>(
     undefined
   )
@@ -139,19 +192,33 @@ const ChoiceButtonRenderer: React.FC<{
             onClick={
               selectedRoute
                 ? async () => {
-                    const foundRoute = routes.find(
-                      (route) => route.id === selectedRoute
-                    )
-
-                    // TODO: Choice may point to multiple passages and jumps.
-                    // Track, calculate probability. For now, we'll go to the first. #111
-                    choice.id &&
-                      foundRoute &&
-                      onChoice(
-                        choice.id,
-                        foundRoute.destinationId,
-                        foundRoute.destinationType
+                    if (choice.id) {
+                      const foundRoute = routes.find(
+                        (route) => route.id === selectedRoute
                       )
+
+                      if (foundRoute?.id) {
+                        const newGameState = await processEffectsByRoute(
+                          studioId,
+                          engine.gameState,
+                          foundRoute.id
+                        )
+
+                        newGameState &&
+                          engineDispatch({
+                            type: ENGINE_ACTION_TYPE.GAME_STATE,
+                            gameState: newGameState
+                          })
+
+                        // TODO: Choice may point to multiple passages and jumps.
+                        // Track, calculate probability. For now, we'll go to the first. #111
+                        onChoice(
+                          choice.id,
+                          foundRoute.destinationId,
+                          foundRoute.destinationType
+                        )
+                      }
+                    }
                   }
                 : () => null
             }
@@ -166,14 +233,13 @@ const ChoiceButtonRenderer: React.FC<{
 
 const ChoicesRenderer: React.FC<{
   studioId: StudioId
-  gameId: GameId
   passageId: ComponentId
   onChoice: (
     choiceId: ComponentId,
     destinationId: ComponentId,
     destinationType: COMPONENT_TYPE
   ) => void
-}> = ({ studioId, gameId, passageId, onChoice }) => {
+}> = ({ studioId, passageId, onChoice }) => {
   const choices = useChoicesByPassageRef(studioId, passageId, [
     studioId,
     passageId
