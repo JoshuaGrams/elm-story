@@ -305,6 +305,8 @@ export class LibraryDatabase extends Dexie {
         scenes = await this.scenes.where({ gameId }).toArray(),
         passages = await this.passages.where({ gameId }).toArray(),
         routes = await this.routes.where({ gameId }).toArray(),
+        conditions = await this.conditions.where({ gameId }).toArray(),
+        effects = await this.effects.where({ gameId }).toArray(),
         choices = await this.choices.where({ gameId }).toArray(),
         variables = await this.variables.where({ gameId }).toArray()
 
@@ -314,6 +316,8 @@ export class LibraryDatabase extends Dexie {
       logger.info(`SCENES: Removing ${scenes.length}...`)
       logger.info(`PASSAGES: Removing ${passages.length}...`)
       logger.info(`ROUTES: Remove ${routes.length}...`)
+      logger.info(`ROUTE CONDITIONS: Remove ${conditions.length}...`)
+      logger.info(`ROUTE EFFECTS: Remove ${effects.length}...`)
       logger.info(`CHOICES: Removing ${choices.length}...`)
       logger.info(`VARIABLES: Removing ${variables.length}...`)
 
@@ -333,6 +337,12 @@ export class LibraryDatabase extends Dexie {
         }),
         routes.map(async (route) => {
           if (route.id) await this.routes.delete(route.id)
+        }),
+        conditions.map(async (condition) => {
+          if (condition.id) await this.conditions.delete(condition.id)
+        }),
+        effects.map(async (effect) => {
+          if (effect.id) await this.effects.delete(effect.id)
         }),
         choices.map(async (passage) => {
           if (passage.id) await this.choices.delete(passage.id)
