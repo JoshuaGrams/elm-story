@@ -33,8 +33,7 @@ function isRouteOpen(gameState: GameState, conditions: Condition[]): boolean {
 
       switch (condition.compare[1]) {
         case COMPARE_OPERATOR_TYPE.EQ:
-          console.log(currentValue)
-          console.log(condition.compare[2])
+          // TODO: All values in compare[2] should be string #131
           isOpen = currentValue === `${condition.compare[2]}`
           break
         case COMPARE_OPERATOR_TYPE.GT:
