@@ -4,7 +4,12 @@ import React, { memo, useContext, useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash-es'
 import { v4 as uuid } from 'uuid'
 
-import { useStoreState, useStoreActions, Node } from 'react-flow-renderer'
+import {
+  useStoreState,
+  useStoreActions,
+  Node,
+  useUpdateNodeInternals
+} from 'react-flow-renderer'
 
 import {
   Choice,
@@ -35,27 +40,47 @@ import {
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
 
+interface MenuInfo {
+  domEvent: React.MouseEvent<HTMLElement>
+}
+
 const ChoiceRow: React.FC<{
   studioId: StudioId
   choiceId: ComponentId
   title: string
+  order: [number, number] // [position, total]
   showDivider: boolean
   handle: JSX.Element
   selected: boolean
   onSelect: (passageId: ComponentId, choiceId: ComponentId) => void
+  onReorder: (
+    passageId: ComponentId,
+    choiceId: ComponentId,
+    newPosition: number
+  ) => void
   onDelete: (choiceId: ComponentId, outgoingRoutes: Route[]) => void
 }> = ({
   studioId,
   choiceId,
   title,
+  order,
   showDivider = true,
   handle,
   selected = false,
   onSelect,
+  onReorder,
   onDelete
 }) => {
   const choice = useChoice(studioId, choiceId),
     outgoingRoutes = useRoutesByChoiceRef(studioId, choiceId)
+
+  function _onReorder(event: MenuInfo, newPosition: number) {
+    event.domEvent.stopPropagation()
+
+    choice?.passageId &&
+      choice?.id &&
+      onReorder(choice?.passageId, choice.id, newPosition)
+  }
 
   return (
     <div
@@ -66,16 +91,34 @@ const ChoiceRow: React.FC<{
         borderBottom: showDivider ? '1px solid hsl(0, 0%, 15%)' : 'none'
       }}
       onClick={() => {
-        choice &&
-          choice.passageId &&
-          choice.id &&
-          onSelect(choice.passageId, choice.id)
+        choice?.passageId && choice?.id && onSelect(choice.passageId, choice.id)
       }}
     >
       <Dropdown
         trigger={['contextMenu']}
         overlay={
           <Menu>
+            {order[0] > 1 && (
+              <Menu.Item onClick={(event) => _onReorder(event, 0)}>
+                Move to Top
+              </Menu.Item>
+            )}
+            {order[0] > 0 && (
+              <Menu.Item onClick={(event) => _onReorder(event, order[0] - 1)}>
+                Move Up
+              </Menu.Item>
+            )}
+            {order[0] < order[1] - 1 && (
+              <Menu.Item onClick={(event) => _onReorder(event, order[0] + 1)}>
+                Move Down
+              </Menu.Item>
+            )}
+            {order[0] < order[1] - 2 && (
+              <Menu.Item onClick={(event) => _onReorder(event, order[1] - 1)}>
+                Move to Bottom
+              </Menu.Item>
+            )}
+
             <Menu.Item
               onClick={(event) => {
                 event.domEvent.stopPropagation()
@@ -149,7 +192,7 @@ const ChoiceHandle: React.FC<{
       className={styles.choiceHandle}
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Right}
-      id={choiceId}
+      id={`handle-${choiceId}`}
       isValidConnection={(connection: Connection): boolean => {
         logger.info('isValidConnection')
 
@@ -185,6 +228,8 @@ const PassageNode: React.FC<NodeProps<{
   const passage = usePassage(data.studioId, data.passageId),
     choicesByPassageRef = useChoicesByPassageRef(data.studioId, data.passageId)
 
+  const updateNodeInternals = useUpdateNodeInternals()
+
   const passages = useStoreState((state) =>
       state.nodes.filter(
         (node: Node<{ type: COMPONENT_TYPE }>) =>
@@ -202,6 +247,8 @@ const PassageNode: React.FC<NodeProps<{
   >([])
 
   useEffect(() => {
+    logger.info(`PassageNode->choicesByPassageRef->useEffect`)
+
     if (choicesByPassageRef) {
       setChoices(
         // @ts-ignore
@@ -227,7 +274,11 @@ const PassageNode: React.FC<NodeProps<{
           })
       )
     }
-  }, [choicesByPassageRef])
+  }, [choicesByPassageRef, passage?.choices])
+
+  useEffect(() => {
+    updateNodeInternals(data.passageId)
+  }, [choices])
 
   useEffect(() => {
     logger.info(`PassageNode->editor.selectedComponentEditorSceneViewChoice->
@@ -241,7 +292,11 @@ const PassageNode: React.FC<NodeProps<{
   }, [data.selectedChoice])
 
   return (
-    <div className={styles.passageNode} key={passage?.id}>
+    <div
+      className={styles.passageNode}
+      key={data.passageId}
+      id={data.passageId}
+    >
       {passage?.id ? (
         <>
           <div
@@ -293,6 +348,7 @@ const PassageNode: React.FC<NodeProps<{
                       studioId={data.studioId}
                       choiceId={choice.id}
                       title={choice.title}
+                      order={[index, choices.length]}
                       showDivider={choices.length - 1 !== index}
                       handle={choice.handle}
                       selected={data.selectedChoice === choice.id}
@@ -323,6 +379,25 @@ const PassageNode: React.FC<NodeProps<{
                               ? choiceId
                               : null
                           )
+                      }}
+                      onReorder={async (passageId, choiceId, newPosition) => {
+                        logger.info(
+                          `ChoiceRow->onReorder->passageId: ${passageId} choiceId: ${choiceId} newPosition: ${newPosition}`
+                        )
+
+                        const clonedChoiceRefs = cloneDeep(passage.choices),
+                          foundChoiceRefIndex = clonedChoiceRefs.findIndex(
+                            (choiceRef) => choiceRef == choiceId
+                          )
+
+                        clonedChoiceRefs.splice(foundChoiceRefIndex, 1)
+                        clonedChoiceRefs.splice(newPosition, 0, choiceId)
+
+                        await api().passages.saveChoiceRefsToPassage(
+                          data.studioId,
+                          data.passageId,
+                          clonedChoiceRefs
+                        )
                       }}
                       onDelete={async (choiceId, outgoingRoutes) => {
                         try {
