@@ -234,12 +234,13 @@ const ChoiceButtonRenderer: React.FC<{
 const ChoicesRenderer: React.FC<{
   studioId: StudioId
   passageId: ComponentId
+  order: string[]
   onChoice: (
     choiceId: ComponentId,
     destinationId: ComponentId,
     destinationType: COMPONENT_TYPE
   ) => void
-}> = ({ studioId, passageId, onChoice }) => {
+}> = ({ studioId, passageId, order, onChoice }) => {
   const choices = useChoicesByPassageRef(studioId, passageId, [
     studioId,
     passageId
@@ -249,17 +250,23 @@ const ChoicesRenderer: React.FC<{
     <>
       {choices && (
         <div className="choices-container">
-          {choices.map(
-            (choice) =>
-              choice.id && (
-                <ChoiceButtonRenderer
-                  key={choice.id}
-                  studioId={studioId}
-                  choiceId={choice.id}
-                  onChoice={onChoice}
-                />
-              )
-          )}
+          {choices
+            .sort(
+              (a, b) =>
+                order.findIndex((choiceRef) => a.id === choiceRef) -
+                order.findIndex((choiceRef) => b.id === choiceRef)
+            )
+            .map(
+              (choice) =>
+                choice.id && (
+                  <ChoiceButtonRenderer
+                    key={choice.id}
+                    studioId={studioId}
+                    choiceId={choice.id}
+                    onChoice={onChoice}
+                  />
+                )
+            )}
         </div>
       )}
     </>

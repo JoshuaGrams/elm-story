@@ -94,6 +94,7 @@ const PassageRenderer: React.FC<{
             <ChoicesRenderer
               studioId={studioId}
               passageId={passageId}
+              order={passage.choices}
               onChoice={onChoice}
             />
           )}
