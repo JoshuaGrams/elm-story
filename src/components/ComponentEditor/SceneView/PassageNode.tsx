@@ -192,7 +192,7 @@ const ChoiceHandle: React.FC<{
       className={styles.choiceHandle}
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Right}
-      id={`handle-${choiceId}`}
+      id={choiceId}
       isValidConnection={(connection: Connection): boolean => {
         logger.info('isValidConnection')
 
