@@ -276,6 +276,7 @@ const RouteDetails: React.FC<{
             />
             <div className={parentStyles.componentId}>{route.id}</div>
 
+            {/* ROUTE CONDITIONS */}
             <div className={styles.routeFeature}>
               <div className={styles.featureHeader}>Conditions</div>
 
@@ -338,6 +339,7 @@ const RouteDetails: React.FC<{
               </div>
             </div>
 
+            {/* ROUTE EFFECTS */}
             <div className={styles.routeFeature}>
               <div className={styles.featureHeader}>Effects</div>
 
