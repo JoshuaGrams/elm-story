@@ -5,6 +5,10 @@
   background: #0f0f0f;
   border: 1px solid #000000 !important;
 
+  &:hover {
+    border-color: var(--highlight-color) !important;
+  }
+
   .addGameButton {
     position: absolute;
     top: 0px;
@@ -14,5 +18,19 @@
     height: 100%;
     width: 100%;
     font-size: 24px;
+    border: none;
+
+    &:hover,
+    &:focus {
+      border-color: transparent !important;
+    }
+
+    svg {
+      fill: white !important;
+    }
+
+    &:hover svg {
+      fill: var(--highlight-color) !important;
+    }
   }
 }
