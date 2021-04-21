@@ -1,3 +1,9 @@
+export enum PLATFORM_TYPE {
+  WINDOWS = 'win32',
+  MACOS = 'darwin',
+  LINUX = 'linux'
+}
+
 export enum COMPONENT_TYPE {
   STUDIO = 'STUDIO',
   GAME = 'GAME',

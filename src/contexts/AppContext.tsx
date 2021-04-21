@@ -1,7 +1,8 @@
 import React, { useMemo, createContext, useReducer } from 'react'
-import { StudioId, GameId } from '../data/types'
+import { StudioId, GameId, PLATFORM_TYPE } from '../data/types'
 
 interface AppState {
+  platform?: PLATFORM_TYPE
   header: string
   fullscreen: boolean
   menuOpen: boolean
@@ -11,6 +12,7 @@ interface AppState {
 }
 
 export enum APP_ACTION_TYPE {
+  PLATFORM = 'PLATFORM',
   HEADER = 'HEADER',
   FULLSCREEN = 'FULLSCREEN',
   FLOATING = 'FLOATING',
@@ -28,6 +30,7 @@ export enum APP_LOCATION {
 }
 
 type AppActionType =
+  | { type: APP_ACTION_TYPE.PLATFORM; platform: PLATFORM_TYPE }
   | { type: APP_ACTION_TYPE.HEADER; header: string }
   | { type: APP_ACTION_TYPE.FULLSCREEN }
   | { type: APP_ACTION_TYPE.FLOATING }
@@ -40,6 +43,11 @@ type AppActionType =
 
 const appReducer = (state: AppState, action: AppActionType): AppState => {
   switch (action.type) {
+    case APP_ACTION_TYPE.PLATFORM:
+      return {
+        ...state,
+        platform: action.platform
+      }
     case APP_ACTION_TYPE.HEADER:
       return {
         ...state,
@@ -72,6 +80,7 @@ interface AppContextType {
 }
 
 const defaultAppState: AppState = {
+  platform: undefined,
   header: 'Elm Story',
   fullscreen: false,
   menuOpen: false,

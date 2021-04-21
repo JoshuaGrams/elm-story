@@ -8,6 +8,7 @@
  * When running `yarn build` or `yarn build-main`, this file is compiled to
  * `./src/main.prod.js` using webpack. This gives us some performance wins.
  */
+import os from 'os'
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import path from 'path'
@@ -106,6 +107,8 @@ const createWindow = async () => {
         ? WINDOW_EVENT_TYPE.FULLSCREEN
         : WINDOW_EVENT_TYPE.FLOAT
     )
+
+    mainWindow.webContents.send(WINDOW_EVENT_TYPE.PLATFORM, [os.platform()])
 
     mainWindow.on('enter-full-screen', () =>
       mainWindow?.webContents.send(WINDOW_EVENT_TYPE.FULLSCREEN)
