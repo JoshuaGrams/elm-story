@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { useGames, useStudios } from '../../hooks'
 
 import { StudioId, Studio } from '../../data/types'
+
+import { useGames, useStudios } from '../../hooks'
+import { GAME_SORT } from '../../hooks/useGames'
 
 import { Divider, Row, Col } from 'antd'
 
@@ -15,17 +17,16 @@ interface GameLibraryProps {
 }
 
 const GameLibrary: React.FC<GameLibraryProps> = ({ studioId }) => {
-  const studios = useStudios([studioId])
-  const games = useGames(studioId, [studioId])
-
   const [selectedStudio, setSelectedStudio] = useState<Studio | undefined>(
-    undefined
-  )
+      undefined
+    ),
+    [saveGameModalVisible, setSaveGameModalVisible] = useState(false),
+    [sortBy] = useState<GAME_SORT>(GAME_SORT.DATE)
 
-  const [saveGameModalVisible, setSaveGameModalVisible] = useState(false)
+  const studios = useStudios([studioId])
+  const games = useGames(studioId, sortBy, [studioId, sortBy])
 
   useEffect(() => {
-    // TODO: Move this to hook; see AppMenu duplicate
     if (studios) {
       setSelectedStudio(
         studioId

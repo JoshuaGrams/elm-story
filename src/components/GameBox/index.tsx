@@ -16,6 +16,8 @@ import { SaveGameModal, RemoveGameModal } from '../Modal'
 
 import styles from './styles.module.less'
 
+import api from '../../api'
+
 interface GameBoxProps {
   studioId: StudioId
   game?: Game
@@ -77,8 +79,15 @@ const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
                 </Tooltip>
               ]
         }
-        onClick={() => {
-          if (game) {
+        onClick={async () => {
+          if (game?.id) {
+            const selectedGame = await api().games.getGame(studioId, game.id)
+
+            await api().games.saveGame(studioId, {
+              ...selectedGame,
+              updated: Date.now()
+            })
+
             appDispatch({
               type: APP_ACTION_TYPE.GAME_SELECT,
               selectedGameId: game.id
