@@ -30,6 +30,7 @@ interface EditorState {
   totalComponentEditorSceneViewSelectedJumps: number
   totalComponentEditorSceneViewSelectedPassages: number
   totalComponentEditorSceneViewSelectedRoutes: number
+  selectedComponentEditorSceneViewCenter: { x: number; y: number; zoom: number }
   selectedComponentEditorSceneViewJump: ComponentId | null
   selectedComponentEditorSceneViewPassage: ComponentId | null
   selectedComponentEditorSceneViewRoute: ComponentId | null
@@ -50,6 +51,7 @@ export enum EDITOR_ACTION_TYPE {
   COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS',
   COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_PASSAGES = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_PASSAGES',
   COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES',
+  COMPONENT_EDITOR_SCENE_VIEW_SELECT_CENTER = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_CENTER',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE',
@@ -111,6 +113,14 @@ type EditorActionType =
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES
       totalComponentEditorSceneViewSelectedRoutes: number
+    }
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CENTER
+      selectedComponentEditorSceneViewCenter: {
+        x: number
+        y: number
+        zoom: number
+      }
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP
@@ -189,6 +199,12 @@ const editorReducer = (
         totalComponentEditorSceneViewSelectedRoutes:
           action.totalComponentEditorSceneViewSelectedRoutes
       }
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CENTER:
+      return {
+        ...state,
+        selectedComponentEditorSceneViewCenter:
+          action.selectedComponentEditorSceneViewCenter
+      }
     case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP:
       return {
         ...state,
@@ -257,6 +273,7 @@ const defaultEditorState: EditorState = {
   totalComponentEditorSceneViewSelectedJumps: 0,
   totalComponentEditorSceneViewSelectedPassages: 0,
   totalComponentEditorSceneViewSelectedRoutes: 0,
+  selectedComponentEditorSceneViewCenter: { x: 0, y: 0, zoom: 0 },
   selectedComponentEditorSceneViewJump: null,
   selectedComponentEditorSceneViewPassage: null,
   selectedComponentEditorSceneViewRoute: null,

@@ -39,6 +39,7 @@ import { SaveGameModal } from '../Modal'
 import styles from './styles.module.less'
 
 import api from '../../api'
+import { DEFAULT_NODE_SIZE } from '../ComponentEditor/SceneView'
 
 const { Text } = Typography
 
@@ -650,7 +651,15 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               title: 'Untitled Passage',
               choices: [],
               content: '',
-              tags: []
+              tags: [],
+              editor: {
+                componentEditorPosX:
+                  editor.selectedComponentEditorSceneViewCenter.x -
+                  DEFAULT_NODE_SIZE.PASSAGE_WIDTH / 2,
+                componentEditorPosY:
+                  editor.selectedComponentEditorSceneViewCenter.y -
+                  DEFAULT_NODE_SIZE.PASSAGE_HEIGHT / 2
+              }
             })
           } catch (error) {
             throw new Error(error)

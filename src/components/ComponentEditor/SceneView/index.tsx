@@ -11,6 +11,7 @@ import {
 } from '../../../contexts/EditorContext'
 
 import {
+  useDebouncedResizeObserver,
   useJumpsBySceneRef,
   usePassagesBySceneRef,
   useRoutesBySceneRef,
@@ -43,13 +44,20 @@ import styles from './styles.module.less'
 
 import api from '../../../api'
 
+export enum DEFAULT_NODE_SIZE {
+  PASSAGE_WIDTH = 197,
+  PASSAGE_HEIGHT = 68,
+  JUMP_WIDTH = 230,
+  JUMP_HEIGHT = 200
+}
+
 export const SceneViewTools: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
 }> = ({ studioId, sceneId }) => {
   const scene = useScene(studioId, sceneId, [sceneId])
 
-  const { editorDispatch } = useContext(EditorContext)
+  const { editor, editorDispatch } = useContext(EditorContext)
 
   return (
     <>
@@ -67,8 +75,12 @@ export const SceneViewTools: React.FC<{
                   content: '',
                   tags: [],
                   editor: {
-                    componentEditorPosX: 0,
-                    componentEditorPosY: 0
+                    componentEditorPosX:
+                      editor.selectedComponentEditorSceneViewCenter.x -
+                      DEFAULT_NODE_SIZE.PASSAGE_WIDTH / 2,
+                    componentEditorPosY:
+                      editor.selectedComponentEditorSceneViewCenter.y -
+                      DEFAULT_NODE_SIZE.PASSAGE_HEIGHT / 2
                   }
                 })
 
@@ -104,8 +116,12 @@ export const SceneViewTools: React.FC<{
                 route: [scene.chapterId],
                 tags: [],
                 editor: {
-                  componentEditorPosX: 0,
-                  componentEditorPosY: 0
+                  componentEditorPosX:
+                    editor.selectedComponentEditorSceneViewCenter.x -
+                    DEFAULT_NODE_SIZE.JUMP_WIDTH / 2,
+                  componentEditorPosY:
+                    editor.selectedComponentEditorSceneViewCenter.y -
+                    DEFAULT_NODE_SIZE.JUMP_HEIGHT / 2
                 }
               })
 
@@ -139,24 +155,28 @@ export const SceneViewTools: React.FC<{
                 }
               })
 
-              const updatedChapter = await api().chapters.getChapter(
-                  studioId,
-                  scene.chapterId
-                ),
-                foundSceneIndex = updatedChapter.scenes.findIndex(
-                  (sceneRef) => sceneRef === sceneId
-                )
+              try {
+                const updatedChapter = await api().chapters.getChapter(
+                    studioId,
+                    scene.chapterId
+                  ),
+                  foundSceneIndex = updatedChapter.scenes.findIndex(
+                    (sceneRef) => sceneRef === sceneId
+                  )
 
-              updatedChapter.scenes.splice(foundSceneIndex, 1)
+                updatedChapter.scenes.splice(foundSceneIndex, 1)
 
-              await Promise.all([
-                api().chapters.saveSceneRefsToChapter(
-                  studioId,
-                  scene.chapterId,
-                  updatedChapter.scenes
-                ),
-                api().scenes.removeScene(studioId, sceneId)
-              ])
+                await Promise.all([
+                  api().chapters.saveSceneRefsToChapter(
+                    studioId,
+                    scene.chapterId,
+                    updatedChapter.scenes
+                  ),
+                  api().scenes.removeScene(studioId, sceneId)
+                ])
+              } catch (error) {
+                throw error
+              }
             }}
           >
             Remove Scene
@@ -171,6 +191,12 @@ const SceneView: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
 }> = ({ studioId, sceneId }) => {
+  const {
+    ref: flowWrapperRef,
+    width: flowWrapperRefWidth,
+    height: flowWrapperRefHeight
+  } = useDebouncedResizeObserver(500)
+
   const { editor, editorDispatch } = useContext(EditorContext)
 
   const jumps = useJumpsBySceneRef(studioId, sceneId),
@@ -178,12 +204,13 @@ const SceneView: React.FC<{
     routes = useRoutesBySceneRef(studioId, sceneId),
     passages = usePassagesBySceneRef(studioId, sceneId)
 
-  const selectedElements = useStoreState((state) => state.selectedElements),
+  const currentZoom = useStoreState((state) => state.transform[2]),
+    selectedElements = useStoreState((state) => state.selectedElements),
     setInternalElements = useStoreActions((actions) => actions.setElements),
     setSelectedElements = useStoreActions(
       (actions) => actions.setSelectedElements
     ),
-    { transform } = useZoomPanHelper()
+    { transform, project } = useZoomPanHelper()
 
   const [ready, setReady] = useState(false),
     // TODO: Support multiple selected jump and passages?
@@ -195,6 +222,19 @@ const SceneView: React.FC<{
     [selectedRoute, setSelectedRoute] = useState<ComponentId | null>(null),
     [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
     [elements, setElements] = useState<FlowElement[]>([])
+
+  function setSelectedSceneViewCenter() {
+    editorDispatch({
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CENTER,
+      selectedComponentEditorSceneViewCenter: {
+        ...project({
+          x: flowWrapperRefWidth / 2,
+          y: flowWrapperRefHeight / 2
+        }),
+        zoom: currentZoom
+      }
+    })
+  }
 
   // This is not selection.
   function highlightElements(elementsToHighlight: Elements<any> | null) {
@@ -548,14 +588,15 @@ const SceneView: React.FC<{
   }
 
   async function onMoveEnd(flowTransform?: FlowTransform | undefined) {
-    scene &&
-      scene.id &&
-      flowTransform &&
-      (await api().scenes.saveSceneViewTransform(
+    if (scene?.id && flowTransform) {
+      setSelectedSceneViewCenter()
+
+      await api().scenes.saveSceneViewTransform(
         studioId,
         scene.id,
         flowTransform
-      ))
+      )
+    }
   }
 
   useEffect(() => {
@@ -727,6 +768,16 @@ const SceneView: React.FC<{
   ])
 
   useEffect(() => {
+    editor.selectedGameOutlineComponent.id === sceneId &&
+      setSelectedSceneViewCenter()
+  }, [
+    editor.selectedGameOutlineComponent,
+    flowWrapperRefWidth,
+    flowWrapperRefHeight,
+    currentZoom
+  ])
+
+  useEffect(() => {
     logger.info(`SceneView->selectedElements->useEffect->nothing`)
   }, [selectedElements])
 
@@ -756,50 +807,51 @@ const SceneView: React.FC<{
   return (
     <>
       {passages && (
-        <ReactFlow
-          className={styles.sceneView}
-          snapToGrid
-          nodeTypes={{
-            passageNode: PassageNode,
-            jumpNode: JumpNode
-          }}
-          edgeTypes={{
-            routeEdge: RouteEdge
-          }}
-          snapGrid={[4, 4]}
-          onlyRenderVisibleElements={false}
-          // TODO: fit to saved editor transform (pan/zoom)
-          onLoad={(reactFlowInstance) => reactFlowInstance.fitView()}
-          elements={elements}
-          onElementsRemove={
-            editor.selectedGameOutlineComponent.id === scene?.id
-              ? onElementsRemove
-              : undefined
-          }
-          onNodeDragStop={onNodeDragStop}
-          onConnectStart={(
-            event: React.MouseEvent<Element, MouseEvent>,
-            params: OnConnectStartParams
-          ) => {
-            // nodeId: passage ID
-            // handleId: passage ID or choice ID
-            // handleType: 'target' passage ID / 'source' choice ID
-            logger.info('onConnectStart')
-          }}
-          onConnect={onConnect}
-          elementsSelectable
-          onSelectionDragStop={onSelectionDragStop}
-          onSelectionChange={onSelectionChange}
-          onMoveEnd={onMoveEnd}
-        >
-          <Background
-            size={1}
-            className={styles.background}
-            color={'hsl(0, 0%, 10%)'}
-          />
-          <Controls className={styles.control} />
-          <MiniMap />
-        </ReactFlow>
+        <div className={styles.sceneView} ref={flowWrapperRef}>
+          <ReactFlow
+            snapToGrid
+            nodeTypes={{
+              passageNode: PassageNode,
+              jumpNode: JumpNode
+            }}
+            edgeTypes={{
+              routeEdge: RouteEdge
+            }}
+            snapGrid={[4, 4]}
+            onlyRenderVisibleElements={false}
+            // TODO: fit to saved editor transform (pan/zoom)
+            onLoad={(reactFlowInstance) => reactFlowInstance.fitView()}
+            elements={elements}
+            onElementsRemove={
+              editor.selectedGameOutlineComponent.id === scene?.id
+                ? onElementsRemove
+                : undefined
+            }
+            onNodeDragStop={onNodeDragStop}
+            onConnectStart={(
+              event: React.MouseEvent<Element, MouseEvent>,
+              params: OnConnectStartParams
+            ) => {
+              // nodeId: passage ID
+              // handleId: passage ID or choice ID
+              // handleType: 'target' passage ID / 'source' choice ID
+              logger.info('onConnectStart')
+            }}
+            onConnect={onConnect}
+            elementsSelectable
+            onSelectionDragStop={onSelectionDragStop}
+            onSelectionChange={onSelectionChange}
+            onMoveEnd={onMoveEnd}
+          >
+            <Background
+              size={1}
+              className={styles.background}
+              color={'hsl(0, 0%, 10%)'}
+            />
+            <Controls className={styles.control} />
+            <MiniMap />
+          </ReactFlow>
+        </div>
       )}
     </>
   )
