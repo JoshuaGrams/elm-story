@@ -1,6 +1,6 @@
 import useDebouncedResizeObserver from './useDebouncedResizeObserver'
 
-import useStudios, { useSelectedStudio } from './useStudios'
+import useStudios, { useStudio } from './useStudios'
 import useGames, { useGame } from './useGames'
 import useJumps, { useJump, useJumpsBySceneRef } from './useJumps'
 import useChapters, { useChapter } from './useChapters'
@@ -29,7 +29,7 @@ import useVariables, { useVariable } from './useVariables'
 export {
   useDebouncedResizeObserver,
   useStudios,
-  useSelectedStudio,
+  useStudio,
   useGames,
   useGame,
   useJumps,

@@ -16,16 +16,13 @@ const useStudios = (deps?: any[]): Studio[] | undefined => {
   return studios
 }
 
-const useSelectedStudio = (
-  studioId: StudioId,
-  deps?: any[]
-): Studio | undefined =>
+const useStudio = (studioId: StudioId, deps?: any[]): Studio | undefined =>
   useLiveQuery(
     () => new AppDatabase().studios.where({ id: studioId }).first(),
     deps || [],
     undefined
   )
 
-export { useSelectedStudio }
+export { useStudio }
 
 export default useStudios

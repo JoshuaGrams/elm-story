@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 
 import { StudioId, Studio } from '../../data/types'
 
-import { Modal, ModalProps, Form, Input } from 'antd'
+import { Modal, ModalProps, Form, Input, Button } from 'antd'
 
 import api from '../../api'
 
@@ -10,6 +10,7 @@ interface SaveStudioModalProps extends ModalProps {
   studio?: Studio
   edit?: boolean
   onSave?: (studioId: StudioId) => void
+  onRemove?: () => void
 }
 
 const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
@@ -18,7 +19,8 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
   afterClose,
   studio,
   edit,
-  onSave
+  onSave,
+  onRemove
 }) => {
   const [saveStudioForm] = Form.useForm()
 
@@ -35,14 +37,36 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
       title={`${studio && edit ? 'Edit' : 'New'} Studio`}
       visible={visible}
       destroyOnClose
-      onOk={(event) => {
-        event.preventDefault()
-        saveStudioForm.submit()
-      }}
       onCancel={onCancel}
       centered
-      okText="Save"
       okButtonProps={{ form: 'save-studio-form', htmlType: 'submit' }}
+      footer={[
+        <Button
+          key="remove"
+          danger
+          style={{ position: 'absolute', left: '16px' }}
+          onClick={async () => {
+            studio?.id && (await api().studios.removeStudio(studio.id))
+
+            onRemove && onRemove()
+          }}
+        >
+          Remove
+        </Button>,
+        <Button key="cancel" onClick={onCancel}>
+          Cancel
+        </Button>,
+        <Button
+          key="submit"
+          type="primary"
+          onClick={(event) => {
+            event.preventDefault()
+            saveStudioForm.submit()
+          }}
+        >
+          Save
+        </Button>
+      ]}
     >
       <Form
         id="save-studio-form"
@@ -56,8 +80,8 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
                 : { title, tags: [], games: [] }
             )
 
-            if (onSave) onSave(studioId)
-            if (afterClose) afterClose()
+            onSave && onSave(studioId)
+            afterClose && afterClose()
           } catch (error) {
             throw new Error(error)
           }

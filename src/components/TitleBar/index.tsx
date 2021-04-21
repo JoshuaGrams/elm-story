@@ -127,7 +127,8 @@ const TitleBar: React.FC = () => {
             })
           }
         />
-        <TitleBarButton
+        {/* #137 */}
+        {/* <TitleBarButton
           type={TITLE_BAR_BUTTON_TYPE.MENU}
           onClick={() =>
             appDispatch({
@@ -136,7 +137,7 @@ const TitleBar: React.FC = () => {
                 : APP_ACTION_TYPE.MENU_OPEN
             })
           }
-        />
+        /> */}
       </div>
 
       <header>{app.header}</header>
