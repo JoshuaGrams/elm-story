@@ -55,6 +55,7 @@ export const SceneViewTools: React.FC<{
     <>
       {scene && (
         <>
+          {/* Add Passage Button */}
           <Button
             onClick={async () => {
               try {
@@ -90,9 +91,10 @@ export const SceneViewTools: React.FC<{
               }
             }}
           >
-            New Passage
+            Add Passage
           </Button>
 
+          {/* Add Jump Button */}
           <Button
             onClick={async () => {
               const jump = await api().jumps.saveJump(studioId, {
@@ -122,7 +124,42 @@ export const SceneViewTools: React.FC<{
               })
             }}
           >
-            New Jump
+            Add Jump
+          </Button>
+
+          {/* Remove Scene Button */}
+          <Button
+            danger
+            onClick={async () => {
+              editorDispatch({
+                type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
+                removedComponent: {
+                  type: COMPONENT_TYPE.SCENE,
+                  id: sceneId
+                }
+              })
+
+              const updatedChapter = await api().chapters.getChapter(
+                  studioId,
+                  scene.chapterId
+                ),
+                foundSceneIndex = updatedChapter.scenes.findIndex(
+                  (sceneRef) => sceneRef === sceneId
+                )
+
+              updatedChapter.scenes.splice(foundSceneIndex, 1)
+
+              await Promise.all([
+                api().chapters.saveSceneRefsToChapter(
+                  studioId,
+                  scene.chapterId,
+                  updatedChapter.scenes
+                ),
+                api().scenes.removeScene(studioId, sceneId)
+              ])
+            }}
+          >
+            Remove Scene
           </Button>
         </>
       )}

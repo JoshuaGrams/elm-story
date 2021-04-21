@@ -1,17 +1,67 @@
-import React, { useEffect } from 'react'
 import logger from '../../../lib/logger'
 
-import { ComponentId, StudioId } from '../../../data/types'
+import React, { useContext, useEffect } from 'react'
+
+import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
+
+import {
+  EditorContext,
+  EDITOR_ACTION_TYPE
+} from '../../../contexts/EditorContext'
 
 import { useChapter } from '../../../hooks'
 
-import { Table } from 'antd'
+import { Button, Table } from 'antd'
+
+import api from '../../../api'
 
 export const ChapterViewTools: React.FC<{
   studioId: StudioId
   chapterId: ComponentId
-}> = () => {
-  return <div>Chapter View Tools</div>
+}> = ({ studioId, chapterId }) => {
+  const chapter = useChapter(studioId, chapterId, [studioId, chapterId])
+
+  const { editorDispatch } = useContext(EditorContext)
+
+  return (
+    <div>
+      {chapter && (
+        <Button
+          danger
+          onClick={async () => {
+            editorDispatch({
+              type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
+              removedComponent: {
+                type: COMPONENT_TYPE.CHAPTER,
+                id: chapterId
+              }
+            })
+
+            const updatedGame = await api().games.getGame(
+                studioId,
+                chapter.gameId
+              ),
+              foundChapterIndex = updatedGame.chapters.findIndex(
+                (chapterRef) => chapterRef === chapterId
+              )
+
+            updatedGame.chapters.splice(foundChapterIndex, 1)
+
+            await Promise.all([
+              api().games.saveChapterRefsToGame(
+                studioId,
+                chapter.gameId,
+                updatedGame.chapters
+              ),
+              api().chapters.removeChapter(studioId, chapterId)
+            ])
+          }}
+        >
+          Remove Chapter
+        </Button>
+      )}
+    </div>
+  )
 }
 
 const ChapterView: React.FC<{

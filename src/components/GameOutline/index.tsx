@@ -766,20 +766,6 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       } catch (error) {
         throw new Error(error)
       }
-
-      setTreeData(newTreeData)
-
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-        selectedGameOutlineComponent: {
-          id: undefined,
-          expanded: false,
-          type: undefined,
-          title: undefined
-        }
-      })
-
-      logger.info(`Removing component from outline with ID: ${componentId}`)
     }
   }
 
@@ -917,6 +903,28 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       )
     }
   }, [editor.renamedComponent])
+
+  useEffect(() => {
+    logger.info(`GameOutline->editor.removedComponent->useEffect`)
+
+    if (treeData && editor.removedComponent.id) {
+      logger.info(
+        `Removing component from outline with ID: ${editor.removedComponent.id}`
+      )
+
+      setTreeData(removeItemFromTree(treeData, editor.removedComponent.id))
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+        selectedGameOutlineComponent: {
+          id: undefined,
+          expanded: false,
+          type: undefined,
+          title: undefined
+        }
+      })
+    }
+  }, [editor.removedComponent])
 
   useEffect(() => {
     async function updateTree() {
