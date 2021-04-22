@@ -18,10 +18,12 @@ import { Slate, Editable, withReact, ReactEditor } from 'slate-react'
 
 import { Button } from 'antd'
 
+import styles from './styles.module.less'
+
 import api from '../../../api'
 
-export type CustomElement = { type: 'paragraph'; children: CustomText[] }
 export type CustomText = { text: string }
+export type CustomElement = { type: 'paragraph'; children: CustomText[] }
 
 declare module 'slate' {
   interface CustomTypes {
@@ -105,6 +107,8 @@ const PassageView: React.FC<{
       )
 
     passage && setReady(true)
+
+    passage && ready && ReactEditor.focus(editor)
   }, [passage, ready])
 
   useEffect(() => {
@@ -128,7 +132,12 @@ const PassageView: React.FC<{
             )
           }}
         >
-          <Editable />
+          <div
+            className={styles.PassageView}
+            onClick={() => passage && ready && ReactEditor.focus(editor)}
+          >
+            <Editable />
+          </div>
         </Slate>
       )}
     </>
