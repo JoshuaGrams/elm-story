@@ -8,9 +8,14 @@
   width: 100%;
   box-sizing: border-box;
   background: @glass-opacity;
-  -webkit-app-region: drag;
   backdrop-filter: @glass-blur;
   border-bottom: 1px solid hsl(0, 0%, 0%);
+
+  .dragBar {
+    -webkit-app-region: drag;
+    height: 100%;
+    position: absolute;
+  }
 
   .titleBarButtonsContainer {
     position: absolute;

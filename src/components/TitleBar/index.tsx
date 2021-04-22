@@ -126,6 +126,16 @@ const TitleBar: React.FC = () => {
 
   return (
     <div className={styles.titleBar}>
+      {!app.fullscreen && (
+        <div
+          className={styles.dragBar}
+          style={{
+            left: app.platform === PLATFORM_TYPE.MACOS ? '79px' : '0px',
+            right: app.platform !== PLATFORM_TYPE.MACOS ? '79px' : '0px'
+          }}
+        />
+      )}
+
       <div
         className={styles.titleBarButtonsContainer}
         style={{
