@@ -1,6 +1,7 @@
 import {
   app,
   Menu,
+  MenuItem,
   shell,
   BrowserWindow,
   MenuItemConstructorOptions
@@ -19,13 +20,6 @@ export default class MenuBuilder {
   }
 
   buildMenu(): Menu {
-    if (
-      process.env.NODE_ENV === 'development' ||
-      process.env.DEBUG_PROD === 'true'
-    ) {
-      this.setupDevelopmentEnvironment()
-    }
-
     const template =
       process.platform === 'darwin'
         ? this.buildDarwinTemplate()
@@ -34,22 +28,37 @@ export default class MenuBuilder {
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
 
-    return menu
-  }
+    this.mainWindow.webContents.on('context-menu', (_, params) => {
+      const menu = new Menu()
 
-  setupDevelopmentEnvironment(): void {
-    this.mainWindow.webContents.on('context-menu', (_, props) => {
-      const { x, y } = props
+      // Add each spelling suggestion
+      for (const suggestion of params.dictionarySuggestions) {
+        menu.append(
+          new MenuItem({
+            label: suggestion,
+            click: () =>
+              this.mainWindow.webContents.replaceMisspelling(suggestion)
+          })
+        )
+      }
 
-      Menu.buildFromTemplate([
-        {
-          label: 'Inspect element',
-          click: () => {
-            this.mainWindow.webContents.inspectElement(x, y)
-          }
-        }
-      ]).popup({ window: this.mainWindow })
+      // Allow users to add the misspelled word to the dictionary
+      if (params.misspelledWord) {
+        menu.append(
+          new MenuItem({
+            label: 'Add to dictionary',
+            click: () =>
+              this.mainWindow.webContents.session.addWordToSpellCheckerDictionary(
+                params.misspelledWord
+              )
+          })
+        )
+      }
+
+      menu.popup()
     })
+
+    return menu
   }
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
