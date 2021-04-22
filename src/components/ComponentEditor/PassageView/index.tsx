@@ -2,9 +2,20 @@
 
 import logger from '../../../lib/logger'
 
-import React, { useMemo, useState, useEffect, useContext } from 'react'
+import React, {
+  useMemo,
+  useState,
+  useEffect,
+  useContext,
+  useCallback
+} from 'react'
 
-import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
+import {
+  ComponentId,
+  COMPONENT_TYPE,
+  DEFAULT_PASSAGE_CONTENT,
+  StudioId
+} from '../../../data/types'
 
 import {
   EditorContext,
@@ -14,7 +25,13 @@ import {
 import { usePassage } from '../../../hooks'
 
 import { BaseEditor, createEditor, Descendant } from 'slate'
-import { Slate, Editable, withReact, ReactEditor } from 'slate-react'
+import {
+  Slate,
+  Editable,
+  withReact,
+  ReactEditor,
+  RenderElementProps
+} from 'slate-react'
 
 import { Button } from 'antd'
 
@@ -79,12 +96,21 @@ export const PassageViewTools: React.FC<{
   )
 }
 
-const initialContent: Descendant[] = [
-  {
-    type: 'paragraph',
-    children: [{ text: '' }]
-  }
-]
+export const initialPassageContent: Descendant[] = [...DEFAULT_PASSAGE_CONTENT]
+
+const ParagraphElement: React.FC<RenderElementProps> = (props) => {
+  console.log(props.element)
+  return (
+    <p
+      className={`${'passage-p'} ${
+        !props.element.children[0].text ? 'passage-p-empty' : ''
+      }`}
+      {...props.attributes}
+    >
+      {props.children}
+    </p>
+  )
+}
 
 const PassageView: React.FC<{
   studioId: StudioId
@@ -95,7 +121,19 @@ const PassageView: React.FC<{
   const editor = useMemo(() => withReact(createEditor()), [])
 
   const [ready, setReady] = useState(false),
-    [passageContent, setPassageContent] = useState<Descendant[]>(initialContent)
+    [passageContent, setPassageContent] = useState<Descendant[]>(
+      initialPassageContent
+    ),
+    [editorIsFocused, setEditorIsFocused] = useState(false)
+
+  const renderElement = useCallback((props: RenderElementProps) => {
+    switch (props.element.type) {
+      case 'paragraph':
+        return <ParagraphElement {...props} />
+      default:
+        return <></>
+    }
+  }, [])
 
   useEffect(() => {
     logger.info(`PassageView->passage->useEffect`)
@@ -103,7 +141,7 @@ const PassageView: React.FC<{
     passage &&
       !ready &&
       setPassageContent(
-        passage.content ? JSON.parse(passage.content) : initialContent
+        passage.content ? JSON.parse(passage.content) : initialPassageContent
       )
 
     passage && setReady(true)
@@ -132,9 +170,24 @@ const PassageView: React.FC<{
         >
           <div
             className={styles.PassageView}
-            onClick={() => passage && ready && ReactEditor.focus(editor)}
+            onClick={() =>
+              passage && ready && !editorIsFocused && ReactEditor.focus(editor)
+            }
           >
-            <Editable />
+            <>
+              {!(passageContent[0] as CustomElement).children[0].text &&
+                !editorIsFocused && (
+                  <div className={styles.placeholder}>
+                    Click here to start typing...
+                  </div>
+                )}
+
+              <Editable
+                renderElement={renderElement}
+                onFocus={() => setEditorIsFocused(true)}
+                onBlur={() => setEditorIsFocused(false)}
+              />
+            </>
           </div>
         </Slate>
       )}

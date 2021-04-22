@@ -24,8 +24,16 @@ html {
   color: var(--text-color);
 }
 
-.passage-paragraph {
-  margin-bottom: 0.8rem;
+.passage-no-content {
+  color: red;
+}
+
+.passage-p {
+  margin-bottom: 0.4rem;
+}
+
+.passage-p-empty {
+  margin-bottom: 0;
 }
 
 .choices-container {

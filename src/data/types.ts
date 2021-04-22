@@ -1,3 +1,5 @@
+import { Descendant } from 'slate'
+
 export enum PLATFORM_TYPE {
   WINDOWS = 'win32',
   MACOS = 'darwin',
@@ -46,6 +48,13 @@ export enum SET_OPERATOR_TYPE {
   SUBTRACT = '-',
   DIVIDE = '/'
 }
+
+export const DEFAULT_PASSAGE_CONTENT: Descendant[] = [
+  {
+    type: 'paragraph',
+    children: [{ text: '' }]
+  }
+]
 
 export type StudioId = string
 export type GameId = string

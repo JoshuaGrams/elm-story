@@ -10,8 +10,40 @@ import { usePassage, useRoutesByPassageRef } from '../../hooks'
 
 import ChoicesRenderer from './ChoicesRenderer'
 
-import api from '../../api'
 import { CustomElement } from '../ComponentEditor/PassageView'
+
+import api from '../../api'
+
+const PassageContent: React.FC<{ title: string; content: string }> = ({
+  title,
+  content
+}) => {
+  const parsedContent: CustomElement[] = JSON.parse(content)
+
+  if (parsedContent.length > 0 && !parsedContent[0].children[0].text) {
+  }
+
+  return (
+    <>
+      {parsedContent.length > 0 && !parsedContent[0].children[0].text && (
+        <div className="passage-no-content">{`Passage "${title}" is missing content.`}</div>
+      )}
+
+      {parsedContent.length > 0 &&
+        parsedContent[0].children[0].text &&
+        parsedContent.map((descendant: CustomElement, index: number) => (
+          <p
+            className={`${'passage-p'} ${
+              !descendant.children[0].text ? 'passage-p-empty' : ''
+            }`}
+            key={`p-${index}`}
+          >
+            {descendant.children[0].text || <>&#65279;</>}
+          </p>
+        ))}
+    </>
+  )
+}
 
 const PassageRenderer: React.FC<{
   studioId: StudioId
@@ -77,16 +109,7 @@ const PassageRenderer: React.FC<{
     <>
       {passage && routes && (
         <>
-          <div>
-            {passage.content &&
-              JSON.parse(passage.content).map(
-                (descendant: CustomElement, index: number) => (
-                  <p className="passage-paragraph" key={`p-${index}`}>
-                    {descendant.children[0].text || <>&#65279;</>}
-                  </p>
-                )
-              )}
-          </div>
+          <PassageContent title={passage.title} content={passage.content} />
 
           {passage.choices.length === 0 && <div>Game Over</div>}
 

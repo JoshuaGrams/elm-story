@@ -9,7 +9,13 @@ import createGameOutlineTreeData from '../../lib/createGameOutlineTreeData'
 import { APP_LOCATION } from '../../contexts/AppContext'
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
-import { ComponentId, COMPONENT_TYPE, Game, StudioId } from '../../data/types'
+import {
+  ComponentId,
+  COMPONENT_TYPE,
+  DEFAULT_PASSAGE_CONTENT,
+  Game,
+  StudioId
+} from '../../data/types'
 import Tree, {
   mutateTree,
   moveItemOnTree,
@@ -650,7 +656,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               sceneId: item.id as string,
               title: 'Untitled Passage',
               choices: [],
-              content: '',
+              content: JSON.stringify([...DEFAULT_PASSAGE_CONTENT]),
               tags: [],
               editor: {
                 componentEditorPosX:

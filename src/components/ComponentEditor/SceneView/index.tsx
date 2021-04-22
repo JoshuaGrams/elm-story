@@ -3,7 +3,12 @@ import logger from '../../../lib/logger'
 import React, { useContext, useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash-es'
 
-import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
+import {
+  ComponentId,
+  COMPONENT_TYPE,
+  DEFAULT_PASSAGE_CONTENT,
+  StudioId
+} from '../../../data/types'
 
 import {
   EditorContext,
@@ -72,7 +77,7 @@ export const SceneViewTools: React.FC<{
                   sceneId: sceneId,
                   title: 'Untitled Passage',
                   choices: [],
-                  content: '',
+                  content: JSON.stringify([...DEFAULT_PASSAGE_CONTENT]),
                   tags: [],
                   editor: {
                     componentEditorPosX:
