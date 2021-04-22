@@ -107,8 +107,6 @@ const PassageView: React.FC<{
       )
 
     passage && setReady(true)
-
-    passage && ready && ReactEditor.focus(editor)
   }, [passage, ready])
 
   useEffect(() => {
