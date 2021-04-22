@@ -186,7 +186,7 @@ export const VariableRow: React.FC<{
           await api().variables.saveVariableDefaultValue(
             studioId,
             variable.id,
-            changedValues.defaultValue
+            `${changedValues.defaultValue}`
           )
         } else {
           editVariableDefaultValueForm.resetFields()

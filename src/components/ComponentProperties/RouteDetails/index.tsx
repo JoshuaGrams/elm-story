@@ -89,8 +89,6 @@ const RouteConditionRow: React.FC<{
                   newCompareOperatorType
                 ))
 
-              console.log('wtf indeed')
-
               setConditionCompareOperatorType(newCompareOperatorType)
             }}
             onChangeValue={async (newValue: string) => {
@@ -98,7 +96,7 @@ const RouteConditionRow: React.FC<{
                 (await api().conditions.saveConditionValue(
                   studioId,
                   condition.id,
-                  newValue
+                  newValue !== null ? `${newValue}` : ''
                 ))
 
               setConditionValue(newValue)
@@ -175,7 +173,7 @@ const RouteEffectRow: React.FC<{
                 (await api().effects.saveEffectValue(
                   studioId,
                   effect.id,
-                  newValue
+                  newValue !== null ? `${newValue}` : ''
                 ))
 
               setEffectValue(newValue)
