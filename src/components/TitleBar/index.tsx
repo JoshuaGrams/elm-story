@@ -11,6 +11,8 @@ import {
 
 import styles from './styles.module.less'
 import { useLocation } from 'react-router-dom'
+import { PLATFORM_TYPE } from '../../data/types'
+import { cloneDeep } from 'lodash'
 
 enum TITLE_BAR_BUTTON_TYPE {
   QUIT = 'QUIT',
@@ -70,6 +72,28 @@ const TitleBar: React.FC = () => {
    */
   const isFirstRun = useRef(true)
 
+  const titleBarButtonData = [
+    {
+      type: TITLE_BAR_BUTTON_TYPE.QUIT,
+      onClick: () => ipcRenderer.send(WINDOW_EVENT_TYPE.QUIT)
+    },
+    {
+      type: TITLE_BAR_BUTTON_TYPE.MINIMIZE,
+      onClick: () => ipcRenderer.send(WINDOW_EVENT_TYPE.MINIMIZE)
+    },
+    {
+      type: app.fullscreen
+        ? TITLE_BAR_BUTTON_TYPE.FLOATING
+        : TITLE_BAR_BUTTON_TYPE.FULLSCREEN,
+      onClick: () =>
+        appDispatch({
+          type: app.fullscreen
+            ? APP_ACTION_TYPE.FLOATING
+            : APP_ACTION_TYPE.FULLSCREEN
+        })
+    }
+  ]
+
   useEffect(() => {
     ipcRenderer.on(WINDOW_EVENT_TYPE.FULLSCREEN, () =>
       appDispatch({ type: APP_ACTION_TYPE.FULLSCREEN })
@@ -102,31 +126,39 @@ const TitleBar: React.FC = () => {
 
   return (
     <div className={styles.titleBar}>
-      <div className={styles.titleBarButtonsContainer}>
-        <TitleBarButton
-          type={TITLE_BAR_BUTTON_TYPE.QUIT}
-          onClick={() => ipcRenderer.send(WINDOW_EVENT_TYPE.QUIT)}
-        />
-        {!app.fullscreen && (
-          <TitleBarButton
-            type={TITLE_BAR_BUTTON_TYPE.MINIMIZE}
-            onClick={() => ipcRenderer.send(WINDOW_EVENT_TYPE.MINIMIZE)}
-          />
-        )}
-        <TitleBarButton
-          type={
-            app.fullscreen
-              ? TITLE_BAR_BUTTON_TYPE.FLOATING
-              : TITLE_BAR_BUTTON_TYPE.FULLSCREEN
-          }
-          onClick={() =>
-            appDispatch({
-              type: app.fullscreen
-                ? APP_ACTION_TYPE.FLOATING
-                : APP_ACTION_TYPE.FULLSCREEN
-            })
-          }
-        />
+      <div
+        className={styles.titleBarButtonsContainer}
+        style={{
+          left: app.platform === PLATFORM_TYPE.MACOS ? '10px' : 'initial',
+          right: app.platform !== PLATFORM_TYPE.MACOS ? '10px' : 'initial'
+        }}
+      >
+        {app.platform === PLATFORM_TYPE.MACOS &&
+          titleBarButtonData.map(
+            (data, index) =>
+              (index !== 1 || (index === 1 && !app.fullscreen)) && (
+                <TitleBarButton
+                  key={data.type}
+                  type={data.type}
+                  onClick={data.onClick}
+                />
+              )
+          )}
+
+        {app.platform !== PLATFORM_TYPE.MACOS &&
+          cloneDeep(titleBarButtonData)
+            .reverse()
+            .map(
+              (data, index) =>
+                (index !== 1 || (index === 1 && !app.fullscreen)) && (
+                  <TitleBarButton
+                    key={data.type}
+                    type={data.type}
+                    onClick={data.onClick}
+                  />
+                )
+            )}
+
         {/* #137 */}
         {/* <TitleBarButton
           type={TITLE_BAR_BUTTON_TYPE.MENU}
