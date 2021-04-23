@@ -2,17 +2,30 @@ html {
   font-size: 62.5% !important;
 }
 
-.elm-story-engine {
-  width: calc(100% - 4rem);
-  margin: 0 auto;
-
+.es-engine {
+  --background-color: black;
   --text-color: white;
+  --highlight-color: hsl(209, 100%, 55%);
+  --divider-color: hsl(0, 0%, 20%);
+  --disabled-color: hsl(0, 0%, 50%);
   --button-color: hsl(209, 100%, 55%);
   --button-color-hover: hsl(209, 100%, 60%);
   --button-height: 3.2rem;
+  --animation-duration: 0.2s;
+
+  background: var(--background-color);
+  min-height: 100%;
+  width: clamp(45ch, 50%, 75ch);
+  margin: 0 auto;
+  padding: 1rem;
+  padding-bottom: 0;
+  border: 0.1rem solid var(--highlight-color);
+  border-top: none;
+  border-bottom: none;
+  background: black;
 }
 
-.elm-story-engine * {
+.es-engine * {
   padding: 0;
   margin: 0;
   color: var(--text-color);
@@ -20,28 +33,38 @@ html {
   transition: none;
 }
 
-.elm-story-engine *:hover {
+.es-engine *:hover {
   color: var(--text-color);
 }
 
-.passage-no-content {
-  color: red;
+.es-engine-passage-no-content {
+  color: red !important;
+  margin-bottom: 1rem;
 }
 
-.passage-p {
+.es-engine-passage-p {
   margin-bottom: 0.4rem;
+  line-height: 2.4rem;
 }
 
-.passage-p-empty {
+.es-engine-passage-p:last-of-type {
+  margin-bottom: 1.1rem;
+}
+
+.es-engine-passage-p-empty {
   margin-bottom: 0;
 }
 
-.choices-container {
-  width: calc(100% - 10rem);
-  margin: 0 auto;
+.es-engine-choices-container {
+  width: 100%;
+  position: sticky;
+  bottom: -0.1rem;
+  background-color: var(--background-color);
+  padding: 1.5rem 0;
+  border-top: 0.1rem solid var(--divider-color);
 }
 
-.choice-button {
+.es-engine-choice-button {
   display: block;
   font-size: 1.4rem;
   height: var(--button-height);
@@ -51,8 +74,28 @@ html {
   background: var(--button-color);
   border-radius: 0.4rem;
   margin-bottom: 0.8rem;
+  border: 0.1rem solid var(--highlight-color);
+  transition: background-color var(--animation-duration),
+    border var(--animation-duration);
 }
 
-.choice-button:hover {
+.es-engine-choice-button-disabled {
+  background: transparent;
+  border: 0.1rem dashed var(--disabled-color);
+  color: var(--disabled-color);
+  pointer-events: none;
+}
+
+.es-engine-choice-button:last-of-type {
+  margin-bottom: 0;
+}
+
+.es-engine-choice-button:hover {
   background: var(--button-color-hover);
+}
+
+.es-engine-game-over-message {
+  border-top: 0.1rem solid var(--divider-color);
+  padding: 1.5rem 0;
+  text-align: center;
 }

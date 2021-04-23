@@ -1,6 +1,6 @@
 import logger from '../../lib/logger'
 
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 
 import { GameId, GameState, StudioId } from '../../data/types'
 
@@ -9,12 +9,13 @@ import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 import { useGame, useJumps, useVariables } from '../../hooks'
 
 import ChapterRenderer from './ChapterRenderer'
-import GameStateView from './GameStateView'
 
 const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   studioId,
   gameId
 }) => {
+  const engineRef = useRef<HTMLDivElement>(null)
+
   const game = useGame(studioId, gameId, [studioId, gameId]),
     variables = useVariables(studioId, gameId, [studioId, gameId]),
     jumps = useJumps(studioId, gameId, [studioId, gameId])
@@ -104,29 +105,39 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   }, [variables])
 
   useEffect(() => {
+    logger.info(
+      `GameEngine->engine.scrollTo->useEffect->${engine.scrollTo.top},${engine.scrollTo.left}`
+    )
+
+    engineRef.current && engineRef.current.scrollIntoView(true)
+  }, [engine.scrollTo])
+
+  useEffect(() => {
     logger.info(`GameEngine->engine.gameState->useEffect`)
   }, [variables, engine.gameState])
 
   return (
     <>
       {game && variables && jumps && (
-        <div className="elm-story-engine">
-          {(engine.currentChapter || engine.startingChapter) && (
-            <ChapterRenderer
-              studioId={studioId}
-              // @ts-ignore: We are checking this.
-              chapterId={engine.currentChapter || engine.startingChapter}
-            />
-          )}
+        <>
+          <div className="es-engine" ref={engineRef}>
+            {(engine.currentChapter || engine.startingChapter) && (
+              <ChapterRenderer
+                studioId={studioId}
+                // @ts-ignore: We are checking this.
+                chapterId={engine.currentChapter || engine.startingChapter}
+              />
+            )}
 
-          {game.chapters.length === 0 && (
-            <div>
-              Game requires at least 1 chapter, scene and passage to play.
-            </div>
-          )}
+            {game.chapters.length === 0 && (
+              <div>
+                Game requires at least 1 chapter, scene and passage to play.
+              </div>
+            )}
+          </div>
 
-          <GameStateView />
-        </div>
+          {/* <GameStateView /> */}
+        </>
       )}
     </>
   )

@@ -10,6 +10,7 @@ interface EngineState {
   currentScene: ComponentId | null
   startingPassage: ComponentId | null
   currentPassage: ComponentId | null
+  scrollTo: { top: number; left: number }
 }
 
 export enum ENGINE_ACTION_TYPE {
@@ -20,7 +21,8 @@ export enum ENGINE_ACTION_TYPE {
   SCENE_START = 'SCENE_START',
   SCENE_CURRENT = 'SCENE_CURRENT',
   PASSAGE_START = 'PASSAGE_START',
-  PASSAGE_CURRENT = 'PASSAGE_CURRENT'
+  PASSAGE_CURRENT = 'PASSAGE_CURRENT',
+  SCROLL_TO = 'SCROLL_TO'
 }
 
 type EngineActionType =
@@ -49,6 +51,10 @@ type EngineActionType =
   | {
       type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT
       currentPassage: ComponentId | null
+    }
+  | {
+      type: ENGINE_ACTION_TYPE.SCROLL_TO
+      scrollTo: { top: number; left: number }
     }
 
 const engineReducer = (
@@ -108,6 +114,11 @@ const engineReducer = (
         ...state,
         currentPassage: action.currentPassage
       }
+    case ENGINE_ACTION_TYPE.SCROLL_TO:
+      return {
+        ...state,
+        scrollTo: action.scrollTo
+      }
     default:
       return state
   }
@@ -125,7 +136,8 @@ const defaultEngineState: EngineState = {
   startingScene: null,
   currentScene: null,
   startingPassage: null,
-  currentPassage: null
+  currentPassage: null,
+  scrollTo: { top: 0, left: 0 }
 }
 
 export const EngineContext = createContext<EngineContextType>({

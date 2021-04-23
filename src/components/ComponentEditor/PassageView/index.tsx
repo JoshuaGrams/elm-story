@@ -102,8 +102,8 @@ const ParagraphElement: React.FC<RenderElementProps> = (props) => {
   console.log(props.element)
   return (
     <p
-      className={`${'passage-p'} ${
-        !props.element.children[0].text ? 'passage-p-empty' : ''
+      className={`${'es-engine-passage-p'} ${
+        !props.element.children[0].text ? 'es-engine-passage-p-empty' : ''
       }`}
       {...props.attributes}
     >

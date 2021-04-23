@@ -26,15 +26,15 @@ const PassageContent: React.FC<{ title: string; content: string }> = ({
   return (
     <>
       {parsedContent.length > 0 && !parsedContent[0].children[0].text && (
-        <div className="passage-no-content">{`Passage "${title}" is missing content.`}</div>
+        <div className="es-engine-passage-no-content">{`Passage "${title}" is missing content.`}</div>
       )}
 
       {parsedContent.length > 0 &&
         parsedContent[0].children[0].text &&
         parsedContent.map((descendant: CustomElement, index: number) => (
           <p
-            className={`${'passage-p'} ${
-              !descendant.children[0].text ? 'passage-p-empty' : ''
+            className={`${'es-engine-passage-p'} ${
+              !descendant.children[0].text ? 'es-engine-passage-p-empty' : ''
             }`}
             key={`p-${index}`}
           >
@@ -90,6 +90,11 @@ const PassageRenderer: React.FC<{
         currentChapter: jump.route[0] || null
       })
     }
+
+    engineDispatch({
+      type: ENGINE_ACTION_TYPE.SCROLL_TO,
+      scrollTo: { top: 0, left: 0 }
+    })
   }
 
   useEffect(() => {
@@ -111,7 +116,9 @@ const PassageRenderer: React.FC<{
         <>
           <PassageContent title={passage.title} content={passage.content} />
 
-          {passage.choices.length === 0 && <div>Game Over</div>}
+          {passage.choices.length === 0 && (
+            <div className="es-engine-game-over-message">The End</div>
+          )}
 
           {passage.choices.length > 0 && (
             <ChoicesRenderer

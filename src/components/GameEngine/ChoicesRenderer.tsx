@@ -186,9 +186,10 @@ const ChoiceButtonRenderer: React.FC<{
               setSelectedRoute(routeId)
             }
           />
-
           <a
-            className="choice-button"
+            className={`es-engine-choice-button ${
+              !selectedRoute ? 'es-engine-choice-button-disabled' : ''
+            }`}
             onClick={
               selectedRoute
                 ? async () => {
@@ -223,7 +224,7 @@ const ChoiceButtonRenderer: React.FC<{
                 : () => null
             }
           >
-            {choice.title} {!selectedRoute && <span>(No Route)</span>}
+            {choice.title}
           </a>
         </>
       )}
@@ -249,7 +250,7 @@ const ChoicesRenderer: React.FC<{
   return (
     <>
       {choices && (
-        <div className="choices-container">
+        <div className="es-engine-choices-container">
           {choices
             .sort(
               (a, b) =>

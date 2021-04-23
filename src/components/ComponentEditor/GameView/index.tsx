@@ -1,5 +1,6 @@
-import React, { useContext, useEffect } from 'react'
 import logger from '../../../lib/logger'
+
+import React, { useContext, useEffect } from 'react'
 
 import { GameId, StudioId } from '../../../data/types'
 
@@ -18,10 +19,14 @@ export const GameViewTools: React.FC<{
   studioId: StudioId
   gameId: GameId
 }> = () => {
-  const { engine, engineDispatch } = useContext(EngineContext)
+  const { engineDispatch } = useContext(EngineContext)
 
   function onRestartGame() {
     engineDispatch({ type: ENGINE_ACTION_TYPE.GAME_RESTART })
+    engineDispatch({
+      type: ENGINE_ACTION_TYPE.SCROLL_TO,
+      scrollTo: { top: 0, left: 0 }
+    })
   }
 
   return (
