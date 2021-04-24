@@ -163,7 +163,13 @@ const TabContent: React.FC<{
         }}
       />
       <TabContentToolbar>{tools}</TabContentToolbar>
-      <div ref={tabContentViewRef} className={styles.TabContentView}>
+      <div
+        ref={tabContentViewRef}
+        className={styles.TabContentView}
+        style={{
+          overflow: type === COMPONENT_TYPE.GAME ? 'hidden' : 'initial'
+        }}
+      >
         {view}
       </div>
     </div>

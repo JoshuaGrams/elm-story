@@ -3,6 +3,7 @@ import React, { useMemo, createContext, useReducer } from 'react'
 import { ComponentId, GameState } from '../data/types'
 
 interface EngineState {
+  devToolsEnabled: boolean
   gameState: GameState
   startingChapter: ComponentId | null
   currentChapter: ComponentId | null
@@ -14,6 +15,8 @@ interface EngineState {
 }
 
 export enum ENGINE_ACTION_TYPE {
+  TOGGLE_DEV_TOOLS = 'TOGGLE_DEV_TOOLS',
+  DISABLE_DEV_TOOLS = 'DISABLE_DEV_TOOLS',
   GAME_STATE = 'GAME_STATE',
   GAME_RESTART = 'GAME_RESTART',
   CHAPTER_START = 'CHAPTER_START',
@@ -26,6 +29,7 @@ export enum ENGINE_ACTION_TYPE {
 }
 
 type EngineActionType =
+  | { type: ENGINE_ACTION_TYPE.TOGGLE_DEV_TOOLS }
   | { type: ENGINE_ACTION_TYPE.GAME_STATE; gameState: GameState }
   | { type: ENGINE_ACTION_TYPE.GAME_RESTART }
   | {
@@ -62,6 +66,11 @@ const engineReducer = (
   action: EngineActionType
 ): EngineState => {
   switch (action.type) {
+    case ENGINE_ACTION_TYPE.TOGGLE_DEV_TOOLS:
+      return {
+        ...state,
+        devToolsEnabled: !state.devToolsEnabled
+      }
     case ENGINE_ACTION_TYPE.GAME_STATE:
       return {
         ...state,
@@ -130,6 +139,7 @@ interface EngineContextType {
 }
 
 const defaultEngineState: EngineState = {
+  devToolsEnabled: false,
   gameState: {},
   startingChapter: null,
   currentChapter: null,

@@ -36,7 +36,7 @@ const GameInspector: React.FC<{
                 {
                   id: 'propertiesTab',
                   title: 'Properties',
-                  minHeight: 30,
+                  minHeight: 32,
                   content: (
                     <>
                       {gameId && (
@@ -92,7 +92,7 @@ const GameInspector: React.FC<{
                       )}
                     </div>
                   ),
-                  minHeight: 30,
+                  minHeight: 32,
                   content: (
                     <>
                       {gameId && (
@@ -105,7 +105,7 @@ const GameInspector: React.FC<{
                 {
                   id: 'problemsTab',
                   title: 'Problems',
-                  minHeight: 30,
+                  minHeight: 32,
                   content: <GameProblems />,
                   group: 'default'
                 }

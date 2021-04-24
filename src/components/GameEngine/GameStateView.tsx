@@ -1,13 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react'
 
+import { ComponentId, VARIABLE_TYPE } from '../../data/types'
+
 import { EngineContext } from '../../contexts/EngineContext'
 
 import { Table } from 'antd'
-import { ComponentId, VARIABLE_TYPE } from '../../data/types'
+
+import styles from './styles.module.less'
 
 const columns = [
   {
-    title: 'ID',
+    title: 'Component ID',
     dataIndex: 'id',
     key: 'id'
   },
@@ -65,7 +68,7 @@ const GameStateView: React.FC = () => {
   }, [engine.gameState])
 
   return (
-    <div>
+    <div className={styles.GameStateView}>
       <Table dataSource={dataSource} columns={columns} pagination={false} />
     </div>
   )

@@ -8,7 +8,37 @@ import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
 import { useGame, useJumps, useVariables } from '../../hooks'
 
+import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
+
 import ChapterRenderer from './ChapterRenderer'
+import GameStateView from './GameStateView'
+import GameStylesView from './GameStylesView'
+
+import styles from './styles.module.less'
+
+const gameEngineDevTools: LayoutData = {
+  dockbox: {
+    mode: 'horizontal',
+    children: [
+      {
+        tabs: [
+          {
+            id: 'gameStateTab',
+            title: 'State',
+            content: <GameStateView />,
+            group: 'default'
+          },
+          {
+            id: 'gameStylesTab',
+            title: 'Styles',
+            content: <GameStylesView />,
+            group: 'default'
+          }
+        ]
+      }
+    ]
+  }
+}
 
 const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   studioId,
@@ -120,23 +150,49 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
     <>
       {game && variables && jumps && (
         <>
-          <div className="es-engine" ref={engineRef}>
-            {(engine.currentChapter || engine.startingChapter) && (
-              <ChapterRenderer
-                studioId={studioId}
-                // @ts-ignore: We are checking this.
-                chapterId={engine.currentChapter || engine.startingChapter}
+          <DividerBox
+            mode="vertical"
+            style={{ height: '100%' }}
+            className={styles.GameEngine}
+          >
+            <div
+              className={styles.rendererContainer}
+              style={{
+                maxHeight: engine.devToolsEnabled ? 'calc(100% - 36px)' : '100%'
+              }}
+            >
+              <div className="es-engine" ref={engineRef}>
+                {(engine.currentChapter || engine.startingChapter) && (
+                  <ChapterRenderer
+                    studioId={studioId}
+                    // @ts-ignore: We are checking this.
+                    chapterId={engine.currentChapter || engine.startingChapter}
+                  />
+                )}
+
+                {game.chapters.length === 0 && (
+                  <div>
+                    Game requires at least 1 chapter, scene and passage to play.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {engine.devToolsEnabled && (
+              <DockLayout
+                defaultLayout={gameEngineDevTools}
+                groups={{
+                  default: {
+                    floatable: false,
+                    animated: false,
+                    maximizable: false,
+                    tabLocked: true
+                  }
+                }}
+                dropMode="edge"
               />
             )}
-
-            {game.chapters.length === 0 && (
-              <div>
-                Game requires at least 1 chapter, scene and passage to play.
-              </div>
-            )}
-          </div>
-
-          {/* <GameStateView /> */}
+          </DividerBox>
         </>
       )}
     </>
