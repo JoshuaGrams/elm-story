@@ -39,6 +39,10 @@ interface EditorState {
     id?: ComponentId
     type?: COMPONENT_TYPE
   }[]
+  closedEditorTab: {
+    id?: ComponentId
+    type?: COMPONENT_TYPE
+  }
 }
 
 export enum EDITOR_ACTION_TYPE {
@@ -56,7 +60,8 @@ export enum EDITOR_ACTION_TYPE {
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE',
-  COMPONENT_EDITOR_SELECT = 'COMPONENT_EDITOR_SELECT'
+  COMPONENT_EDITOR_SELECT = 'COMPONENT_EDITOR_SELECT',
+  COMPONENT_EDITOR_CLOSE_TAB = 'COMPONENT_EDITOR_CLOSE_TAB'
 }
 
 type EditorActionType =
@@ -144,6 +149,13 @@ type EditorActionType =
         id?: ComponentId
         type?: COMPONENT_TYPE
       }[]
+    }
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_CLOSE_TAB
+      closedEditorTab: {
+        id?: ComponentId
+        type?: COMPONENT_TYPE
+      }
     }
 
 const editorReducer = (
@@ -235,6 +247,12 @@ const editorReducer = (
         selectedComponentEditorComponents:
           action.selectedComponentEditorComponents || []
       }
+
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_CLOSE_TAB:
+      return {
+        ...state,
+        closedEditorTab: action.closedEditorTab
+      }
     default:
       return state
   }
@@ -278,7 +296,8 @@ const defaultEditorState: EditorState = {
   selectedComponentEditorSceneViewPassage: null,
   selectedComponentEditorSceneViewRoute: null,
   selectedComponentEditorSceneViewChoice: null,
-  selectedComponentEditorComponents: []
+  selectedComponentEditorComponents: [],
+  closedEditorTab: { id: undefined, type: undefined }
 }
 
 export const EditorContext = createContext<EditorContextType>({

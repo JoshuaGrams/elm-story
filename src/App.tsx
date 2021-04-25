@@ -16,7 +16,7 @@ const App: React.FC = () => {
   const { app, appDispatch } = useContext(AppContext)
 
   useEffect(() => {
-    ipcRenderer.on(WINDOW_EVENT_TYPE.PLATFORM, (event, [platform]) =>
+    ipcRenderer.on(WINDOW_EVENT_TYPE.PLATFORM, (_, [platform]) =>
       appDispatch({ type: APP_ACTION_TYPE.PLATFORM, platform })
     )
   }, [])

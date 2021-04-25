@@ -7,6 +7,8 @@ import {
   MenuItemConstructorOptions
 } from 'electron'
 
+import { WINDOW_EVENT_TYPE } from './lib/events'
+
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string
   submenu?: DarwinMenuItemConstructorOptions[] | Menu
@@ -156,7 +158,14 @@ export default class MenuBuilder {
           accelerator: 'Command+M',
           selector: 'performMiniaturize:'
         },
-        { label: 'Close', accelerator: 'Command+W', selector: 'performClose:' },
+        {
+          label: 'Close',
+          accelerator: 'Command+W',
+          click: () =>
+            this.mainWindow.webContents.send(
+              WINDOW_EVENT_TYPE.CLOSE_TAB_OR_WINDOW
+            )
+        },
         { type: 'separator' },
         { label: 'Bring All to Front', selector: 'arrangeInFront:' }
       ]
@@ -214,9 +223,10 @@ export default class MenuBuilder {
           {
             label: '&Close',
             accelerator: 'Ctrl+W',
-            click: () => {
-              this.mainWindow.close()
-            }
+            click: () =>
+              this.mainWindow.webContents.send(
+                WINDOW_EVENT_TYPE.CLOSE_TAB_OR_WINDOW
+              )
           }
         ]
       },

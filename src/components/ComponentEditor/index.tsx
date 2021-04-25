@@ -239,7 +239,12 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
         // TODO: This should be the next available
         editorDispatch({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-          selectedGameOutlineComponent: {}
+          selectedGameOutlineComponent: {
+            id: game.id,
+            expanded: true,
+            title: game.title,
+            type: COMPONENT_TYPE.GAME
+          }
         })
       }
 
@@ -472,6 +477,23 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
 
     removeTabs()
   }, [editor.removedComponent])
+
+  useEffect(() => {
+    logger.info(`ComponentEditor->editor.closedEditorTab->useEffect`)
+
+    if (editor.closedEditorTab.id && dockLayout.current) {
+      const foundTab = dockLayout.current.find(editor.closedEditorTab.id) as
+        | TabData
+        | undefined
+
+      foundTab && dockLayout.current.dockMove(foundTab, null, 'remove')
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_CLOSE_TAB,
+        closedEditorTab: {}
+      })
+    }
+  }, [editor.closedEditorTab])
 
   return (
     <>
