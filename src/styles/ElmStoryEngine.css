@@ -5,11 +5,11 @@ html {
 .es-engine {
   --background-color: black;
   --text-color: white;
-  --highlight-color: hsl(209, 100%, 55%);
+  --highlight-color: hsl(265, 100%, 60%);
   --divider-color: hsl(0, 0%, 20%);
   --disabled-color: hsl(0, 0%, 50%);
-  --button-color: hsl(209, 100%, 55%);
-  --button-color-hover: hsl(209, 100%, 60%);
+  --button-color: hsl(265, 100%, 60%);
+  --button-color-hover: hsl(265, 100%, 65%);
   --button-height: 3.2rem;
   --animation-duration: 0.2s;
 

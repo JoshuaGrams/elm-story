@@ -10,7 +10,30 @@
 @import '@fontsource/fira-mono';
 
 :root {
-  --highlight-color: hsl(209, 100%, 55%);
+  --highlight-color: hsl(265, 100%, 60%);
+  --highlight-color-bright: hsl(265, 100%, 65%);
+  --highlight-color-80a: hsla(265, 100%, 60%, 0.8);
+  --highlight-color-50a: hsla(265, 100%, 60%, 0.5);
+  --highlight-color-20a: hsla(265, 100%, 60%, 0.2);
+  --highlight-color-10a: hsla(265, 100%, 60%, 0.1);
+  --warning-color: hsl(350, 100%, 60%);
+  --warning-color-bright: hsl(350, 100%, 65%);
+  --bg-color-0: hsl(0, 0%, 0%);
+  --bg-color-3: hsl(0, 0%, 3%);
+  --bg-color-5: hsl(0, 0%, 5%);
+  --bg-color-8: hsl(0, 0%, 8%);
+  --bg-color-10: hsl(0, 0%, 10%);
+  --bg-color-15: hsl(0, 0%, 15%);
+  --border-color-5: hsl(0, 0%, 5%);
+  --border-color-10: hsl(0, 0%, 10%);
+  --border-color-20: hsl(0, 0%, 20%);
+  --modal-title-color: white;
+  --modal-mask-color: hsla(0, 0%, 0%, 0.8);
+  --dropdown-bg-color: hsl(0, 0%, 10%);
+  --dropdown-border-color: hsl(0, 0%, 0%);
+  --dropdown-active-item-color: hsl(0, 0%, 18%);
+  --dropdown-selected-item-color: hsl(0, 0%, 15%);
+  --dropdown-item-color: hsl(0, 0%, 60%);
 }
 
 ::-webkit-scrollbar {
@@ -54,9 +77,13 @@ body {
 }
 
 a {
-  color: white;
-  text-decoration: underline;
+  color: var(--highlight-color);
+  text-decoration: underline !important;
   cursor: pointer;
+
+  &:hover {
+    color: var(--highlight-color-bright);
+  }
 }
 
 ul {
@@ -68,6 +95,148 @@ h3 {
   margin-bottom: 20px;
 }
 
-.ant-btn:focus {
-  color: white !important;
+.ant-btn {
+  border-radius: unset;
+
+  &:hover {
+    border-color: var(--highlight-color-bright);
+    color: white;
+  }
+
+  &:focus {
+    color: white !important;
+  }
+
+  &.ant-btn-link {
+    color: var(--highlight-color);
+
+    &:hover {
+      border-color: transparent;
+
+      .ant-icon {
+        color: var(--highlight-color-bright);
+      }
+    }
+  }
+}
+
+.ant-btn-primary {
+  background: var(--highlight-color);
+  border-color: var(--highlight-color);
+
+  &:hover {
+    background: var(--highlight-color-bright);
+    border-color: var(--highlight-color-bright);
+  }
+}
+
+.ant-btn-dangerous {
+  color: white;
+  border-color: var(--warning-color) !important;
+
+  &.ant-btn-primary {
+    background: var(--warning-color);
+
+    &:hover {
+      background: var(--warning-color-bright);
+    }
+  }
+
+  &:hover {
+    border-color: var(--warning-color-bright) !important;
+  }
+}
+
+.ant-modal-mask {
+  background: var(--modal-mask-color);
+}
+
+.ant-modal-content {
+  background: var(--bg-color-3);
+  border: 1px solid var(--border-color-10);
+  border-radius: unset;
+
+  .ant-modal-header {
+    background: var(--bg-color-0);
+    border-radius: unset;
+    border-bottom: 1px solid var(--bg-color-10);
+
+    .ant-modal-title {
+      color: var(--modal-title-color);
+    }
+  }
+
+  .ant-modal-footer {
+    border-top: 1px solid var(--bg-color-10);
+  }
+}
+
+.ant-modal-close {
+  color: white;
+}
+
+.ant-card-actions {
+  .anticon:hover {
+    color: var(--highlight-color) !important;
+  }
+}
+
+.ant-input:hover {
+  border-color: var(--highlight-color-50a);
+}
+
+.ant-input:focus {
+  border-color: var(--highlight-color);
+  box-shadow: unset;
+}
+
+.ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  color: var(--warning-color);
+}
+
+.ant-select {
+  &:not(.ant-select-customize-input) .ant-select-selector {
+    border-radius: unset;
+  }
+
+  &:not(.ant-select-disabled):hover .ant-select-selector {
+    border-color: var(--highlight-color-50a);
+  }
+
+  &.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input)
+    .ant-select-selector {
+    border-color: var(--highlight-color);
+    box-shadow: unset;
+  }
+}
+
+.ant-select-dropdown {
+  background: var(--dropdown-bg-color);
+  padding: 0px;
+  border-radius: unset;
+  border: 1px solid var(--dropdown-border-color);
+
+  .ant-select-item {
+    color: var(--dropdown-item-color);
+    background: none !important;
+  }
+
+  .ant-select-item-option-active {
+    color: white;
+    background: var(--dropdown-active-item-color) !important;
+  }
+
+  .ant-select-item-option-selected {
+    background: var(--dropdown-selected-item-color) !important;
+
+    &.ant-select-item-option-active {
+      color: white;
+      background: var(--dropdown-selected-item-color) !important;
+    }
+  }
+
+  .ant-btn {
+    margin-top: 6px;
+  }
 }

@@ -146,8 +146,11 @@ function getTabTitle(
   return (
     <div className={styles.tabTitle}>
       {getTabIcon(component.type)}
-      {component.type !== COMPONENT_TYPE.GAME &&
-        (component.title || 'Unknown Title')}
+      {component.type !== COMPONENT_TYPE.GAME && (
+        <span className={styles.title}>
+          {component.title || 'Unknown Title'}
+        </span>
+      )}
       {component.type !== COMPONENT_TYPE.GAME && (
         <CloseOutlined
           className={styles.tabCloseButton}

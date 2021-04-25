@@ -41,8 +41,14 @@
   transition: border 0.25s;
 
   &.selected {
-    border: 1px hsl(209, 100%, 55%) solid;
+    border: 1px var(--highlight-color) solid;
   }
+}
+
+:global .react-flow__selection,
+:global .react-flow__nodesselection-rect {
+  background: var(--highlight-color-10a);
+  border: 1px dotted var(--highlight-color-80a);
 }
 
 :global .react-flow__handle-connecting {
@@ -185,7 +191,7 @@
 
   h1 {
     .headerIcon {
-      color: hsla(209, 100%, 55%);
+      color: var(--highlight-color);
       margin-right: 6px;
     }
 
@@ -219,7 +225,7 @@
       transition: background-color 0.25s;
 
       &.choiceSelected {
-        background-color: hsla(209, 100%, 55%, 80%);
+        background-color: var(--highlight-color-80a);
       }
     }
   }

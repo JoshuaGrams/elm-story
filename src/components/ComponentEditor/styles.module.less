@@ -1,9 +1,25 @@
-:global .dock-tab-close-btn {
-  display: none;
-}
+:global .dock {
+  .dock-tab {
+    &:hover {
+      color: white;
+    }
 
-:global .dock-tab-btn {
-  cursor: pointer;
+    &.dock-tab-active {
+      color: white;
+    }
+
+    .dock-tab-btn {
+      cursor: pointer;
+    }
+
+    .dock-tab-close-btn {
+      display: none;
+    }
+  }
+
+  .dock-ink-bar {
+    background: var(--highlight-color);
+  }
 }
 
 .tabTitle {
@@ -11,7 +27,12 @@
   }
 
   .tabIcon {
+    color: var(--highlight-color);
     padding-right: 6px;
+  }
+
+  .title {
+    color: white !important;
   }
 
   .tabCloseButton {

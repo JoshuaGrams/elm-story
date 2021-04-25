@@ -73,7 +73,9 @@ const GameDetails: React.FC<{
                             By default, games start on the first chapter, scene
                             and passage.
                           </div>
-                          <Button onClick={onCreateJump}>Create Jump</Button>
+                          <Button type="primary" onClick={onCreateJump}>
+                            Create Jump
+                          </Button>
                         </>
                       )}
 

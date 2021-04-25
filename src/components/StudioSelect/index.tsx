@@ -77,8 +77,9 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
               dropdownRender={(menu) => (
                 <div>
                   {menu}
-                  <Divider />
+
                   <Button
+                    type="primary"
                     style={{ width: '100%' }}
                     onClick={() =>
                       setSaveStudioModal({ visible: true, edit: false })
@@ -107,6 +108,7 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
             </Select>
             {app.selectedStudioId && (
               <Button
+                type="primary"
                 onClick={() =>
                   setSaveStudioModal({ visible: true, edit: true })
                 }
