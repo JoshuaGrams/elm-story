@@ -19,11 +19,7 @@ export const GameViewTools: React.FC<{
   studioId: StudioId
   gameId: GameId
 }> = () => {
-  const { engine, engineDispatch } = useContext(EngineContext)
-
-  function onToggleDevTools() {
-    engineDispatch({ type: ENGINE_ACTION_TYPE.TOGGLE_DEV_TOOLS })
-  }
+  const { engineDispatch } = useContext(EngineContext)
 
   function onRestartGame() {
     engineDispatch({ type: ENGINE_ACTION_TYPE.GAME_RESTART })
@@ -35,9 +31,6 @@ export const GameViewTools: React.FC<{
 
   return (
     <div>
-      <Button onClick={onToggleDevTools}>{`${
-        engine.devToolsEnabled ? 'Disable' : 'Enable'
-      } Dev Tools`}</Button>
       <Button onClick={onRestartGame}>Restart Game</Button>
     </div>
   )

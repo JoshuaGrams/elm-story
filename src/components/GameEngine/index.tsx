@@ -150,17 +150,8 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
     <>
       {game && variables && jumps && (
         <>
-          <DividerBox
-            mode="vertical"
-            style={{ height: '100%' }}
-            className={styles.GameEngine}
-          >
-            <div
-              className={styles.rendererContainer}
-              style={{
-                maxHeight: engine.devToolsEnabled ? 'calc(100% - 36px)' : '100%'
-              }}
-            >
+          <DividerBox mode="vertical" className={styles.GameEngine}>
+            <div className={styles.rendererContainer}>
               <div className="es-engine" ref={engineRef}>
                 {(engine.currentChapter || engine.startingChapter) && (
                   <ChapterRenderer
@@ -178,20 +169,18 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
               </div>
             </div>
 
-            {engine.devToolsEnabled && (
-              <DockLayout
-                defaultLayout={gameEngineDevTools}
-                groups={{
-                  default: {
-                    floatable: false,
-                    animated: false,
-                    maximizable: false,
-                    tabLocked: true
-                  }
-                }}
-                dropMode="edge"
-              />
-            )}
+            <DockLayout
+              defaultLayout={gameEngineDevTools}
+              groups={{
+                default: {
+                  floatable: false,
+                  animated: false,
+                  maximizable: false,
+                  tabLocked: true
+                }
+              }}
+              dropMode="edge"
+            />
           </DividerBox>
         </>
       )}
