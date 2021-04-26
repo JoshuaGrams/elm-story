@@ -69,7 +69,14 @@ const GameStateView: React.FC = () => {
 
   return (
     <div className={styles.GameStateView}>
-      <Table dataSource={dataSource} columns={columns} pagination={false} />
+      {dataSource.length === 0 && (
+        <div className={styles.noData}>
+          Add global variables to see game state.
+        </div>
+      )}
+      {dataSource.length > 0 && (
+        <Table dataSource={dataSource} columns={columns} pagination={false} />
+      )}
     </div>
   )
 }

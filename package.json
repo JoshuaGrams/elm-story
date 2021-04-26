@@ -1,6 +1,6 @@
 {
   "name": "esg-app",
-  "productName": "Elm Story",
+  "productName": "Elm Story Designer",
   "description": "Front-end application for the Elm Story platform.",
   "scripts": {
     "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
@@ -30,8 +30,8 @@
     ]
   },
   "build": {
-    "productName": "Elm Story",
-    "appId": "com.esg.elmstory",
+    "productName": "Elm Story Designer",
+    "appId": "com.esg.elmstorydesigner",
     "files": [
       "dist/",
       "node_modules/",
@@ -86,8 +86,8 @@
     ]
   },
   "author": {
-    "name": "af4",
-    "email": "ritsuke@gmail.com"
+    "name": "Elm Story Games",
+    "email": "elmstorygames@gmail.com"
   },
   "private": true,
   "license": "UNLICENSED",

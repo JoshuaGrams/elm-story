@@ -18,6 +18,7 @@
   --highlight-color-10a: hsla(265, 100%, 60%, 0.1);
   --warning-color: hsl(350, 100%, 60%);
   --warning-color-bright: hsl(350, 100%, 65%);
+  --primary-border-color: hsl(0, 0%, 20%);
   --bg-color-0: hsl(0, 0%, 0%);
   --bg-color-3: hsl(0, 0%, 3%);
   --bg-color-5: hsl(0, 0%, 5%);
@@ -122,6 +123,10 @@ h3 {
   &.ant-btn-text {
     border-color: transparent !important;
   }
+}
+
+.ant-collapse {
+  border-color: var(--primary-border-color) !important;
 }
 
 .ant-btn-primary {

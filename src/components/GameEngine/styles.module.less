@@ -4,20 +4,25 @@
 
   .rendererContainer {
     width: 100%;
-    height: calc(100% - 36px);
+    height: calc(100% - 35px);
     min-height: 110px;
-    max-height: calc(100% - 36px);
+    max-height: calc(100% - 35px);
     overflow-y: auto;
+    border-bottom: 1px solid var(--primary-border-color);
   }
 
   :global .dock-panel {
-    border-left: none !important;
-    border-right: none !important;
+    border: none !important;
+    border-top: 1px solid var(--primary-border-color) !important;
   }
 
   .GameStateView {
     height: 100%;
     overflow: auto;
+
+    .noData {
+      padding: 10px;
+    }
 
     h2 {
       font-size: 16px;
@@ -33,6 +38,10 @@
         background: unset;
       }
 
+      .ant-empty {
+        display: none !important;
+      }
+
       th,
       td {
         padding: 2px 6px;
@@ -45,7 +54,6 @@
       }
 
       th {
-        border-top: 1px solid hsl(0, 0%, 10%);
         text-transform: uppercase;
         background: black;
       }
