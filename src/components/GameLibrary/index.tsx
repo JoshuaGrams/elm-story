@@ -50,9 +50,11 @@ const GameLibrary: React.FC<GameLibraryProps> = ({ studioId }) => {
         <div className={styles.contentWrapper}>
           {selectedStudio && games && games.length === 0 && (
             <div className={styles.noContent}>
-              {selectedStudio.title} has 0 games...{' '}
+              There are 0 games in this library.
+              <br />
+              Select another studio or{' '}
               <a onClick={() => setSaveGameModalVisible(true)}>
-                Create game...
+                create game...
               </a>
             </div>
           )}
