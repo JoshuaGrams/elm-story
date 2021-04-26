@@ -118,6 +118,10 @@ h3 {
       }
     }
   }
+
+  &.ant-btn-text {
+    border-color: transparent !important;
+  }
 }
 
 .ant-btn-primary {
@@ -181,13 +185,19 @@ h3 {
   }
 }
 
-.ant-input:hover {
-  border-color: var(--highlight-color-50a);
-}
+.ant-input {
+  &::selection {
+    background: var(--highlight-color-50a);
+  }
 
-.ant-input:focus {
-  border-color: var(--highlight-color);
-  box-shadow: unset;
+  &:hover {
+    border-color: var(--highlight-color-50a);
+  }
+
+  &:focus {
+    border-color: var(--highlight-color);
+    box-shadow: unset;
+  }
 }
 
 .ant-form-item-label
@@ -222,6 +232,10 @@ h3 {
     background: none !important;
   }
 
+  .ant-select-item-empty {
+    display: none;
+  }
+
   .ant-select-item-option-active {
     color: white;
     background: var(--dropdown-active-item-color) !important;
@@ -234,9 +248,5 @@ h3 {
       color: white;
       background: var(--dropdown-selected-item-color) !important;
     }
-  }
-
-  .ant-btn {
-    margin-top: 6px;
   }
 }

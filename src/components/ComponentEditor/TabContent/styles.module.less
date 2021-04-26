@@ -14,9 +14,17 @@
   .TabContentToolbar {
     height: 32px;
     border-bottom: 1px solid hsl(0, 0%, 20%);
+    text-align: center;
 
     :global .ant-btn {
       border: none;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--highlight-color);
+
+      &:hover {
+        color: var(--highlight-color-bright);
+      }
     }
   }
 

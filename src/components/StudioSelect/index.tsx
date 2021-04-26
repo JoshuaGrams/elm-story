@@ -80,7 +80,10 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
 
                   <Button
                     type="primary"
-                    style={{ width: '100%' }}
+                    style={{
+                      width: '100%',
+                      marginTop: studios.length > 0 ? '6px' : '0px'
+                    }}
                     onClick={() =>
                       setSaveStudioModal({ visible: true, edit: false })
                     }

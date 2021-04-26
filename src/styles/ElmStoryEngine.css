@@ -7,6 +7,8 @@ html {
   --text-color: white;
   --highlight-color: hsl(265, 100%, 60%);
   --divider-color: hsl(0, 0%, 20%);
+  --warning-color: hsl(350, 100%, 60%);
+  --warning-color-bright: hsl(350, 100%, 65%);
   --disabled-color: hsl(0, 0%, 50%);
   --button-color: hsl(265, 100%, 60%);
   --button-color-hover: hsl(265, 100%, 65%);
@@ -38,7 +40,7 @@ html {
 }
 
 .es-engine-passage-no-content {
-  color: red !important;
+  color: var(--warning-color) !important;
   margin-bottom: 1rem;
 }
 

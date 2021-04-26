@@ -259,8 +259,8 @@ const renderComponentItem = ({
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       className={`${styles.itemRow} ${
-        item.data.selected ? styles.selected : ''
-      } ${snapshot.isDragging ? styles.dragging : ''}`}
+        item.data.selected && !snapshot.isDragging ? styles.selected : ''
+      }`}
       onClick={(event) => {
         event.stopPropagation()
         if (!item.data.renaming) onSelect(item.id as ComponentId)
@@ -268,52 +268,61 @@ const renderComponentItem = ({
       onContextMenu={(event) => event.stopPropagation()}
       // style={getStyle(provided.draggableProps.style)} locks axis; disable for now
     >
-      <ContextMenu
-        component={{
-          id: item.id as string,
-          title: componentTitle,
-          type: componentType,
-          disabled: item.data.renaming || false,
-          onAdd,
-          onRemove,
-          onEditName: () => onEditName(item.id as string, undefined, false)
-        }}
-      >
-        <div>
-          {componentType !== COMPONENT_TYPE.PASSAGE && (
-            <Button
-              type="text"
-              size="small"
-              onClick={(event) => {
-                event.stopPropagation()
-                if (!item.data.renaming)
-                  item.isExpanded ? onCollapse(item.id) : onExpand(item.id)
-              }}
-            >
-              <ExpandedIcon />
-            </Button>
-          )}
-          <ComponentIcon />
-          {item.data.renaming && (
-            <Text
-              editable={{
-                editing: item.data.renaming,
-                onChange: (title) => onEditName(item.id as string, title, true)
-              }}
-            >
-              {componentTitle || `New ${componentType}`}
-            </Text>
-          )}
-          {!item.data.renaming && <Text ellipsis>{componentTitle}</Text>}{' '}
-          {!item.isExpanded && !item.data.renaming && (
-            <Badge
-              count={item.children.length}
-              size="small"
-              className={styles.badge}
-            />
-          )}
+      {snapshot.isDragging && (
+        <div className={styles.dragging}>
+          <span className={styles.draggingTitle}>{componentTitle}</span>
         </div>
-      </ContextMenu>
+      )}
+
+      {!snapshot.isDragging && (
+        <ContextMenu
+          component={{
+            id: item.id as string,
+            title: componentTitle,
+            type: componentType,
+            disabled: item.data.renaming || false,
+            onAdd,
+            onRemove,
+            onEditName: () => onEditName(item.id as string, undefined, false)
+          }}
+        >
+          <div>
+            {componentType !== COMPONENT_TYPE.PASSAGE && (
+              <Button
+                type="text"
+                size="small"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  if (!item.data.renaming)
+                    item.isExpanded ? onCollapse(item.id) : onExpand(item.id)
+                }}
+              >
+                <ExpandedIcon />
+              </Button>
+            )}
+            <ComponentIcon />
+            {item.data.renaming && (
+              <Text
+                editable={{
+                  editing: item.data.renaming,
+                  onChange: (title) =>
+                    onEditName(item.id as string, title, true)
+                }}
+              >
+                {componentTitle || `New ${componentType}`}
+              </Text>
+            )}
+            {!item.data.renaming && <Text ellipsis>{componentTitle}</Text>}{' '}
+            {!item.isExpanded && !item.data.renaming && (
+              <Badge
+                count={item.children.length}
+                size="small"
+                className={styles.badge}
+              />
+            )}
+          </div>
+        </ContextMenu>
+      )}
     </div>
   )
 }

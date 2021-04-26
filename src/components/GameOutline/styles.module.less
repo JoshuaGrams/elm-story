@@ -88,8 +88,13 @@
         }
       }
 
-      &.dragging {
-        background-color: hsl(182, 100%, 20%) !important;
+      .dragging {
+        padding-left: 47px;
+
+        .draggingTitle {
+          border: 1px solid var(--highlight-color);
+          background: var(--highlight-color-50a);
+        }
       }
 
       &:hover {
