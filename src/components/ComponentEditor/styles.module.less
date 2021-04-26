@@ -29,10 +29,6 @@
 :global .dragging-layer {
   --default-background-color: var(--highlight-color-50a) !important;
 
-  .dock > .dock-ink-bar {
-    background: transparent !important;
-  }
-
   .dock-tab-close-btn {
     display: none !important;
   }
@@ -50,34 +46,10 @@
   background: black !important;
 }
 
-:global .dragging * {
-  background: black !important;
-
-  .dock-top .dock-bar {
-    background: black !important;
-  }
-}
-
 :global .dock-layout > .dock-drop-indicator {
   border: solid 1px var(--highlight-color) !important;
   background: var(--highlight-color-50a) !important;
   box-shadow: unset !important;
-}
-
-:global .dock-drop-layer .dock-drop-square {
-  background: var(--highlight-color) !important;
-}
-
-:global .dock-top .dock-bar {
-  background: black !important;
-}
-
-:global .dock-drop-edge {
-  background: var(--highlight-color) !important;
-}
-
-:global .dock-drop-layer .dock-drop-square-dropping {
-  background: black !important;
 }
 
 .tabTitle {
