@@ -1,7 +1,11 @@
 import { ipcRenderer } from 'electron'
+import { cloneDeep } from 'lodash'
+
 import React, { useEffect, useRef, useContext } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
+import { PLATFORM_TYPE } from '../../data/types'
 
 import {
   AppContext,
@@ -9,10 +13,9 @@ import {
   APP_LOCATION
 } from '../../contexts/AppContext'
 
+import ESGIcon from '../ESGIcon'
+
 import styles from './styles.module.less'
-import { useLocation } from 'react-router-dom'
-import { PLATFORM_TYPE } from '../../data/types'
-import { cloneDeep } from 'lodash'
 
 enum TITLE_BAR_BUTTON_TYPE {
   QUIT = 'QUIT',
@@ -130,8 +133,8 @@ const TitleBar: React.FC = () => {
         <div
           className={styles.dragBar}
           style={{
-            left: app.platform === PLATFORM_TYPE.MACOS ? '79px' : '0px',
-            right: app.platform !== PLATFORM_TYPE.MACOS ? '79px' : '0px'
+            left: app.platform === PLATFORM_TYPE.MACOS ? '79px' : '34px',
+            right: app.platform !== PLATFORM_TYPE.MACOS ? '79px' : '34px'
           }}
         />
       )}
@@ -183,6 +186,16 @@ const TitleBar: React.FC = () => {
       </div>
 
       <header>{app.header}</header>
+
+      <div
+        className={styles.titleBarIcon}
+        style={{
+          right: app.platform === PLATFORM_TYPE.MACOS ? '15px' : 'initial',
+          left: app.platform !== PLATFORM_TYPE.MACOS ? '15px' : 'initial'
+        }}
+      >
+        <ESGIcon />
+      </div>
     </div>
   )
 }
