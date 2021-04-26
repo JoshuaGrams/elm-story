@@ -206,6 +206,19 @@ h3 {
   }
 }
 
+.ant-form-item-has-error .ant-input {
+  border-color: var(--warning-color);
+
+  &:focus {
+    border-color: var(--warning-color);
+    box-shadow: unset;
+  }
+}
+
+.ant-form-item-explain.ant-form-item-explain-error {
+  color: var(--warning-color);
+}
+
 .ant-form-item-label
   > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
   color: var(--warning-color);
