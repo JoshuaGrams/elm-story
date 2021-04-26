@@ -254,12 +254,20 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
       // Not removing tab
       if (
         direction !== 'remove' &&
-        changingTabId !== editor.selectedGameOutlineComponent.id
+        changingTabId !== editor.selectedGameOutlineComponent.id &&
+        !editor.renamedComponent.id
       ) {
         editorDispatch({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
           selectedGameOutlineComponent:
             clonedTabIndex !== -1 ? cloneDeep(tabs[clonedTabIndex]) : {}
+        })
+      }
+
+      if (editor.renamedComponent.id) {
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
+          renamedComponent: {}
         })
       }
     }
@@ -323,7 +331,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
         }
       }
     }
-  }, [editor.selectedGameOutlineComponent])
+  }, [editor.selectedGameOutlineComponent.id])
 
   useEffect(() => {
     if (
@@ -386,7 +394,8 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
               editor.renamedComponent.id &&
               dockLayout.current.updateTab(
                 editor.renamedComponent.id,
-                tabToUpdate
+                tabToUpdate,
+                false
               ),
             0
           )

@@ -839,9 +839,10 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           }
         })
 
-        if (componentId === editor.selectedGameOutlineComponent.id) {
-          console.log('test')
-          // TODO: results in unneeded call on selectComponent
+        if (
+          componentId === editor.selectedGameOutlineComponent.id &&
+          title !== editor.selectedGameOutlineComponent.title
+        ) {
           editorDispatch({
             type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
             selectedGameOutlineComponent: {
