@@ -1,3 +1,5 @@
+import logger from '../../lib/logger'
+
 import { ipcRenderer } from 'electron'
 import React, { useContext, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
@@ -51,7 +53,10 @@ const Editor: React.FC = () => {
   }, [editor.selectedGameOutlineComponent])
 
   useEffect(() => {
+    logger.info(`Editor->selectedGame->useEffect`)
+
     selectedGame?.id &&
+      !editor.selectedGameOutlineComponent.id &&
       editorDispatch({
         type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
         selectedGameOutlineComponent: {

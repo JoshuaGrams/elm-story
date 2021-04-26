@@ -233,6 +233,8 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
         direction === 'remove' &&
         changingTabId === editor.selectedGameOutlineComponent.id
       ) {
+        logger.info(`Removing tab`)
+
         if (clonedTabIndex !== -1) {
           clonedTabs.splice(clonedTabIndex, 1)
         }
@@ -257,6 +259,8 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
         changingTabId !== editor.selectedGameOutlineComponent.id &&
         !editor.renamedComponent.id
       ) {
+        logger.info(`Not removing tab`)
+
         editorDispatch({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
           selectedGameOutlineComponent:
@@ -279,6 +283,10 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
       editor.selectedGameOutlineComponent.id &&
       activePanelId
     ) {
+      logger.info(
+        `ComponentEditor->editor.selectedGameOutlineComponent.id->useEffect->type: ${editor.selectedGameOutlineComponent.type}`
+      )
+
       const foundTab = dockLayout.current.find(
         editor.selectedGameOutlineComponent.id
       ) as TabData
