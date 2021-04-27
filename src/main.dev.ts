@@ -83,7 +83,7 @@ const createWindow = async () => {
     icon: getAssetPath('icon.png'),
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false // used for react dev tools
     },
     frame: false,
     backgroundColor: '#0a0a0a'
