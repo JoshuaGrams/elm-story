@@ -1,7 +1,7 @@
 {
   "name": "esg-app",
-  "productName": "Elm Story Designer",
-  "description": "Front-end application for the Elm Story platform.",
+  "productName": "Elm Story",
+  "description": "The Elm Story Platform app.",
   "scripts": {
     "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
     "build:main": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.main.prod.babel.js",
@@ -30,8 +30,8 @@
     ]
   },
   "build": {
-    "productName": "Elm Story Designer",
-    "appId": "com.esg.elmstorydesigner",
+    "productName": "Elm Story",
+    "appId": "com.esg.elmstory",
     "files": [
       "dist/",
       "node_modules/",
