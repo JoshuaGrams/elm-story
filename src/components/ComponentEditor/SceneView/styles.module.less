@@ -27,9 +27,11 @@
   border: solid 1px hsl(0, 0%, 20%);
   box-shadow: 0px 0px 20px hsla(0, 0%, 0%, 0.8);
   pointer-events: none;
+  height: 80px;
+  width: 100px;
 
   .react-flow__minimap-mask {
-    fill: hsla(0, 0%, 0%, 0.9);
+    fill: hsla(0, 0%, 0%, 0.8);
   }
 }
 
@@ -78,7 +80,7 @@
 
   &.selected {
     &.jump .react-flow__edge-path {
-      stroke: hsl(160, 100%, 55%);
+      stroke: var(--jump-node-color);
     }
 
     &.passage .react-flow__edge-path {
@@ -143,7 +145,7 @@
 
   h1 {
     .headerIcon {
-      color: hsl(160, 100%, 55%);
+      color: var(--jump-node-color);
       margin-right: 6px;
     }
 

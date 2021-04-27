@@ -338,7 +338,7 @@ const SceneView: React.FC<{
   }
 
   async function onNodeDragStop(
-    event: React.MouseEvent<Element, MouseEvent>,
+    _: React.MouseEvent<Element, MouseEvent>,
     node: Node<{
       type: COMPONENT_TYPE
     }>
@@ -854,7 +854,19 @@ const SceneView: React.FC<{
               color={'hsl(0, 0%, 10%)'}
             />
             <Controls className={styles.control} />
-            <MiniMap />
+            <MiniMap
+              nodeColor={(node) => {
+                switch (node.type) {
+                  case 'passageNode':
+                    return 'hsl(265, 100%, 60%)'
+                  case 'jumpNode':
+                    return 'hsl(160, 100%, 60%)'
+                  default:
+                    return '#000'
+                }
+              }}
+              nodeBorderRadius={10}
+            />
           </ReactFlow>
         </div>
       )}
