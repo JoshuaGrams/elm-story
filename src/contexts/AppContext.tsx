@@ -2,6 +2,8 @@ import React, { useMemo, createContext, useReducer } from 'react'
 import { StudioId, GameId, PLATFORM_TYPE } from '../data/types'
 
 interface AppState {
+  version: string
+  build: string
   platform?: PLATFORM_TYPE
   header: string
   fullscreen: boolean
@@ -80,6 +82,8 @@ interface AppContextType {
 }
 
 const defaultAppState: AppState = {
+  version: 'Alpha M1',
+  build: '20210426001',
   platform: undefined,
   header: 'Elm Story',
   fullscreen: false,

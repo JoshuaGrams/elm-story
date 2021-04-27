@@ -120,7 +120,7 @@ const createWindow = async () => {
 
     ipcMain.on(WINDOW_EVENT_TYPE.QUIT, () => app.quit())
     ipcMain.on(WINDOW_EVENT_TYPE.MINIMIZE, () => mainWindow?.minimize())
-    ipcMain.on(WINDOW_EVENT_TYPE.TOGGLE_FULLSCREEN, ({}, isFullscreen) => {
+    ipcMain.on(WINDOW_EVENT_TYPE.TOGGLE_FULLSCREEN, (_, isFullscreen) => {
       if (mainWindow) {
         if (isFullscreen && !mainWindow.fullScreen)
           mainWindow.setFullScreen(true)
@@ -128,6 +128,10 @@ const createWindow = async () => {
           mainWindow.setFullScreen(false)
       }
     })
+
+    ipcMain.on(WINDOW_EVENT_TYPE.OPEN_EXTERNAL_LINK, (_, [address]) =>
+      shell.openExternal(address)
+    )
   })
 
   mainWindow.on('closed', () => {

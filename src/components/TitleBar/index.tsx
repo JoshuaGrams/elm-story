@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron'
 import { cloneDeep } from 'lodash'
 
-import React, { useEffect, useRef, useContext } from 'react'
+import React, { useEffect, useRef, useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
@@ -13,7 +13,8 @@ import {
   APP_LOCATION
 } from '../../contexts/AppContext'
 
-import ESGIcon from '../ESGIcon'
+import { ESGModal } from '../Modal'
+import ESGIcon from './ESGIcon'
 
 import styles from './styles.module.less'
 
@@ -75,6 +76,8 @@ const TitleBar: React.FC = () => {
    */
   const isFirstRun = useRef(true)
 
+  const [esgModalVisible, setESGModalVisible] = useState(false)
+
   const titleBarButtonData = [
     {
       type: TITLE_BAR_BUTTON_TYPE.QUIT,
@@ -98,6 +101,14 @@ const TitleBar: React.FC = () => {
   ]
 
   useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false
+    } else {
+      ipcRenderer.send(WINDOW_EVENT_TYPE.TOGGLE_FULLSCREEN, app.fullscreen)
+    }
+  }, [app.fullscreen])
+
+  useEffect(() => {
     ipcRenderer.on(WINDOW_EVENT_TYPE.FULLSCREEN, () =>
       appDispatch({ type: APP_ACTION_TYPE.FULLSCREEN })
     )
@@ -105,14 +116,6 @@ const TitleBar: React.FC = () => {
       appDispatch({ type: APP_ACTION_TYPE.FLOATING })
     )
   }, [])
-
-  useEffect(() => {
-    if (isFirstRun.current) {
-      isFirstRun.current = false
-    } else {
-      ipcRenderer.send(WINDOW_EVENT_TYPE.TOGGLE_FULLSCREEN, app.fullscreen)
-    }
-  }, [app.fullscreen])
 
   useEffect(() => {
     switch (pathname) {
@@ -128,40 +131,32 @@ const TitleBar: React.FC = () => {
   }, [pathname])
 
   return (
-    <div className={styles.titleBar}>
-      {!app.fullscreen && (
+    <>
+      <ESGModal
+        visible={esgModalVisible}
+        onCancel={() => setESGModalVisible(false)}
+      />
+
+      <div className={styles.titleBar}>
+        {!app.fullscreen && (
+          <div
+            className={styles.dragBar}
+            style={{
+              left: app.platform === PLATFORM_TYPE.MACOS ? '79px' : '34px',
+              right: app.platform !== PLATFORM_TYPE.MACOS ? '79px' : '34px'
+            }}
+          />
+        )}
+
         <div
-          className={styles.dragBar}
+          className={styles.titleBarButtonsContainer}
           style={{
-            left: app.platform === PLATFORM_TYPE.MACOS ? '79px' : '34px',
-            right: app.platform !== PLATFORM_TYPE.MACOS ? '79px' : '34px'
+            left: app.platform === PLATFORM_TYPE.MACOS ? '10px' : 'initial',
+            right: app.platform !== PLATFORM_TYPE.MACOS ? '10px' : 'initial'
           }}
-        />
-      )}
-
-      <div
-        className={styles.titleBarButtonsContainer}
-        style={{
-          left: app.platform === PLATFORM_TYPE.MACOS ? '10px' : 'initial',
-          right: app.platform !== PLATFORM_TYPE.MACOS ? '10px' : 'initial'
-        }}
-      >
-        {app.platform === PLATFORM_TYPE.MACOS &&
-          titleBarButtonData.map(
-            (data, index) =>
-              (index !== 1 || (index === 1 && !app.fullscreen)) && (
-                <TitleBarButton
-                  key={data.type}
-                  type={data.type}
-                  onClick={data.onClick}
-                />
-              )
-          )}
-
-        {app.platform !== PLATFORM_TYPE.MACOS &&
-          cloneDeep(titleBarButtonData)
-            .reverse()
-            .map(
+        >
+          {app.platform === PLATFORM_TYPE.MACOS &&
+            titleBarButtonData.map(
               (data, index) =>
                 (index !== 1 || (index === 1 && !app.fullscreen)) && (
                   <TitleBarButton
@@ -172,8 +167,22 @@ const TitleBar: React.FC = () => {
                 )
             )}
 
-        {/* #137 */}
-        {/* <TitleBarButton
+          {app.platform !== PLATFORM_TYPE.MACOS &&
+            cloneDeep(titleBarButtonData)
+              .reverse()
+              .map(
+                (data, index) =>
+                  (index !== 1 || (index === 1 && !app.fullscreen)) && (
+                    <TitleBarButton
+                      key={data.type}
+                      type={data.type}
+                      onClick={data.onClick}
+                    />
+                  )
+              )}
+
+          {/* #137 */}
+          {/* <TitleBarButton
           type={TITLE_BAR_BUTTON_TYPE.MENU}
           onClick={() =>
             appDispatch({
@@ -183,20 +192,22 @@ const TitleBar: React.FC = () => {
             })
           }
         /> */}
-      </div>
+        </div>
 
-      <header>{app.header}</header>
+        <header>{app.header}</header>
 
-      <div
-        className={styles.titleBarIcon}
-        style={{
-          right: app.platform === PLATFORM_TYPE.MACOS ? '15px' : 'initial',
-          left: app.platform !== PLATFORM_TYPE.MACOS ? '15px' : 'initial'
-        }}
-      >
-        <ESGIcon />
+        <div
+          className={styles.titleBarIcon}
+          style={{
+            right: app.platform === PLATFORM_TYPE.MACOS ? '15px' : 'initial',
+            left: app.platform !== PLATFORM_TYPE.MACOS ? '15px' : 'initial'
+          }}
+          onClick={() => setESGModalVisible(true)}
+        >
+          <ESGIcon />
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
