@@ -2,6 +2,13 @@
   "name": "esg-app",
   "productName": "Elm Story",
   "description": "The Elm Story Platform app.",
+  "version": "0.0.1",
+  "author": {
+    "name": "Elm Story Games",
+    "email": "elmstorygames@gmail.com"
+  },
+  "private": true,
+  "license": "UNLICENSED",
   "scripts": {
     "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
     "build:main": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.main.prod.babel.js",
@@ -85,12 +92,6 @@
       "./assets/**"
     ]
   },
-  "author": {
-    "name": "Elm Story Games",
-    "email": "elmstorygames@gmail.com"
-  },
-  "private": true,
-  "license": "UNLICENSED",
   "jest": {
     "testURL": "http://localhost/",
     "moduleNameMapper": {
