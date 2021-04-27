@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 
 import { StudioId, Game, GAME_TEMPLATE } from '../../data/types'
+
+import { AppContext } from '../../contexts/AppContext'
 
 import { Modal, ModalProps, Form, Input } from 'antd'
 
@@ -22,6 +24,8 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
   edit = false,
   onSave
 }) => {
+  const { app } = useContext(AppContext)
+
   const [saveGameForm] = Form.useForm()
 
   useEffect(() => {
@@ -70,8 +74,8 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
                     template: GAME_TEMPLATE.ADVENTURE,
                     tags: [],
                     // TODO: Move to defines/types.
-                    engine: '1.0.0',
-                    version: '1.0.0',
+                    engine: app.version,
+                    version: app.version,
                     chapters: [],
                     jump: null
                   }
