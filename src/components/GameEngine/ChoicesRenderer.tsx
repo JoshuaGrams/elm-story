@@ -13,7 +13,8 @@ import {
   GameState,
   Route,
   SET_OPERATOR_TYPE,
-  StudioId
+  StudioId,
+  VARIABLE_TYPE
 } from '../../data/types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
@@ -31,7 +32,10 @@ function isRouteOpen(gameState: GameState, conditions: Condition[]): boolean {
 
   conditions.length > 0 &&
     conditions.map((condition) => {
-      const currentValue = gameState[condition.compare[0]].currentValue
+      const currentValue =
+        condition.compare[3] === VARIABLE_TYPE.NUMBER
+          ? Number(gameState[condition.compare[0]].currentValue)
+          : gameState[condition.compare[0]].currentValue
 
       switch (condition.compare[1]) {
         case COMPARE_OPERATOR_TYPE.EQ:

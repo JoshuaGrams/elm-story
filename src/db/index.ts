@@ -1042,7 +1042,8 @@ export class LibraryDatabase extends Dexie {
               compare: [
                 condition.compare[0],
                 newCompareOperatorType,
-                condition.compare[2]
+                condition.compare[2],
+                condition.compare[3]
               ]
             })
           } else {
@@ -1072,7 +1073,12 @@ export class LibraryDatabase extends Dexie {
           if (condition) {
             await this.conditions.update(conditionId, {
               ...condition,
-              compare: [condition.compare[0], condition.compare[1], newValue]
+              compare: [
+                condition.compare[0],
+                condition.compare[1],
+                newValue,
+                condition.compare[3]
+              ]
             })
           } else {
             throw new Error('Unable to set condition value. Component missing.')

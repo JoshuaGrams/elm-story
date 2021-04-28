@@ -121,7 +121,8 @@ export const VariableRow: React.FC<{
               compare: [
                 condition.compare[0],
                 COMPARE_OPERATOR_TYPE.EQ,
-                selectedVariableType === VARIABLE_TYPE.BOOLEAN ? 'false' : ''
+                selectedVariableType === VARIABLE_TYPE.BOOLEAN ? 'false' : '',
+                selectedVariableType
               ]
             })
           }
@@ -347,7 +348,7 @@ export const VariableRow: React.FC<{
                 <Form
                   form={editVariableDefaultValueForm}
                   initialValues={{
-                    defaultValue: value || variable.defaultValue
+                    defaultValue: value || undefined
                   }}
                   onValuesChange={debounce(
                     onChangeValue

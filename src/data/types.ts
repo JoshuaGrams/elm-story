@@ -137,7 +137,7 @@ export interface Condition extends Component {
   gameId: GameId
   routeId: ComponentId
   variableId: ComponentId
-  compare: [ComponentId, COMPARE_OPERATOR_TYPE, string] // variable ref
+  compare: [ComponentId, COMPARE_OPERATOR_TYPE, string, VARIABLE_TYPE] // variable ref
 }
 
 // Route Condition

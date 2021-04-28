@@ -78,7 +78,7 @@ const RouteConditionRow: React.FC<{
             allowTypeChange={false}
             allowCompareOperator={true}
             compareOperatorType={conditionCompareOperatorType}
-            value={condition.compare[2]}
+            value={condition.compare[2] || undefined}
             onCompareOperatorTypeChange={async (
               newCompareOperatorType: COMPARE_OPERATOR_TYPE
             ) => {
@@ -104,7 +104,7 @@ const RouteConditionRow: React.FC<{
             onDelete={onRemoveCondition}
           />
 
-          {conditionValue === variable.defaultValue && (
+          {condition.compare[2] === variable.defaultValue && (
             <div className={styles.defaultValueMsg}>
               Condition set to default value.
             </div>
@@ -181,7 +181,7 @@ const RouteEffectRow: React.FC<{
             onDelete={onRemoveEffect}
           />
 
-          {effectValue === variable.defaultValue && (
+          {effect.set[2] === variable.defaultValue && (
             <div className={styles.defaultValueMsg}>
               Effect set to default value.
             </div>
@@ -220,7 +220,8 @@ const RouteDetails: React.FC<{
         compare: [
           foundVariable.id,
           COMPARE_OPERATOR_TYPE.EQ,
-          foundVariable.defaultValue
+          foundVariable.defaultValue,
+          foundVariable.type
         ],
         tags: []
       }))
