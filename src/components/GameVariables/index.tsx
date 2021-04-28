@@ -351,7 +351,10 @@ export const VariableRow: React.FC<{
                 <Form
                   form={editVariableDefaultValueForm}
                   initialValues={{
-                    defaultValue: value || undefined
+                    defaultValue:
+                      rowType === VARIABLE_ROW_TYPE.VARIABLE
+                        ? variable.defaultValue
+                        : value || undefined
                   }}
                   onValuesChange={debounce(
                     onChangeValue
