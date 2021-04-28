@@ -46,6 +46,7 @@ export enum SET_OPERATOR_TYPE {
   ASSIGN = '=',
   ADD = '+',
   SUBTRACT = '-',
+  MULTIPLY = '*',
   DIVIDE = '/'
 }
 

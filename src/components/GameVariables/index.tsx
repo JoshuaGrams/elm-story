@@ -325,6 +325,9 @@ export const VariableRow: React.FC<{
                   <Option value={SET_OPERATOR_TYPE.SUBTRACT}>
                     {SET_OPERATOR_TYPE.SUBTRACT}
                   </Option>
+                  <Option value={SET_OPERATOR_TYPE.MULTIPLY}>
+                    {SET_OPERATOR_TYPE.MULTIPLY}
+                  </Option>
                   <Option value={SET_OPERATOR_TYPE.DIVIDE}>
                     {SET_OPERATOR_TYPE.DIVIDE}
                   </Option>
