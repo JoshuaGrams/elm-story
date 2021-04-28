@@ -2,7 +2,7 @@
   "name": "esg-app",
   "productName": "Elm Story",
   "description": "The Elm Story Platform app.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "Elm Story Games",
     "email": "elmstorygames@gmail.com"
