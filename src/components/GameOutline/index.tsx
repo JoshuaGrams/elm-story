@@ -1,8 +1,9 @@
 import logger from '../../lib/logger'
+import { cloneDeep } from 'lodash-es'
+import getGameDataJSON from '../../lib/getGameDataJSON'
 
 import React, { useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
-import { cloneDeep } from 'lodash-es'
 
 import createGameOutlineTreeData from '../../lib/createGameOutlineTreeData'
 
@@ -37,10 +38,11 @@ import {
   RightOutlined,
   LeftOutlined,
   PlusOutlined,
-  EditOutlined
+  EditOutlined,
+  ExportOutlined
 } from '@ant-design/icons'
 
-import { SaveGameModal } from '../Modal'
+import { ExportJSONModal, SaveGameModal } from '../Modal'
 
 import styles from './styles.module.less'
 
@@ -336,13 +338,31 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
   const { editor, editorDispatch } = useContext(EditorContext)
 
-  const [editGameModalVisible, setEditGameModalVisible] = useState<boolean>(
-      false
-    ),
+  const [editGameModalVisible, setEditGameModalVisible] = useState(false),
+    [exportJSONModalVisible, setExportJSONModalVisible] = useState(false),
     [treeData, setTreeData] = useState<TreeData | undefined>(undefined),
     [movingComponentId, setMovingComponentId] = useState<string | undefined>(
       undefined
     )
+
+  async function onExportGameDataAsJSON() {
+    if (game.id) {
+      setExportJSONModalVisible(true)
+
+      const json = await getGameDataJSON(studioId, game.id),
+        element = document.createElement('a'),
+        file = new Blob([json], { type: 'text/json' })
+
+      element.href = URL.createObjectURL(file)
+      element.download = `${game.title.trim()}.json`
+
+      setTimeout(() => {
+        element.click()
+
+        setExportJSONModalVisible(false)
+      }, 1000)
+    }
+  }
 
   function onExpand(itemId: React.ReactText) {
     if (treeData)
@@ -1007,7 +1027,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             studioId,
             game.id
           ),
-          scenes = await api().scenes.getScenesByGameId(studioId, game.id),
+          scenes = await api().scenes.getScenesByGameRef(studioId, game.id),
           passages = await api().passages.getPassagesByGameRef(
             studioId,
             game.id
@@ -1053,7 +1073,10 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             edit
           />
 
+          <ExportJSONModal visible={exportJSONModalVisible} />
+
           <div className={styles.gameOutline}>
+            {/* TODO: move to seperate component */}
             {/* Outline Nav */}
             <div className={styles.outlineNav}>
               <Tooltip
@@ -1075,9 +1098,20 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
               <div className={styles.gameButtons}>
                 <Tooltip
+                  title="Export game as JSON"
+                  placement="right"
+                  align={{ offset: [-6, 0] }}
+                  mouseEnterDelay={1}
+                >
+                  <Button onClick={onExportGameDataAsJSON} type="link">
+                    <ExportOutlined />
+                  </Button>
+                </Tooltip>
+
+                <Tooltip
                   title="Edit Game Details..."
                   placement="right"
-                  align={{ offset: [-10, 0] }}
+                  align={{ offset: [-6, 0] }}
                   mouseEnterDelay={1}
                 >
                   <Button
@@ -1091,7 +1125,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 <Tooltip
                   title="Add Chapter"
                   placement="right"
-                  align={{ offset: [-10, 0] }}
+                  align={{ offset: [-6, 0] }}
                   mouseEnterDelay={1}
                 >
                   <Button

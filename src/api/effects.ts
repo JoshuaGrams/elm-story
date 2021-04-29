@@ -1,11 +1,28 @@
 import { LibraryDatabase } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { ComponentId, Effect, SET_OPERATOR_TYPE, StudioId } from '../data/types'
+import {
+  ComponentId,
+  Effect,
+  GameId,
+  SET_OPERATOR_TYPE,
+  StudioId
+} from '../data/types'
 
 export async function getEffect(studioId: StudioId, effectId: ComponentId) {
   try {
     return await new LibraryDatabase(studioId).getEffect(effectId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function getEffectsByGameRef(
+  studioId: StudioId,
+  gameId: GameId
+): Promise<Effect[]> {
+  try {
+    return await new LibraryDatabase(studioId).getEffectsByGameRef(gameId)
   } catch (error) {
     throw new Error(error)
   }

@@ -400,6 +400,14 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async getJumpsByGameRef(gameId: GameId): Promise<Jump[]> {
+    try {
+      return await this.jumps.where({ gameId }).toArray()
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async saveJump(jump: Jump): Promise<Jump> {
     if (!jump.gameId)
       throw new Error('Unable to save jump to database. Missing game ID.')
@@ -841,7 +849,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getScenesByGameId(gameId: GameId): Promise<Scene[]> {
+  public async getScenesByGameRef(gameId: GameId): Promise<Scene[]> {
     try {
       return await this.scenes.where({ gameId }).toArray()
     } catch (error) {
@@ -876,6 +884,14 @@ export class LibraryDatabase extends Dexie {
           `Unable to get route with ID: ${routeId}. Does not exist.`
         )
       }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getRoutesByGameRef(gameId: GameId): Promise<Route[]> {
+    try {
+      return await this.routes.where({ gameId }).toArray()
     } catch (error) {
       throw new Error(error)
     }
@@ -993,6 +1009,14 @@ export class LibraryDatabase extends Dexie {
           `Unable to get condition with ID: ${conditionId}. Does not exist.`
         )
       }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getConditionsByGameRef(gameId: GameId): Promise<Condition[]> {
+    try {
+      return await this.conditions.where({ gameId }).toArray()
     } catch (error) {
       throw new Error(error)
     }
@@ -1147,6 +1171,14 @@ export class LibraryDatabase extends Dexie {
           `Unable to get effect with ID: ${effectId}. Does not exist.`
         )
       }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getEffectsByGameRef(gameId: GameId): Promise<Effect[]> {
+    try {
+      return await this.effects.where({ gameId }).toArray()
     } catch (error) {
       throw new Error(error)
     }
@@ -1477,6 +1509,14 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async getChoicesByGameRef(gameId: GameId): Promise<Choice[]> {
+    try {
+      return await this.choices.where({ gameId }).toArray()
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async saveChoice(choice: Choice): Promise<Choice> {
     if (!choice.gameId)
       throw new Error('Unable to save choice to database. Missing game ID.')
@@ -1547,6 +1587,14 @@ export class LibraryDatabase extends Dexie {
           `Unable to get variable with ID: ${variableId}. Does not exist.`
         )
       }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getVariablesByGameRef(gameId: GameId): Promise<Variable[]> {
+    try {
+      return await this.variables.where({ gameId }).toArray()
     } catch (error) {
       throw new Error(error)
     }

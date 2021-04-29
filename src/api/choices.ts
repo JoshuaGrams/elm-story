@@ -1,10 +1,21 @@
-import { Choice, ComponentId, StudioId } from '../data/types'
+import { Choice, ComponentId, GameId, StudioId } from '../data/types'
 import { v4 as uuid } from 'uuid'
 import { LibraryDatabase } from '../db'
 
 export async function getChoice(studioId: StudioId, choiceId: ComponentId) {
   try {
     return await new LibraryDatabase(studioId).getChoice(choiceId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function getChoicesByGameRef(
+  studioId: StudioId,
+  gameId: GameId
+): Promise<Choice[]> {
+  try {
+    return await new LibraryDatabase(studioId).getChoicesByGameRef(gameId)
   } catch (error) {
     throw new Error(error)
   }

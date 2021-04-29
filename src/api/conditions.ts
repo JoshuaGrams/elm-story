@@ -5,6 +5,7 @@ import {
   COMPARE_OPERATOR_TYPE,
   ComponentId,
   Condition,
+  GameId,
   StudioId
 } from '../data/types'
 
@@ -14,6 +15,17 @@ export async function getCondition(
 ) {
   try {
     return await new LibraryDatabase(studioId).getCondition(conditionId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function getConditionsByGameRef(
+  studioId: StudioId,
+  gameId: GameId
+): Promise<Condition[]> {
+  try {
+    return await new LibraryDatabase(studioId).getConditionsByGameRef(gameId)
   } catch (error) {
     throw new Error(error)
   }

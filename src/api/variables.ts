@@ -1,11 +1,28 @@
 import { LibraryDatabase, LIBRARY_TABLE } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { ComponentId, StudioId, Variable, VARIABLE_TYPE } from '../data/types'
+import {
+  ComponentId,
+  GameId,
+  StudioId,
+  Variable,
+  VARIABLE_TYPE
+} from '../data/types'
 
 export async function getVariable(studioId: StudioId, variableId: ComponentId) {
   try {
     return await new LibraryDatabase(studioId).getVariable(variableId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function getVariablesByGameRef(
+  studioId: StudioId,
+  gameId: GameId
+): Promise<Variable[]> {
+  try {
+    return await new LibraryDatabase(studioId).getVariablesByGameRef(gameId)
   } catch (error) {
     throw new Error(error)
   }

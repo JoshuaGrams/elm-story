@@ -1,11 +1,22 @@
 import { LibraryDatabase } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { ComponentId, Route, StudioId } from '../data/types'
+import { ComponentId, GameId, Route, StudioId } from '../data/types'
 
 export async function getRoute(studioId: StudioId, routeId: ComponentId) {
   try {
     return await new LibraryDatabase(studioId).getRoute(routeId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function getRoutesByGameRef(
+  studioId: StudioId,
+  gameId: GameId
+): Promise<Route[]> {
+  try {
+    return await new LibraryDatabase(studioId).getRoutesByGameRef(gameId)
   } catch (error) {
     throw new Error(error)
   }

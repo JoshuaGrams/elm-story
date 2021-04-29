@@ -34,12 +34,12 @@ export async function removeScene(studioId: StudioId, sceneId: ComponentId) {
   }
 }
 
-export async function getScenesByGameId(
+export async function getScenesByGameRef(
   studioId: StudioId,
   gameId: GameId
 ): Promise<Scene[]> {
   try {
-    return await new LibraryDatabase(studioId).getScenesByGameId(gameId)
+    return await new LibraryDatabase(studioId).getScenesByGameRef(gameId)
   } catch (error) {
     throw new Error(error)
   }
