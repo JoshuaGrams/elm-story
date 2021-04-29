@@ -163,6 +163,20 @@ export class LibraryDatabase extends Dexie {
       variables: '&id,gameId,title,type,*tags,updated'
     })
 
+    this.version(2)
+      .stores({
+        games: '&id,title,*tags,updated,template,designer,version,engine'
+      })
+      .upgrade((tx) =>
+        tx
+          .table('games')
+          .toCollection()
+          .modify((game) => {
+            game.designer = game.director
+            delete game.director
+          })
+      )
+
     this.tables.map((table) => table.name)
 
     this.games = this.table(LIBRARY_TABLE.GAMES)

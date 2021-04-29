@@ -32,7 +32,7 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
     if (edit && game) {
       saveGameForm.setFieldsValue({
         title: game.title,
-        director: game.director
+        designer: game.designer
       })
     }
   }, [visible])
@@ -57,19 +57,19 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
         preserve={false}
         onFinish={async ({
           title,
-          director
+          designer
         }: {
           title: string
-          director: string
+          designer: string
         }) => {
           try {
             const savedGame = await api().games.saveGame(
               studioId,
               game && edit
-                ? { ...game, title, director }
+                ? { ...game, title, designer }
                 : {
                     title,
-                    director,
+                    designer,
                     // TODO: Enable user-defined once more templates are supported.
                     template: GAME_TEMPLATE.ADVENTURE,
                     tags: [],
@@ -96,9 +96,9 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
           <Input autoFocus />
         </Form.Item>
         <Form.Item
-          label="Director"
-          name="director"
-          rules={[{ required: true, message: 'Director is required.' }]}
+          label="Designer"
+          name="designer"
+          rules={[{ required: true, message: 'Designer is required.' }]}
         >
           <Input />
         </Form.Item>

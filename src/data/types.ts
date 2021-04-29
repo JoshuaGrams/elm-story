@@ -96,7 +96,7 @@ export interface Editor extends Component {}
 export interface Game extends Component {
   id?: GameId
   template: GAME_TEMPLATE
-  director: string
+  designer: string
   version: string
   engine: string
   chapters: ComponentId[]

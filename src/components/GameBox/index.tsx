@@ -109,7 +109,7 @@ const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
 
         {game && (
           <>
-            <Meta title="directed by" description={game.director} />
+            <Meta title="designed by" description={game.designer} />
           </>
         )}
       </Card>
