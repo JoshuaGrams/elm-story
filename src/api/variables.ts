@@ -71,12 +71,12 @@ export async function saveVariableType(
 export async function saveVariableDefaultValue(
   studioId: StudioId,
   variableId: ComponentId,
-  defaultValue: string
+  initialValue: string
 ) {
   try {
     return await new LibraryDatabase(studioId).saveVariableDefaultValue(
       variableId,
-      defaultValue
+      initialValue
     )
   } catch (error) {
     throw new Error(error)

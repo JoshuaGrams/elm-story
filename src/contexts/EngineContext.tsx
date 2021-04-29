@@ -82,7 +82,7 @@ const engineReducer = (
       Object.keys(state.gameState).map((key) => {
         resetGameState[key] = {
           ...state.gameState[key],
-          currentValue: `${state.gameState[key].defaultValue}`
+          currentValue: `${state.gameState[key].initialValue}`
         }
       })
 

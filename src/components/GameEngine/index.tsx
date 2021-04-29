@@ -119,9 +119,9 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
           newGameState[variable.id] = {
             title: variable.title,
             type: variable.type,
-            defaultValue: `${variable.defaultValue}`,
+            initialValue: `${variable.initialValue}`,
             currentValue: `${
-              newGameState[variable.id]?.currentValue || variable.defaultValue
+              newGameState[variable.id]?.currentValue || variable.initialValue
             }`
           }
         }

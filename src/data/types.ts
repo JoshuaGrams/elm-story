@@ -65,7 +65,7 @@ export interface GameState {
   [variableId: string]: {
     title: string
     type: VARIABLE_TYPE
-    defaultValue: string
+    initialValue: string
     currentValue: string
   }
 }
@@ -164,5 +164,5 @@ export interface Choice extends Component {
 export interface Variable extends Component {
   gameId: GameId
   type: VARIABLE_TYPE
-  defaultValue: string
+  initialValue: string
 }

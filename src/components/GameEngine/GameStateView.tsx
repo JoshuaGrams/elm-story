@@ -25,7 +25,7 @@ const columns = [
     key: 'type'
   },
   {
-    title: 'Default',
+    title: 'Initial',
     dataIndex: 'default',
     key: 'default'
   },
@@ -59,7 +59,7 @@ const GameStateView: React.FC = () => {
         id: key,
         title: engine.gameState[key].title,
         type: engine.gameState[key].type,
-        default: `${engine.gameState[key].defaultValue || 'undefined'}`,
+        default: `${engine.gameState[key].initialValue || 'undefined'}`,
         current: `${engine.gameState[key].currentValue || 'undefined'}`
       })
     )

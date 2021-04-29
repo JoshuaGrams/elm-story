@@ -104,9 +104,9 @@ const RouteConditionRow: React.FC<{
             onDelete={onRemoveCondition}
           />
 
-          {condition.compare[2] === variable.defaultValue && (
+          {condition.compare[2] === variable.initialValue && (
             <div className={styles.defaultValueMsg}>
-              Condition set to default value.
+              Condition set to initial value.
             </div>
           )}
         </>
@@ -181,9 +181,9 @@ const RouteEffectRow: React.FC<{
             onDelete={onRemoveEffect}
           />
 
-          {effect.set[2] === variable.defaultValue && (
+          {effect.set[2] === variable.initialValue && (
             <div className={styles.defaultValueMsg}>
-              Effect set to default value.
+              Effect set to initial value.
             </div>
           )}
         </>
@@ -220,7 +220,7 @@ const RouteDetails: React.FC<{
         compare: [
           foundVariable.id,
           COMPARE_OPERATOR_TYPE.EQ,
-          foundVariable.defaultValue,
+          foundVariable.initialValue,
           foundVariable.type
         ],
         tags: []
@@ -242,7 +242,7 @@ const RouteDetails: React.FC<{
         set: [
           foundVariable.id,
           SET_OPERATOR_TYPE.ASSIGN,
-          foundVariable.defaultValue
+          foundVariable.initialValue
         ],
         tags: []
       }))

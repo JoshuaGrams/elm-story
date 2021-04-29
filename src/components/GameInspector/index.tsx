@@ -84,7 +84,7 @@ const GameInspector: React.FC<{
                                 })
                                 .join(''),
                               type: VARIABLE_TYPE.BOOLEAN,
-                              defaultValue: 'false',
+                              initialValue: 'false',
                               tags: []
                             })
                           }}

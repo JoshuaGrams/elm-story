@@ -165,17 +165,24 @@ export class LibraryDatabase extends Dexie {
 
     this.version(2)
       .stores({
-        games: '&id,title,*tags,updated,template,designer,version,engine'
+        games: '&id,title,*tags,updated,template,designer,version,engine',
+        variables: '&id,gameId,title,type,*tags,updated'
       })
-      .upgrade((tx) =>
-        tx
-          .table('games')
+      .upgrade((tx) => {
+        tx.table('games')
           .toCollection()
           .modify((game) => {
             game.designer = game.director
             delete game.director
           })
-      )
+
+        tx.table('variables')
+          .toCollection()
+          .modify((variable) => {
+            variable.initialValue = variable.initialValue
+            delete variable.initialValue
+          })
+      })
 
     this.tables.map((table) => table.name)
 
@@ -1617,7 +1624,7 @@ export class LibraryDatabase extends Dexie {
           await this.variables.update(variableId, {
             ...component,
             type,
-            defaultValue: type === VARIABLE_TYPE.BOOLEAN ? 'false' : ''
+            initialValue: type === VARIABLE_TYPE.BOOLEAN ? 'false' : ''
           })
         } else {
           throw new Error('Unable to save variable type. Variable missing.')
@@ -1630,7 +1637,7 @@ export class LibraryDatabase extends Dexie {
 
   public async saveVariableDefaultValue(
     variableId: ComponentId,
-    defaultValue: string
+    initialValue: string
   ) {
     await this.transaction('rw', this.variables, async () => {
       if (variableId) {
@@ -1642,15 +1649,15 @@ export class LibraryDatabase extends Dexie {
         if (component) {
           await this.variables.update(variableId, {
             ...component,
-            defaultValue
+            initialValue
           })
         } else {
           throw new Error(
-            'Unable to save variable defaultValue. Variable missing.'
+            'Unable to save variable initialValue. Variable missing.'
           )
         }
       } else {
-        throw new Error('Unable to save variable defaultValue. Missing ID.')
+        throw new Error('Unable to save variable initialValue. Missing ID.')
       }
     })
   }
