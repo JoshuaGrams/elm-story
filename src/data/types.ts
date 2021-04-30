@@ -80,7 +80,7 @@ export interface Component {
     componentEditorTransformX?: number
     componentEditorTransformY?: number
     componentEditorTransformZoom?: number
-    // SceneView node position
+    // SceneView->Passage,Jump position
     componentEditorPosX?: number
     componentEditorPosY?: number
   }
