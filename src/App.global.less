@@ -66,6 +66,10 @@
   user-select: none;
   font-family: 'Fira Mono';
   outline: none !important;
+
+  &::selection {
+    background: var(--highlight-color-50a);
+  }
 }
 
 html,
@@ -193,10 +197,6 @@ h3 {
 }
 
 .ant-input {
-  &::selection {
-    background: var(--highlight-color-50a);
-  }
-
   &:hover {
     border-color: var(--highlight-color-50a);
   }

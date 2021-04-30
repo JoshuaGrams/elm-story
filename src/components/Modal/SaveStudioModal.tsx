@@ -39,7 +39,6 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
       destroyOnClose
       onCancel={onCancel}
       centered
-      okButtonProps={{ form: 'save-studio-form', htmlType: 'submit' }}
       footer={[
         <Button
           key="remove"
@@ -59,6 +58,8 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
         <Button
           key="submit"
           type="primary"
+          form="save-studio-form"
+          htmlType="submit"
           onClick={(event) => {
             event.preventDefault()
             saveStudioForm.submit()
