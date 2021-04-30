@@ -56,6 +56,10 @@ interface EffectCollection {
 
 interface JumpCollection {
   [jumpId: string]: {
+    editor?: {
+      componentEditorPosX?: number
+      componentEditorPosY?: number
+    }
     id: ComponentId
     route: [ComponentId?, ComponentId?, ComponentId?]
     tags: string[]
@@ -68,6 +72,10 @@ interface PassageCollection {
   [passageId: string]: {
     choices: ComponentId[]
     content: string
+    editor?: {
+      componentEditorPosX?: number
+      componentEditorPosY?: number
+    }
     id: ComponentId
     sceneId: ComponentId
     tags: string[]
@@ -94,6 +102,11 @@ interface RouteCollection {
 interface SceneCollection {
   [sceneId: string]: {
     chapterId: ComponentId
+    editor?: {
+      componentEditorTransformX?: number
+      componentEditorTransformY?: number
+      componentEditorTransformZoom?: number
+    }
     id: ComponentId
     jumps: ComponentId[]
     passages: ComponentId[]
@@ -114,7 +127,7 @@ interface VariableCollection {
   }
 }
 
-interface GameData {
+export interface GameDataJSON {
   _: {
     chapters: ComponentId[]
     designer: string
@@ -160,7 +173,7 @@ export default async (studioId: StudioId, gameId: GameId): Promise<string> => {
       scenes = await api().scenes.getScenesByGameRef(studioId, gameId),
       variables = await api().variables.getVariablesByGameRef(studioId, gameId)
 
-    let gameData: GameData = {
+    let gameData: GameDataJSON = {
       _: {
         chapters: game.chapters,
         designer: game.designer,
@@ -234,8 +247,9 @@ export default async (studioId: StudioId, gameId: GameId): Promise<string> => {
     )
 
     jumps.map(
-      ({ id, route, tags, title, updated }) =>
+      ({ editor, id, route, tags, title, updated }) =>
         (gameData.jumps[id as string] = {
+          editor,
           id: id as string,
           route,
           tags,
@@ -245,10 +259,11 @@ export default async (studioId: StudioId, gameId: GameId): Promise<string> => {
     )
 
     passages.map(
-      ({ choices, content, id, sceneId, tags, title, updated }) =>
+      ({ choices, content, editor, id, sceneId, tags, title, updated }) =>
         (gameData.passages[id as string] = {
           choices,
           content,
+          editor,
           id: id as string,
           sceneId,
           tags,
@@ -285,9 +300,10 @@ export default async (studioId: StudioId, gameId: GameId): Promise<string> => {
     )
 
     scenes.map(
-      ({ chapterId, id, jumps, passages, tags, title, updated }) =>
+      ({ chapterId, editor, id, jumps, passages, tags, title, updated }) =>
         (gameData.scenes[id as string] = {
           chapterId,
+          editor,
           id: id as string,
           jumps,
           passages,
