@@ -4,7 +4,9 @@ import { AppDatabase, LibraryDatabase } from '../db'
 import { GameId, Studio, StudioId } from '../data/types'
 import { v4 as uuid } from 'uuid'
 
-export async function getStudio(studioId: StudioId): Promise<Studio> {
+export async function getStudio(
+  studioId: StudioId
+): Promise<Studio | undefined> {
   try {
     return new AppDatabase().getStudio(studioId)
   } catch (error) {
@@ -12,7 +14,9 @@ export async function getStudio(studioId: StudioId): Promise<Studio> {
   }
 }
 export async function getGameRefs(studioId: StudioId): Promise<GameId[]> {
-  return (await getStudio(studioId)).games
+  const studio = await getStudio(studioId)
+
+  return studio ? studio.games : []
 }
 
 /**
@@ -45,7 +49,7 @@ export async function removeStudio(studioId: StudioId) {
 export async function saveGameRef(studioId: StudioId, gameId: GameId) {
   try {
     const studio = await getStudio(studioId),
-      exists = studio.games.indexOf(gameId) !== -1
+      exists = studio ? studio.games.indexOf(gameId) !== -1 : false
 
     if (!exists) {
       if (studio) {

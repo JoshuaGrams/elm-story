@@ -77,17 +77,9 @@ export class AppDatabase extends Dexie {
     return exists
   }
 
-  public async getStudio(studioId: StudioId): Promise<Studio> {
+  public async getStudio(studioId: StudioId): Promise<Studio | undefined> {
     try {
-      const studio = await this.studios.get(studioId)
-
-      if (studio) {
-        return studio
-      } else {
-        throw new Error(
-          `Unable to get studio with ID: ${studioId}. Does not exist.`
-        )
-      }
+      return await this.studios.get(studioId)
     } catch (error) {
       throw new Error(error)
     }
