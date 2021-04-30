@@ -123,7 +123,7 @@ const TitleBar: React.FC = () => {
         appDispatch({ type: APP_ACTION_TYPE.HEADER, header: 'DASHBOARD' })
         break
       case APP_LOCATION.EDITOR:
-        appDispatch({ type: APP_ACTION_TYPE.HEADER, header: 'DESIGNER' })
+        appDispatch({ type: APP_ACTION_TYPE.HEADER, header: 'EDITOR' })
         break
       default:
         break
