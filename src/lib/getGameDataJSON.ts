@@ -205,7 +205,7 @@ export default async (
         id: game.id as ComponentId,
         engine: game.engine,
         jump: game.jump,
-        schema: `https://elmstory.com/schema/${schemaVersion}.json`,
+        schema: `https://elmstory.com/schema/elm-story-${schemaVersion}.json`,
         studioId: studioId,
         studioTitle: studio?.title as string,
         tags: game.tags,
