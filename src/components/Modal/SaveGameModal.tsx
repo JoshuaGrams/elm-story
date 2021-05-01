@@ -51,21 +51,22 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
       reader.addEventListener('load', async () => {
         try {
           const errors = await importGameDataJSON(
-            JSON.parse(reader.result as string) as GameDataJSON
+            JSON.parse(reader.result as string) as GameDataJSON,
+            studioId
           )
 
-          setTimeout(() => {
-            if (errors.length === 0) {
-              afterClose && afterClose()
-              setImportingGameDataJSON(false)
-            }
+          if (errors.length === 0) {
+            afterClose && afterClose()
+            setImportingGameDataJSON(false)
+          }
 
-            if (errors.length > 0) {
-              setImportingGameDataJSONErrors(errors)
-            }
-          }, 1000)
+          if (errors.length > 0) {
+            setImportingGameDataJSONErrors(errors)
+          }
         } catch (error) {
-          throw error
+          setImportingGameDataJSONErrors([
+            'Unable to parse JSON. It is likely invalid or corrupt.'
+          ])
         }
       })
 
@@ -233,9 +234,7 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
         )}
 
         {importingGameDataJSON && (
-          <div
-            className={styles.importingGameDataJSONError}
-          >
+          <div className={styles.importingGameDataJSONError}>
             {importingGameDataJSONErrors.length === 0 && (
               <>
                 <div style={{ marginBottom: 20 }}>Importing Game Data</div>

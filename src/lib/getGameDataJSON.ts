@@ -16,6 +16,7 @@ export interface RootData {
   id: string
   engine: string
   jump: string | null
+  schema: string
   studioId: StudioId
   studioTitle: string
   tags: string[]
@@ -200,8 +201,9 @@ export default async (studioId: StudioId, gameId: GameId): Promise<string> => {
         id: game.id as ComponentId,
         engine: game.engine,
         jump: game.jump,
+        schema: 'https://elmstory.com/schema/0.0.2',
         studioId: studioId,
-        studioTitle: studio.title,
+        studioTitle: studio?.title as string,
         tags: game.tags,
         title: game.title,
         updated: game.updated as number,

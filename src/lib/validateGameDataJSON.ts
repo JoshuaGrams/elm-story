@@ -21,9 +21,9 @@ function isValidData(data: any, schema: Schema): [boolean, ValidationError[]] {
 
 export const isRootDataValid = (
   rootData: RootData
-): [boolean, ValidationError[]] =>
+): [boolean, ValidationError[] | { path?: string; message: string }[]] =>
   !rootData
-    ? [false, []]
+    ? [false, [{ message: 'Missing root data' }]]
     : isValidData(rootData, {
         type: 'object',
         properties: {
@@ -35,6 +35,7 @@ export const isRootDataValid = (
           id: { type: 'string' },
           engine: { type: 'string' },
           jump: { type: ['string', 'null'] },
+          schema: { type: 'string' },
           studioId: { type: 'string' },
           studioTitle: { type: 'string' },
           tags: { type: 'array', items: { type: 'string' } },
@@ -48,6 +49,7 @@ export const isRootDataValid = (
           'id',
           'engine',
           'jump',
+          'schema',
           'studioId',
           'studioTitle',
           'tags',
@@ -60,9 +62,9 @@ export const isRootDataValid = (
 
 export const isChapterCollectionValid = (
   chapterCollection: ChapterCollection
-): [boolean, ValidationError[]] =>
+): [boolean, ValidationError[] | { path?: string; message: string }[]] =>
   !chapterCollection
-    ? [false, []]
+    ? [false, [{ message: 'Missing chapter collection' }]]
     : isValidData(chapterCollection, {
         type: 'object',
         additionalProperties: {
@@ -74,6 +76,7 @@ export const isChapterCollectionValid = (
             title: { type: 'string' },
             updated: { type: 'number' }
           },
+          minLength: 1,
           required: ['id', 'scenes', 'tags', 'title', 'updated'],
           additionalProperties: false
         }
@@ -81,9 +84,9 @@ export const isChapterCollectionValid = (
 
 export const isChoiceCollectionValid = (
   choiceCollection: ChoiceCollection
-): [boolean, ValidationError[]] =>
+): [boolean, ValidationError[] | { path?: string; message: string }[]] =>
   !choiceCollection
-    ? [false, []]
+    ? [false, [{ message: 'Missing choice collection' }]]
     : isValidData(choiceCollection, {
         type: 'object',
         additionalProperties: {
@@ -102,9 +105,9 @@ export const isChoiceCollectionValid = (
 
 export const isConditionCollectionValid = (
   conditionCollection: ConditionCollection
-): [boolean, ValidationError[]] =>
+): [boolean, ValidationError[] | { path?: string; message: string }[]] =>
   !conditionCollection
-    ? [false, []]
+    ? [false, [{ message: 'Missing condition collection' }]]
     : isValidData(conditionCollection, {
         type: 'object',
         additionalProperties: {
@@ -142,9 +145,9 @@ export const isConditionCollectionValid = (
 
 export const isEffectCollectionValid = (
   effectCollection: EffectCollection
-): [boolean, ValidationError[]] =>
+): [boolean, ValidationError[] | { path?: string; message: string }[]] =>
   !effectCollection
-    ? [false, []]
+    ? [false, [{ message: 'Missing effect collection' }]]
     : isValidData(effectCollection, {
         type: 'object',
         additionalProperties: {
@@ -182,9 +185,9 @@ export const isEffectCollectionValid = (
 
 export const isJumpCollectionValid = (
   jumpCollection: JumpCollection
-): [boolean, ValidationError[]] =>
+): [boolean, ValidationError[] | { path?: string; message: string }[]] =>
   !jumpCollection
-    ? [false, []]
+    ? [false, [{ message: 'Missing jump collection' }]]
     : isValidData(jumpCollection, {
         type: 'object',
         additionalProperties: {
@@ -219,9 +222,9 @@ export const isJumpCollectionValid = (
 
 export const isPassageCollectionValid = (
   passageCollection: PassageCollection
-): [boolean, ValidationError[]] =>
+): [boolean, ValidationError[] | { path?: string; message: string }[]] =>
   !passageCollection
-    ? [false, []]
+    ? [false, [{ message: 'Missing passage collection' }]]
     : isValidData(passageCollection, {
         type: 'object',
         additionalProperties: {
@@ -258,9 +261,9 @@ export const isPassageCollectionValid = (
 
 export const isRouteCollectionValid = (
   routeCollection: RouteCollection
-): [boolean, ValidationError[]] =>
+): [boolean, ValidationError[] | { path?: string; message: string }[]] =>
   !routeCollection
-    ? [false, []]
+    ? [false, [{ message: 'Missing route collection' }]]
     : isValidData(routeCollection, {
         type: 'object',
         additionalProperties: {
@@ -294,9 +297,9 @@ export const isRouteCollectionValid = (
 
 export const isSceneCollectionValid = (
   sceneCollection: SceneCollection
-): [boolean, ValidationError[]] =>
+): [boolean, ValidationError[] | { path?: string; message: string }[]] =>
   !sceneCollection
-    ? [false, []]
+    ? [false, [{ message: 'Missing scene collection' }]]
     : isValidData(sceneCollection, {
         type: 'object',
         additionalProperties: {
@@ -334,9 +337,9 @@ export const isSceneCollectionValid = (
 
 export const isVariableCollectionValid = (
   variableCollection: VariableCollection
-): [boolean, ValidationError[]] =>
+): [boolean, ValidationError[] | { path?: string; message: string }[]] =>
   !variableCollection
-    ? [false, []]
+    ? [false, [{ message: 'Missing variable collection' }]]
     : isValidData(variableCollection, {
         type: 'object',
         additionalProperties: {

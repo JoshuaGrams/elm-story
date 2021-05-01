@@ -53,8 +53,10 @@ const GameLibrary: React.FC<GameLibraryProps> = ({ studioId }) => {
               There are 0 games in this library...
               <br />
               Select another studio or{' '}
-              <a onClick={() => setSaveGameModalVisible(true)}>create</a> a new
-              game.
+              <a onClick={() => setSaveGameModalVisible(true)}>
+                create/import
+              </a>{' '}
+              a game.
             </div>
           )}
 
