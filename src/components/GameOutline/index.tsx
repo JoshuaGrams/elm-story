@@ -7,8 +7,10 @@ import { useHistory } from 'react-router'
 
 import createGameOutlineTreeData from '../../lib/createGameOutlineTreeData'
 
-import { APP_LOCATION } from '../../contexts/AppContext'
+import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
+
+import { DEFAULT_NODE_SIZE } from '../ComponentEditor/SceneView'
 
 import {
   ComponentId,
@@ -47,7 +49,6 @@ import { ExportJSONModal, SaveGameModal } from '../Modal'
 import styles from './styles.module.less'
 
 import api from '../../api'
-import { DEFAULT_NODE_SIZE } from '../ComponentEditor/SceneView'
 
 const { Text } = Typography
 
@@ -336,7 +337,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 }) => {
   const history = useHistory()
 
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { app } = useContext(AppContext),
+    { editor, editorDispatch } = useContext(EditorContext)
 
   const [editGameModalVisible, setEditGameModalVisible] = useState(false),
     [exportJSONModalVisible, setExportJSONModalVisible] = useState(false),
@@ -349,7 +351,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     if (game.id) {
       setExportJSONModalVisible(true)
 
-      const json = await getGameDataJSON(studioId, game.id),
+      const json = await getGameDataJSON(studioId, game.id, app.version),
         element = document.createElement('a'),
         file = new Blob([json], { type: 'text/json' })
 

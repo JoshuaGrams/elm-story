@@ -173,7 +173,11 @@ export interface GameDataJSON {
   variables: VariableCollection
 }
 
-export default async (studioId: StudioId, gameId: GameId): Promise<string> => {
+export default async (
+  studioId: StudioId,
+  gameId: GameId,
+  schemaVersion: string
+): Promise<string> => {
   try {
     const studio = await api().studios.getStudio(studioId),
       game = await api().games.getGame(studioId, gameId)
@@ -201,7 +205,7 @@ export default async (studioId: StudioId, gameId: GameId): Promise<string> => {
         id: game.id as ComponentId,
         engine: game.engine,
         jump: game.jump,
-        schema: 'https://elmstory.com/schema/0.0.2',
+        schema: `https://elmstory.com/schema/${schemaVersion}.json`,
         studioId: studioId,
         studioTitle: studio?.title as string,
         tags: game.tags,

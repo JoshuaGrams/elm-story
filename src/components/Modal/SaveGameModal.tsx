@@ -78,7 +78,8 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
     if (edit && game) {
       saveGameForm.setFieldsValue({
         title: game.title,
-        designer: game.designer
+        designer: game.designer,
+        version: game.version
       })
     }
   }, [visible])
@@ -185,16 +186,18 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
             preserve={false}
             onFinish={async ({
               title,
-              designer
+              designer,
+              version
             }: {
               title: string
               designer: string
+              version: string
             }) => {
               try {
                 const savedGame = await api().games.saveGame(
                   studioId,
                   game && edit
-                    ? { ...game, title, designer }
+                    ? { ...game, title, designer, version }
                     : {
                         title,
                         designer,
@@ -203,7 +206,7 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
                         tags: [],
                         // TODO: Move to defines/types.
                         engine: app.version,
-                        version: app.version,
+                        version: '0.0.1',
                         chapters: [],
                         jump: null
                       }
@@ -230,6 +233,16 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
             >
               <Input />
             </Form.Item>
+
+            {edit && (
+              <Form.Item
+                label="Version"
+                name="version"
+                rules={[{ required: true, message: 'Version is required.' }]}
+              >
+                <Input />
+              </Form.Item>
+            )}
           </Form>
         )}
 
