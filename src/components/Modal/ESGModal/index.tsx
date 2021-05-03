@@ -37,7 +37,7 @@ const ESGModal: React.FC<{ visible: boolean; onCancel: () => void }> = ({
           <div className={styles.version}>
             <div>
               <span className={styles.versionHeader}>Elm Story Version</span>{' '}
-              {app.version} (Alpha M1)
+              {app.version} (Alpha M2)
             </div>
             <div>
               <span className={styles.versionHeader}>Elm Story Build</span>{' '}
