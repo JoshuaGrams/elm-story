@@ -171,8 +171,8 @@ export class LibraryDatabase extends Dexie {
         tx.table('variables')
           .toCollection()
           .modify((variable) => {
-            variable.initialValue = variable.initialValue
-            delete variable.initialValue
+            variable.initialValue = variable.defaultValue
+            delete variable.defaultValue
           })
       })
 
