@@ -4,7 +4,7 @@ import { useStudios } from '../../hooks'
 
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 
-import { Button, Divider, Select } from 'antd'
+import { Button, Select } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
 
 import { SaveStudioModal } from '../Modal'
@@ -112,6 +112,7 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
             {app.selectedStudioId && (
               <Button
                 type="primary"
+                style={{ marginRight: 6 }}
                 onClick={() =>
                   setSaveStudioModal({ visible: true, edit: true })
                 }
