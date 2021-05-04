@@ -79,7 +79,7 @@ export async function removeGameRef(studioId: StudioId, gameId: GameId) {
       const index = studio.games.indexOf(gameId)
 
       if (index !== -1) {
-        studio.games.splice(index)
+        studio.games.splice(index, 1)
       }
 
       await saveStudio(studio)
