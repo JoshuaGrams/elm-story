@@ -16,6 +16,7 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import MenuBuilder from './menu'
+import contextMenu from 'electron-context-menu'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
 
@@ -28,6 +29,17 @@ export default class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify()
   }
 }
+
+contextMenu({
+  showLookUpSelection: false,
+  showCopyImage: false,
+  showCopyImageAddress: false,
+  showSaveImageAs: false,
+  showSaveLinkAs: false,
+  showInspectElement: false,
+  showServices: false,
+  showSearchWithGoogle: false
+})
 
 let mainWindow: BrowserWindow | null = null
 
