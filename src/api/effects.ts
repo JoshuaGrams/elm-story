@@ -62,8 +62,6 @@ export async function saveEffect(
 ): Promise<ComponentId> {
   if (!effect.id) effect.id = uuid()
 
-  effect.updated = Date.now()
-
   try {
     return await new LibraryDatabase(studioId).saveEffect(effect)
   } catch (error) {

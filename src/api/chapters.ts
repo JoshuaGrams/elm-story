@@ -17,8 +17,6 @@ export async function saveChapter(
 ): Promise<ComponentId> {
   if (!chapter.id) chapter.id = uuid()
 
-  chapter.updated = Date.now()
-
   try {
     return await new LibraryDatabase(studioId).saveChapter(chapter)
   } catch (error) {

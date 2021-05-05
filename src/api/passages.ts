@@ -18,8 +18,6 @@ export async function savePassage(
 ): Promise<Passage> {
   if (!passage.id) passage.id = uuid()
 
-  passage.updated = Date.now()
-
   try {
     return await new LibraryDatabase(studioId).savePassage(passage)
   } catch (error) {

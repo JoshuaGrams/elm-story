@@ -24,8 +24,6 @@ export async function getChoicesByGameRef(
 export async function saveChoice(studioId: StudioId, choice: Choice) {
   if (!choice.id) choice.id = uuid()
 
-  choice.updated = Date.now()
-
   try {
     return await new LibraryDatabase(studioId).saveChoice(choice)
   } catch (error) {

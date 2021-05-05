@@ -84,8 +84,7 @@ const GameBox: React.FC<GameBoxProps> = ({ studioId, game }) => {
             const selectedGame = await api().games.getGame(studioId, game.id)
 
             await api().games.saveGame(studioId, {
-              ...selectedGame,
-              updated: Date.now()
+              ...selectedGame
             })
 
             appDispatch({

@@ -17,8 +17,6 @@ export async function saveScene(
 ): Promise<ComponentId> {
   if (!scene.id) scene.id = uuid()
 
-  scene.updated = Date.now()
-
   try {
     return await new LibraryDatabase(studioId).saveScene(scene)
   } catch (error) {

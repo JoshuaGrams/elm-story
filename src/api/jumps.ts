@@ -47,8 +47,6 @@ export async function getJumpsByPassageRef(
 export async function saveJump(studioId: StudioId, jump: Jump): Promise<Jump> {
   if (!jump.id) jump.id = uuid()
 
-  jump.updated = Date.now()
-
   try {
     return await new LibraryDatabase(studioId).saveJump(jump)
   } catch (error) {

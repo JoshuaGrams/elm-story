@@ -34,8 +34,6 @@ export async function saveVariable(
 ): Promise<ComponentId> {
   if (!variable.id) variable.id = uuid()
 
-  variable.updated = Date.now()
-
   try {
     return await new LibraryDatabase(studioId).saveVariable(variable)
   } catch (error) {

@@ -65,8 +65,6 @@ export async function saveCondition(
 ): Promise<ComponentId> {
   if (!condition.id) condition.id = uuid()
 
-  condition.updated = Date.now()
-
   try {
     return await new LibraryDatabase(studioId).saveCondition(condition)
   } catch (error) {

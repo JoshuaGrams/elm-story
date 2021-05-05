@@ -90,9 +90,15 @@ export class AppDatabase extends Dexie {
       await this.transaction('rw', this.studios, async () => {
         if (studio.id) {
           if (await this.getComponent(APP_TABLE.STUDIOS, studio.id)) {
-            await this.studios.update(studio.id, studio)
+            await this.studios.update(studio.id, {
+              ...studio,
+              updated: Date.now()
+            })
           } else {
-            await this.studios.add(studio)
+            await this.studios.add({
+              ...studio,
+              updated: studio.updated || Date.now()
+            })
           }
         } else {
           throw new Error('Unable to save studio to database. Missing ID.')
@@ -221,7 +227,11 @@ export class LibraryDatabase extends Dexie {
           const component = await this.getComponent(table, componentId)
 
           if (component) {
-            await this[table].update(componentId, { ...component, title })
+            await this[table].update(componentId, {
+              ...component,
+              title,
+              updated: Date.now()
+            })
           } else {
             throw new Error('Unable to rename component. Component missing.')
           }
@@ -258,9 +268,12 @@ export class LibraryDatabase extends Dexie {
       await this.transaction('rw', this.games, async () => {
         if (game.id) {
           if (await this.getComponent(LIBRARY_TABLE.GAMES, game.id)) {
-            await this.games.update(game.id, game)
+            await this.games.update(game.id, { ...game, updated: Date.now() })
           } else {
-            await this.games.add(game)
+            await this.games.add({
+              ...game,
+              updated: game.updated || Date.now()
+            })
           }
         } else {
           throw new Error('Unable to save game to database. Missing ID.')
@@ -280,7 +293,11 @@ export class LibraryDatabase extends Dexie {
           const game = await this.getComponent(LIBRARY_TABLE.GAMES, gameId)
 
           if (game) {
-            this.games.update(gameId, { ...game, chapters })
+            this.games.update(gameId, {
+              ...game,
+              chapters,
+              updated: Date.now()
+            })
           } else {
             throw new Error('Unable to save chapter refs. Game missing.')
           }
@@ -298,7 +315,11 @@ export class LibraryDatabase extends Dexie {
           const game = await this.getComponent(LIBRARY_TABLE.GAMES, gameId)
 
           if (game) {
-            this.games.update(gameId, { ...game, jump: jumpId })
+            this.games.update(gameId, {
+              ...game,
+              jump: jumpId,
+              updated: Date.now()
+            })
           } else {
             throw new Error('Unable to save jump ref. Game missing.')
           }
@@ -410,9 +431,12 @@ export class LibraryDatabase extends Dexie {
       await this.transaction('rw', this.jumps, async () => {
         if (jump.id) {
           if (await this.getComponent(LIBRARY_TABLE.JUMPS, jump.id)) {
-            await this.jumps.update(jump.id, jump)
+            await this.jumps.update(jump.id, { ...jump, updated: Date.now() })
           } else {
-            await this.jumps.add(jump)
+            await this.jumps.add({
+              ...jump,
+              updated: jump.updated || Date.now()
+            })
           }
         } else {
           throw new Error('Unable to save jump to database. Missing ID.')
@@ -436,7 +460,7 @@ export class LibraryDatabase extends Dexie {
           const jump = await this.getComponent(LIBRARY_TABLE.JUMPS, jumpId)
 
           if (jump) {
-            this.jumps.update(jumpId, { ...jump, route })
+            this.jumps.update(jumpId, { ...jump, route, updated: Date.now() })
           } else {
             throw new Error('Unable to save jump route. Jump missing.')
           }
@@ -526,9 +550,15 @@ export class LibraryDatabase extends Dexie {
       await this.transaction('rw', this.chapters, async () => {
         if (chapter.id) {
           if (await this.getComponent(LIBRARY_TABLE.CHAPTERS, chapter.id)) {
-            await this.chapters.update(chapter.id, chapter)
+            await this.chapters.update(chapter.id, {
+              ...chapter,
+              updated: Date.now()
+            })
           } else {
-            await this.chapters.add(chapter)
+            await this.chapters.add({
+              ...chapter,
+              updated: chapter.updated || Date.now()
+            })
           }
         } else {
           throw new Error('Unable to save chapter to database. Missing ID.')
@@ -554,7 +584,11 @@ export class LibraryDatabase extends Dexie {
           )
 
           if (chapter) {
-            this.chapters.update(chapterId, { ...chapter, scenes })
+            this.chapters.update(chapterId, {
+              ...chapter,
+              scenes,
+              updated: Date.now()
+            })
           } else {
             throw new Error('Unable to save scene refs. Chapter missing.')
           }
@@ -677,9 +711,15 @@ export class LibraryDatabase extends Dexie {
       await this.transaction('rw', this.scenes, async () => {
         if (scene.id) {
           if (await this.getComponent(LIBRARY_TABLE.SCENES, scene.id)) {
-            await this.scenes.update(scene.id, scene)
+            await this.scenes.update(scene.id, {
+              ...scene,
+              updated: Date.now()
+            })
           } else {
-            await this.scenes.add(scene)
+            await this.scenes.add({
+              ...scene,
+              updated: scene.updated || Date.now()
+            })
           }
         } else {
           throw new Error('Unable to save scene to database. Missing ID.')
@@ -700,7 +740,11 @@ export class LibraryDatabase extends Dexie {
       const scene = await this.getComponent(LIBRARY_TABLE.SCENES, sceneId)
 
       if (scene && scene.id) {
-        await this.scenes.update(scene.id, { ...scene, chapterId })
+        await this.scenes.update(scene.id, {
+          ...scene,
+          chapterId,
+          updated: Date.now()
+        })
       } else {
         throw new Error('Unable to save chapter ID. Missing scene.')
       }
@@ -719,7 +763,11 @@ export class LibraryDatabase extends Dexie {
           const scene = await this.getComponent(LIBRARY_TABLE.SCENES, sceneId)
 
           if (scene) {
-            this.scenes.update(sceneId, { ...scene, passages })
+            this.scenes.update(sceneId, {
+              ...scene,
+              passages,
+              updated: Date.now()
+            })
           } else {
             throw new Error('Unable to save passage refs. Scene missing.')
           }
@@ -737,7 +785,11 @@ export class LibraryDatabase extends Dexie {
           const scene = await this.getComponent(LIBRARY_TABLE.SCENES, sceneId)
 
           if (scene) {
-            this.scenes.update(sceneId, { ...scene, jumps })
+            this.scenes.update(sceneId, {
+              ...scene,
+              jumps,
+              updated: Date.now()
+            })
           } else {
             throw new Error('Unable to save jump refs. Scene missing.')
           }
@@ -764,7 +816,8 @@ export class LibraryDatabase extends Dexie {
                 componentEditorTransformX: transform.x,
                 componentEditorTransformY: transform.y,
                 componentEditorTransformZoom: transform.zoom
-              }
+              },
+              updated: Date.now()
             })
           } else {
             throw new Error(
@@ -899,9 +952,15 @@ export class LibraryDatabase extends Dexie {
       await this.transaction('rw', this.routes, async () => {
         if (route.id) {
           if (await this.getComponent(LIBRARY_TABLE.ROUTES, route.id)) {
-            await this.routes.update(route.id, route)
+            await this.routes.update(route.id, {
+              ...route,
+              updated: Date.now()
+            })
           } else {
-            await this.routes.add(route)
+            await this.routes.add({
+              ...route,
+              updated: route.updated || Date.now()
+            })
           }
         } else {
           throw new Error('Unable to save route to database. Missing ID.')
@@ -1047,9 +1106,15 @@ export class LibraryDatabase extends Dexie {
       await this.transaction('rw', this.conditions, async () => {
         if (condition.id) {
           if (await this.getComponent(LIBRARY_TABLE.CONDITIONS, condition.id)) {
-            await this.conditions.update(condition.id, condition)
+            await this.conditions.update(condition.id, {
+              ...condition,
+              updated: Date.now()
+            })
           } else {
-            await this.conditions.add(condition)
+            await this.conditions.add({
+              ...condition,
+              updated: condition.updated || Date.now()
+            })
           }
         } else {
           throw new Error('Unable to save condition to database. Missing ID.')
@@ -1081,7 +1146,8 @@ export class LibraryDatabase extends Dexie {
                 newCompareOperatorType,
                 condition.compare[2],
                 condition.compare[3]
-              ]
+              ],
+              updated: Date.now()
             })
           } else {
             throw new Error(
@@ -1115,7 +1181,8 @@ export class LibraryDatabase extends Dexie {
                 condition.compare[1],
                 newValue,
                 condition.compare[3]
-              ]
+              ],
+              updated: Date.now()
             })
           } else {
             throw new Error('Unable to set condition value. Component missing.')
@@ -1209,9 +1276,15 @@ export class LibraryDatabase extends Dexie {
       await this.transaction('rw', this.effects, async () => {
         if (effect.id) {
           if (await this.getComponent(LIBRARY_TABLE.EFFECTS, effect.id)) {
-            await this.effects.update(effect.id, effect)
+            await this.effects.update(effect.id, {
+              ...effect,
+              updated: Date.now()
+            })
           } else {
-            await this.effects.add(effect)
+            await this.effects.add({
+              ...effect,
+              updated: effect.updated || Date.now()
+            })
           }
         } else {
           throw new Error('Unable to save effect to database. Missing ID.')
@@ -1236,7 +1309,8 @@ export class LibraryDatabase extends Dexie {
           if (effect) {
             await this.effects.update(effectId, {
               ...effect,
-              set: [effect.set[0], newSetOperatorType, effect.set[2]]
+              set: [effect.set[0], newSetOperatorType, effect.set[2]],
+              updated: Date.now()
             })
           } else {
             throw new Error(
@@ -1261,7 +1335,8 @@ export class LibraryDatabase extends Dexie {
           if (effect) {
             await this.effects.update(effectId, {
               ...effect,
-              set: [effect.set[0], effect.set[1], newValue]
+              set: [effect.set[0], effect.set[1], newValue],
+              updated: Date.now()
             })
           } else {
             throw new Error('Unable to set effect value. Component missing.')
@@ -1324,9 +1399,15 @@ export class LibraryDatabase extends Dexie {
       await this.transaction('rw', this.passages, async () => {
         if (passage.id) {
           if (await this.getComponent(LIBRARY_TABLE.PASSAGES, passage.id)) {
-            await this.passages.update(passage.id, passage)
+            await this.passages.update(passage.id, {
+              ...passage,
+              updated: Date.now()
+            })
           } else {
-            await this.passages.add(passage)
+            await this.passages.add({
+              ...passage,
+              updated: passage.updated || Date.now()
+            })
           }
         } else {
           throw new Error('Unable to save passage to database. Missing ID.')
@@ -1349,7 +1430,11 @@ export class LibraryDatabase extends Dexie {
           )
 
           if (component) {
-            await this.passages.update(passageId, { ...component, content })
+            await this.passages.update(passageId, {
+              ...component,
+              content,
+              updated: Date.now()
+            })
           } else {
             throw new Error(
               'Unable to save content to passage. Passage missing.'
@@ -1376,7 +1461,11 @@ export class LibraryDatabase extends Dexie {
       const passage = await this.getComponent(LIBRARY_TABLE.PASSAGES, passageId)
 
       if (passage && passage.id) {
-        await this.passages.update(passage.id, { ...passage, sceneId })
+        await this.passages.update(passage.id, {
+          ...passage,
+          sceneId,
+          updated: Date.now()
+        })
       } else {
         throw new Error('Unable to save scene ID. Missing passage.')
       }
@@ -1398,7 +1487,11 @@ export class LibraryDatabase extends Dexie {
           )
 
           if (passage) {
-            this.passages.update(passageId, { ...passage, choices })
+            this.passages.update(passageId, {
+              ...passage,
+              choices,
+              updated: Date.now()
+            })
           } else {
             throw new Error('Unable to save choice refs. Passage missing.')
           }
@@ -1521,9 +1614,15 @@ export class LibraryDatabase extends Dexie {
       await this.transaction('rw', this.choices, async () => {
         if (choice.id) {
           if (await this.getComponent(LIBRARY_TABLE.CHOICES, choice.id)) {
-            await this.choices.update(choice.id, choice)
+            await this.choices.update(choice.id, {
+              ...choice,
+              updated: Date.now()
+            })
           } else {
-            await this.choices.add(choice)
+            await this.choices.add({
+              ...choice,
+              updated: choice.updated || Date.now()
+            })
           }
         } else {
           throw new Error('Unable to save choice to database. Missing ID.')
@@ -1602,9 +1701,15 @@ export class LibraryDatabase extends Dexie {
       await this.transaction('rw', this.variables, async () => {
         if (variable.id) {
           if (await this.getComponent(LIBRARY_TABLE.VARIABLES, variable.id)) {
-            await this.variables.update(variable.id, variable)
+            await this.variables.update(variable.id, {
+              ...variable,
+              updated: Date.now()
+            })
           } else {
-            await this.variables.add(variable)
+            await this.variables.add({
+              ...variable,
+              updated: variable.updated || Date.now()
+            })
           }
         } else {
           throw new Error('Unable to save variable to database. Missing ID.')
@@ -1664,7 +1769,8 @@ export class LibraryDatabase extends Dexie {
           await this.variables.update(variableId, {
             ...component,
             type,
-            initialValue: type === VARIABLE_TYPE.BOOLEAN ? 'false' : ''
+            initialValue: type === VARIABLE_TYPE.BOOLEAN ? 'false' : '',
+            updated: Date.now()
           })
         } else {
           throw new Error('Unable to save variable type. Variable missing.')
@@ -1689,7 +1795,8 @@ export class LibraryDatabase extends Dexie {
         if (component) {
           await this.variables.update(variableId, {
             ...component,
-            initialValue
+            initialValue,
+            updated: Date.now()
           })
         } else {
           throw new Error(

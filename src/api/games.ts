@@ -26,8 +26,6 @@ export async function getGames(
 export async function saveGame(studioId: StudioId, game: Game): Promise<Game> {
   if (!game.id) game.id = uuid()
 
-  game.updated = Date.now()
-
   try {
     await api().studios.saveGameRef(studioId, game.id)
 

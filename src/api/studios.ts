@@ -27,8 +27,6 @@ export async function getGameRefs(studioId: StudioId): Promise<GameId[]> {
 export async function saveStudio(studio: Studio): Promise<StudioId> {
   if (!studio.id) studio.id = uuid()
 
-  studio.updated = Date.now()
-
   return await new AppDatabase().saveStudio(studio)
 }
 

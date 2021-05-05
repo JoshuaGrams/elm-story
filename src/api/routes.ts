@@ -28,8 +28,6 @@ export async function saveRoute(
 ): Promise<ComponentId> {
   if (!route.id) route.id = uuid()
 
-  route.updated = Date.now()
-
   try {
     return await new LibraryDatabase(studioId).saveRoute(route)
   } catch (error) {
