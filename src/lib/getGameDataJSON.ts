@@ -84,6 +84,7 @@ export interface JumpData {
   }
   id: ComponentId
   route: [ComponentId?, ComponentId?, ComponentId?]
+  sceneId?: ComponentId
   tags: string[]
   title: string
   updated: number
@@ -273,11 +274,12 @@ export default async (
     )
 
     jumps.map(
-      ({ editor, id, route, tags, title, updated }) =>
+      ({ editor, id, route, sceneId, tags, title, updated }) =>
         (gameData.jumps[id as string] = {
           editor,
           id: id as string,
           route,
+          sceneId,
           tags,
           title,
           updated: updated as number

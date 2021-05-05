@@ -230,13 +230,14 @@ export default (
           // Save jumps
           for await (const [
             __,
-            { editor, id, route, tags, title, updated }
+            { editor, id, route, sceneId, tags, title, updated }
           ] of Object.entries(jumps)) {
             await api().jumps.saveJump(_.studioId, {
               editor,
               gameId: _.id,
               id,
               route,
+              sceneId,
               tags,
               title,
               updated

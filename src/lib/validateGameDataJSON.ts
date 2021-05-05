@@ -211,6 +211,7 @@ export const isJumpCollectionValid = (
               ],
               additionalItems: false
             },
+            sceneId: { type: 'string' },
             tags: { type: 'array', items: { type: 'string' } },
             title: { type: 'string' },
             updated: { type: 'number' }
