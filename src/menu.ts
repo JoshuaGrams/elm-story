@@ -28,6 +28,7 @@ export default class MenuBuilder {
         : this.buildDefaultTemplate()
 
     const menu = Menu.buildFromTemplate(template)
+
     Menu.setApplicationMenu(menu)
 
     this.mainWindow.webContents.on('context-menu', (_, params) => {
@@ -65,17 +66,10 @@ export default class MenuBuilder {
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'Electron',
+      label: 'Elm Story',
       submenu: [
         {
-          label: 'About ElectronReact',
-          selector: 'orderFrontStandardAboutPanel:'
-        },
-        { type: 'separator' },
-        { label: 'Services', submenu: [] },
-        { type: 'separator' },
-        {
-          label: 'Hide ElectronReact',
+          label: 'Hide Elm Story',
           accelerator: 'Command+H',
           selector: 'hide:'
         },
@@ -95,13 +89,18 @@ export default class MenuBuilder {
         }
       ]
     }
+
     const subMenuEdit: DarwinMenuItemConstructorOptions = {
       label: 'Edit',
       submenu: [
         { label: 'Undo', accelerator: 'Command+Z', selector: 'undo:' },
         { label: 'Redo', accelerator: 'Shift+Command+Z', selector: 'redo:' },
         { type: 'separator' },
-        { label: 'Cut', accelerator: 'Command+X', selector: 'cut:' },
+        {
+          label: 'Cut',
+          accelerator: 'Command+X',
+          selector: 'cut:'
+        },
         { label: 'Copy', accelerator: 'Command+C', selector: 'copy:' },
         { label: 'Paste', accelerator: 'Command+V', selector: 'paste:' },
         {
@@ -111,6 +110,7 @@ export default class MenuBuilder {
         }
       ]
     }
+
     const subMenuViewDev: MenuItemConstructorOptions = {
       label: 'View',
       submenu: [
@@ -134,6 +134,7 @@ export default class MenuBuilder {
         }
       ]
     }
+
     const subMenuViewProd: MenuItemConstructorOptions = {
       label: 'View',
       submenu: [
@@ -155,6 +156,7 @@ export default class MenuBuilder {
         // }
       ]
     }
+
     const subMenuWindow: DarwinMenuItemConstructorOptions = {
       label: 'Window',
       submenu: [
@@ -175,33 +177,26 @@ export default class MenuBuilder {
         { label: 'Bring All to Front', selector: 'arrangeInFront:' }
       ]
     }
+
     const subMenuHelp: MenuItemConstructorOptions = {
       label: 'Help',
       submenu: [
         {
           label: 'Learn More',
           click() {
-            shell.openExternal('https://electronjs.org')
+            shell.openExternal('https://elmstorygames.itch.io/elm-story')
           }
         },
         {
-          label: 'Documentation',
+          label: 'Support',
           click() {
-            shell.openExternal(
-              'https://github.com/electron/electron/tree/master/docs#readme'
-            )
+            shell.openExternal('https://elmstory.com/support')
           }
         },
         {
-          label: 'Community Discussions',
+          label: 'Community',
           click() {
-            shell.openExternal('https://www.electronjs.org/community')
-          }
-        },
-        {
-          label: 'Search Issues',
-          click() {
-            shell.openExternal('https://github.com/electron/electron/issues')
+            shell.openExternal('https://reddit.com/r/ElmStoryGames')
           }
         }
       ]
@@ -217,7 +212,7 @@ export default class MenuBuilder {
   }
 
   buildDefaultTemplate() {
-    const templateDefault = [
+    const templateDefault: MenuItemConstructorOptions[] = [
       {
         label: '&File',
         submenu: [
@@ -297,27 +292,19 @@ export default class MenuBuilder {
           {
             label: 'Learn More',
             click() {
-              shell.openExternal('https://electronjs.org')
+              shell.openExternal('https://elmstorygames.itch.io/elm-story')
             }
           },
           {
-            label: 'Documentation',
+            label: 'Support',
             click() {
-              shell.openExternal(
-                'https://github.com/electron/electron/tree/master/docs#readme'
-              )
+              shell.openExternal('https://elmstory.com/support')
             }
           },
           {
-            label: 'Community Discussions',
+            label: 'Community',
             click() {
-              shell.openExternal('https://www.electronjs.org/community')
-            }
-          },
-          {
-            label: 'Search Issues',
-            click() {
-              shell.openExternal('https://github.com/electron/electron/issues')
+              shell.openExternal('https://reddit.com/r/ElmStoryGames')
             }
           }
         ]
