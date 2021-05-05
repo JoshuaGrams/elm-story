@@ -203,7 +203,7 @@ export default async (
         chapters: game.chapters,
         designer: game.designer,
         id: game.id as ComponentId,
-        engine: game.engine,
+        engine: schemaVersion,
         jump: game.jump,
         schema: `https://elmstory.com/schema/elm-story-${schemaVersion}.json`,
         studioId: studioId,
