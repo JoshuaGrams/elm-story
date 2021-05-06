@@ -299,28 +299,7 @@ const PassageNode: React.FC<NodeProps<{
     >
       {passage?.id ? (
         <>
-          <div
-            onMouseDown={() => {
-              logger.info(`onClick: passage: ${passage.id}`)
-
-              passage.id &&
-                editorDispatch({
-                  type:
-                    EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                  selectedComponentEditorSceneViewPassage: passage.id
-                })
-
-              if (
-                passage.id !== editor.selectedComponentEditorSceneViewPassage
-              ) {
-                editorDispatch({
-                  type:
-                    EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                  selectedComponentEditorSceneViewChoice: null
-                })
-              }
-            }}
-          >
+          <div>
             <PassageHandle
               studioId={data.studioId}
               sceneId={data.sceneId}
