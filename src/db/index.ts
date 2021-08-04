@@ -8,6 +8,7 @@ import {
   Game,
   GameId,
   ComponentId,
+  Folder,
   Chapter,
   Scene,
   Passage,
@@ -23,8 +24,10 @@ import {
   COMPARE_OPERATOR_TYPE
 } from '../data/types'
 
+// DATABASE VERSIONS / UPGRADES
 import v1 from './v1'
 import v2 from './v2'
+import v3 from './v3'
 
 export enum DB_NAME {
   APP = 'esg-app',
@@ -39,6 +42,7 @@ export enum APP_TABLE {
 export enum LIBRARY_TABLE {
   GAMES = 'games',
   JUMPS = 'jumps',
+  FOLDERS = 'folders',
   CHAPTERS = 'chapters',
   SCENES = 'scenes',
   ROUTES = 'routes',
@@ -135,6 +139,7 @@ export class AppDatabase extends Dexie {
 export class LibraryDatabase extends Dexie {
   public games: Dexie.Table<Game, string>
   public jumps: Dexie.Table<Jump, string>
+  public folders: Dexie.Table<Folder, string>
   public chapters: Dexie.Table<Chapter, string>
   public scenes: Dexie.Table<Scene, string>
   public routes: Dexie.Table<Route, string>
@@ -149,11 +154,13 @@ export class LibraryDatabase extends Dexie {
 
     v1(this)
     v2(this)
+    v3(this)
 
     this.tables.map((table) => table.name)
 
     this.games = this.table(LIBRARY_TABLE.GAMES)
     this.jumps = this.table(LIBRARY_TABLE.JUMPS)
+    this.folders = this.table(LIBRARY_TABLE.FOLDERS)
     this.chapters = this.table(LIBRARY_TABLE.CHAPTERS)
     this.scenes = this.table(LIBRARY_TABLE.SCENES)
     this.routes = this.table(LIBRARY_TABLE.ROUTES)
