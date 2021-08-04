@@ -23,7 +23,10 @@ import {
   COMPARE_OPERATOR_TYPE
 } from '../data/types'
 
-export enum DATABASE {
+import v1 from './v1'
+import v2 from './v2'
+
+export enum DB_NAME {
   APP = 'esg-app',
   LIBRARY = 'esg-library'
 }
@@ -51,12 +54,9 @@ export class AppDatabase extends Dexie {
   public editors: Dexie.Table<Editor, string>
 
   public constructor() {
-    super(DATABASE.APP)
+    super(DB_NAME.APP)
 
-    this.version(1).stores({
-      studios: '&id,title,*tags,updated',
-      editors: '&id,updated'
-    })
+    v1(this)
 
     this.studios = this.table(APP_TABLE.STUDIOS)
     this.editors = this.table(APP_TABLE.EDITORS)
@@ -145,42 +145,10 @@ export class LibraryDatabase extends Dexie {
   public variables: Dexie.Table<Variable, string>
 
   public constructor(studioId: string) {
-    super(`${DATABASE.LIBRARY}-${studioId}`)
+    super(`${DB_NAME.LIBRARY}-${studioId}`)
 
-    this.version(1).stores({
-      games: '&id,title,*tags,updated,template,director,version,engine',
-      jumps: '&id,gameId,sceneId,title,*tags,updated,*route',
-      chapters: '&id,gameId,title,*tags,updated',
-      scenes: '&id,gameId,chapterId,title,*tags,updated',
-      routes:
-        '&id,gameId,sceneId,title,originId,choiceId,originType,destinationId,destinationType,*tags,updated',
-      conditions: '&id,gameId,routeId,variableId,title,*tags,updated',
-      effects: '&id,gameId,routeId,variableId,title,*tags,updated',
-      passages: '&id,gameId,sceneId,title,*tags,updated',
-      choices: '&id,gameId,passageId,title,*tags,updated',
-      variables: '&id,gameId,title,type,*tags,updated'
-    })
-
-    this.version(2)
-      .stores({
-        games: '&id,title,*tags,updated,template,designer,version,engine',
-        variables: '&id,gameId,title,type,*tags,updated'
-      })
-      .upgrade((tx) => {
-        tx.table('games')
-          .toCollection()
-          .modify((game) => {
-            game.designer = game.director
-            delete game.director
-          })
-
-        tx.table('variables')
-          .toCollection()
-          .modify((variable) => {
-            variable.initialValue = variable.defaultValue
-            delete variable.defaultValue
-          })
-      })
+    v1(this)
+    v2(this)
 
     this.tables.map((table) => table.name)
 
