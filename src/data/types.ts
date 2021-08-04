@@ -10,6 +10,7 @@ export enum COMPONENT_TYPE {
   STUDIO = 'STUDIO',
   GAME = 'GAME',
   JUMP = 'JUMP',
+  FOLDER = 'FOLDER',
   CHAPTER = 'CHAPTER',
   SCENE = 'SCENE',
   ROUTE = 'ROUTE',
@@ -109,6 +110,11 @@ export interface Jump extends Component {
   gameId: GameId
   sceneId?: ComponentId
   route: JumpRoute
+}
+
+export interface Folder extends Component {
+  gameId: GameId
+  children: Array<[COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ComponentId]>
 }
 
 export interface Chapter extends Component {
