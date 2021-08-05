@@ -28,6 +28,7 @@ import {
 import v1 from './v1'
 import v2 from './v2'
 import v3 from './v3'
+import v4 from './v4'
 
 export enum DB_NAME {
   APP = 'esg-app',
@@ -155,13 +156,13 @@ export class LibraryDatabase extends Dexie {
     v1(this)
     v2(this)
     v3(this)
+    v4(this)
 
     this.tables.map((table) => table.name)
 
     this.games = this.table(LIBRARY_TABLE.GAMES)
-    this.jumps = this.table(LIBRARY_TABLE.JUMPS)
     this.folders = this.table(LIBRARY_TABLE.FOLDERS)
-    this.chapters = this.table(LIBRARY_TABLE.CHAPTERS)
+    this.jumps = this.table(LIBRARY_TABLE.JUMPS)
     this.scenes = this.table(LIBRARY_TABLE.SCENES)
     this.routes = this.table(LIBRARY_TABLE.ROUTES)
     this.conditions = this.table(LIBRARY_TABLE.CONDITIONS)
