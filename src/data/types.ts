@@ -94,14 +94,33 @@ export interface Studio extends Component {
 
 export interface Editor extends Component {}
 
+export type GameChildRefs = Array<
+  [COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ComponentId]
+>
+
 export interface Game extends Component {
+  children: GameChildRefs[]
   id?: GameId
   template: GAME_TEMPLATE
   designer: string
   version: string
   engine: string
-  chapters: ComponentId[]
   jump: ComponentId | null // Jump
+}
+
+// To reduce dupe, set null when parent is of type GAME
+export type FolderParentRef = [
+  COMPONENT_TYPE.GAME | COMPONENT_TYPE.FOLDER,
+  ComponentId | null
+]
+export type FolderChildRefs = Array<
+  [COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ComponentId]
+>
+
+export interface Folder extends Component {
+  children: FolderChildRefs[]
+  gameId: GameId
+  parent: FolderParentRef
 }
 
 export type JumpRoute = [ComponentId?, ComponentId?, ComponentId?] // [chapterId, sceneId, passageId]
@@ -112,21 +131,24 @@ export interface Jump extends Component {
   route: JumpRoute
 }
 
-export interface Folder extends Component {
-  gameId: GameId
-  children: Array<[COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ComponentId]>
-}
-
+// TODO: #220 remove; replaced with Folder
 export interface Chapter extends Component {
   gameId: GameId
   scenes: ComponentId[]
 }
 
+// To reduce dupe, set null when parent is of type GAME
+export type SceneParentRef = [
+  COMPONENT_TYPE.GAME | COMPONENT_TYPE.FOLDER,
+  ComponentId | null
+]
+export type SceneChildRefs = Array<[COMPONENT_TYPE.PASSAGE, ComponentId]>
+
 export interface Scene extends Component {
+  children: SceneChildRefs[]
   gameId: GameId
-  chapterId: ComponentId
-  passages: ComponentId[]
-  jumps: ComponentId[] // Jumps
+  parent: SceneParentRef
+  jumps: ComponentId[]
 }
 
 export interface Route extends Component {
