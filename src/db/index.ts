@@ -21,7 +21,8 @@ import {
   Jump,
   JumpRoute,
   SET_OPERATOR_TYPE,
-  COMPARE_OPERATOR_TYPE
+  COMPARE_OPERATOR_TYPE,
+  FolderChildRefs
 } from '../data/types'
 
 // DATABASE VERSIONS / UPGRADES
@@ -373,6 +374,167 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async getFolder(folderId: ComponentId): Promise<Folder> {
+    try {
+      const folder = await this.folders.get(folderId)
+
+      if (folder) {
+        return folder
+      } else {
+        throw new Error(
+          `Unable to get folder with ID: ${folderId}. Does not exist.`
+        )
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async saveFolder(folder: Folder): Promise<ComponentId> {
+    if (!folder.gameId)
+      throw new Error('Unable to save folder to databse. Missing game ID.')
+    if (!folder.id)
+      throw new Error('Unable to save folder to database. Missing ID.')
+
+    try {
+      await this.transaction('rw', this.folders, async () => {
+        if (folder.id) {
+          if (await this.getComponent(LIBRARY_TABLE.FOLDERS, folder.id)) {
+            await this.folders.update(folder.id, {
+              ...folder,
+              updated: Date.now()
+            })
+          } else {
+            await this.folders.add({
+              ...folder,
+              updated: folder.updated || Date.now()
+            })
+          }
+        } else {
+          throw new Error('Unable to save folder to database. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    return folder.id
+  }
+
+  public async saveChildRefsToFolder(
+    folderId: ComponentId,
+    children: FolderChildRefs
+  ) {
+    try {
+      await this.transaction('rw', this.folders, async () => {
+        if (folderId) {
+          const folder = await this.getComponent(
+            LIBRARY_TABLE.FOLDERS,
+            folderId
+          )
+
+          if (folder) {
+            this.folders.update(folderId, {
+              ...folder,
+              children,
+              updated: Date.now()
+            })
+          } else {
+            throw new Error('Unable to save child refs. Folder missing.')
+          }
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async removeFolder(folderId: ComponentId) {
+    try {
+      const jumps = await this.jumps.where({ route: folderId }).toArray(),
+        scenes = await this.scenes.where({ folderId }).toArray()
+
+      if (jumps.length > 0) {
+        logger.info(
+          `LibraryDatabase->removeFolder->Updating ${jumps.length} jumps(s) from folder with ID: ${folderId}`
+        )
+      }
+
+      await Promise.all(
+        jumps.map(async (jump) => jump.id && (await this.removeJump(jump.id)))
+      )
+
+      if (scenes.length > 0) {
+        logger.info(
+          `removeFolder->Removing ${scenes.length} scene(s) from folder with ID: ${folderId}`
+        )
+      }
+
+      await Promise.all(
+        scenes.map(async (scene) => {
+          if (scene.id) {
+            const passages = await this.passages
+              .where({ sceneId: scene.id })
+              .toArray()
+
+            if (passages.length > 0) {
+              logger.info(
+                `removeFolder->Removing ${passages.length} passage(s) from scene with ID: ${scene.id}`
+              )
+            }
+
+            await Promise.all(
+              passages.map(
+                async (passage) =>
+                  passage.id && (await this.removePassage(passage.id))
+              )
+            )
+
+            await this.scenes.delete(scene.id)
+          }
+        })
+      )
+
+      await this.transaction('rw', this.folders, async () => {
+        if (await this.getComponent(LIBRARY_TABLE.FOLDERS, folderId)) {
+          logger.info(`Removing folder with ID: ${folderId}`)
+
+          await this.folders.delete(folderId)
+        } else {
+          throw new Error(
+            `Unable to remove folder with ID: '${folderId}'. Does not exist.`
+          )
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getFoldersByGameRef(gameId: GameId): Promise<Folder[]> {
+    try {
+      return await this.folders.where({ gameId }).toArray()
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getChildRefsByFolderRef(
+    folderId: ComponentId
+  ): Promise<FolderChildRefs> {
+    try {
+      const folder = await this.folders.where({ id: folderId }).first()
+
+      if (folder) {
+        return folder.children
+      } else {
+        throw new Error('Folder not found.')
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async getJump(jumpId: ComponentId): Promise<Jump> {
     try {
       const jump = await this.jumps.get(jumpId)
@@ -495,167 +657,6 @@ export class LibraryDatabase extends Dexie {
   public async getJumpsByPassageRef(passageId: ComponentId): Promise<Jump[]> {
     try {
       return await this.jumps.where({ route: passageId }).toArray()
-    } catch (error) {
-      throw new Error(error)
-    }
-  }
-
-  public async getChapter(chapterId: ComponentId): Promise<Chapter> {
-    try {
-      const chapter = await this.chapters.get(chapterId)
-
-      if (chapter) {
-        return chapter
-      } else {
-        throw new Error(
-          `Unable to get chapter with ID: ${chapterId}. Does not exist.`
-        )
-      }
-    } catch (error) {
-      throw new Error(error)
-    }
-  }
-
-  public async saveChapter(chapter: Chapter): Promise<ComponentId> {
-    if (!chapter.gameId)
-      throw new Error('Unable to save chapter to databse. Missing game ID.')
-    if (!chapter.id)
-      throw new Error('Unable to save chapter to database. Missing ID.')
-
-    try {
-      await this.transaction('rw', this.chapters, async () => {
-        if (chapter.id) {
-          if (await this.getComponent(LIBRARY_TABLE.CHAPTERS, chapter.id)) {
-            await this.chapters.update(chapter.id, {
-              ...chapter,
-              updated: Date.now()
-            })
-          } else {
-            await this.chapters.add({
-              ...chapter,
-              updated: chapter.updated || Date.now()
-            })
-          }
-        } else {
-          throw new Error('Unable to save chapter to database. Missing ID.')
-        }
-      })
-    } catch (error) {
-      throw new Error(error)
-    }
-
-    return chapter.id
-  }
-
-  public async saveSceneRefsToChapter(
-    chapterId: ComponentId,
-    scenes: ComponentId[]
-  ) {
-    try {
-      await this.transaction('rw', this.chapters, async () => {
-        if (chapterId) {
-          const chapter = await this.getComponent(
-            LIBRARY_TABLE.CHAPTERS,
-            chapterId
-          )
-
-          if (chapter) {
-            this.chapters.update(chapterId, {
-              ...chapter,
-              scenes,
-              updated: Date.now()
-            })
-          } else {
-            throw new Error('Unable to save scene refs. Chapter missing.')
-          }
-        }
-      })
-    } catch (error) {
-      throw new Error(error)
-    }
-  }
-
-  public async removeChapter(chapterId: ComponentId) {
-    try {
-      const jumps = await this.jumps.where({ route: chapterId }).toArray(),
-        scenes = await this.scenes.where({ chapterId }).toArray()
-
-      if (jumps.length > 0) {
-        logger.info(
-          `LibraryDatabase->removeChapter->Updating ${jumps.length} jumps(s) from chapter with ID: ${chapterId}`
-        )
-      }
-
-      await Promise.all(
-        jumps.map(async (jump) => jump.id && (await this.removeJump(jump.id)))
-      )
-
-      if (scenes.length > 0) {
-        logger.info(
-          `removeChapter->Removing ${scenes.length} scene(s) from chapter with ID: ${chapterId}`
-        )
-      }
-
-      await Promise.all(
-        scenes.map(async (scene) => {
-          if (scene.id) {
-            const passages = await this.passages
-              .where({ sceneId: scene.id })
-              .toArray()
-
-            if (passages.length > 0) {
-              logger.info(
-                `removeChapter->Removing ${passages.length} passage(s) from scene with ID: ${scene.id}`
-              )
-            }
-
-            await Promise.all(
-              passages.map(
-                async (passage) =>
-                  passage.id && (await this.removePassage(passage.id))
-              )
-            )
-
-            await this.scenes.delete(scene.id)
-          }
-        })
-      )
-
-      await this.transaction('rw', this.chapters, async () => {
-        if (await this.getComponent(LIBRARY_TABLE.CHAPTERS, chapterId)) {
-          logger.info(`Removing chapter with ID: ${chapterId}`)
-
-          await this.chapters.delete(chapterId)
-        } else {
-          throw new Error(
-            `Unable to remove chapter with ID: '${chapterId}'. Does not exist.`
-          )
-        }
-      })
-    } catch (error) {
-      throw new Error(error)
-    }
-  }
-
-  public async getChaptersByGameRef(gameId: GameId): Promise<Chapter[]> {
-    try {
-      return await this.chapters.where({ gameId }).toArray()
-    } catch (error) {
-      throw new Error(error)
-    }
-  }
-
-  public async getSceneRefsByChapterRef(
-    chapterId: ComponentId
-  ): Promise<ComponentId[]> {
-    try {
-      const chapter = await this.chapters.where({ id: chapterId }).first()
-
-      if (chapter) {
-        return chapter.scenes
-      } else {
-        throw new Error('Chapter not found.')
-      }
     } catch (error) {
       throw new Error(error)
     }

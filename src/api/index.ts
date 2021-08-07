@@ -4,7 +4,7 @@ import * as studios from './studios'
 // LIBRARY
 import * as games from './games'
 import * as jumps from './jumps'
-import * as chapters from './chapters'
+import * as folders from './folders'
 import * as scenes from './scenes'
 import * as routes from './routes'
 import * as conditions from './conditions'
@@ -17,7 +17,7 @@ export default () => ({
   studios,
   games,
   jumps,
-  chapters,
+  folders,
   scenes,
   routes,
   conditions,
