@@ -4,8 +4,10 @@ import importGameDataJSON from '../../lib/importGameDataJSON'
 import React, { useContext, useEffect, useState } from 'react'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
+
 import { ComponentId, StudioId } from '../../data/types'
-import { GameDataJSON } from '../../lib/getGameDataJSON'
+import { GameDataJSON as GameDataJSON_013 } from '../../lib/transport/types/0.1.3'
+import { GameDataJSON as GameDataJSON_020 } from '../../lib/transport/types/0.2.0'
 
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 
@@ -29,7 +31,9 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
   const { appDispatch } = useContext(AppContext)
 
   const [importingGameData, setImportingGameData] = useState(false),
-    [gameData, setGameData] = useState<GameDataJSON | undefined>(undefined),
+    [gameData, setGameData] = useState<
+      GameDataJSON_013 | GameDataJSON_020 | undefined
+    >(undefined),
     [importingGameDataErrors, setImportingGameDataErrors] = useState<string[]>(
       []
     ),
@@ -107,12 +111,12 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
 
         reader.addEventListener('load', async () => {
           try {
-            setGameData(JSON.parse(reader.result as string) as GameDataJSON)
+            setGameData(JSON.parse(reader.result as string))
           } catch (error) {
             setImportingGameData(false)
 
             setImportingGameDataErrors([
-              'Unable to parse JSON. It is likely invalid or corrupt.'
+              'Unable to parse JSON. Data is invalid or corrupt.'
             ])
           }
         })

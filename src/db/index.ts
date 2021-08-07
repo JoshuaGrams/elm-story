@@ -679,8 +679,8 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveScene(scene: Scene): Promise<ComponentId> {
-    if (!scene.chapterId)
-      throw new Error('Unable to save scene to databse. Missing chapter ID.')
+    if (!scene.parent)
+      throw new Error('Unable to save scene to database. Missing parent.')
     if (!scene.id)
       throw new Error('Unable to save scene to database. Missing ID.')
 

@@ -1,183 +1,59 @@
-import { GameDataJSON } from './getGameDataJSON'
-import { GAME_TEMPLATE } from '../data/types'
-
-import {
-  isRootDataValid,
-  isChapterCollectionValid,
-  isChoiceCollectionValid,
-  isConditionCollectionValid,
-  isEffectCollectionValid,
-  isJumpCollectionValid,
-  isPassageCollectionValid,
-  isRouteCollectionValid,
-  isSceneCollectionValid,
-  isVariableCollectionValid
-} from './validateGameDataJSON'
-
-import api from '../api'
+import { cloneDeep } from 'lodash'
 import { ValidationError } from 'jsonschema'
 
+import { GAME_TEMPLATE } from '../data/types'
+import { GameDataJSON as GameDataJSON_013 } from './transport/types/0.1.3'
+import { GameDataJSON as GameDataJSON_020 } from './transport/types/0.2.0'
+
+import api from '../api'
+
+import validateGameData from './transport/validate'
+
+import v020 from './transport/upgrade/0.2.0'
+
 export default (
-  {
-    _,
-    chapters,
-    choices,
-    conditions,
-    effects,
-    jumps,
-    passages,
-    routes,
-    scenes,
-    variables
-  }: GameDataJSON,
+  gameData: GameDataJSON_013 | GameDataJSON_020,
   skipValidation?: boolean
 ): {
   errors: string[]
   finish: () => Promise<string[]>
 } => {
   let errors: string[] = []
+  const { engine: engineVersion } = gameData._
 
-  if (!skipValidation) {
-    const [, rootDataErrors] = isRootDataValid(_),
-      [, chapterCollectionErrors] = isChapterCollectionValid(chapters),
-      [, choiceCollectionErrors] = isChoiceCollectionValid(choices),
-      [, conditionCollectionErrors] = isConditionCollectionValid(conditions),
-      [, effectsCollectionErrors] = isEffectCollectionValid(effects),
-      [, jumpCollectionErrors] = isJumpCollectionValid(jumps),
-      [, passageCollectionErrors] = isPassageCollectionValid(passages),
-      [, routeCollectionErrors] = isRouteCollectionValid(routes),
-      [, sceneCollectionErrors] = isSceneCollectionValid(scenes),
-      [, variableCollectionErrors] = isVariableCollectionValid(variables)
+  if (!gameData._?.engine)
+    errors = ['Unable to import game data. Missing engine version.']
 
-    if (rootDataErrors && rootDataErrors.length > 0)
-      errors = [
-        ...errors,
-        ...rootDataErrors.map(
-          (error: ValidationError | { path?: string; message: string }) =>
-            `_: ${error.message}`
-        )
-      ]
-
-    if (chapterCollectionErrors && chapterCollectionErrors.length > 0)
-      errors = [
-        ...errors,
-        ...chapterCollectionErrors.map(
-          (error: ValidationError | { path?: string; message: string }) =>
-            `chapters: ${error.path ? JSON.stringify(error.path) + ': ' : ''}${
-              error.message
-            }`
-        )
-      ]
-
-    if (choiceCollectionErrors && choiceCollectionErrors.length > 0)
-      errors = [
-        ...errors,
-        ...choiceCollectionErrors.map(
-          (error: ValidationError | { path?: string; message: string }) =>
-            `choices: ${error.path ? JSON.stringify(error.path) + ': ' : ''}${
-              error.message
-            }`
-        )
-      ]
-
-    if (conditionCollectionErrors && conditionCollectionErrors.length > 0)
-      errors = [
-        ...errors,
-        ...conditionCollectionErrors.map(
-          (error: ValidationError | { path?: string; message: string }) =>
-            `conditions: ${
-              error.path ? JSON.stringify(error.path) + ': ' : ''
-            }${error.message}`
-        )
-      ]
-
-    if (effectsCollectionErrors && effectsCollectionErrors.length > 0)
-      errors = [
-        ...errors,
-        ...effectsCollectionErrors.map(
-          (error: ValidationError | { path?: string; message: string }) =>
-            `effects: ${error.path ? JSON.stringify(error.path) + ': ' : ''}${
-              error.message
-            }`
-        )
-      ]
-
-    if (jumpCollectionErrors && jumpCollectionErrors.length > 0)
-      errors = [
-        ...errors,
-        ...jumpCollectionErrors.map(
-          (error: ValidationError | { path?: string; message: string }) =>
-            `jumps: ${error.path ? JSON.stringify(error.path) + ': ' : ''}${
-              error.message
-            }`
-        )
-      ]
-
-    if (passageCollectionErrors && passageCollectionErrors.length > 0)
-      errors = [
-        ...errors,
-        ...passageCollectionErrors.map(
-          (error: ValidationError | { path?: string; message: string }) =>
-            `passages: ${error.path ? JSON.stringify(error.path) + ': ' : ''}${
-              error.message
-            }`
-        )
-      ]
-
-    if (routeCollectionErrors && routeCollectionErrors.length > 0)
-      errors = [
-        ...errors,
-        ...routeCollectionErrors.map(
-          (error: ValidationError | { path?: string; message: string }) =>
-            `routes: ${error.path ? JSON.stringify(error.path) + ': ' : ''}${
-              error.message
-            }`
-        )
-      ]
-
-    if (sceneCollectionErrors && sceneCollectionErrors.length > 0)
-      errors = [
-        ...errors,
-        ...sceneCollectionErrors.map(
-          (error: ValidationError | { path?: string; message: string }) =>
-            `scenes: ${error.path ? JSON.stringify(error.path) + ': ' : ''}${
-              error.message
-            }`
-        )
-      ]
-
-    if (variableCollectionErrors && variableCollectionErrors.length > 0)
-      errors = [
-        ...errors,
-        ...variableCollectionErrors.map(
-          (error: ValidationError | { path?: string; message: string }) =>
-            `variables: ${error.path ? JSON.stringify(error.path) + ': ' : ''}${
-              error.message
-            }`
-        )
-      ]
+  if (gameData._?.engine && !skipValidation) {
+    errors = [
+      ...errors,
+      ...validateGameData(gameData, engineVersion)[1].map(
+        (error: ValidationError | { path?: string; message: string }) =>
+          `${error.path ? `${error.path}:` : ''} ${error.message}`
+      )
+    ]
   }
 
   return {
     errors,
     finish: async (): Promise<string[]> => {
       if (errors.length === 0) {
-        try {
-          // Save chapters
-          for await (const [
-            __,
-            { id, scenes, tags, title, updated }
-          ] of Object.entries(chapters)) {
-            await api().chapters.saveChapter(_.studioId, {
-              gameId: _.id,
-              id,
-              scenes,
-              tags,
-              title,
-              updated
-            })
-          }
+        const upgradedGameData = v020(cloneDeep(gameData) as GameDataJSON_013)
 
+        const {
+          _,
+          choices,
+          conditions,
+          effects,
+          folders,
+          jumps,
+          passages,
+          routes,
+          scenes,
+          variables
+        } = upgradedGameData
+
+        try {
           // Save choices
           for await (const [
             __,
@@ -224,6 +100,22 @@ export default (
               title,
               updated,
               variableId
+            })
+          }
+
+          // Save folders
+          for await (const [
+            __,
+            { children, id, parent, tags, title, updated }
+          ] of Object.entries(folders)) {
+            await api().folders.saveFolder(_.studioId, {
+              children,
+              gameId: _.id,
+              id,
+              parent,
+              tags,
+              title,
+              updated
             })
           }
 
@@ -296,15 +188,15 @@ export default (
           // Save scenes
           for await (const [
             __,
-            { chapterId, editor, id, jumps, passages, tags, title, updated }
+            { children, editor, id, jumps, parent, tags, title, updated }
           ] of Object.entries(scenes)) {
             await api().scenes.saveScene(_.studioId, {
-              chapterId,
+              children,
               editor,
               id,
               gameId: _.id,
               jumps,
-              passages,
+              parent,
               tags,
               title,
               updated
@@ -329,7 +221,7 @@ export default (
 
           // Save game data
           await api().games.saveGame(_.studioId, {
-            chapters: _.chapters,
+            children: _.children,
             id: _.id,
             designer: _.designer,
             engine: _.engine,
