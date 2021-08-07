@@ -99,7 +99,7 @@ export type GameChildRefs = Array<
 >
 
 export interface Game extends Component {
-  children: GameChildRefs[]
+  children: GameChildRefs
   id?: GameId
   template: GAME_TEMPLATE
   designer: string
@@ -118,12 +118,12 @@ export type FolderChildRefs = Array<
 >
 
 export interface Folder extends Component {
-  children: FolderChildRefs[]
+  children: FolderChildRefs
   gameId: GameId
   parent: FolderParentRef
 }
 
-export type JumpRoute = [ComponentId?, ComponentId?, ComponentId?] // [chapterId, sceneId, passageId]
+export type JumpRoute = [ComponentId?, ComponentId?] // [sceneId, passageId]
 
 export interface Jump extends Component {
   gameId: GameId
@@ -145,7 +145,7 @@ export type SceneParentRef = [
 export type SceneChildRefs = Array<[COMPONENT_TYPE.PASSAGE, ComponentId]>
 
 export interface Scene extends Component {
-  children: SceneChildRefs[]
+  children: SceneChildRefs
   gameId: GameId
   parent: SceneParentRef
   jumps: ComponentId[]
