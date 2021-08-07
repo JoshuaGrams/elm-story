@@ -1,178 +1,7 @@
-import {
-  COMPARE_OPERATOR_TYPE,
-  ComponentId,
-  COMPONENT_TYPE,
-  GameId,
-  SET_OPERATOR_TYPE,
-  StudioId,
-  VARIABLE_TYPE
-} from '../data/types'
+import { ComponentId, GameId, StudioId } from '../data/types'
+import { GameDataJSON } from './transport/types/0.2.0'
 
 import api from '../api'
-
-export interface RootData {
-  chapters: ComponentId[]
-  designer: string
-  id: string
-  engine: string
-  jump: string | null
-  schema: string
-  studioId: StudioId
-  studioTitle: string
-  tags: string[]
-  title: string
-  updated: number
-  version: string
-}
-
-export interface ChapterData {
-  id: ComponentId
-  scenes: ComponentId[]
-  tags: string[]
-  title: string
-  updated: number
-}
-
-export interface ChapterCollection {
-  [chapterId: string]: ChapterData
-}
-
-export interface ChoiceData {
-  id: ComponentId
-  passageId: ComponentId
-  tags: string[]
-  title: string
-  updated: number
-}
-
-export interface ChoiceCollection {
-  [choiceId: string]: ChoiceData
-}
-
-export interface ConditionData {
-  compare: [ComponentId, COMPARE_OPERATOR_TYPE, string]
-  id: ComponentId
-  routeId: ComponentId
-  tags: string[]
-  title: string
-  updated: number
-  variableId: ComponentId
-}
-
-export interface ConditionCollection {
-  [conditionId: string]: ConditionData
-}
-
-export interface EffectData {
-  id: ComponentId
-  routeId: ComponentId
-  set: [ComponentId, SET_OPERATOR_TYPE, string]
-  tags: string[]
-  title: string
-  updated: number
-  variableId: string
-}
-
-export interface EffectCollection {
-  [effectId: string]: EffectData
-}
-
-export interface JumpData {
-  editor?: {
-    componentEditorPosX?: number
-    componentEditorPosY?: number
-  }
-  id: ComponentId
-  route: [ComponentId?, ComponentId?, ComponentId?]
-  sceneId?: ComponentId
-  tags: string[]
-  title: string
-  updated: number
-}
-
-export interface JumpCollection {
-  [jumpId: string]: JumpData
-}
-
-export interface PassageData {
-  choices: ComponentId[]
-  content: string
-  editor?: {
-    componentEditorPosX?: number
-    componentEditorPosY?: number
-  }
-  id: ComponentId
-  sceneId: ComponentId
-  tags: string[]
-  title: string
-  updated: number
-}
-
-export interface PassageCollection {
-  [passageId: string]: PassageData
-}
-
-export interface RouteData {
-  choiceId?: ComponentId
-  destinationId: ComponentId
-  destinationType: COMPONENT_TYPE
-  id: ComponentId
-  originId: ComponentId
-  originType: COMPONENT_TYPE
-  sceneId: ComponentId
-  tags: string[]
-  title: string
-  updated: number
-}
-
-export interface RouteCollection {
-  [routeId: string]: RouteData
-}
-
-export interface SceneData {
-  chapterId: ComponentId
-  editor?: {
-    componentEditorTransformX?: number
-    componentEditorTransformY?: number
-    componentEditorTransformZoom?: number
-  }
-  id: ComponentId
-  jumps: ComponentId[]
-  passages: ComponentId[]
-  tags: string[]
-  title: string
-  updated: number
-}
-
-export interface SceneCollection {
-  [sceneId: string]: SceneData
-}
-
-export interface VariableData {
-  id: ComponentId
-  initialValue: string
-  tags: string[]
-  title: string
-  type: VARIABLE_TYPE
-  updated: number
-}
-
-export interface VariableCollection {
-  [variableId: string]: VariableData
-}
-
-export interface GameDataJSON {
-  _: RootData
-  chapters: ChapterCollection
-  choices: ChoiceCollection
-  conditions: ConditionCollection
-  effects: EffectCollection
-  jumps: JumpCollection
-  passages: PassageCollection
-  routes: RouteCollection
-  scenes: SceneCollection
-  variables: VariableCollection
-}
 
 export default async (
   studioId: StudioId,
@@ -183,16 +12,13 @@ export default async (
     const studio = await api().studios.getStudio(studioId),
       game = await api().games.getGame(studioId, gameId)
 
-    const chapters = await api().chapters.getChaptersByGameRef(
-        studioId,
-        gameId
-      ),
-      choices = await api().choices.getChoicesByGameRef(studioId, gameId),
+    const choices = await api().choices.getChoicesByGameRef(studioId, gameId),
       conditions = await api().conditions.getConditionsByGameRef(
         studioId,
         gameId
       ),
       effects = await api().effects.getEffectsByGameRef(studioId, gameId),
+      folders = await api().folders.getFoldersByGameRef(studioId, gameId),
       jumps = await api().jumps.getJumpsByGameRef(studioId, gameId),
       routes = await api().routes.getRoutesByGameRef(studioId, gameId),
       passages = await api().passages.getPassagesByGameRef(studioId, gameId),
@@ -201,7 +27,7 @@ export default async (
 
     let gameData: GameDataJSON = {
       _: {
-        chapters: game.chapters,
+        children: game.children,
         designer: game.designer,
         id: game.id as ComponentId,
         engine: schemaVersion,
@@ -214,27 +40,16 @@ export default async (
         updated: game.updated as number,
         version: game.version
       },
-      chapters: {},
       choices: {},
       conditions: {},
       effects: {},
+      folders: {},
       jumps: {},
       passages: {},
       routes: {},
       scenes: {},
       variables: {}
     }
-
-    chapters.map(
-      ({ id, scenes, tags, title, updated }) =>
-        (gameData.chapters[id as string] = {
-          id: id as string,
-          scenes,
-          tags,
-          title,
-          updated: updated as number
-        })
-    )
 
     choices.map(
       ({ id, passageId, tags, title, updated }) =>
@@ -270,6 +85,18 @@ export default async (
           title,
           updated: updated as number,
           variableId
+        })
+    )
+
+    folders.map(
+      ({ children, id, parent, tags, title, updated }) =>
+        (gameData.folders[id as string] = {
+          children,
+          id: id as string,
+          parent,
+          tags,
+          title,
+          updated: updated as number
         })
     )
 
@@ -328,13 +155,13 @@ export default async (
     )
 
     scenes.map(
-      ({ chapterId, editor, id, jumps, passages, tags, title, updated }) =>
+      ({ children, editor, id, jumps, parent, tags, title, updated }) =>
         (gameData.scenes[id as string] = {
-          chapterId,
+          children,
           editor,
           id: id as string,
           jumps,
-          passages,
+          parent,
           tags,
           title,
           updated: updated as number

@@ -12,7 +12,7 @@ import validateGameData from './transport/validate'
 import v020 from './transport/upgrade/0.2.0'
 
 export default (
-  gameData: GameDataJSON_013 | GameDataJSON_020,
+  gameData: GameDataJSON_013 & GameDataJSON_020,
   skipValidation?: boolean
 ): {
   errors: string[]
@@ -38,7 +38,10 @@ export default (
     errors,
     finish: async (): Promise<string[]> => {
       if (errors.length === 0) {
-        const upgradedGameData = v020(cloneDeep(gameData) as GameDataJSON_013)
+        const upgradedGameData =
+          engineVersion === '0.1.3'
+            ? v020(cloneDeep(gameData) as GameDataJSON_013)
+            : gameData
 
         const {
           _,
