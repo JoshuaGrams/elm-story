@@ -5,6 +5,7 @@ import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
 
 import { COMPONENT_TYPE, Game, GameId, StudioId } from '../../data/types'
+import { OnAddComponent } from './next'
 
 import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
@@ -20,11 +21,12 @@ import {
 import { ExportJSONModal, SaveGameModal } from '../Modal'
 
 import styles from './styles.module.less'
+import AddComponentMenu from './AddComponentMenu'
 
 const TitleBar: React.FC<{
   studioId: StudioId
   game: Game
-  onAdd: (gameId: GameId) => void
+  onAdd: OnAddComponent
 }> = ({ studioId, game, onAdd }) => {
   const history = useHistory()
 
@@ -100,7 +102,7 @@ const TitleBar: React.FC<{
 
         <div className={styles.gameButtons}>
           <Tooltip
-            title="Export game as JSON"
+            title="Export game as JSON..."
             placement="right"
             align={{ offset: [-6, 0] }}
             mouseEnterDelay={1}
@@ -121,16 +123,23 @@ const TitleBar: React.FC<{
             </Button>
           </Tooltip>
 
-          <Tooltip
-            title="Add Chapter"
-            placement="right"
-            align={{ offset: [-6, 0] }}
-            mouseEnterDelay={1}
+          <AddComponentMenu
+            gameId={game.id as GameId}
+            onAdd={(gameId: GameId, type: COMPONENT_TYPE) =>
+              onAdd(gameId, type)
+            }
           >
-            <Button onClick={() => onAdd(game.id as GameId)} type="link">
-              <PlusOutlined />
-            </Button>
-          </Tooltip>
+            <Tooltip
+              title="Add Component..."
+              placement="right"
+              align={{ offset: [-6, 0] }}
+              mouseEnterDelay={1}
+            >
+              <Button type="link">
+                <PlusOutlined />
+              </Button>
+            </Tooltip>
+          </AddComponentMenu>
         </div>
       </div>
     </>
