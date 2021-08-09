@@ -291,7 +291,10 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
         editor.selectedGameOutlineComponent.id
       ) as TabData
 
-      if (!foundTab) {
+      if (
+        !foundTab &&
+        editor.selectedGameOutlineComponent.type !== COMPONENT_TYPE.FOLDER
+      ) {
         dockLayout.current.dockMove(
           {
             title: getTabTitle(
@@ -333,10 +336,10 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
         )
 
         setTabs([...tabs, editor.selectedGameOutlineComponent])
-      } else {
-        if (foundTab.id) {
-          dockLayout.current.updateTab(foundTab.id, foundTab)
-        }
+      }
+
+      if (foundTab?.id) {
+        dockLayout.current.updateTab(foundTab.id, foundTab)
       }
     }
   }, [editor.selectedGameOutlineComponent.id])
