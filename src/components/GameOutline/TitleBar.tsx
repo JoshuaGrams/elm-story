@@ -5,7 +5,7 @@ import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
 
 import { COMPONENT_TYPE, Game, GameId, StudioId } from '../../data/types'
-import { OnAddComponent } from './next'
+import { OnAddComponent } from '.'
 
 import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'

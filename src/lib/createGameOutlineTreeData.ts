@@ -1,10 +1,10 @@
-import { Chapter, COMPONENT_TYPE, Game, Passage, Scene } from '../data/types'
+import { COMPONENT_TYPE, Folder, Game, Passage, Scene } from '../data/types'
 
 import { TreeData } from '@atlaskit/tree'
 
 const createGameOutlineTreeData = (
   game: Game,
-  chapters: Chapter[],
+  folders: Folder[],
   scenes: Scene[],
   passages: Passage[]
 ): TreeData => {
@@ -16,8 +16,8 @@ const createGameOutlineTreeData = (
 
     gameOutlineTreeData.items[game.id] = {
       id: game.id,
-      children: game.chapters,
-      hasChildren: chapters.length > 0,
+      children: game.children.map((child) => child[1]),
+      hasChildren: folders.length > 0,
       isExpanded: true,
       isChildrenLoading: false,
       data: {
@@ -29,25 +29,25 @@ const createGameOutlineTreeData = (
       }
     }
 
-    chapters.map((chapter) => {
-      if (chapter.id) {
-        gameOutlineTreeData.items[chapter.id] = {
-          id: chapter.id,
-          children: chapter.scenes,
+    folders.map((folder) => {
+      if (folder.id) {
+        gameOutlineTreeData.items[folder.id] = {
+          id: folder.id,
+          children: folder.children.map((child) => child[1]),
           hasChildren: false,
           isExpanded: false,
           isChildrenLoading: false,
           data: {
-            title: chapter.title,
-            type: COMPONENT_TYPE.CHAPTER,
+            title: folder.title,
+            type: COMPONENT_TYPE.FOLDER,
             selected: false,
             parentId: game.id,
             renaming: false
           }
         }
 
-        gameOutlineTreeData.items[chapter.id].hasChildren =
-          gameOutlineTreeData.items[chapter.id].children.length > 0
+        gameOutlineTreeData.items[folder.id].hasChildren =
+          gameOutlineTreeData.items[folder.id].children.length > 0
       }
     })
 
@@ -55,7 +55,7 @@ const createGameOutlineTreeData = (
       if (scene.id) {
         gameOutlineTreeData.items[scene.id] = {
           id: scene.id,
-          children: scene.passages,
+          children: scene.children.map((child) => child[1]),
           hasChildren: false,
           isExpanded: false,
           isChildrenLoading: false,
@@ -63,7 +63,7 @@ const createGameOutlineTreeData = (
             title: scene.title,
             type: COMPONENT_TYPE.SCENE,
             selected: false,
-            parentId: scene.chapterId,
+            parentId: scene.parent[1],
             renaming: false
           }
         }

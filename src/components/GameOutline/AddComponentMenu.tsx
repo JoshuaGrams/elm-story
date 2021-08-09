@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 
 import { COMPONENT_TYPE, GameId } from '../../data/types'
-import { OnAddComponent } from './next'
+import { OnAddComponent } from '.'
 
 import { EditorContext } from '../../contexts/EditorContext'
 
