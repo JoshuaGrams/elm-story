@@ -25,6 +25,12 @@ const AddComponentMenu: React.FC<{
           <Menu.Item
             key={'add-folder'}
             onClick={() => onAdd(gameId, COMPONENT_TYPE.FOLDER)}
+            disabled={
+              editor.selectedGameOutlineComponent.type ===
+                COMPONENT_TYPE.SCENE ||
+              editor.selectedGameOutlineComponent.type ===
+                COMPONENT_TYPE.PASSAGE
+            }
           >
             <FolderOutlined />
             Folder
@@ -32,6 +38,12 @@ const AddComponentMenu: React.FC<{
           <Menu.Item
             key={'add-scene'}
             onClick={() => onAdd(gameId, COMPONENT_TYPE.SCENE)}
+            disabled={
+              editor.selectedGameOutlineComponent.type ===
+                COMPONENT_TYPE.SCENE ||
+              editor.selectedGameOutlineComponent.type ===
+                COMPONENT_TYPE.PASSAGE
+            }
           >
             <PartitionOutlined />
             Scene
@@ -40,7 +52,9 @@ const AddComponentMenu: React.FC<{
             key={'add-passage'}
             onClick={() => onAdd(gameId, COMPONENT_TYPE.PASSAGE)}
             disabled={
-              editor.selectedGameOutlineComponent.type !== COMPONENT_TYPE.SCENE
+              editor.selectedGameOutlineComponent.type ===
+                COMPONENT_TYPE.GAME ||
+              editor.selectedGameOutlineComponent.type === COMPONENT_TYPE.FOLDER
             }
           >
             <AlignLeftOutlined />
