@@ -819,7 +819,7 @@ export class LibraryDatabase extends Dexie {
 
       scene?.jumps &&
         logger.info(
-          `LibraryDatabase->removeScene->Removing ${scene.jumps.length}jump(s) from scene with ID: ${sceneId}`
+          `LibraryDatabase->removeScene->Removing ${scene.jumps.length} jump(s) from scene with ID: ${sceneId}`
         ) &&
         (await Promise.all(
           scene.jumps.map(async (jumpId) => await this.removeJump(jumpId))
@@ -882,14 +882,14 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getPassageRefsBySceneRef(
+  public async getChildRefsBySceneRef(
     sceneId: ComponentId
-  ): Promise<ComponentId[]> {
+  ): Promise<SceneChildRefs> {
     try {
       const scene = await this.scenes.where({ id: sceneId }).first()
 
       if (scene) {
-        return scene.passages
+        return scene.children
       } else {
         throw new Error('Scene not found.')
       }

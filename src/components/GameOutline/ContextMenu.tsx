@@ -25,7 +25,7 @@ const ContextMenu: React.FC<{
     case COMPONENT_TYPE.GAME:
       menuItems.push(
         <Menu.Item key={`${id}-add`} onClick={() => onAdd(id)}>
-          Add Chapter to '{title}'
+          Add Folder to '{title}'
         </Menu.Item>
       )
 

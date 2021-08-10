@@ -50,12 +50,12 @@ export async function getScenesByGameRef(
   }
 }
 
-export async function getPassageRefsBySceneRef(
+export async function getChildRefsBySceneRef(
   studioId: StudioId,
   sceneId: ComponentId
-): Promise<ComponentId[]> {
+): Promise<SceneChildRefs> {
   try {
-    return await new LibraryDatabase(studioId).getPassageRefsBySceneRef(sceneId)
+    return await new LibraryDatabase(studioId).getChildRefsBySceneRef(sceneId)
   } catch (error) {
     throw new Error(error)
   }

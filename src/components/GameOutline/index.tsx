@@ -7,10 +7,12 @@ import React, { useContext, useEffect, useState } from 'react'
 import {
   ComponentId,
   COMPONENT_TYPE,
+  DEFAULT_PASSAGE_CONTENT,
   Game,
   GameId,
   StudioId
 } from '../../data/types'
+import { DEFAULT_NODE_SIZE } from '../ComponentEditor/SceneView'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
@@ -34,7 +36,67 @@ import api from '../../api'
 
 export type OnAddComponent = (gameId: GameId, type: COMPONENT_TYPE) => void
 
-const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
+const addItemToTree = (
+  treeData: TreeData,
+  parentId: ComponentId,
+  item: TreeItem
+): TreeData => {
+  const clonedTree = cloneDeep(treeData),
+    parentItem = clonedTree.items[parentId]
+
+  if (!parentItem.children.includes(item.id)) {
+    parentItem.children.push(item.id)
+
+    if (!parentItem.isExpanded) parentItem.isExpanded = true
+
+    clonedTree.items[item.id] = item
+
+    return clonedTree
+  } else {
+    throw new Error('Unable to add item to tree. Child already exists.')
+  }
+}
+
+const removeItemFromTree = (
+  treeData: TreeData,
+  itemId: ComponentId
+): TreeData => {
+  const clonedTree = cloneDeep(treeData),
+    itemToRemove = clonedTree.items[itemId],
+    parentId = itemToRemove.data.parentId || undefined,
+    nestedChildrenToRemove: ItemId[] = []
+
+  if (parentId) {
+    const parentItem = clonedTree.items[parentId]
+
+    if (parentItem.children.includes(itemToRemove.id)) {
+      parentItem.children = parentItem.children.filter(
+        (childId) => itemId !== childId
+      )
+
+      parentItem.hasChildren = parentItem.children.length > 0 ? true : false
+
+      itemToRemove.children.map((sceneId) => {
+        clonedTree.items[sceneId].children.map((passageId) =>
+          nestedChildrenToRemove.push(passageId)
+        )
+
+        nestedChildrenToRemove.push(sceneId)
+      })
+
+      nestedChildrenToRemove.map((childId) => delete clonedTree.items[childId])
+      delete clonedTree.items[itemId]
+
+      return clonedTree
+    } else {
+      throw new Error('Unable to remove item from tree. Child does not exist.')
+    }
+  } else {
+    throw new Error('Unable to remove item from tree. Missing parent ID.')
+  }
+}
+
+const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   studioId,
   game
 }) => {
@@ -268,6 +330,287 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   }
 
+  async function onAdd(componentId: ComponentId) {
+    const item = treeData?.items[componentId]
+
+    if (treeData && item && game.id) {
+      const data = item.data
+      let newTreeData = undefined
+
+      if (editor.selectedGameOutlineComponent.id)
+        treeData.items[
+          editor.selectedGameOutlineComponent.id
+        ].data.selected = false
+
+      switch (data.type) {
+        // add folder
+        case COMPONENT_TYPE.GAME:
+          let folderId = undefined
+
+          try {
+            folderId = await api().folders.saveFolder(studioId, {
+              children: [],
+              gameId: game.id,
+              parent: [COMPONENT_TYPE.GAME, null],
+              title: 'Untitled Folder',
+              tags: []
+            })
+          } catch (error) {
+            throw error
+          }
+
+          item.hasChildren = true
+
+          newTreeData = addItemToTree(treeData, item.id as ComponentId, {
+            id: folderId,
+            children: [],
+            isExpanded: false,
+            hasChildren: false,
+            isChildrenLoading: false,
+            data: {
+              title: 'Untitled Folder',
+              type: COMPONENT_TYPE.FOLDER,
+              selected: false,
+              parentId: item.id,
+              renaming: true
+            }
+          })
+
+          try {
+            await api().games.saveChildRefsToGame(
+              studioId,
+              game.id,
+              newTreeData.items[item.id].children.map((childId) => [
+                COMPONENT_TYPE.FOLDER,
+                childId as ComponentId
+              ])
+            )
+          } catch (error) {
+            throw new Error(error)
+          }
+
+          setTreeData(newTreeData)
+
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+            selectedGameOutlineComponent: {
+              id: folderId,
+              expanded: true,
+              type: COMPONENT_TYPE.FOLDER,
+              title: 'Untitled Folder'
+            }
+          })
+
+          break
+        // add scene
+        case COMPONENT_TYPE.FOLDER:
+          let sceneId = undefined
+
+          try {
+            sceneId = await api().scenes.saveScene(studioId, {
+              children: [],
+              gameId: game.id,
+              jumps: [],
+              title: 'Untitled Scene',
+              parent: [COMPONENT_TYPE.FOLDER, item.id as ComponentId],
+              tags: []
+            })
+          } catch (error) {
+            throw new Error(error)
+          }
+
+          item.hasChildren = true
+
+          newTreeData = addItemToTree(treeData, item.id as ComponentId, {
+            id: sceneId,
+            children: [],
+            isExpanded: false,
+            hasChildren: false,
+            isChildrenLoading: false,
+            data: {
+              title: 'Untitled Scene',
+              type: COMPONENT_TYPE.SCENE,
+              selected: false,
+              parentId: item.id,
+              renaming: true
+            }
+          })
+
+          try {
+            await api().folders.saveChildRefsToFolder(
+              studioId,
+              item.id as ComponentId,
+              newTreeData.items[item.id].children.map((childId) => [
+                COMPONENT_TYPE.SCENE,
+                childId as ComponentId
+              ])
+            )
+          } catch (error) {
+            throw new Error(error)
+          }
+
+          setTreeData(newTreeData)
+
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+            selectedGameOutlineComponent: {
+              id: sceneId,
+              expanded: true,
+              type: COMPONENT_TYPE.SCENE,
+              title: 'Untitled Scene'
+            }
+          })
+
+          break
+        // add passage
+        case COMPONENT_TYPE.SCENE:
+          let passage = undefined
+
+          try {
+            passage = await api().passages.savePassage(studioId, {
+              choices: [],
+              content: JSON.stringify([...DEFAULT_PASSAGE_CONTENT]),
+              editor: {
+                componentEditorPosX:
+                  editor.selectedComponentEditorSceneViewCenter.x -
+                  DEFAULT_NODE_SIZE.PASSAGE_WIDTH / 2,
+                componentEditorPosY:
+                  editor.selectedComponentEditorSceneViewCenter.y -
+                  DEFAULT_NODE_SIZE.PASSAGE_HEIGHT / 2
+              },
+              gameId: game.id,
+              sceneId: item.id as string,
+              title: 'Untitled Passage',
+
+              tags: []
+            })
+          } catch (error) {
+            throw new Error(error)
+          }
+
+          item.hasChildren = true
+
+          if (passage.id) {
+            newTreeData = addItemToTree(treeData, item.id as ComponentId, {
+              id: passage.id,
+              children: [],
+              isExpanded: false,
+              hasChildren: false,
+              isChildrenLoading: false,
+              data: {
+                title: 'Untitled Passage',
+                type: COMPONENT_TYPE.PASSAGE,
+                selected: false,
+                parentId: item.id,
+                renaming: true
+              }
+            })
+
+            try {
+              await api().scenes.saveChildRefsToScene(
+                studioId,
+                item.id as ComponentId,
+                newTreeData.items[item.id].children.map((childId) => [
+                  COMPONENT_TYPE.PASSAGE,
+                  childId as ComponentId
+                ])
+              )
+            } catch (error) {
+              throw new Error(error)
+            }
+
+            setTreeData(newTreeData)
+
+            editorDispatch({
+              type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+              selectedGameOutlineComponent: {
+                id: passage.id,
+                expanded: true,
+                type: COMPONENT_TYPE.PASSAGE,
+                title: 'Untitled Passage'
+              }
+            })
+          }
+
+          break
+        default:
+          break
+      }
+
+      logger.info(`adding component to tree with id '${componentId}'`)
+    }
+  }
+
+  async function onRemove(componentId: ComponentId) {
+    logger.info(`GameOutline->onRemove->${componentId}`)
+
+    const item = treeData?.items[componentId],
+      data = item?.data
+
+    if (game.id && item && treeData) {
+      const newTreeData = removeItemFromTree(treeData, item.id as ComponentId)
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
+        removedComponent: { id: componentId, type: data.type }
+      })
+
+      try {
+        switch (data.type) {
+          case COMPONENT_TYPE.FOLDER:
+            await Promise.all([
+              await api().games.saveChildRefsToGame(
+                studioId,
+                game.id,
+                newTreeData.items[
+                  item.data.parentId
+                ].children.map((childId) => [
+                  COMPONENT_TYPE.FOLDER,
+                  childId as ComponentId
+                ])
+              ),
+              await api().folders.removeFolder(studioId, componentId)
+            ])
+            break
+          case COMPONENT_TYPE.SCENE:
+            await Promise.all([
+              api().folders.saveChildRefsToFolder(
+                studioId,
+                item.data.parentId,
+                newTreeData.items[
+                  item.data.parentId
+                ].children.map((childId) => [
+                  COMPONENT_TYPE.SCENE,
+                  childId as ComponentId
+                ])
+              ),
+              api().scenes.removeScene(studioId, componentId)
+            ])
+            break
+          case COMPONENT_TYPE.PASSAGE:
+            await Promise.all([
+              api().scenes.saveChildRefsToScene(
+                studioId,
+                item.data.parentId,
+                newTreeData.items[
+                  item.data.parentId
+                ].children.map((childId) => [
+                  COMPONENT_TYPE.PASSAGE,
+                  childId as ComponentId
+                ])
+              ),
+              api().passages.removePassage(studioId, item?.id as ComponentId)
+            ])
+            break
+          default:
+            break
+        }
+      } catch (error) {
+        throw new Error(error)
+      }
+    }
+  }
+
   async function onEditTitle(
     componentId: ComponentId,
     title: string | undefined,
@@ -376,6 +719,46 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
   useEffect(selectComponent, [editor.selectedGameOutlineComponent])
 
   useEffect(() => {
+    async function updateTree() {
+      logger.info('GameOutline->editor.savedComponent effect')
+
+      // TODO: Can't we do this better? *hic*
+      if (treeData && editor.savedComponent.id) {
+        const { id, type } = editor.savedComponent
+
+        switch (type) {
+          case COMPONENT_TYPE.PASSAGE:
+            const passage = await api().passages.getPassage(studioId, id)
+
+            if (passage.id) {
+              setTreeData(
+                addItemToTree(treeData, passage.sceneId, {
+                  id,
+                  children: [],
+                  isExpanded: false,
+                  hasChildren: false,
+                  isChildrenLoading: false,
+                  data: {
+                    title: 'Untitled Passage',
+                    type: COMPONENT_TYPE.PASSAGE,
+                    selected: false,
+                    parentId: passage.sceneId,
+                    renaming: true
+                  }
+                })
+              )
+            }
+            break
+          default:
+            break
+        }
+      }
+    }
+
+    updateTree()
+  }, [editor.savedComponent])
+
+  useEffect(() => {
     logger.info(
       `GameOutline->editor.renamedComponent->useEffect->
        id:${editor.renamedComponent.id} newTitle:'${editor.renamedComponent.newTitle}'`
@@ -399,6 +782,34 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
       )
     }
   }, [editor.renamedComponent])
+
+  useEffect(() => {
+    logger.info(`GameOutline->editor.removedComponent->useEffect`)
+
+    if (treeData && editor.removedComponent.id) {
+      logger.info(
+        `Removing component from outline with ID: ${editor.removedComponent.id}`
+      )
+
+      setTreeData(removeItemFromTree(treeData, editor.removedComponent.id))
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+        selectedGameOutlineComponent: {
+          id: undefined,
+          expanded: false,
+          type: undefined,
+          title: undefined
+        }
+      })
+    }
+  }, [editor.removedComponent])
+
+  useEffect(() => {
+    if (treeData) {
+      logger.info('GameOutline->treeData->useEffect->tree data updated')
+    }
+  }, [treeData])
 
   useEffect(() => {
     async function getGameComponents() {
@@ -433,8 +844,9 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
           <TitleBar
             studioId={studioId}
             game={game}
-            onAdd={(gameId: GameId, type: COMPONENT_TYPE) =>
-              logger.info(`GameOutlineNext->onAdd:${gameId}|${type}`)
+            onAdd={() =>
+              editor.selectedGameOutlineComponent.id &&
+              onAdd(editor.selectedGameOutlineComponent.id)
             }
           />
 
@@ -446,8 +858,8 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
                   <ComponentItem
                     item={item}
                     onSelect={onSelect}
-                    onAdd={() => console.log('onAdd')}
-                    onRemove={() => console.log('onRemove')}
+                    onAdd={onAdd}
+                    onRemove={onRemove}
                     onEditTitle={onEditTitle}
                   />
                 )}
@@ -467,4 +879,4 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
   )
 }
 
-export default GameOutlineNext
+export default GameOutline

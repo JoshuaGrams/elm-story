@@ -27,7 +27,6 @@ import {
 
 import TabContent from './TabContent'
 import GameView, { GameViewTools } from './GameView'
-import ChapterView, { ChapterViewTools } from './ChapterView'
 import SceneView, { SceneViewTools } from './SceneView'
 import PassageView, { PassageViewTools } from './PassageView'
 
@@ -80,16 +79,6 @@ function getTabContent(
   type: COMPONENT_TYPE | undefined
 ): JSX.Element {
   switch (type) {
-    case COMPONENT_TYPE.CHAPTER:
-      return (
-        <TabContent
-          studioId={studioId}
-          id={id}
-          type={type}
-          tools={<ChapterViewTools studioId={studioId} chapterId={id} />}
-          view={<ChapterView studioId={studioId} chapterId={id} />}
-        />
-      )
     case COMPONENT_TYPE.SCENE:
       return (
         <TabContent
@@ -427,11 +416,13 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
 
       const clonedTabs = cloneDeep(tabs)
 
-      if (editor.removedComponent.type === COMPONENT_TYPE.CHAPTER) {
-        scenesById = await api().chapters.getSceneRefsByChapterRef(
-          studioId,
-          editor.removedComponent.id
-        )
+      if (editor.removedComponent.type === COMPONENT_TYPE.FOLDER) {
+        scenesById = (
+          await api().folders.getChildRefsByFolderRef(
+            studioId,
+            editor.removedComponent.id
+          )
+        ).map((child) => child[1])
       }
 
       if (
@@ -442,10 +433,9 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
           scenesById.map(async (sceneId) => {
             passagesById = [
               ...passagesById,
-              ...(await api().scenes.getPassageRefsBySceneRef(
-                studioId,
-                sceneId
-              ))
+              ...(
+                await api().scenes.getChildRefsBySceneRef(studioId, sceneId)
+              ).map((child) => child[1])
             ]
           })
         )
