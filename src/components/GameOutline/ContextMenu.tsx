@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { ComponentId, COMPONENT_TYPE } from '../../data/types'
+import { onAddItem, OnEditTitle, OnRemoveItem } from './ComponentItem'
 
 import { Dropdown, Menu } from 'antd'
 
@@ -12,11 +13,11 @@ const ContextMenu: React.FC<{
     disabled: boolean
     onAdd: onAddItem
     onRemove: OnRemoveItem
-    onEditName: OnEditName
+    onEditTitle: OnEditTitle
   }
 }> = ({
   children,
-  component: { id, type, title, disabled, onAdd, onRemove, onEditName }
+  component: { id, type, title, disabled, onAdd, onRemove, onEditTitle }
 }) => {
   const menuItems: React.ReactElement[] = []
 
@@ -29,7 +30,7 @@ const ContextMenu: React.FC<{
       )
 
       break
-    case COMPONENT_TYPE.CHAPTER:
+    case COMPONENT_TYPE.FOLDER:
       menuItems.push(
         <Menu.Item key={`${id}-add`} onClick={() => onAdd(id)}>
           Add Scene to '{title}'
@@ -55,7 +56,7 @@ const ContextMenu: React.FC<{
     menuItems.push(
       <Menu.Item
         key={`${id}-rename`}
-        onClick={() => onEditName(id, undefined, false)}
+        onClick={() => onEditTitle(id, undefined, false)}
       >
         Rename '{title}'
       </Menu.Item>

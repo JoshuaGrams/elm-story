@@ -21,10 +21,10 @@ import styles from './styles.module.less'
 
 const { Text } = Typography
 
-type OnSelectItem = (componentId: ComponentId) => void
-type onAddItem = (componentId: ComponentId) => void
-type OnRemoveItem = (componentId: ComponentId) => void
-type OnEditName = (
+export type OnSelectItem = (componentId: ComponentId) => void
+export type onAddItem = (componentId: ComponentId) => void
+export type OnRemoveItem = (componentId: ComponentId) => void
+export type OnEditTitle = (
   componentId: ComponentId,
   title: string | undefined,
   complete: boolean | false
@@ -35,13 +35,13 @@ const ComponentItem = ({
   onSelect,
   onAdd,
   onRemove,
-  onEditName
+  onEditTitle
 }: {
   item: RenderItemParams
   onSelect: OnSelectItem
   onAdd: onAddItem
   onRemove: OnRemoveItem
-  onEditName: OnEditName
+  onEditTitle: OnEditTitle
 }) => {
   const componentType: COMPONENT_TYPE = item.data.type,
     componentTitle: string = item.data.title
@@ -101,7 +101,7 @@ const ComponentItem = ({
             disabled: item.data.renaming || false,
             onAdd,
             onRemove,
-            onEditName: () => onEditName(item.id as string, undefined, false)
+            onEditTitle: () => onEditTitle(item.id as string, undefined, false)
           }}
         >
           <div>
@@ -124,7 +124,7 @@ const ComponentItem = ({
                 editable={{
                   editing: item.data.renaming,
                   onChange: (title) =>
-                    onEditName(item.id as string, title, true)
+                    onEditTitle(item.id as string, title, true)
                 }}
               >
                 {componentTitle || `New ${componentType}`}

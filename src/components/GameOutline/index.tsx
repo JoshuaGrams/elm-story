@@ -217,13 +217,20 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
                 api().scenes.saveChildRefsToScene(
                   studioId,
                   sourceParent.id as ComponentId,
-                  newTreeData.items[sourceParent.id].children.map(childId => [COMPONENT_TYPE.PASSAGE, childId as ComponentId])
+                  newTreeData.items[sourceParent.id].children.map((childId) => [
+                    COMPONENT_TYPE.PASSAGE,
+                    childId as ComponentId
+                  ])
                 ),
                 api().scenes.saveChildRefsToScene(
                   studioId,
                   destinationParent.id as ComponentId,
-                  newTreeData.items[destinationParent.id]
-                    .children.map(childId => [COMPONENT_TYPE.PASSAGE, childId as ComponentId])
+                  newTreeData.items[
+                    destinationParent.id
+                  ].children.map((childId) => [
+                    COMPONENT_TYPE.PASSAGE,
+                    childId as ComponentId
+                  ])
                 )
               ])
               break
@@ -258,6 +265,77 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
           title
         }
       })
+    }
+  }
+
+  async function onEditTitle(
+    componentId: ComponentId,
+    title: string | undefined,
+    complete: boolean
+  ) {
+    logger.info(`GameOutline->onEditTitle`)
+
+    if (treeData) {
+      if (complete && title) {
+        logger.info(`GameOutline->onEditTitle->complete && title:'${title}'`)
+
+        try {
+          switch (treeData.items[componentId].data.type) {
+            case COMPONENT_TYPE.FOLDER:
+              await api().folders.saveFolderTitle(studioId, componentId, title)
+              break
+            case COMPONENT_TYPE.SCENE:
+              await api().scenes.saveSceneTitle(studioId, componentId, title)
+              break
+            case COMPONENT_TYPE.PASSAGE:
+              await api().passages.savePassageTitle(
+                studioId,
+                componentId,
+                title
+              )
+              break
+            default:
+              break
+          }
+        } catch (error) {
+          throw new Error(error)
+        }
+
+        // TODO: updating DB could fail; cache name if need revert on error
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
+          renamedComponent: {
+            id: componentId,
+            newTitle: title || treeData.items[componentId].data.title
+          }
+        })
+
+        if (
+          componentId === editor.selectedGameOutlineComponent.id &&
+          title !== editor.selectedGameOutlineComponent.title
+        ) {
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+            selectedGameOutlineComponent: {
+              ...editor.selectedGameOutlineComponent,
+              title: title || treeData.items[componentId].data.title
+            }
+          })
+        }
+      } else {
+        logger.info(`GameOutline->onEditTitle->else`)
+
+        setTreeData(
+          mutateTree(treeData, componentId, {
+            data: { ...treeData.items[componentId].data, renaming: true }
+          })
+        )
+
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_RENAME,
+          renamingGameOutlineComponent: { id: componentId, renaming: true }
+        })
+      }
     }
   }
 
@@ -370,7 +448,7 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
                     onSelect={onSelect}
                     onAdd={() => console.log('onAdd')}
                     onRemove={() => console.log('onRemove')}
-                    onEditName={() => console.log('onEditName')}
+                    onEditTitle={onEditTitle}
                   />
                 )}
                 onExpand={onExpand}
