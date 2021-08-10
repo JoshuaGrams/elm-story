@@ -22,7 +22,10 @@ import {
   JumpRoute,
   SET_OPERATOR_TYPE,
   COMPARE_OPERATOR_TYPE,
-  FolderChildRefs
+  FolderChildRefs,
+  GameChildRefs,
+  SceneParentRef,
+  SceneChildRefs
 } from '../data/types'
 
 // DATABASE VERSIONS / UPGRADES
@@ -263,7 +266,7 @@ export class LibraryDatabase extends Dexie {
     return game
   }
 
-  public async saveChapterRefsToGame(gameId: GameId, chapters: ComponentId[]) {
+  public async saveChildRefsToGame(gameId: GameId, children: GameChildRefs) {
     try {
       await this.transaction('rw', this.games, async () => {
         if (gameId) {
@@ -272,7 +275,7 @@ export class LibraryDatabase extends Dexie {
           if (game) {
             this.games.update(gameId, {
               ...game,
-              chapters,
+              children,
               updated: Date.now()
             })
           } else {
@@ -709,8 +712,8 @@ export class LibraryDatabase extends Dexie {
     return scene.id
   }
 
-  public async saveChapterRefToScene(
-    chapterId: ComponentId,
+  public async saveParentRefToScene(
+    parent: SceneParentRef,
     sceneId: ComponentId
   ) {
     try {
@@ -719,7 +722,7 @@ export class LibraryDatabase extends Dexie {
       if (scene && scene.id) {
         await this.scenes.update(scene.id, {
           ...scene,
-          chapterId,
+          parent,
           updated: Date.now()
         })
       } else {
@@ -730,9 +733,9 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async savePassageRefsToScene(
+  public async saveChildRefsToScene(
     sceneId: ComponentId,
-    passages: ComponentId[]
+    children: SceneChildRefs
   ) {
     try {
       await this.transaction('rw', this.scenes, async () => {
@@ -742,7 +745,7 @@ export class LibraryDatabase extends Dexie {
           if (scene) {
             this.scenes.update(sceneId, {
               ...scene,
-              passages,
+              children,
               updated: Date.now()
             })
           } else {

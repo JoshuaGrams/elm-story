@@ -1,7 +1,7 @@
 import { LibraryDatabase } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { StudioId, Game, GameId, ComponentId } from '../data/types'
+import { StudioId, Game, GameId, ComponentId, GameChildRefs } from '../data/types'
 
 import api from '.'
 
@@ -35,13 +35,13 @@ export async function saveGame(studioId: StudioId, game: Game): Promise<Game> {
   }
 }
 
-export async function saveChapterRefsToGame(
+export async function saveChildRefsToGame(
   studioId: StudioId,
   gameId: GameId,
-  chapters: ComponentId[]
+  children: GameChildRefs
 ) {
   try {
-    await new LibraryDatabase(studioId).saveChapterRefsToGame(gameId, chapters)
+    await new LibraryDatabase(studioId).saveChildRefsToGame(gameId, children)
   } catch (error) {
     throw new Error(error)
   }

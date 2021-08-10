@@ -40,7 +40,10 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
 }) => {
   const { editor, editorDispatch } = useContext(EditorContext)
 
-  const [treeData, setTreeData] = useState<TreeData | undefined>(undefined)
+  const [treeData, setTreeData] = useState<TreeData | undefined>(undefined),
+    [movingComponentId, setMovingComponentId] = useState<string | undefined>(
+      undefined
+    )
 
   function onExpand(itemId: React.ReactText) {
     if (treeData)
@@ -50,6 +53,193 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
   function onCollapse(itemId: React.ReactText) {
     if (treeData)
       setTreeData(mutateTree(treeData, itemId, { isExpanded: false }))
+  }
+
+  function onDragStart(itemId: React.ReactText) {
+    logger.info(`GameOutline->onDragStart->${itemId}`)
+
+    if (treeData && editor.renamingGameOutlineComponent.id) {
+      setTreeData(
+        mutateTree(treeData, editor.renamingGameOutlineComponent.id, {
+          data: {
+            ...treeData.items[editor.renamingGameOutlineComponent.id].data,
+            renaming: false
+          }
+        })
+      )
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_RENAME,
+        renamingGameOutlineComponent: { id: undefined, renaming: false }
+      })
+    }
+
+    setMovingComponentId(itemId as string)
+  }
+
+  async function onDragEnd(
+    source: TreeSourcePosition,
+    destination?: TreeDestinationPosition
+  ) {
+    if (!destination || !treeData) return
+
+    const sourceParent = treeData.items[source.parentId],
+      destinationParent = treeData.items[destination.parentId],
+      movingComponent = movingComponentId && treeData.items[movingComponentId]
+
+    if (
+      sourceParent.id === destinationParent.id &&
+      source.index === destination.index
+    )
+      return
+
+    if (
+      movingComponent &&
+      sourceParent.data.type === destinationParent.data.type
+    ) {
+      logger.info(
+        `
+          moving: ${movingComponent.data.title}
+          from: ${sourceParent.data.title} (index ${source.index})
+          to: ${destinationParent.data.title} (index ${destination.index})
+        `
+      )
+
+      const newTreeData = moveItemOnTree(treeData, source, destination)
+
+      if (!destinationParent.isExpanded) destinationParent.isExpanded = true
+
+      movingComponent.data.selected =
+        editor.selectedGameOutlineComponent.id === movingComponent.id
+
+      setTreeData(newTreeData)
+
+      editor.selectedGameOutlineComponent.id === movingComponent.id &&
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+          selectedGameOutlineComponent: {
+            id: movingComponent.id as string,
+            expanded: movingComponent.isExpanded || false,
+            type: movingComponent.data.type,
+            title: movingComponent.data.title
+          }
+        })
+
+      if (game.id) {
+        try {
+          switch (movingComponent.data.type) {
+            case COMPONENT_TYPE.FOLDER:
+              await api().games.saveChildRefsToGame(
+                studioId,
+                game.id,
+                newTreeData.items[
+                  destinationParent.id
+                ].children.map((childId) => [
+                  COMPONENT_TYPE.FOLDER,
+                  childId as ComponentId
+                ])
+              )
+              break
+            case COMPONENT_TYPE.SCENE:
+              if (sourceParent.id !== destinationParent.id) {
+                const jumps = await api().jumps.getJumpsBySceneRef(
+                  studioId,
+                  movingComponent.id as string
+                )
+
+                await Promise.all(
+                  jumps.map(
+                    async (jump) =>
+                      jump.id &&
+                      (await api().jumps.saveJumpRoute(studioId, jump.id, [
+                        jump.route[0]
+                      ]))
+                  )
+                )
+              }
+
+              await Promise.all([
+                api().scenes.saveParentRefToScene(
+                  studioId,
+                  [COMPONENT_TYPE.FOLDER, destinationParent.id as ComponentId],
+                  movingComponent.id as ComponentId
+                ),
+                api().folders.saveChildRefsToFolder(
+                  studioId,
+                  sourceParent.id as ComponentId,
+                  newTreeData.items[sourceParent.id].children.map((childId) => [
+                    COMPONENT_TYPE.SCENE,
+                    childId as ComponentId
+                  ])
+                ),
+                api().folders.saveChildRefsToFolder(
+                  studioId,
+                  destinationParent.id as ComponentId,
+                  newTreeData.items[
+                    destinationParent.id
+                  ].children.map((childId) => [
+                    COMPONENT_TYPE.SCENE,
+                    childId as ComponentId
+                  ])
+                )
+              ])
+              break
+            case COMPONENT_TYPE.PASSAGE:
+              if (sourceParent.id !== destinationParent.id) {
+                const jumps = await api().jumps.getJumpsByPassageRef(
+                  studioId,
+                  movingComponent.id as string
+                )
+
+                await Promise.all(
+                  jumps.map(
+                    async (jump) =>
+                      jump.id &&
+                      (await api().jumps.saveJumpRoute(studioId, jump.id, [
+                        jump.route[0],
+                        jump.route[1]
+                      ]))
+                  )
+                )
+
+                await api().routes.removeRoutesByPassageRef(
+                  studioId,
+                  movingComponent.id as ComponentId
+                )
+              }
+
+              await Promise.all([
+                api().passages.saveSceneRefToPassage(
+                  studioId,
+                  destinationParent.id as ComponentId,
+                  movingComponent.id as ComponentId
+                ),
+                api().scenes.saveChildRefsToScene(
+                  studioId,
+                  sourceParent.id as ComponentId,
+                  newTreeData.items[sourceParent.id].children.map(childId => [COMPONENT_TYPE.PASSAGE, childId as ComponentId])
+                ),
+                api().scenes.saveChildRefsToScene(
+                  studioId,
+                  destinationParent.id as ComponentId,
+                  newTreeData.items[destinationParent.id]
+                    .children.map(childId => [COMPONENT_TYPE.PASSAGE, childId as ComponentId])
+                )
+              ])
+              break
+            default:
+              return
+          }
+        } catch (error) {
+          // TODO: Move the item back to original position?
+          throw new Error(error)
+        }
+      }
+    } else if (movingComponent) {
+      logger.info(
+        `Unable to move component type '${movingComponent.data.type}' to type '${destinationParent.data.type}'`
+      )
+    }
   }
 
   function onSelect(componentId: ComponentId) {
@@ -108,6 +298,31 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
   useEffect(selectComponent, [editor.selectedGameOutlineComponent])
 
   useEffect(() => {
+    logger.info(
+      `GameOutline->editor.renamedComponent->useEffect->
+       id:${editor.renamedComponent.id} newTitle:'${editor.renamedComponent.newTitle}'`
+    )
+
+    if (
+      treeData &&
+      editor.renamedComponent.id &&
+      editor.renamedComponent.newTitle
+    ) {
+      setTreeData(
+        mutateTree(treeData, editor.renamedComponent.id, {
+          data: {
+            ...treeData.items[editor.renamedComponent.id].data,
+            title:
+              editor.renamedComponent.newTitle ||
+              treeData.items[editor.renamedComponent.id].data.title,
+            renaming: false
+          }
+        })
+      )
+    }
+  }, [editor.renamedComponent])
+
+  useEffect(() => {
     async function getGameComponents() {
       if (game.id) {
         const folders = await api().folders.getFoldersByGameRef(
@@ -160,6 +375,8 @@ const GameOutlineNext: React.FC<{ studioId: StudioId; game: Game }> = ({
                 )}
                 onExpand={onExpand}
                 onCollapse={onCollapse}
+                onDragStart={onDragStart}
+                onDragEnd={onDragEnd}
                 offsetPerLevel={19}
                 isDragEnabled
                 isNestingEnabled

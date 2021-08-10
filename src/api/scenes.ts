@@ -1,7 +1,14 @@
 import { LibraryDatabase, LIBRARY_TABLE } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { Scene, ComponentId, StudioId, GameId } from '../data/types'
+import {
+  Scene,
+  ComponentId,
+  StudioId,
+  GameId,
+  SceneParentRef,
+  SceneChildRefs
+} from '../data/types'
 
 export async function getScene(studioId: StudioId, sceneId: ComponentId) {
   try {
@@ -85,31 +92,25 @@ export async function saveSceneViewTransform(
   }
 }
 
-export async function saveChapterRefToScene(
+export async function saveParentRefToScene(
   studioId: StudioId,
-  chapterId: ComponentId,
+  parent: SceneParentRef,
   sceneId: ComponentId
 ) {
   try {
-    await new LibraryDatabase(studioId).saveChapterRefToScene(
-      chapterId,
-      sceneId
-    )
+    await new LibraryDatabase(studioId).saveParentRefToScene(parent, sceneId)
   } catch (error) {
     throw new Error(error)
   }
 }
 
-export async function savePassageRefsToScene(
+export async function saveChildRefsToScene(
   studioId: StudioId,
   sceneId: ComponentId,
-  passages: ComponentId[]
+  children: SceneChildRefs
 ) {
   try {
-    await new LibraryDatabase(studioId).savePassageRefsToScene(
-      sceneId,
-      passages
-    )
+    await new LibraryDatabase(studioId).saveChildRefsToScene(sceneId, children)
   } catch (error) {
     throw new Error(error)
   }
