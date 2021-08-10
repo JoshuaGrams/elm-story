@@ -118,7 +118,7 @@ export const SceneViewTools: React.FC<{
                 gameId: scene.gameId,
                 sceneId,
                 title: 'Untitled Jump',
-                route: [scene.chapterId],
+                route: [scene.id],
                 tags: [],
                 editor: {
                   componentEditorPosX:
