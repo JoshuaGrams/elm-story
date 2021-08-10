@@ -25,7 +25,8 @@ import {
   FolderChildRefs,
   GameChildRefs,
   SceneParentRef,
-  SceneChildRefs
+  SceneChildRefs,
+  COMPONENT_TYPE
 } from '../data/types'
 
 // DATABASE VERSIONS / UPGRADES
@@ -455,7 +456,9 @@ export class LibraryDatabase extends Dexie {
   public async removeFolder(folderId: ComponentId) {
     try {
       const jumps = await this.jumps.where({ route: folderId }).toArray(),
-        scenes = await this.scenes.where({ folderId }).toArray()
+        scenes = await this.scenes
+          .where({ parent: [COMPONENT_TYPE.FOLDER, folderId] })
+          .toArray()
 
       if (jumps.length > 0) {
         logger.info(

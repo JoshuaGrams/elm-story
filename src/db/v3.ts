@@ -17,8 +17,10 @@ export default (database: Dexie) => {
     database
       .version(3)
       .stores({
-        folders: '&id,gameId,title,*tags,updated',
-        scenes: '&id,gameId,title,*tags,updated'
+        games:
+          '&id,children,title,*tags,updated,template,designer,version,engine',
+        folders: '&id,children,gameId,parent,title,*tags,updated',
+        scenes: '&id,children,gameId,parent,title,*tags,updated'
       })
       .upgrade(async (tx) => {
         try {
