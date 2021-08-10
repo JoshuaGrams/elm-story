@@ -2,6 +2,7 @@ import useDebouncedResizeObserver from './useDebouncedResizeObserver'
 
 import useStudios, { useStudio } from './useStudios'
 import useGames, { useGame } from './useGames'
+import useFolders, { useFolder } from './useFolders'
 import useJumps, { useJump, useJumpsBySceneRef } from './useJumps'
 import useChapters, { useChapter } from './useChapters'
 import useScenes, { useScenesByChapterRef, useScene } from './useScenes'
@@ -32,6 +33,8 @@ export {
   useStudio,
   useGames,
   useGame,
+  useFolders,
+  useFolder,
   useJumps,
   useJump,
   useJumpsBySceneRef,

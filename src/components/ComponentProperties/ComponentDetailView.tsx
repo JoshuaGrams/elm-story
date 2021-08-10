@@ -4,13 +4,13 @@ import { ComponentId, COMPONENT_TYPE, StudioId } from '../../data/types'
 
 import {
   AlignLeftOutlined,
-  BookOutlined,
+  FolderOutlined,
   PartitionOutlined,
   PlayCircleFilled
 } from '@ant-design/icons'
 
 import GameDetails from './GameDetails'
-import ChapterDetails from './ChapterDetails'
+import FolderDetails from './FolderDetails'
 import SceneDetails from './SceneDetails'
 import PassageDetails from './PassageDetails'
 
@@ -34,12 +34,12 @@ const ComponentDetailView: React.FC<{
         </>
       )}
 
-      {component.type === COMPONENT_TYPE.CHAPTER && (
+      {component.type === COMPONENT_TYPE.FOLDER && (
         <>
           <div className={styles.componentDetailViewHeader}>
-            <BookOutlined className={styles.headerIcon} /> Chapter Details
+            <FolderOutlined className={styles.headerIcon} /> Folder Details
           </div>
-          <ChapterDetails studioId={studioId} chapterId={component.id} />
+          <FolderDetails studioId={studioId} folderId={component.id} />
         </>
       )}
 

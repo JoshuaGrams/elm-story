@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 
 import { ComponentId, StudioId } from '../../../data/types'
 
-import { useChapter } from '../../../hooks'
+import { useFolder } from '../../../hooks'
 
 import {
   EditorContext,
@@ -15,39 +15,39 @@ import styles from '../styles.module.less'
 
 import api from '../../../api'
 
-const ChapterDetails: React.FC<{
+const FolderDetails: React.FC<{
   studioId: StudioId
-  chapterId: ComponentId
-}> = ({ studioId, chapterId }) => {
-  const chapter = useChapter(studioId, chapterId, [chapterId])
+  folderId: ComponentId
+}> = ({ studioId, folderId }) => {
+  const folder = useFolder(studioId, folderId, [folderId])
 
   const { editorDispatch } = useContext(EditorContext)
 
   return (
     <>
-      {chapter && (
+      {folder && (
         <div className={styles.componentDetailViewWrapper}>
           <div className={styles.content}>
             <ComponentTitle
-              title={chapter.title}
+              title={folder.title}
               onUpdate={async (title) => {
-                if (chapter.id) {
-                  await api().chapters.saveChapter(studioId, {
-                    ...(await api().chapters.getChapter(studioId, chapter.id)),
+                if (folder.id) {
+                  await api().folders.saveFolder(studioId, {
+                    ...(await api().folders.getFolder(studioId, folder.id)),
                     title
                   })
 
                   editorDispatch({
                     type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
                     renamedComponent: {
-                      id: chapter.id,
+                      id: folder.id,
                       newTitle: title
                     }
                   })
                 }
               }}
             />
-            <div className={styles.componentId}>{chapter.id}</div>
+            <div className={styles.componentId}>{folder.id}</div>
           </div>
         </div>
       )}
@@ -55,4 +55,4 @@ const ChapterDetails: React.FC<{
   )
 }
 
-export default ChapterDetails
+export default FolderDetails
