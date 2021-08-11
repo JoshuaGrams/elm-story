@@ -87,16 +87,16 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
               game && edit
                 ? { ...game, title, designer, version }
                 : {
-                    title,
+                    children: [],
                     designer,
+                    engine: app.version,
+                    jump: null,
                     // TODO: Enable user-defined once more templates are supported.
                     template: GAME_TEMPLATE.ADVENTURE,
+                    title,
                     tags: [],
                     // TODO: Move to defines/types.
-                    engine: app.version,
-                    version: '0.0.1',
-                    chapters: [],
-                    jump: null
+                    version: '0.0.1'
                   }
             )
 
