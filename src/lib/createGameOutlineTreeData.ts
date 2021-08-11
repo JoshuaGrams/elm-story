@@ -17,7 +17,7 @@ const createGameOutlineTreeData = (
     gameOutlineTreeData.items[game.id] = {
       id: game.id,
       children: game.children.map((child) => child[1]),
-      hasChildren: folders.length > 0,
+      hasChildren: game.children.length > 0,
       isExpanded: true,
       isChildrenLoading: false,
       data: {
@@ -53,6 +53,8 @@ const createGameOutlineTreeData = (
 
     scenes.map((scene) => {
       if (scene.id) {
+        console.log(scene.parent[1])
+
         gameOutlineTreeData.items[scene.id] = {
           id: scene.id,
           children: scene.children.map((child) => child[1]),
@@ -63,7 +65,7 @@ const createGameOutlineTreeData = (
             title: scene.title,
             type: COMPONENT_TYPE.SCENE,
             selected: false,
-            parentId: scene.parent[1],
+            parentId: scene.parent[1] || game.id,
             renaming: false
           }
         }

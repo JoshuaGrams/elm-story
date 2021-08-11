@@ -26,6 +26,7 @@ import Tree, {
   ItemId,
   TreeItem
 } from '@atlaskit/tree'
+import { Button } from 'antd'
 
 import TitleBar from './TitleBar'
 import ComponentItem from './ComponentItem'
@@ -34,7 +35,10 @@ import styles from './styles.module.less'
 
 import api from '../../api'
 
-export type OnAddComponent = (gameId: GameId, type: COMPONENT_TYPE) => void
+export type OnAddComponent = (
+  parentComponentId: ComponentId,
+  childType: COMPONENT_TYPE
+) => void
 
 const addItemToTree = (
   treeData: TreeData,
@@ -139,6 +143,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     setMovingComponentId(itemId as string)
   }
 
+  // TODO: this is a fucking nightmare lol
   async function onDragEnd(
     source: TreeSourcePosition,
     destination?: TreeDestinationPosition
@@ -155,9 +160,22 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     )
       return
 
+    console.log(sourceParent.data.type)
+    console.log(destinationParent.data.type)
+
     if (
       movingComponent &&
-      sourceParent.data.type === destinationParent.data.type
+      (sourceParent.data.type === destinationParent.data.type ||
+        // folder to game or folder
+        (movingComponent.data.type === COMPONENT_TYPE.FOLDER &&
+          destinationParent.data.type === COMPONENT_TYPE.GAME) ||
+        (movingComponent.data.type === COMPONENT_TYPE.FOLDER &&
+          destinationParent.data.type === COMPONENT_TYPE.FOLDER) ||
+        // scene to game or folder
+        (movingComponent.data.type === COMPONENT_TYPE.SCENE &&
+          destinationParent.data.type === COMPONENT_TYPE.GAME) ||
+        (movingComponent.data.type === COMPONENT_TYPE.SCENE &&
+          destinationParent.data.type === COMPONENT_TYPE.FOLDER))
     ) {
       logger.info(
         `
@@ -191,60 +209,163 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
         try {
           switch (movingComponent.data.type) {
             case COMPONENT_TYPE.FOLDER:
-              await api().games.saveChildRefsToGame(
-                studioId,
-                game.id,
-                newTreeData.items[
-                  destinationParent.id
-                ].children.map((childId) => [
-                  COMPONENT_TYPE.FOLDER,
-                  childId as ComponentId
-                ])
+              const folderPromises: Promise<void>[] = []
+
+              if (
+                sourceParent.data.type === COMPONENT_TYPE.GAME ||
+                destinationParent.data.type === COMPONENT_TYPE.GAME
+              ) {
+                folderPromises.push(
+                  api().games.saveChildRefsToGame(
+                    studioId,
+                    game.id,
+                    newTreeData.items[game.id].children.map((childId) => [
+                      newTreeData.items[childId].data.type,
+                      childId as ComponentId
+                    ])
+                  )
+                )
+              }
+
+              if (sourceParent.data.type === COMPONENT_TYPE.FOLDER) {
+                folderPromises.push(
+                  api().folders.saveChildRefsToFolder(
+                    studioId,
+                    sourceParent.id as ComponentId,
+                    newTreeData.items[
+                      sourceParent.id
+                    ].children.map((childId) => [
+                      newTreeData.items[childId].data.type,
+                      childId as ComponentId
+                    ])
+                  )
+                )
+              }
+
+              if (destinationParent.data.type === COMPONENT_TYPE.FOLDER) {
+                folderPromises.push(
+                  api().folders.saveChildRefsToFolder(
+                    studioId,
+                    destinationParent.id as ComponentId,
+                    newTreeData.items[
+                      destinationParent.id
+                    ].children.map((childId) => [
+                      newTreeData.items[childId].data.type,
+                      childId as ComponentId
+                    ])
+                  )
+                )
+              }
+
+              folderPromises.push(
+                api().folders.saveParentRefToFolder(
+                  studioId,
+                  [
+                    newTreeData.items[destinationParent.id].data.type,
+                    newTreeData.items[destinationParent.id].data.type ===
+                    COMPONENT_TYPE.GAME
+                      ? null
+                      : (destinationParent.id as ComponentId)
+                  ],
+                  movingComponent.id as ComponentId
+                )
               )
+
+              await Promise.all(folderPromises)
+
               break
             case COMPONENT_TYPE.SCENE:
+              const scenePromises: Promise<void>[] = []
+
               if (sourceParent.id !== destinationParent.id) {
                 const jumps = await api().jumps.getJumpsBySceneRef(
                   studioId,
                   movingComponent.id as string
                 )
 
-                await Promise.all(
-                  jumps.map(
-                    async (jump) =>
-                      jump.id &&
-                      (await api().jumps.saveJumpRoute(studioId, jump.id, [
-                        jump.route[0]
-                      ]))
+                scenePromises.push(
+                  ...jumps.map((jump) =>
+                    api().jumps.saveJumpRoute(
+                      studioId,
+                      jump.id as ComponentId,
+                      [jump.route[0]]
+                    )
+                  )
+                )
+
+                // await Promise.all(
+                //   jumps.map(
+                //     async (jump) =>
+                //       jump.id &&
+                //       (await api().jumps.saveJumpRoute(studioId, jump.id, [
+                //         jump.route[0]
+                //       ]))
+                //   )
+                // )
+              }
+
+              if (
+                sourceParent.data.type === COMPONENT_TYPE.GAME ||
+                destinationParent.data.type === COMPONENT_TYPE.GAME
+              ) {
+                scenePromises.push(
+                  api().games.saveChildRefsToGame(
+                    studioId,
+                    game.id,
+                    newTreeData.items[game.id].children.map((childId) => [
+                      newTreeData.items[childId].data.type,
+                      childId as ComponentId
+                    ])
                   )
                 )
               }
 
-              await Promise.all([
+              if (sourceParent.data.type === COMPONENT_TYPE.FOLDER) {
+                scenePromises.push(
+                  api().folders.saveChildRefsToFolder(
+                    studioId,
+                    sourceParent.id as ComponentId,
+                    newTreeData.items[
+                      sourceParent.id
+                    ].children.map((childId) => [
+                      newTreeData.items[childId].data.type,
+                      childId as ComponentId
+                    ])
+                  )
+                )
+              }
+
+              if (destinationParent.data.type === COMPONENT_TYPE.FOLDER) {
+                scenePromises.push(
+                  api().folders.saveChildRefsToFolder(
+                    studioId,
+                    destinationParent.id as ComponentId,
+                    newTreeData.items[
+                      destinationParent.id
+                    ].children.map((childId) => [
+                      newTreeData.items[childId].data.type,
+                      childId as ComponentId
+                    ])
+                  )
+                )
+              }
+
+              scenePromises.push(
                 api().scenes.saveParentRefToScene(
                   studioId,
-                  [COMPONENT_TYPE.FOLDER, destinationParent.id as ComponentId],
+                  [
+                    newTreeData.items[destinationParent.id].data.type,
+                    newTreeData.items[destinationParent.id].data.type ===
+                    COMPONENT_TYPE.GAME
+                      ? null
+                      : (destinationParent.id as ComponentId)
+                  ],
                   movingComponent.id as ComponentId
-                ),
-                api().folders.saveChildRefsToFolder(
-                  studioId,
-                  sourceParent.id as ComponentId,
-                  newTreeData.items[sourceParent.id].children.map((childId) => [
-                    COMPONENT_TYPE.SCENE,
-                    childId as ComponentId
-                  ])
-                ),
-                api().folders.saveChildRefsToFolder(
-                  studioId,
-                  destinationParent.id as ComponentId,
-                  newTreeData.items[
-                    destinationParent.id
-                  ].children.map((childId) => [
-                    COMPONENT_TYPE.SCENE,
-                    childId as ComponentId
-                  ])
                 )
-              ])
+              )
+
+              await Promise.all(scenePromises)
+
               break
             case COMPONENT_TYPE.PASSAGE:
               if (sourceParent.id !== destinationParent.id) {
@@ -330,12 +451,15 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   }
 
-  async function onAdd(componentId: ComponentId) {
-    const item = treeData?.items[componentId]
+  async function onAdd(
+    parentComponentId: ComponentId,
+    childType: COMPONENT_TYPE
+  ) {
+    const parentItem = treeData?.items[parentComponentId]
 
-    if (treeData && item && game.id) {
-      const data = item.data
-      let newTreeData = undefined
+    if (treeData && parentItem && game.id) {
+      const data = parentItem.data
+      let newTreeData: TreeData
 
       if (editor.selectedGameOutlineComponent.id)
         treeData.items[
@@ -343,63 +467,91 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
         ].data.selected = false
 
       switch (data.type) {
-        // add folder
+        // add folder or scene
         case COMPONENT_TYPE.GAME:
-          let folderId = undefined
+          if (
+            childType === COMPONENT_TYPE.SCENE ||
+            childType === COMPONENT_TYPE.FOLDER
+          ) {
+            let childId: ComponentId,
+              childTitle: string =
+                childType === COMPONENT_TYPE.SCENE
+                  ? 'Untitled Scene'
+                  : 'Untitled Folder'
 
-          try {
-            folderId = await api().folders.saveFolder(studioId, {
-              children: [],
-              gameId: game.id,
-              parent: [COMPONENT_TYPE.GAME, null],
-              title: 'Untitled Folder',
-              tags: []
-            })
-          } catch (error) {
-            throw error
-          }
-
-          item.hasChildren = true
-
-          newTreeData = addItemToTree(treeData, item.id as ComponentId, {
-            id: folderId,
-            children: [],
-            isExpanded: false,
-            hasChildren: false,
-            isChildrenLoading: false,
-            data: {
-              title: 'Untitled Folder',
-              type: COMPONENT_TYPE.FOLDER,
-              selected: false,
-              parentId: item.id,
-              renaming: true
+            try {
+              childId =
+                childType === COMPONENT_TYPE.SCENE
+                  ? await api().scenes.saveScene(studioId, {
+                      children: [],
+                      gameId: game.id,
+                      jumps: [],
+                      parent: [COMPONENT_TYPE.GAME, null],
+                      tags: [],
+                      title: childTitle,
+                      editor: {}
+                    })
+                  : await api().folders.saveFolder(studioId, {
+                      children: [],
+                      gameId: game.id,
+                      parent: [COMPONENT_TYPE.GAME, null],
+                      tags: [],
+                      title: childTitle
+                    })
+            } catch (error) {
+              throw error
             }
-          })
 
-          try {
-            await api().games.saveChildRefsToGame(
-              studioId,
-              game.id,
-              newTreeData.items[item.id].children.map((childId) => [
-                COMPONENT_TYPE.FOLDER,
-                childId as ComponentId
-              ])
+            parentItem.hasChildren = true
+
+            newTreeData = addItemToTree(
+              treeData,
+              parentItem.id as ComponentId,
+              {
+                id: childId,
+                children: [],
+                isExpanded: false,
+                hasChildren: false,
+                isChildrenLoading: false,
+                data: {
+                  title: childTitle,
+                  type: childType,
+                  selected: false,
+                  parentId: parentItem.id,
+                  renaming: true
+                }
+              }
             )
-          } catch (error) {
-            throw new Error(error)
-          }
 
-          setTreeData(newTreeData)
-
-          editorDispatch({
-            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-            selectedGameOutlineComponent: {
-              id: folderId,
-              expanded: true,
-              type: COMPONENT_TYPE.FOLDER,
-              title: 'Untitled Folder'
+            try {
+              await api().games.saveChildRefsToGame(
+                studioId,
+                game.id,
+                newTreeData.items[parentItem.id].children.map((childId) => [
+                  newTreeData.items[childId].data.type,
+                  childId as ComponentId
+                ])
+              )
+            } catch (error) {
+              throw new Error(error)
             }
-          })
+
+            setTreeData(newTreeData)
+
+            editorDispatch({
+              type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+              selectedGameOutlineComponent: {
+                id: childId,
+                expanded: true,
+                type: childType,
+                title: childTitle
+              }
+            })
+          } else {
+            throw new Error(
+              `Unable to add to game. Component type: ${childType} is not supported.`
+            )
+          }
 
           break
         // add scene
@@ -412,16 +564,16 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               gameId: game.id,
               jumps: [],
               title: 'Untitled Scene',
-              parent: [COMPONENT_TYPE.FOLDER, item.id as ComponentId],
+              parent: [COMPONENT_TYPE.FOLDER, parentItem.id as ComponentId],
               tags: []
             })
           } catch (error) {
             throw new Error(error)
           }
 
-          item.hasChildren = true
+          parentItem.hasChildren = true
 
-          newTreeData = addItemToTree(treeData, item.id as ComponentId, {
+          newTreeData = addItemToTree(treeData, parentItem.id as ComponentId, {
             id: sceneId,
             children: [],
             isExpanded: false,
@@ -431,7 +583,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               title: 'Untitled Scene',
               type: COMPONENT_TYPE.SCENE,
               selected: false,
-              parentId: item.id,
+              parentId: parentItem.id,
               renaming: true
             }
           })
@@ -439,8 +591,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           try {
             await api().folders.saveChildRefsToFolder(
               studioId,
-              item.id as ComponentId,
-              newTreeData.items[item.id].children.map((childId) => [
+              parentItem.id as ComponentId,
+              newTreeData.items[parentItem.id].children.map((childId) => [
                 COMPONENT_TYPE.SCENE,
                 childId as ComponentId
               ])
@@ -479,7 +631,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                   DEFAULT_NODE_SIZE.PASSAGE_HEIGHT / 2
               },
               gameId: game.id,
-              sceneId: item.id as string,
+              sceneId: parentItem.id as string,
               title: 'Untitled Passage',
 
               tags: []
@@ -488,29 +640,33 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             throw new Error(error)
           }
 
-          item.hasChildren = true
+          parentItem.hasChildren = true
 
           if (passage.id) {
-            newTreeData = addItemToTree(treeData, item.id as ComponentId, {
-              id: passage.id,
-              children: [],
-              isExpanded: false,
-              hasChildren: false,
-              isChildrenLoading: false,
-              data: {
-                title: 'Untitled Passage',
-                type: COMPONENT_TYPE.PASSAGE,
-                selected: false,
-                parentId: item.id,
-                renaming: true
+            newTreeData = addItemToTree(
+              treeData,
+              parentItem.id as ComponentId,
+              {
+                id: passage.id,
+                children: [],
+                isExpanded: false,
+                hasChildren: false,
+                isChildrenLoading: false,
+                data: {
+                  title: 'Untitled Passage',
+                  type: COMPONENT_TYPE.PASSAGE,
+                  selected: false,
+                  parentId: parentItem.id,
+                  renaming: true
+                }
               }
-            })
+            )
 
             try {
               await api().scenes.saveChildRefsToScene(
                 studioId,
-                item.id as ComponentId,
-                newTreeData.items[item.id].children.map((childId) => [
+                parentItem.id as ComponentId,
+                newTreeData.items[parentItem.id].children.map((childId) => [
                   COMPONENT_TYPE.PASSAGE,
                   childId as ComponentId
                 ])
@@ -537,7 +693,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           break
       }
 
-      logger.info(`adding component to tree with id '${componentId}'`)
+      logger.info(`adding component to tree with id '${parentComponentId}'`)
     }
   }
 
@@ -807,6 +963,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
   useEffect(() => {
     if (treeData) {
+      console.log(treeData)
       logger.info('GameOutline->treeData->useEffect->tree data updated')
     }
   }, [treeData])
@@ -844,9 +1001,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           <TitleBar
             studioId={studioId}
             game={game}
-            onAdd={() =>
+            onAdd={(_, childType: COMPONENT_TYPE) =>
               editor.selectedGameOutlineComponent.id &&
-              onAdd(editor.selectedGameOutlineComponent.id)
+              onAdd(editor.selectedGameOutlineComponent.id, childType)
             }
           />
 
@@ -872,6 +1029,18 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 isNestingEnabled
               />
             </div>
+          )}
+
+          {!treeData.items[treeData.rootId].hasChildren && (
+            <Button
+              type="link"
+              onClick={() => {
+                if (game.id) onAdd(game.id, COMPONENT_TYPE.SCENE)
+              }}
+              className={styles.addSceneButton}
+            >
+              Add Scene...
+            </Button>
           )}
         </>
       )}

@@ -26,7 +26,8 @@ import {
   GameChildRefs,
   SceneParentRef,
   SceneChildRefs,
-  COMPONENT_TYPE
+  COMPONENT_TYPE,
+  FolderParentRef
 } from '../data/types'
 
 // DATABASE VERSIONS / UPGRADES
@@ -280,7 +281,7 @@ export class LibraryDatabase extends Dexie {
               updated: Date.now()
             })
           } else {
-            throw new Error('Unable to save chapter refs. Game missing.')
+            throw new Error('Unable to save child refs. Game missing.')
           }
         }
       })
@@ -423,6 +424,27 @@ export class LibraryDatabase extends Dexie {
     }
 
     return folder.id
+  }
+
+  public async saveParentRefToFolder(
+    parent: FolderParentRef,
+    folderId: ComponentId
+  ) {
+    try {
+      const folder = await this.getComponent(LIBRARY_TABLE.FOLDERS, folderId)
+
+      if (folder && folder.id) {
+        await this.folders.update(folder.id, {
+          ...folder,
+          parent,
+          updated: Date.now()
+        })
+      } else {
+        throw new Error('Unable to save parent ref. Missing folder.')
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 
   public async saveChildRefsToFolder(
@@ -729,7 +751,7 @@ export class LibraryDatabase extends Dexie {
           updated: Date.now()
         })
       } else {
-        throw new Error('Unable to save chapter ID. Missing scene.')
+        throw new Error('Unable to save parent ref. Missing scene.')
       }
     } catch (error) {
       throw new Error(error)

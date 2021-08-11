@@ -31,7 +31,7 @@ const TitleBar: React.FC<{
   const history = useHistory()
 
   const { app } = useContext(AppContext),
-    { editor, editorDispatch } = useContext(EditorContext)
+    { editorDispatch } = useContext(EditorContext)
 
   const [editGameModalVisible, setEditGameModalVisible] = useState(false),
     [exportJSONModalVisible, setExportJSONModalVisible] = useState(false)
