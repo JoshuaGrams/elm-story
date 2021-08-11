@@ -277,33 +277,6 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             case COMPONENT_TYPE.SCENE:
               const scenePromises: Promise<void>[] = []
 
-              if (sourceParent.id !== destinationParent.id) {
-                const jumps = await api().jumps.getJumpsBySceneRef(
-                  studioId,
-                  movingComponent.id as string
-                )
-
-                scenePromises.push(
-                  ...jumps.map((jump) =>
-                    api().jumps.saveJumpRoute(
-                      studioId,
-                      jump.id as ComponentId,
-                      [jump.route[0]]
-                    )
-                  )
-                )
-
-                // await Promise.all(
-                //   jumps.map(
-                //     async (jump) =>
-                //       jump.id &&
-                //       (await api().jumps.saveJumpRoute(studioId, jump.id, [
-                //         jump.route[0]
-                //       ]))
-                //   )
-                // )
-              }
-
               if (
                 sourceParent.data.type === COMPONENT_TYPE.GAME ||
                 destinationParent.data.type === COMPONENT_TYPE.GAME
