@@ -315,8 +315,8 @@ export class LibraryDatabase extends Dexie {
     if (!gameId) throw new Error('Unable to remove game. Missing ID.')
 
     try {
-      const jumps = await this.jumps.where({ gameId }).toArray(),
-        chapters = await this.chapters.where({ gameId }).toArray(),
+      const folders = await this.folders.where({ gameId }).toArray(),
+        jumps = await this.jumps.where({ gameId }).toArray(),
         scenes = await this.scenes.where({ gameId }).toArray(),
         passages = await this.passages.where({ gameId }).toArray(),
         routes = await this.routes.where({ gameId }).toArray(),
@@ -326,8 +326,8 @@ export class LibraryDatabase extends Dexie {
         variables = await this.variables.where({ gameId }).toArray()
 
       logger.info(`Removing game with ID: ${gameId}`)
+      logger.info(`FOLDERS: Removing ${folders.length}...`)
       logger.info(`JUMPS: Removing ${jumps.length}...`)
-      logger.info(`CHAPTERS: Removing ${chapters.length}...`)
       logger.info(`SCENES: Removing ${scenes.length}...`)
       logger.info(`PASSAGES: Removing ${passages.length}...`)
       logger.info(`ROUTES: Remove ${routes.length}...`)
@@ -338,11 +338,11 @@ export class LibraryDatabase extends Dexie {
 
       // TODO: replace 'delete' method with methods that handle children
       await Promise.all([
+        folders.map(async (folder) => {
+          if (folder.id) await this.folders.delete(folder.id)
+        }),
         jumps.map(async (jump) => {
           if (jump.id) await this.jumps.delete(jump.id)
-        }),
-        chapters.map(async (chapter) => {
-          if (chapter.id) await this.chapters.delete(chapter.id)
         }),
         scenes.map(async (scene) => {
           if (scene.id) await this.scenes.delete(scene.id)
