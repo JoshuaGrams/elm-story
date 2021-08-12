@@ -2,7 +2,7 @@ import React from 'react'
 
 import { GameId, StudioId } from '../../../data/types'
 
-import { useGame } from '../../../hooks'
+import { useGame, useScenes } from '../../../hooks'
 
 import { Button, Collapse } from 'antd'
 
@@ -18,14 +18,15 @@ const GameDetails: React.FC<{
   studioId: StudioId
   gameId: GameId
 }> = ({ studioId, gameId }) => {
-  const game = useGame(studioId, gameId, [studioId, gameId])
+  const game = useGame(studioId, gameId, [studioId, gameId]),
+    scenes = useScenes(studioId, gameId, [studioId, gameId])
 
   async function onCreateJump() {
-    if (game?.id) {
+    if (game?.id && scenes && scenes[0].id) {
       const { id: jumpId } = await api().jumps.saveJump(studioId, {
         gameId: game.id,
         title: 'On Game Start Jump',
-        route: [game.chapters[0]],
+        route: [scenes[0].id],
         tags: []
       })
 
@@ -57,47 +58,47 @@ const GameDetails: React.FC<{
           <div className={parentStyles.componentDetailViewNestedCollapse}>
             <Collapse defaultActiveKey={['jump-panel']}>
               <Collapse.Panel header="Jump on Game Start" key="jump-panel">
-                <div className={`${parentStyles.content} ${styles.jumpPanel}`}>
-                  {/* {game.chapters.length === 0 && (
-                    <div>
-                      To define a custom jump at start, games require at least 1
-                      chapter.
-                    </div>
-                  )} */}
+                {scenes && (
+                  <div
+                    className={`${parentStyles.content} ${styles.jumpPanel}`}
+                  >
+                    {scenes.length === 0 && (
+                      <div>
+                        To define jump on game start, games require at least
+                        1 scene.
+                      </div>
+                    )}
 
-                  {/* {game.chapters.length > 0 && (
-                    <>
-                      {!game.jump && (
-                        <>
-                          <div>
-                            By default, games start on the first chapter, scene
-                            and passage.
-                          </div>
-                          <Button type="primary" onClick={onCreateJump}>
-                            Create Jump
-                          </Button>
-                        </>
-                      )}
+                    {scenes.length > 0 && (
+                      <>
+                        {!game.jump && (
+                          <>
+                            <Button type="primary" onClick={onCreateJump}>
+                              Create Jump
+                            </Button>
+                          </>
+                        )}
 
-                      {game.jump && (
-                        <>
-                          <JumpTo
-                            studioId={studioId}
-                            jumpId={game.jump}
-                            onRemove={async () => {
-                              game.id &&
-                                api().games.saveJumpRefToGame(
-                                  studioId,
-                                  game.id,
-                                  null
-                                )
-                            }}
-                          />
-                        </>
-                      )}
-                    </>
-                  )} */}
-                </div>
+                        {game.jump && (
+                          <>
+                            <JumpTo
+                              studioId={studioId}
+                              jumpId={game.jump}
+                              onRemove={async () => {
+                                game.id &&
+                                  api().games.saveJumpRefToGame(
+                                    studioId,
+                                    game.id,
+                                    null
+                                  )
+                              }}
+                            />
+                          </>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
               </Collapse.Panel>
             </Collapse>
           </div>
