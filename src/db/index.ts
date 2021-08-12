@@ -503,10 +503,26 @@ export class LibraryDatabase extends Dexie {
       }
     }
 
-    await getChildren(folderId, COMPONENT_TYPE.FOLDER)
-
     try {
-      await this.folders.delete(folderId)
+      await getChildren(folderId, COMPONENT_TYPE.FOLDER)
+
+      logger.info(
+        `removeFolder->Removing ${
+          children.filter((child) => child[0] === COMPONENT_TYPE.FOLDER).length
+        } nested folder(s) from folder with ID: ${folderId}`
+      )
+
+      logger.info(
+        `removeFolder->Removing ${
+          children.filter((child) => child[0] === COMPONENT_TYPE.SCENE).length
+        } nested scene(s) from folder with ID: ${folderId}`
+      )
+
+      logger.info(
+        `removeFolder->Removing ${
+          children.filter((child) => child[0] === COMPONENT_TYPE.PASSAGE).length
+        } nested passage(s) from folder with ID: ${folderId}`
+      )
 
       await Promise.all(
         children.map(async (child) => {
@@ -518,6 +534,12 @@ export class LibraryDatabase extends Dexie {
               const jumps = await this.jumps
                 .where({ route: child[1] })
                 .toArray()
+
+              if (jumps.length > 0) {
+                logger.info(
+                  `LibraryDatabase->removeFolder->Updating ${jumps.length} nested jumps(s) from folder with ID: ${folderId}`
+                )
+              }
 
               await Promise.all(
                 jumps.map(
@@ -532,57 +554,6 @@ export class LibraryDatabase extends Dexie {
               break
             default:
               break
-          }
-        })
-      )
-    } catch (error) {
-      throw new Error(error)
-    }
-    return
-
-    try {
-      const jumps = await this.jumps.where({ route: folderId }).toArray(),
-        scenes = await this.scenes
-          .where({ parent: [COMPONENT_TYPE.FOLDER, folderId] })
-          .toArray()
-
-      if (jumps.length > 0) {
-        logger.info(
-          `LibraryDatabase->removeFolder->Updating ${jumps.length} jumps(s) from folder with ID: ${folderId}`
-        )
-      }
-
-      await Promise.all(
-        jumps.map(async (jump) => jump.id && (await this.removeJump(jump.id)))
-      )
-
-      if (scenes.length > 0) {
-        logger.info(
-          `removeFolder->Removing ${scenes.length} scene(s) from folder with ID: ${folderId}`
-        )
-      }
-
-      await Promise.all(
-        scenes.map(async (scene) => {
-          if (scene.id) {
-            const passages = await this.passages
-              .where({ sceneId: scene.id })
-              .toArray()
-
-            if (passages.length > 0) {
-              logger.info(
-                `removeFolder->Removing ${passages.length} passage(s) from scene with ID: ${scene.id}`
-              )
-            }
-
-            await Promise.all(
-              passages.map(
-                async (passage) =>
-                  passage.id && (await this.removePassage(passage.id))
-              )
-            )
-
-            await this.scenes.delete(scene.id)
           }
         })
       )
@@ -601,6 +572,8 @@ export class LibraryDatabase extends Dexie {
     } catch (error) {
       throw new Error(error)
     }
+
+    return
   }
 
   public async getFoldersByGameRef(gameId: GameId): Promise<Folder[]> {
