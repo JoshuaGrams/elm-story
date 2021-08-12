@@ -151,6 +151,9 @@ export const SceneViewTools: React.FC<{
           <Button
             danger
             onClick={async () => {
+              const sceneRemovePromises: Promise<void>[] = []
+              let foundSceneIndex = -1
+
               editorDispatch({
                 type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
                 removedComponent: {
@@ -160,24 +163,54 @@ export const SceneViewTools: React.FC<{
               })
 
               try {
-                const updatedChapter = await api().chapters.getChapter(
-                    studioId,
-                    scene.chapterId
-                  ),
-                  foundSceneIndex = updatedChapter.scenes.findIndex(
-                    (sceneRef) => sceneRef === sceneId
+                if (scene.parent[0] === COMPONENT_TYPE.GAME) {
+                  const updatedGameChildren = (
+                    await api().games.getGame(studioId, scene.gameId)
+                  ).children
+
+                  foundSceneIndex = updatedGameChildren.findIndex(
+                    (child) => child[1] === scene.id
                   )
 
-                updatedChapter.scenes.splice(foundSceneIndex, 1)
+                  updatedGameChildren.splice(foundSceneIndex, 1)
 
-                await Promise.all([
-                  api().chapters.saveSceneRefsToChapter(
-                    studioId,
-                    scene.chapterId,
-                    updatedChapter.scenes
-                  ),
+                  sceneRemovePromises.push(
+                    api().games.saveChildRefsToGame(
+                      studioId,
+                      scene.gameId,
+                      updatedGameChildren
+                    )
+                  )
+                }
+
+                if (
+                  scene.parent[0] === COMPONENT_TYPE.FOLDER &&
+                  scene.parent[1]
+                ) {
+                  const updatedFolderChildren = (
+                    await api().folders.getFolder(studioId, scene.parent[1])
+                  ).children
+
+                  foundSceneIndex = updatedFolderChildren.findIndex(
+                    (child) => child[1] === scene.id
+                  )
+
+                  updatedFolderChildren.splice(foundSceneIndex, 1)
+
+                  sceneRemovePromises.push(
+                    api().folders.saveChildRefsToFolder(
+                      studioId,
+                      scene.parent[1],
+                      updatedFolderChildren
+                    )
+                  )
+                }
+
+                sceneRemovePromises.push(
                   api().scenes.removeScene(studioId, sceneId)
-                ])
+                )
+
+                await Promise.all(sceneRemovePromises)
               } catch (error) {
                 throw error
               }

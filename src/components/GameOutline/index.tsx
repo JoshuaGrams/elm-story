@@ -701,10 +701,10 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             ])
             break
           case COMPONENT_TYPE.SCENE:
-            const scenePromises: Promise<void>[] = []
+            const sceneRemovePromises: Promise<void>[] = []
 
             if (parent.data.type === COMPONENT_TYPE.GAME) {
-              scenePromises.push(
+              sceneRemovePromises.push(
                 api().games.saveChildRefsToGame(
                   studioId,
                   game.id,
@@ -717,7 +717,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             }
 
             if (parent.data.type === COMPONENT_TYPE.FOLDER) {
-              scenePromises.push(
+              sceneRemovePromises.push(
                 api().folders.saveChildRefsToFolder(
                   studioId,
                   item.data.parentId,
@@ -729,9 +729,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               )
             }
 
-            scenePromises.push(api().scenes.removeScene(studioId, componentId))
+            sceneRemovePromises.push(api().scenes.removeScene(studioId, componentId))
 
-            await Promise.all(scenePromises)
+            await Promise.all(sceneRemovePromises)
 
             break
           case COMPONENT_TYPE.PASSAGE:
