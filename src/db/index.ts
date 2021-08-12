@@ -692,8 +692,25 @@ export class LibraryDatabase extends Dexie {
     )
 
     try {
+      const jump: Jump | undefined = await this.jumps.get(jumpId)
+
+      if (jump?.sceneId) {
+        const updatedSceneJumpRefs: ComponentId[] | undefined = (
+            await this.scenes.get(jump.sceneId)
+          )?.jumps,
+          foundJumpIndex = updatedSceneJumpRefs
+            ? updatedSceneJumpRefs.findIndex((id) => id === jumpId)
+            : -1
+
+        if (updatedSceneJumpRefs && foundJumpIndex !== -1) {
+          updatedSceneJumpRefs.splice(foundJumpIndex, 1)
+
+          await this.saveJumpRefsToScene(jump.sceneId, updatedSceneJumpRefs)
+        }
+      }
+
       await this.transaction('rw', this.jumps, async () => {
-        if (await this.getComponent(LIBRARY_TABLE.JUMPS, jumpId)) {
+        if (jump) {
           logger.info(
             `LibraryDatabase->removeJump->Removing jump with ID: ${jumpId}`
           )
