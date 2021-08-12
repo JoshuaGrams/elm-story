@@ -6,7 +6,8 @@ import {
   ComponentId,
   GameId,
   StudioId,
-  FolderChildRefs
+  FolderChildRefs,
+  FolderParentRef
 } from '../data/types'
 
 export async function getFolder(studioId: StudioId, folderId: ComponentId) {
@@ -71,6 +72,18 @@ export async function saveFolderTitle(
       LIBRARY_TABLE.FOLDERS,
       title
     )
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function saveParentRefToFolder(
+  studioId: StudioId,
+  parent: FolderParentRef,
+  folderId: ComponentId
+) {
+  try {
+    await new LibraryDatabase(studioId).saveParentRefToFolder(parent, folderId)
   } catch (error) {
     throw new Error(error)
   }

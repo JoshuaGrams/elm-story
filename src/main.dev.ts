@@ -69,7 +69,7 @@ const installExtensions = async () => {
       extensions.map((name) => installer[name]),
       { forceDownload, loadExtensionOptions: { allowFileAccess: true } }
     )
-    .catch(console.log)
+    .catch(logger.info)
 }
 
 const createWindow = async () => {

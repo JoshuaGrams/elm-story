@@ -249,11 +249,11 @@ const RouteDetails: React.FC<{
   }
 
   useEffect(() => {
-    console.log(variables)
+    logger.info(variables)
   }, [variables])
 
   useEffect(() => {
-    console.log(effects)
+    logger.info(effects)
   }, [effects])
 
   return (

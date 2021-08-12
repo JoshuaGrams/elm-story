@@ -476,6 +476,70 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async removeFolder(folderId: ComponentId) {
+    let children: [COMPONENT_TYPE, ComponentId][] = []
+
+    const getChildren = async (itemId: ComponentId, type: COMPONENT_TYPE) => {
+      let item: Folder | Scene | undefined = undefined
+
+      switch (type) {
+        case COMPONENT_TYPE.FOLDER:
+          item = await this.folders.where({ id: itemId }).first()
+          break
+        case COMPONENT_TYPE.SCENE:
+          item = await this.scenes.where({ id: itemId }).first()
+          break
+        default:
+          break
+      }
+
+      if (item && item.children.length > 0) {
+        children = [...children, ...item.children]
+
+        await Promise.all(
+          item.children.map(async (child) => {
+            await getChildren(child[1], child[0])
+          })
+        )
+      }
+    }
+
+    await getChildren(folderId, COMPONENT_TYPE.FOLDER)
+
+    try {
+      await this.folders.delete(folderId)
+
+      await Promise.all(
+        children.map(async (child) => {
+          switch (child[0]) {
+            case COMPONENT_TYPE.FOLDER:
+              await this.folders.delete(child[1])
+              break
+            case COMPONENT_TYPE.SCENE:
+              const jumps = await this.jumps
+                .where({ route: child[1] })
+                .toArray()
+
+              await Promise.all(
+                jumps.map(
+                  async (jump) => jump.id && (await this.removeJump(jump.id))
+                )
+              )
+
+              await this.scenes.delete(child[1])
+              break
+            case COMPONENT_TYPE.PASSAGE:
+              await this.removePassage(child[1])
+              break
+            default:
+              break
+          }
+        })
+      )
+    } catch (error) {
+      throw new Error(error)
+    }
+    return
+
     try {
       const jumps = await this.jumps.where({ route: folderId }).toArray(),
         scenes = await this.scenes

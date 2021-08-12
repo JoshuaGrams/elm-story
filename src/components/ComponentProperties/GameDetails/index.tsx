@@ -58,14 +58,14 @@ const GameDetails: React.FC<{
             <Collapse defaultActiveKey={['jump-panel']}>
               <Collapse.Panel header="Jump on Game Start" key="jump-panel">
                 <div className={`${parentStyles.content} ${styles.jumpPanel}`}>
-                  {game.chapters.length === 0 && (
+                  {/* {game.chapters.length === 0 && (
                     <div>
                       To define a custom jump at start, games require at least 1
                       chapter.
                     </div>
-                  )}
+                  )} */}
 
-                  {game.chapters.length > 0 && (
+                  {/* {game.chapters.length > 0 && (
                     <>
                       {!game.jump && (
                         <>
@@ -96,7 +96,7 @@ const GameDetails: React.FC<{
                         </>
                       )}
                     </>
-                  )}
+                  )} */}
                 </div>
               </Collapse.Panel>
             </Collapse>

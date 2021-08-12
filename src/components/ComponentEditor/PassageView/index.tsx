@@ -80,7 +80,7 @@ export const PassageViewTools: React.FC<{
             updatedScene.passages.splice(foundPassageIndex, 1)
 
             await Promise.all([
-              api().scenes.savePassageRefsToScene(
+              api().scenes.saveChildRefsToScene(
                 studioId,
                 passage.sceneId,
                 updatedScene.passages
@@ -99,7 +99,6 @@ export const PassageViewTools: React.FC<{
 export const initialPassageContent: Descendant[] = [...DEFAULT_PASSAGE_CONTENT]
 
 const ParagraphElement: React.FC<RenderElementProps> = (props) => {
-  console.log(props.element)
   return (
     <p
       className={`${'es-engine-passage-p'} ${
@@ -158,7 +157,6 @@ const PassageView: React.FC<{
           editor={editor}
           value={passageContent}
           onChange={async (newContent) => {
-            console.log(newContent)
             setPassageContent(newContent)
 
             await api().passages.savePassageContent(

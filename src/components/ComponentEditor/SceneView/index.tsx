@@ -90,11 +90,10 @@ export const SceneViewTools: React.FC<{
                 })
 
                 passage.id &&
-                  (await api().scenes.savePassageRefsToScene(
-                    studioId,
-                    sceneId,
-                    [...scene.passages, passage.id]
-                  ))
+                  (await api().scenes.saveChildRefsToScene(studioId, sceneId, [
+                    ...scene.passages,
+                    passage.id
+                  ]))
 
                 editorDispatch({
                   type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
@@ -463,7 +462,7 @@ const SceneView: React.FC<{
 
     // if (clonedScene && clonedScene.id) {
     //   await Promise.all([
-    //     api().scenes.savePassageRefsToScene(
+    //     api().scenes.saveChildRefsToScene(
     //       studioId,
     //       clonedScene.id,
     //       clonedScene.passages.filter(
