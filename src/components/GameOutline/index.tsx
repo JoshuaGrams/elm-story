@@ -1029,8 +1029,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             }
           />
 
-          {treeData.items[treeData.rootId].hasChildren && (
-            <div className={styles.tree}>
+          <div className={styles.tree}>
+            {treeData.items[treeData.rootId].hasChildren && (
               <Tree
                 tree={treeData}
                 renderItem={(item: RenderItemParams) => (
@@ -1050,20 +1050,20 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 isDragEnabled
                 isNestingEnabled
               />
-            </div>
-          )}
+            )}
 
-          {!treeData.items[treeData.rootId].hasChildren && (
-            <Button
-              type="link"
-              onClick={() => {
-                if (game.id) onAdd(game.id, COMPONENT_TYPE.SCENE)
-              }}
-              className={styles.addSceneButton}
-            >
-              Add Scene...
-            </Button>
-          )}
+            {!treeData.items[treeData.rootId].hasChildren && (
+              <Button
+                type="link"
+                onClick={() => {
+                  if (game.id) onAdd(game.id, COMPONENT_TYPE.SCENE)
+                }}
+                className={styles.addSceneButton}
+              >
+                Add Scene...
+              </Button>
+            )}
+          </div>
         </>
       )}
     </div>
