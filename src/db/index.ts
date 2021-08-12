@@ -531,23 +531,7 @@ export class LibraryDatabase extends Dexie {
               await this.folders.delete(child[1])
               break
             case COMPONENT_TYPE.SCENE:
-              const jumps = await this.jumps
-                .where({ route: child[1] })
-                .toArray()
-
-              if (jumps.length > 0) {
-                logger.info(
-                  `LibraryDatabase->removeFolder->Updating ${jumps.length} nested jumps(s) from folder with ID: ${folderId}`
-                )
-              }
-
-              await Promise.all(
-                jumps.map(
-                  async (jump) => jump.id && (await this.removeJump(jump.id))
-                )
-              )
-
-              await this.scenes.delete(child[1])
+              await this.removeScene(child[1])
               break
             case COMPONENT_TYPE.PASSAGE:
               await this.removePassage(child[1])
