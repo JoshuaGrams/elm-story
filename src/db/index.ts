@@ -1563,8 +1563,7 @@ export class LibraryDatabase extends Dexie {
       await Promise.all(
         jumps.map(
           async (jump) =>
-            jump.id &&
-            (await this.saveJumpRoute(jump.id, [jump.route[0], jump.route[1]]))
+            jump.id && (await this.saveJumpRoute(jump.id, [jump.route[0]]))
         )
       )
 
