@@ -1,7 +1,8 @@
 import React from 'react'
 
 import { ComponentId, COMPONENT_TYPE } from '../../data/types'
-import { onAddItem, OnEditTitle, OnRemoveItem } from './ComponentItem'
+import { OnAddComponent } from '.'
+import { OnEditComponentTitle, OnRemoveComponent } from '.'
 
 import { Dropdown, Menu } from 'antd'
 
@@ -11,20 +12,31 @@ const ContextMenu: React.FC<{
     type: COMPONENT_TYPE
     title: string
     disabled: boolean
-    onAdd: onAddItem
-    onRemove: OnRemoveItem
-    onEditTitle: OnEditTitle
+    onAdd: OnAddComponent
+    onRemove: OnRemoveComponent
+    OnEditComponentTitle: OnEditComponentTitle
   }
 }> = ({
   children,
-  component: { id, type, title, disabled, onAdd, onRemove, onEditTitle }
+  component: {
+    id,
+    type,
+    title,
+    disabled,
+    onAdd,
+    onRemove,
+    OnEditComponentTitle
+  }
 }) => {
   const menuItems: React.ReactElement[] = []
 
   switch (type) {
     case COMPONENT_TYPE.GAME:
       menuItems.push(
-        <Menu.Item key={`${id}-add`} onClick={() => onAdd(id)}>
+        <Menu.Item
+          key={`${id}-add`}
+          onClick={() => onAdd(id, COMPONENT_TYPE.FOLDER)}
+        >
           Add Folder to '{title}'
         </Menu.Item>
       )
@@ -32,7 +44,10 @@ const ContextMenu: React.FC<{
       break
     case COMPONENT_TYPE.FOLDER:
       menuItems.push(
-        <Menu.Item key={`${id}-add`} onClick={() => onAdd(id)}>
+        <Menu.Item
+          key={`${id}-add`}
+          onClick={() => onAdd(id, COMPONENT_TYPE.SCENE)}
+        >
           Add Scene to '{title}'
         </Menu.Item>
       )
@@ -40,7 +55,10 @@ const ContextMenu: React.FC<{
       break
     case COMPONENT_TYPE.SCENE:
       menuItems.push(
-        <Menu.Item key={`${id}-add`} onClick={() => onAdd(id)}>
+        <Menu.Item
+          key={`${id}-add`}
+          onClick={() => onAdd(id, COMPONENT_TYPE.PASSAGE)}
+        >
           Add Passage to '{title}'
         </Menu.Item>
       )
@@ -56,7 +74,7 @@ const ContextMenu: React.FC<{
     menuItems.push(
       <Menu.Item
         key={`${id}-rename`}
-        onClick={() => onEditTitle(id, undefined, false)}
+        onClick={() => OnEditComponentTitle(id, undefined, false)}
       >
         Rename '{title}'
       </Menu.Item>

@@ -1,6 +1,12 @@
 import React from 'react'
 
 import { ComponentId, COMPONENT_TYPE } from '../../data/types'
+import {
+  OnAddComponent,
+  OnEditComponentTitle,
+  OnRemoveComponent,
+  OnSelectComponent
+} from '.'
 
 import { RenderItemParams } from '@atlaskit/tree'
 
@@ -21,27 +27,18 @@ import styles from './styles.module.less'
 
 const { Text } = Typography
 
-export type OnSelectItem = (componentId: ComponentId) => void
-export type onAddItem = (componentId: ComponentId) => void
-export type OnRemoveItem = (componentId: ComponentId) => void
-export type OnEditTitle = (
-  componentId: ComponentId,
-  title: string | undefined,
-  complete: boolean | false
-) => void
-
 const ComponentItem = ({
   item: { item, provided, onExpand, onCollapse, snapshot },
   onSelect,
   onAdd,
   onRemove,
-  onEditTitle
+  OnEditComponentTitle
 }: {
   item: RenderItemParams
-  onSelect: OnSelectItem
-  onAdd: onAddItem
-  onRemove: OnRemoveItem
-  onEditTitle: OnEditTitle
+  onSelect: OnSelectComponent
+  onAdd: OnAddComponent
+  onRemove: OnRemoveComponent
+  OnEditComponentTitle: OnEditComponentTitle
 }) => {
   const componentType: COMPONENT_TYPE = item.data.type,
     componentTitle: string = item.data.title
@@ -101,7 +98,8 @@ const ComponentItem = ({
             disabled: item.data.renaming || false,
             onAdd,
             onRemove,
-            onEditTitle: () => onEditTitle(item.id as string, undefined, false)
+            OnEditComponentTitle: () =>
+              OnEditComponentTitle(item.id as string, undefined, false)
           }}
         >
           <div>
@@ -124,7 +122,7 @@ const ComponentItem = ({
                 editable={{
                   editing: item.data.renaming,
                   onChange: (title) =>
-                    onEditTitle(item.id as string, title, true)
+                    OnEditComponentTitle(item.id as string, title, true)
                 }}
               >
                 {componentTitle || `New ${componentType}`}

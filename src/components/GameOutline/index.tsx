@@ -9,7 +9,6 @@ import {
   COMPONENT_TYPE,
   DEFAULT_PASSAGE_CONTENT,
   Game,
-  GameId,
   StudioId
 } from '../../data/types'
 import { DEFAULT_NODE_SIZE } from '../ComponentEditor/SceneView'
@@ -35,9 +34,16 @@ import styles from './styles.module.less'
 
 import api from '../../api'
 
+export type OnSelectComponent = (componentId: ComponentId) => void
 export type OnAddComponent = (
   parentComponentId: ComponentId,
   childType: COMPONENT_TYPE
+) => void
+export type OnRemoveComponent = (componentId: ComponentId) => void
+export type OnEditComponentTitle = (
+  componentId: ComponentId,
+  title: string | undefined,
+  complete: boolean | false
 ) => void
 
 const addItemToTree = (
@@ -781,16 +787,18 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   }
 
-  async function onEditTitle(
+  async function OnEditComponentTitle(
     componentId: ComponentId,
     title: string | undefined,
     complete: boolean
   ) {
-    logger.info(`GameOutline->onEditTitle`)
+    logger.info(`GameOutline->OnEditComponentTitle`)
 
     if (treeData) {
       if (complete && title) {
-        logger.info(`GameOutline->onEditTitle->complete && title:'${title}'`)
+        logger.info(
+          `GameOutline->OnEditComponentTitle->complete && title:'${title}'`
+        )
 
         try {
           switch (treeData.items[componentId].data.type) {
@@ -836,7 +844,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           })
         }
       } else {
-        logger.info(`GameOutline->onEditTitle->else`)
+        logger.info(`GameOutline->OnEditComponentTitle->else`)
 
         setTreeData(
           mutateTree(treeData, componentId, {
@@ -1031,7 +1039,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                     onSelect={onSelect}
                     onAdd={onAdd}
                     onRemove={onRemove}
-                    onEditTitle={onEditTitle}
+                    OnEditComponentTitle={OnEditComponentTitle}
                   />
                 )}
                 onExpand={onExpand}
