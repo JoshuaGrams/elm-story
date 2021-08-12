@@ -91,8 +91,8 @@ export const SceneViewTools: React.FC<{
 
                 passage.id &&
                   (await api().scenes.saveChildRefsToScene(studioId, sceneId, [
-                    ...scene.passages,
-                    passage.id
+                    ...scene.children,
+                    [COMPONENT_TYPE.PASSAGE, passage.id]
                   ]))
 
                 editorDispatch({

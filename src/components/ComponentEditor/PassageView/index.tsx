@@ -69,21 +69,20 @@ export const PassageViewTools: React.FC<{
               removedComponent: { type: COMPONENT_TYPE.PASSAGE, id: passageId }
             })
 
-            const updatedScene = await api().scenes.getScene(
-                studioId,
-                passage.sceneId
-              ),
-              foundPassageIndex = updatedScene.passages.findIndex(
-                (passageRef) => passageRef === passageId
+            const updatedSceneChildren = (
+                await api().scenes.getScene(studioId, passage.sceneId)
+              ).children,
+              foundPassageIndex = updatedSceneChildren.findIndex(
+                (child) => child[1] === passage.id
               )
 
-            updatedScene.passages.splice(foundPassageIndex, 1)
+            updatedSceneChildren.splice(foundPassageIndex, 1)
 
             await Promise.all([
               api().scenes.saveChildRefsToScene(
                 studioId,
                 passage.sceneId,
-                updatedScene.passages
+                updatedSceneChildren
               ),
               api().passages.removePassage(studioId, passageId)
             ])
