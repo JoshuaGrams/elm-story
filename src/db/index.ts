@@ -877,7 +877,8 @@ export class LibraryDatabase extends Dexie {
     logger.info(`LibraryDatabase->removeScene`)
 
     try {
-      const scene = await this.scenes.get(sceneId)
+      const scene = await this.scenes.get(sceneId),
+        game = scene?.id ? await this.games.get(scene.gameId) : undefined
 
       scene?.jumps &&
         logger.info(
@@ -899,10 +900,13 @@ export class LibraryDatabase extends Dexie {
       }
 
       await Promise.all(
-        jumpsRefScene.map(
-          async (jump) =>
-            jump.id && (await this.saveJumpRoute(jump.id, [jump.route[0]]))
-        )
+        jumpsRefScene.map(async (jump) => {
+          game?.id &&
+            jump?.id === game.jump &&
+            this.saveJumpRefToGame(game.id, null)
+
+          jump.id && (await this.removeJump(jump.id))
+        })
       )
 
       if (passages.length > 0) {
