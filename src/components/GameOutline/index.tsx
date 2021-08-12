@@ -677,7 +677,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       data = item?.data
 
     if (game.id && item && treeData) {
-      const newTreeData = removeItemFromTree(treeData, item.id as ComponentId)
+      const newTreeData = removeItemFromTree(treeData, item.id as ComponentId),
+        parent = newTreeData.items[item.data.parentId]
 
       editorDispatch({
         type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
@@ -691,10 +692,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               await api().games.saveChildRefsToGame(
                 studioId,
                 game.id,
-                newTreeData.items[
-                  item.data.parentId
-                ].children.map((childId) => [
-                  COMPONENT_TYPE.FOLDER,
+                parent.children.map((childId) => [
+                  newTreeData.items[childId].data.type,
                   childId as ComponentId
                 ])
               ),
@@ -702,28 +701,45 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             ])
             break
           case COMPONENT_TYPE.SCENE:
-            await Promise.all([
-              api().folders.saveChildRefsToFolder(
-                studioId,
-                item.data.parentId,
-                newTreeData.items[
-                  item.data.parentId
-                ].children.map((childId) => [
-                  COMPONENT_TYPE.SCENE,
-                  childId as ComponentId
-                ])
-              ),
-              api().scenes.removeScene(studioId, componentId)
-            ])
+            const scenePromises: Promise<void>[] = []
+
+            if (parent.data.type === COMPONENT_TYPE.GAME) {
+              scenePromises.push(
+                api().games.saveChildRefsToGame(
+                  studioId,
+                  game.id,
+                  parent.children.map((childId) => [
+                    newTreeData.items[childId].data.type,
+                    childId as ComponentId
+                  ])
+                )
+              )
+            }
+
+            if (parent.data.type === COMPONENT_TYPE.FOLDER) {
+              scenePromises.push(
+                api().folders.saveChildRefsToFolder(
+                  studioId,
+                  item.data.parentId,
+                  parent.children.map((childId) => [
+                    newTreeData.items[childId].data.type,
+                    childId as ComponentId
+                  ])
+                )
+              )
+            }
+
+            scenePromises.push(api().scenes.removeScene(studioId, componentId))
+
+            await Promise.all(scenePromises)
+
             break
           case COMPONENT_TYPE.PASSAGE:
             await Promise.all([
               api().scenes.saveChildRefsToScene(
                 studioId,
                 item.data.parentId,
-                newTreeData.items[
-                  item.data.parentId
-                ].children.map((childId) => [
+                parent.children.map((childId) => [
                   COMPONENT_TYPE.PASSAGE,
                   childId as ComponentId
                 ])
