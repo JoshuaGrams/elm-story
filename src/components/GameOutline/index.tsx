@@ -529,62 +529,85 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           break
         // add scene
         case COMPONENT_TYPE.FOLDER:
-          let sceneId = undefined
+          let childId: ComponentId | undefined = undefined,
+            childTitle: string | undefined = undefined
 
           try {
-            sceneId = await api().scenes.saveScene(studioId, {
-              children: [],
-              gameId: game.id,
-              jumps: [],
-              title: 'Untitled Scene',
-              parent: [COMPONENT_TYPE.FOLDER, parentItem.id as ComponentId],
-              tags: []
-            })
+            if (childType === COMPONENT_TYPE.FOLDER) {
+              childTitle = 'Untitled Folder'
+
+              childId = await api().folders.saveFolder(studioId, {
+                children: [],
+                gameId: game.id,
+                parent: [parentItem.data.type, parentItem.id as ComponentId],
+                tags: [],
+                title: childTitle
+              })
+            }
+
+            if (childType === COMPONENT_TYPE.SCENE) {
+              childTitle = 'Untitled Scene'
+
+              childId = await api().scenes.saveScene(studioId, {
+                children: [],
+                gameId: game.id,
+                jumps: [],
+                title: childTitle,
+                parent: [parentItem.data.type, parentItem.id as ComponentId],
+                tags: []
+              })
+            }
           } catch (error) {
             throw new Error(error)
           }
 
           parentItem.hasChildren = true
 
-          newTreeData = addItemToTree(treeData, parentItem.id as ComponentId, {
-            id: sceneId,
-            children: [],
-            isExpanded: false,
-            hasChildren: false,
-            isChildrenLoading: false,
-            data: {
-              title: 'Untitled Scene',
-              type: COMPONENT_TYPE.SCENE,
-              selected: false,
-              parentId: parentItem.id,
-              renaming: true
-            }
-          })
-
-          try {
-            await api().folders.saveChildRefsToFolder(
-              studioId,
+          if (childId && childTitle) {
+            newTreeData = addItemToTree(
+              treeData,
               parentItem.id as ComponentId,
-              newTreeData.items[parentItem.id].children.map((childId) => [
-                COMPONENT_TYPE.SCENE,
-                childId as ComponentId
-              ])
+              {
+                id: childId,
+                children: [],
+                isExpanded: false,
+                hasChildren: false,
+                isChildrenLoading: false,
+                data: {
+                  title: childTitle,
+                  type: childType,
+                  selected: false,
+                  parentId: parentItem.id,
+                  renaming: true
+                }
+              }
             )
-          } catch (error) {
-            throw new Error(error)
-          }
 
-          setTreeData(newTreeData)
-
-          editorDispatch({
-            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-            selectedGameOutlineComponent: {
-              id: sceneId,
-              expanded: true,
-              type: COMPONENT_TYPE.SCENE,
-              title: 'Untitled Scene'
+            try {
+              await api().folders.saveChildRefsToFolder(
+                studioId,
+                parentItem.id as ComponentId,
+                newTreeData.items[parentItem.id].children.map((childId) => [
+                  newTreeData.items[childId].data.type,
+                  childId as ComponentId
+                ])
+              )
+            } catch (error) {
+              throw new Error(error)
             }
-          })
+
+            setTreeData(newTreeData)
+
+            editorDispatch({
+              type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+              selectedGameOutlineComponent: {
+                id: childId,
+                expanded: true,
+                type: childType,
+                title: childTitle
+              }
+            })
+          }
 
           break
         // add passage
@@ -729,7 +752,9 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               )
             }
 
-            sceneRemovePromises.push(api().scenes.removeScene(studioId, componentId))
+            sceneRemovePromises.push(
+              api().scenes.removeScene(studioId, componentId)
+            )
 
             await Promise.all(sceneRemovePromises)
 
