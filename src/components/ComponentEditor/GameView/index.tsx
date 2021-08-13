@@ -48,7 +48,11 @@ const GameView: React.FC<{
 
   return (
     <>
-      {game && <>{/* <GameEngine studioId={studioId} gameId={gameId} /> */}</>}
+      {game && (
+        <>
+          <GameEngine studioId={studioId} gameId={gameId} />
+        </>
+      )}
     </>
   )
 }

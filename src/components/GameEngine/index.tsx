@@ -2,17 +2,17 @@ import logger from '../../lib/logger'
 
 import React, { useContext, useEffect, useRef } from 'react'
 
-import { GameId, GameState, StudioId } from '../../data/types'
+import { COMPONENT_TYPE, GameId, GameState, StudioId } from '../../data/types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
-import { useGame, useJumps, useVariables } from '../../hooks'
+import { useGame, useJumps, useScenes, useVariables } from '../../hooks'
 
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 
-import ChapterRenderer from './ChapterRenderer'
 import GameStateView from './GameStateView'
 import GameStylesView from './GameStylesView'
+import SceneRenderer from './SceneRenderer'
 
 import styles from './styles.module.less'
 
@@ -48,65 +48,65 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
 
   const game = useGame(studioId, gameId, [studioId, gameId]),
     variables = useVariables(studioId, gameId, [studioId, gameId]),
-    jumps = useJumps(studioId, gameId, [studioId, gameId])
+    jumps = useJumps(studioId, gameId, [studioId, gameId]),
+    scenes = useScenes(studioId, gameId, [studioId, gameId])
 
   const { engine, engineDispatch } = useContext(EngineContext)
 
   useEffect(() => {
     logger.info(`GameEngine->game,jumps->useEffect`)
 
-    if (game && variables && jumps) {
+    if (game && variables && jumps && scenes) {
       if (game.jump) {
         const foundJump = jumps?.find((jump) => jump.id === game.jump)
 
         engineDispatch({
           type: ENGINE_ACTION_TYPE.PASSAGE_START,
-          startingPassage: foundJump?.route[2] || null
+          startingPassage: foundJump?.route[1] || null
         })
 
         engineDispatch({
           type: ENGINE_ACTION_TYPE.SCENE_START,
-          startingScene: foundJump?.route[1] || null
+          startingScene: foundJump?.route[0] || null
         })
 
         engineDispatch({
-          type: ENGINE_ACTION_TYPE.CHAPTER_START,
-          startingChapter: foundJump?.route[0] || null
+          type: ENGINE_ACTION_TYPE.SCENE_CURRENT,
+          currentScene: foundJump?.route[0] || null
         })
       }
 
       if (!game.jump) {
-        if (game.chapters.length > 0) {
-          engineDispatch({
-            type: ENGINE_ACTION_TYPE.PASSAGE_START,
-            startingPassage: null
-          })
+        const rootScenes = game.children.filter(
+          (child) => child[0] === COMPONENT_TYPE.SCENE
+        )
+        let defaultScene = null
 
-          engineDispatch({
-            type: ENGINE_ACTION_TYPE.SCENE_START,
-            startingScene: null
-          })
-
-          engineDispatch({
-            type: ENGINE_ACTION_TYPE.CHAPTER_START,
-            startingChapter: game.chapters[0]
-          })
+        if (rootScenes.length > 0) {
+          defaultScene = rootScenes[0][1]
         }
-      }
 
-      if (game.chapters.length === 0) {
+        if (rootScenes.length === 0 && scenes.length > 0) {
+          defaultScene = scenes[0].id || null
+        }
+
         engineDispatch({
-          type: ENGINE_ACTION_TYPE.CHAPTER_START,
-          startingChapter: null
+          type: ENGINE_ACTION_TYPE.PASSAGE_START,
+          startingPassage: null
         })
 
         engineDispatch({
-          type: ENGINE_ACTION_TYPE.CHAPTER_CURRENT,
-          currentChapter: null
+          type: ENGINE_ACTION_TYPE.SCENE_START,
+          startingScene: defaultScene
+        })
+
+        engineDispatch({
+          type: ENGINE_ACTION_TYPE.SCENE_CURRENT,
+          currentScene: defaultScene
         })
       }
     }
-  }, [game, jumps])
+  }, [game, variables, jumps, scenes])
 
   useEffect(() => {
     logger.info(`GameEngine->variables->useEffect`)
@@ -153,18 +153,16 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
           <DividerBox mode="vertical" className={styles.GameEngine}>
             <div className={styles.rendererContainer}>
               <div className="es-engine" ref={engineRef}>
-                {(engine.currentChapter || engine.startingChapter) && (
-                  <ChapterRenderer
+                {(engine.currentScene || engine.startingScene) && (
+                  <SceneRenderer
                     studioId={studioId}
-                    // @ts-ignore: We are checking this.
-                    chapterId={engine.currentChapter || engine.startingChapter}
+                    // @ts-ignore
+                    sceneId={engine.currentScene || engine.startingScene}
                   />
                 )}
 
-                {game.chapters.length === 0 && (
-                  <div>
-                    Game requires at least 1 chapter, scene and passage to play.
-                  </div>
+                {!engine.startingScene && (
+                  <div>Game requires at least 1 scene and passage to play.</div>
                 )}
               </div>
             </div>

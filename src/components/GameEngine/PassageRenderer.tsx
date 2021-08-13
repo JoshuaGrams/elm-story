@@ -77,17 +77,12 @@ const PassageRenderer: React.FC<{
 
       engineDispatch({
         type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
-        currentPassage: jump.route[2] || null
+        currentPassage: jump.route[1] || null
       })
 
       engineDispatch({
         type: ENGINE_ACTION_TYPE.SCENE_CURRENT,
-        currentScene: jump.route[1] || null
-      })
-
-      engineDispatch({
-        type: ENGINE_ACTION_TYPE.CHAPTER_CURRENT,
-        currentChapter: jump.route[0] || null
+        currentScene: jump.route[0] || null
       })
     }
 

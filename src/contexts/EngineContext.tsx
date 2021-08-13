@@ -5,8 +5,6 @@ import { ComponentId, GameState } from '../data/types'
 interface EngineState {
   devToolsEnabled: boolean
   gameState: GameState
-  startingChapter: ComponentId | null
-  currentChapter: ComponentId | null
   startingScene: ComponentId | null
   currentScene: ComponentId | null
   startingPassage: ComponentId | null
@@ -19,8 +17,6 @@ export enum ENGINE_ACTION_TYPE {
   DISABLE_DEV_TOOLS = 'DISABLE_DEV_TOOLS',
   GAME_STATE = 'GAME_STATE',
   GAME_RESTART = 'GAME_RESTART',
-  CHAPTER_START = 'CHAPTER_START',
-  CHAPTER_CURRENT = 'CHAPTER_CURRENT',
   SCENE_START = 'SCENE_START',
   SCENE_CURRENT = 'SCENE_CURRENT',
   PASSAGE_START = 'PASSAGE_START',
@@ -32,14 +28,6 @@ type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEV_TOOLS }
   | { type: ENGINE_ACTION_TYPE.GAME_STATE; gameState: GameState }
   | { type: ENGINE_ACTION_TYPE.GAME_RESTART }
-  | {
-      type: ENGINE_ACTION_TYPE.CHAPTER_START
-      startingChapter: ComponentId | null
-    }
-  | {
-      type: ENGINE_ACTION_TYPE.CHAPTER_CURRENT
-      currentChapter: ComponentId | null
-    }
   | {
       type: ENGINE_ACTION_TYPE.SCENE_START
       startingScene: ComponentId | null
@@ -89,19 +77,8 @@ const engineReducer = (
       return {
         ...state,
         gameState: resetGameState,
-        currentChapter: null,
         currentScene: null,
         currentPassage: null
-      }
-    case ENGINE_ACTION_TYPE.CHAPTER_START:
-      return {
-        ...state,
-        startingChapter: action.startingChapter
-      }
-    case ENGINE_ACTION_TYPE.CHAPTER_CURRENT:
-      return {
-        ...state,
-        currentChapter: action.currentChapter
       }
     case ENGINE_ACTION_TYPE.SCENE_START:
       return {
@@ -141,8 +118,6 @@ interface EngineContextType {
 const defaultEngineState: EngineState = {
   devToolsEnabled: false,
   gameState: {},
-  startingChapter: null,
-  currentChapter: null,
   startingScene: null,
   currentScene: null,
   startingPassage: null,
