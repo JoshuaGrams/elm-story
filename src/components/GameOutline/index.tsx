@@ -166,9 +166,6 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     )
       return
 
-    console.log(sourceParent.data.type)
-    console.log(destinationParent.data.type)
-
     if (
       movingComponent &&
       (sourceParent.data.type === destinationParent.data.type ||
@@ -195,7 +192,8 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
       if (!destinationParent.isExpanded) destinationParent.isExpanded = true
 
-      movingComponent.data.selected =
+      newTreeData.items[movingComponent.id].data.parentId = destinationParent.id
+      newTreeData.items[movingComponent.id].data.selected =
         editor.selectedGameOutlineComponent.id === movingComponent.id
 
       setTreeData(newTreeData)
@@ -985,7 +983,6 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
   useEffect(() => {
     if (treeData) {
-      console.log(treeData)
       logger.info('GameOutline->treeData->useEffect->tree data updated')
     }
   }, [treeData])
