@@ -83,7 +83,7 @@ interface AppContextType {
 
 const defaultAppState: AppState = {
   version: '0.2.0',
-  build: 'dev',
+  build: '657be9a1',
   platform: undefined,
   header: 'Elm Story',
   fullscreen: false,

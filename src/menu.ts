@@ -1,7 +1,6 @@
 import {
   app,
   Menu,
-  MenuItem,
   shell,
   BrowserWindow,
   MenuItemConstructorOptions
