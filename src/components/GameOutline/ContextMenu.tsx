@@ -34,7 +34,7 @@ const ContextMenu: React.FC<{
     case COMPONENT_TYPE.GAME:
       menuItems.push(
         <Menu.Item
-          key={`${id}-add`}
+          key={`${id}-add-folder`}
           onClick={() => onAdd(id, COMPONENT_TYPE.FOLDER)}
         >
           Add Folder to '{title}'
@@ -45,7 +45,16 @@ const ContextMenu: React.FC<{
     case COMPONENT_TYPE.FOLDER:
       menuItems.push(
         <Menu.Item
-          key={`${id}-add`}
+          key={`${id}-add-folder`}
+          onClick={() => onAdd(id, COMPONENT_TYPE.FOLDER)}
+        >
+          Add Folder to '{title}'
+        </Menu.Item>
+      )
+
+      menuItems.push(
+        <Menu.Item
+          key={`${id}-add-scene`}
           onClick={() => onAdd(id, COMPONENT_TYPE.SCENE)}
         >
           Add Scene to '{title}'
