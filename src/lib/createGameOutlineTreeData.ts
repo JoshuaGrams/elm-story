@@ -53,8 +53,6 @@ const createGameOutlineTreeData = (
 
     scenes.map((scene) => {
       if (scene.id) {
-        console.log(scene.parent[1])
-
         gameOutlineTreeData.items[scene.id] = {
           id: scene.id,
           children: scene.children.map((child) => child[1]),
