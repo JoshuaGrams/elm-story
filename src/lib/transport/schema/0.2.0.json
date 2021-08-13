@@ -285,7 +285,7 @@
           "jumps": { "type": "array", "items": { "type": "string" } },
           "parent": {
             "type": "array",
-            "items": [{ "type": "string" }, { "type": "string" }]
+            "items": [{ "type": "string" }, { "type": ["string", "null"] }]
           },
           "tags": { "type": "array", "items": { "type": "string" } },
           "title": { "type": "string" },
