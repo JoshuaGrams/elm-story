@@ -1604,7 +1604,7 @@ export class LibraryDatabase extends Dexie {
 
           await this.passages.delete(passageId)
         } else {
-          throw new Error(
+          logger.error(
             `LibraryDatabase->removePassage->Unable to remove passage with ID: '${passageId}'. Does not exist.`
           )
         }
