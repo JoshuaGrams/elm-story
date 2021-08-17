@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import styles from './styles.module.less'
 
+const whitelistByClassName = ['react-flow__pane', 'nodeHeader']
+
 const ContextMenu: React.FC<{
   trigger: string
   forceHide: boolean
@@ -18,7 +20,14 @@ const ContextMenu: React.FC<{
       targetElement = event.target as Element,
       triggered = parentElement?.contains(targetElement)
 
-    if (triggered) {
+    if (
+      triggered &&
+      event
+        .composedPath()
+        .findIndex((target) =>
+          whitelistByClassName.includes((target as Element).className)
+        ) !== -1
+    ) {
       logger.info('SceneView->showContextMenu->visible')
 
       document.addEventListener('click', hideContextMenu)
