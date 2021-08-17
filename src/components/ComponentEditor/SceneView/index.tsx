@@ -41,6 +41,7 @@ import ReactFlow, {
 
 import { Button } from 'antd'
 
+import ContextMenu from './ContextMenu'
 import RouteEdge, { RouteEdgeData } from './RouteEdge'
 import PassageNode from './PassageNode'
 import JumpNode from './JumpNode'
@@ -844,7 +845,13 @@ const SceneView: React.FC<{
   return (
     <>
       {passages && (
-        <div className={styles.sceneView} ref={flowWrapperRef}>
+        <div
+          id={`scene-view-${sceneId}`}
+          className={styles.SceneView}
+          ref={flowWrapperRef}
+        >
+          <ContextMenu trigger={`scene-view-${sceneId}`} />
+
           <ReactFlow
             snapToGrid
             nodeTypes={{
