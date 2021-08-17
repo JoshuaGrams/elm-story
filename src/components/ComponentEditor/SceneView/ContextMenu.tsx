@@ -6,7 +6,8 @@ import styles from './styles.module.less'
 
 const ContextMenu: React.FC<{
   trigger: string
-}> = ({ trigger }) => {
+  forceHide: boolean
+}> = ({ trigger, forceHide }) => {
   const menuRef = useRef<HTMLDivElement>(null)
 
   const [visible, setVisible] = useState(false),
@@ -54,6 +55,10 @@ const ContextMenu: React.FC<{
       return false
     })
   }
+
+  useEffect(() => {
+    if (visible && forceHide) hideContextMenu()
+  }, [forceHide])
 
   useEffect(() => {
     document.addEventListener('contextmenu', showContextMenu)

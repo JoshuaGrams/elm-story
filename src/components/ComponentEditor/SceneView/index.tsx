@@ -259,7 +259,8 @@ const SceneView: React.FC<{
     [selectedPassage, setSelectedPassage] = useState<ComponentId | null>(null),
     [selectedRoute, setSelectedRoute] = useState<ComponentId | null>(null),
     [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
-    [elements, setElements] = useState<FlowElement[]>([])
+    [elements, setElements] = useState<FlowElement[]>([]),
+    [paneMoving, setPaneMoving] = useState(false)
 
   function setSelectedSceneViewCenter() {
     editorDispatch({
@@ -626,6 +627,8 @@ const SceneView: React.FC<{
   }
 
   async function onMoveEnd(flowTransform?: FlowTransform | undefined) {
+    setPaneMoving(false)
+
     if (scene?.id && flowTransform) {
       setSelectedSceneViewCenter()
 
@@ -850,7 +853,10 @@ const SceneView: React.FC<{
           className={styles.SceneView}
           ref={flowWrapperRef}
         >
-          <ContextMenu trigger={`scene-view-${sceneId}`} />
+          <ContextMenu
+            trigger={`scene-view-${sceneId}`}
+            forceHide={paneMoving}
+          />
 
           <ReactFlow
             snapToGrid
@@ -885,6 +891,9 @@ const SceneView: React.FC<{
             elementsSelectable
             onSelectionDragStop={onSelectionDragStop}
             onSelectionChange={onSelectionChange}
+            onMove={() => {
+              setPaneMoving(true)
+            }}
             onMoveEnd={onMoveEnd}
           >
             <Background
