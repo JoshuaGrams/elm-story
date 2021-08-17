@@ -1,12 +1,14 @@
 import logger from '../../../lib/logger'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import styles from './styles.module.less'
 
 const ContextMenu: React.FC<{
   trigger: string
 }> = ({ trigger }) => {
+  const menuRef = useRef<HTMLDivElement>(null)
+
   const [visible, setVisible] = useState(false),
     [position, setPostion] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
@@ -21,7 +23,21 @@ const ContextMenu: React.FC<{
       document.addEventListener('click', hideContextMenu)
       document.addEventListener('mousedown', hideContextMenu)
 
-      setPostion({ x: event.clientX, y: event.clientY })
+      const parentRect = parentElement?.getBoundingClientRect(),
+        menuRect = menuRef.current?.getBoundingClientRect()
+
+      if (menuRect && parentRect)
+        setPostion({
+          x:
+            event.offsetX + menuRect.width > parentRect.width
+              ? event.clientX - menuRect.width
+              : event.clientX,
+          y:
+            event.offsetY + menuRect.height > parentRect.height
+              ? event.clientY - menuRect.height
+              : event.clientY
+        })
+
       setVisible(true)
     }
   }
@@ -51,6 +67,7 @@ const ContextMenu: React.FC<{
 
   return (
     <div
+      ref={menuRef}
       className={styles.ContextMenu}
       style={{
         opacity: visible ? 1.0 : 0.0,
