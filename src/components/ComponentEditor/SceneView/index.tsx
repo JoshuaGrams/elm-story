@@ -855,6 +855,29 @@ const SceneView: React.FC<{
         >
           <ContextMenu
             trigger={`scene-view-${sceneId}`}
+            features={[
+              {
+                className: 'react-flow__pane',
+                items: [
+                  [
+                    'Add Passage',
+                    ({ clickPosition }) => console.log('add passage')
+                  ],
+                  ['Add Jump', ({ clickPosition }) => console.log('add jump')]
+                ]
+              },
+              {
+                className: 'nodePassageHeader',
+                items: [
+                  ['Edit Passage', () => console.log('edit passage')],
+                  ['Remove Passage', () => console.log('remove passage')]
+                ]
+              },
+              {
+                className: 'nodeJumpHeader',
+                items: [['Remove Jump', () => console.log('remove jump')]]
+              }
+            ]}
             forceHide={paneMoving}
           />
 

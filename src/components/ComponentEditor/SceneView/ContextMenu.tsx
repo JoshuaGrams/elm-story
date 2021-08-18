@@ -2,18 +2,44 @@ import logger from '../../../lib/logger'
 
 import React, { useEffect, useRef, useState } from 'react'
 
+import { Menu } from 'antd'
+
 import styles from './styles.module.less'
 
-const whitelistByClassName = ['react-flow__pane', 'nodeHeader']
+interface FeatureReturn {
+  clickPosition: {
+    x: number
+    y: number
+  }
+}
+
+const CONTEXT_MENU_CLASS_NAME = 'sv-cm',
+  MENU_ITEM_CLASS_NAME = 'sv-cm-item'
 
 const ContextMenu: React.FC<{
   trigger: string
+  features: {
+    className: string
+    items: [string, (featureReturn: FeatureReturn) => void][]
+  }[]
   forceHide: boolean
-}> = ({ trigger, forceHide }) => {
+}> = ({ trigger, features, forceHide }) => {
   const menuRef = useRef<HTMLDivElement>(null)
 
-  const [visible, setVisible] = useState(false),
-    [position, setPostion] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const [menuVisible, setMenuVisible] = useState(false),
+    [menuContents, setMenuContents] = useState<JSX.Element[] | undefined>(
+      undefined
+    ),
+    [menuPosition, setMenuPosition] = useState<{ x: number; y: number }>({
+      x: 0,
+      y: 0
+    }),
+    [clickPosition, setClickPosition] = useState<{ x: number; y: number }>({
+      x: 0,
+      y: 0
+    })
+
+  const whitelistByClassName = features.map((feature) => feature.className)
 
   function showContextMenu(event: MouseEvent) {
     const parentElement = document.getElementById(trigger),
@@ -33,11 +59,25 @@ const ContextMenu: React.FC<{
       document.addEventListener('click', hideContextMenu)
       document.addEventListener('mousedown', hideContextMenu)
 
+      setMenuContents(
+        features
+          .find((feature) => feature.className === targetElement.className)
+          ?.items.map((item, index) => (
+            <Menu.Item
+              key={`${targetElement.className},${index}`}
+              className={MENU_ITEM_CLASS_NAME}
+            >
+              {' '}
+              {item[0]}
+            </Menu.Item>
+          ))
+      )
+
       const parentRect = parentElement?.getBoundingClientRect(),
         menuRect = menuRef.current?.getBoundingClientRect()
 
       if (menuRect && parentRect)
-        setPostion({
+        setMenuPosition({
           x:
             event.offsetX + menuRect.width > parentRect.width
               ? event.clientX - menuRect.width
@@ -48,12 +88,23 @@ const ContextMenu: React.FC<{
               : event.clientY
         })
 
-      setVisible(true)
+      setMenuVisible(true)
+      setClickPosition({ x: event.offsetX, y: event.offsetY })
     }
   }
 
-  function hideContextMenu() {
-    setVisible((isVisible: boolean) => {
+  function hideContextMenu(event?: MouseEvent) {
+    if (
+      event &&
+      event.composedPath().findIndex((target) => {
+        const classList = (target as Element).classList
+
+        return classList && classList.contains(CONTEXT_MENU_CLASS_NAME)
+      }) !== -1
+    )
+      return
+
+    setMenuVisible((isVisible: boolean) => {
       if (isVisible) {
         logger.info('SceneView->hideContextMenu->not visible')
 
@@ -63,10 +114,13 @@ const ContextMenu: React.FC<{
 
       return false
     })
+
+    setMenuContents(undefined)
+    setClickPosition({ x: 0, y: 0 })
   }
 
   useEffect(() => {
-    if (visible && forceHide) hideContextMenu()
+    if (menuVisible && forceHide) hideContextMenu()
   }, [forceHide])
 
   useEffect(() => {
@@ -84,12 +138,29 @@ const ContextMenu: React.FC<{
       ref={menuRef}
       className={styles.ContextMenu}
       style={{
-        opacity: visible ? 1.0 : 0.0,
-        left: position.x,
-        top: position.y
+        visibility: menuVisible ? 'visible' : 'hidden',
+        left: menuPosition.x,
+        top: menuPosition.y
       }}
     >
-      Scene View Context Menu
+      <Menu
+        className={CONTEXT_MENU_CLASS_NAME}
+        selectedKeys={[]}
+        onClick={(info) => {
+          const keyParts: string[] = (info.key as string).split(','),
+            foundFeature = features.find(
+              (feature) => feature.className === keyParts[0]
+            )
+
+          if (foundFeature) {
+            foundFeature.items[parseInt(keyParts[1])][1]({ clickPosition })
+
+            hideContextMenu()
+          }
+        }}
+      >
+        {menuContents}
+      </Menu>
     </div>
   )
 }
