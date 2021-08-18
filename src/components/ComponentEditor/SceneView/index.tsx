@@ -7,6 +7,7 @@ import {
   ComponentId,
   COMPONENT_TYPE,
   DEFAULT_PASSAGE_CONTENT,
+  Scene,
   StudioId
 } from '../../../data/types'
 
@@ -73,36 +74,28 @@ export const SceneViewTools: React.FC<{
           <Button
             onClick={async () => {
               try {
-                const passage = await api().passages.savePassage(studioId, {
-                  gameId: scene.gameId,
-                  sceneId: sceneId,
-                  title: 'Untitled Passage',
-                  choices: [],
-                  content: JSON.stringify([...DEFAULT_PASSAGE_CONTENT]),
-                  tags: [],
-                  editor: {
-                    componentEditorPosX:
+                const passageId = await onAddComponent(
+                  studioId,
+                  scene,
+                  COMPONENT_TYPE.PASSAGE,
+                  {
+                    x:
                       editor.selectedComponentEditorSceneViewCenter.x -
                       DEFAULT_NODE_SIZE.PASSAGE_WIDTH / 2,
-                    componentEditorPosY:
+                    y:
                       editor.selectedComponentEditorSceneViewCenter.y -
                       DEFAULT_NODE_SIZE.PASSAGE_HEIGHT / 2
                   }
-                })
+                )
 
-                passage.id &&
-                  (await api().scenes.saveChildRefsToScene(studioId, sceneId, [
-                    ...scene.children,
-                    [COMPONENT_TYPE.PASSAGE, passage.id]
-                  ]))
-
-                editorDispatch({
-                  type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
-                  savedComponent: {
-                    id: passage.id,
-                    type: COMPONENT_TYPE.PASSAGE
-                  }
-                })
+                if (passageId)
+                  editorDispatch({
+                    type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
+                    savedComponent: {
+                      id: passageId,
+                      type: COMPONENT_TYPE.PASSAGE
+                    }
+                  })
               } catch (error) {
                 throw new Error(error)
               }
@@ -114,35 +107,28 @@ export const SceneViewTools: React.FC<{
           {/* Add Jump Button */}
           <Button
             onClick={async () => {
-              const jump = await api().jumps.saveJump(studioId, {
-                gameId: scene.gameId,
-                sceneId,
-                title: 'Untitled Jump',
-                route: [scene.id],
-                tags: [],
-                editor: {
-                  componentEditorPosX:
+              const jumpId = await onAddComponent(
+                studioId,
+                scene,
+                COMPONENT_TYPE.JUMP,
+                {
+                  x:
                     editor.selectedComponentEditorSceneViewCenter.x -
                     DEFAULT_NODE_SIZE.JUMP_WIDTH / 2,
-                  componentEditorPosY:
+                  y:
                     editor.selectedComponentEditorSceneViewCenter.y -
                     DEFAULT_NODE_SIZE.JUMP_HEIGHT / 2
                 }
-              })
+              )
 
-              jump.id &&
-                (await api().scenes.saveJumpRefsToScene(studioId, sceneId, [
-                  ...scene.jumps,
-                  jump.id
-                ]))
-
-              editorDispatch({
-                type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
-                savedComponent: {
-                  id: jump.id,
-                  type: COMPONENT_TYPE.JUMP
-                }
-              })
+              if (jumpId)
+                editorDispatch({
+                  type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
+                  savedComponent: {
+                    id: jumpId,
+                    type: COMPONENT_TYPE.JUMP
+                  }
+                })
             }}
           >
             Add Jump
@@ -223,6 +209,63 @@ export const SceneViewTools: React.FC<{
       )}
     </>
   )
+}
+
+async function onAddComponent(
+  studioId: StudioId,
+  scene: Scene,
+  type: COMPONENT_TYPE,
+  position: { x: number; y: number }
+): Promise<ComponentId | undefined> {
+  if (scene.id) {
+    switch (type) {
+      case COMPONENT_TYPE.PASSAGE:
+        const passage = await api().passages.savePassage(studioId, {
+          gameId: scene.gameId,
+          sceneId: scene.id,
+          title: 'Untitled Passage',
+          choices: [],
+          content: JSON.stringify([...DEFAULT_PASSAGE_CONTENT]),
+          tags: [],
+          editor: {
+            componentEditorPosX: position.x,
+            componentEditorPosY: position.y
+          }
+        })
+
+        passage.id &&
+          (await api().scenes.saveChildRefsToScene(studioId, scene.id, [
+            ...scene.children,
+            [COMPONENT_TYPE.PASSAGE, passage.id]
+          ]))
+
+        return passage.id
+      case COMPONENT_TYPE.JUMP:
+        const jump = await api().jumps.saveJump(studioId, {
+          gameId: scene.gameId,
+          sceneId: scene.id,
+          title: 'Untitled Jump',
+          route: [scene.id],
+          tags: [],
+          editor: {
+            componentEditorPosX: position.x,
+            componentEditorPosY: position.y
+          }
+        })
+
+        jump.id &&
+          (await api().scenes.saveJumpRefsToScene(studioId, scene.id, [
+            ...scene.jumps,
+            jump.id
+          ]))
+
+        return jump.id
+      default:
+        return undefined
+    }
+  }
+
+  return undefined
 }
 
 const SceneView: React.FC<{
