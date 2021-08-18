@@ -63,7 +63,7 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
           <div>
             <JumpHandle jumpId={jump.id} />
 
-            <h1 className="nodeJumpHeader">
+            <h1 className="nodeJumpHeader" data-component-id={jump.id}>
               <ForwardOutlined className={styles.headerIcon} />
               {jump.title}
             </h1>

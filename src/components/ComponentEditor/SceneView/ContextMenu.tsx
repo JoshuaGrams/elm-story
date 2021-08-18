@@ -2,25 +2,29 @@ import logger from '../../../lib/logger'
 
 import React, { useEffect, useRef, useState } from 'react'
 
+import { ComponentId } from '../../../data/types'
+
 import { Menu } from 'antd'
 
 import styles from './styles.module.less'
 
-interface FeatureReturn {
+interface MenuItemReturnData {
   clickPosition: {
     x: number
     y: number
   }
+  componentId: ComponentId | null
 }
 
 const CONTEXT_MENU_CLASS_NAME = 'sv-cm',
-  MENU_ITEM_CLASS_NAME = 'sv-cm-item'
+  MENU_ITEM_CLASS_NAME = 'sv-cm-item',
+  COMPONENT_ID_ATTRIBUTE_NAME = 'data-component-id'
 
 const ContextMenu: React.FC<{
   trigger: string
   features: {
     className: string
-    items: [string, (featureReturn: FeatureReturn) => void][]
+    items: [string, (featureReturn: MenuItemReturnData) => void][]
   }[]
   forceHide: boolean
 }> = ({ trigger, features, forceHide }) => {
@@ -37,7 +41,8 @@ const ContextMenu: React.FC<{
     [clickPosition, setClickPosition] = useState<{ x: number; y: number }>({
       x: 0,
       y: 0
-    })
+    }),
+    [byComponentId, setByComponentId] = useState<ComponentId | null>(null)
 
   const whitelistByClassName = features.map((feature) => feature.className)
 
@@ -88,8 +93,10 @@ const ContextMenu: React.FC<{
               : event.clientY
         })
 
-      setMenuVisible(true)
       setClickPosition({ x: event.offsetX, y: event.offsetY })
+      setByComponentId(targetElement.getAttribute(COMPONENT_ID_ATTRIBUTE_NAME))
+
+      setMenuVisible(true)
     }
   }
 
@@ -117,6 +124,7 @@ const ContextMenu: React.FC<{
 
     setMenuContents(undefined)
     setClickPosition({ x: 0, y: 0 })
+    setByComponentId(null)
   }
 
   useEffect(() => {
@@ -165,7 +173,8 @@ const ContextMenu: React.FC<{
                 y:
                   info.domEvent.clientY -
                   (parentElement?.getBoundingClientRect().top || 0)
-              }
+              },
+              componentId: byComponentId
             })
 
             hideContextMenu()

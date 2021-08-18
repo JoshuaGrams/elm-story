@@ -306,7 +306,7 @@ const PassageNode: React.FC<NodeProps<{
               passageId={passage.id}
             />
 
-            <h1 className="nodePassageHeader">
+            <h1 className="nodePassageHeader" data-component-id={passage.id}>
               <AlignLeftOutlined className={styles.headerIcon} />
               {passage.title}
             </h1>
