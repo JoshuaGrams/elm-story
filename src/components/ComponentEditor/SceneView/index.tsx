@@ -277,6 +277,23 @@ async function removeComponentFromScene(
   if (scene.id) {
     switch (type) {
       case COMPONENT_TYPE.PASSAGE:
+        const clonedChildRefs = [...scene.children],
+          passageRefIndex = clonedChildRefs.findIndex(
+            (clonedPassageRef) => clonedPassageRef[1] === id
+          )
+
+        if (passageRefIndex !== -1) {
+          clonedChildRefs.splice(passageRefIndex, 1)
+
+          await api().scenes.saveChildRefsToScene(
+            studioId,
+            scene.id,
+            clonedChildRefs
+          )
+        }
+
+        await api().passages.removePassage(studioId, id)
+
         break
       case COMPONENT_TYPE.JUMP:
         const clonedJumpRefs = [...scene.jumps],
@@ -1001,8 +1018,27 @@ const SceneView: React.FC<{
                   ],
                   [
                     'Remove Passage',
-                    ({ componentId }) =>
-                      console.log(`remove passage: ${componentId}`)
+                    async ({ componentId }) => {
+                      if (scene && componentId)
+                        try {
+                          editorDispatch({
+                            type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
+                            removedComponent: {
+                              type: COMPONENT_TYPE.PASSAGE,
+                              id: componentId
+                            }
+                          })
+
+                          await removeComponentFromScene(
+                            studioId,
+                            scene,
+                            COMPONENT_TYPE.PASSAGE,
+                            componentId
+                          )
+                        } catch (error) {
+                          throw new Error(error)
+                        }
+                    }
                   ]
                 ]
               },
