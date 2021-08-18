@@ -904,9 +904,48 @@ const SceneView: React.FC<{
                 items: [
                   [
                     'Add Passage',
-                    ({ clickPosition }) => console.log('add passage')
+                    async ({ clickPosition }) => {
+                      if (scene) {
+                        const passageId = await onAddComponent(
+                          studioId,
+                          scene,
+                          COMPONENT_TYPE.PASSAGE,
+                          project(clickPosition)
+                        )
+
+                        if (passageId)
+                          editorDispatch({
+                            type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
+                            savedComponent: {
+                              id: passageId,
+                              type: COMPONENT_TYPE.PASSAGE
+                            }
+                          })
+                      }
+                    }
                   ],
-                  ['Add Jump', ({ clickPosition }) => console.log('add jump')]
+                  [
+                    'Add Jump',
+                    async ({ clickPosition }) => {
+                      if (scene) {
+                        const jumpId = await onAddComponent(
+                          studioId,
+                          scene,
+                          COMPONENT_TYPE.JUMP,
+                          project(clickPosition)
+                        )
+
+                        if (jumpId)
+                          editorDispatch({
+                            type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
+                            savedComponent: {
+                              id: jumpId,
+                              type: COMPONENT_TYPE.JUMP
+                            }
+                          })
+                      }
+                    }
+                  ]
                 ]
               },
               {
