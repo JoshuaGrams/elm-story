@@ -65,7 +65,7 @@ const ContextMenu: React.FC<{
           ?.items.map((item, index) => (
             <Menu.Item
               key={`${targetElement.className},${index}`}
-              className={MENU_ITEM_CLASS_NAME}
+              className={`${MENU_ITEM_CLASS_NAME} ant-dropdown-menu-item`}
             >
               {' '}
               {item[0]}
@@ -136,7 +136,7 @@ const ContextMenu: React.FC<{
   return (
     <div
       ref={menuRef}
-      className={styles.ContextMenu}
+      className={`ant-dropdown-menu ant-dropdown-menu-root ant-dropdown-menu-vertical ${styles.ContextMenu}`}
       style={{
         visibility: menuVisible ? 'visible' : 'hidden',
         left: menuPosition.x,

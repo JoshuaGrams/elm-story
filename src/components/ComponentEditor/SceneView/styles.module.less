@@ -114,9 +114,18 @@
     position: fixed;
     left: 200px;
     top: 200px;
-    background-color: red;
     width: auto;
     height: auto;
+    padding: 0px;
+
+    :global .ant-menu {
+      background: transparent;
+      border: none;
+
+      .ant-menu-item-active {
+        color: white;
+      }
+    }
   }
 }
 
