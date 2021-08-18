@@ -74,7 +74,7 @@ export const SceneViewTools: React.FC<{
           <Button
             onClick={async () => {
               try {
-                const passageId = await onAddComponent(
+                const passageId = await addComponentToScene(
                   studioId,
                   scene,
                   COMPONENT_TYPE.PASSAGE,
@@ -107,7 +107,7 @@ export const SceneViewTools: React.FC<{
           {/* Add Jump Button */}
           <Button
             onClick={async () => {
-              const jumpId = await onAddComponent(
+              const jumpId = await addComponentToScene(
                 studioId,
                 scene,
                 COMPONENT_TYPE.JUMP,
@@ -211,7 +211,7 @@ export const SceneViewTools: React.FC<{
   )
 }
 
-async function onAddComponent(
+async function addComponentToScene(
   studioId: StudioId,
   scene: Scene,
   type: COMPONENT_TYPE,
@@ -266,6 +266,41 @@ async function onAddComponent(
   }
 
   return undefined
+}
+
+async function removeComponentFromScene(
+  studioId: StudioId,
+  scene: Scene,
+  type: COMPONENT_TYPE,
+  id: ComponentId
+): Promise<void> {
+  if (scene.id) {
+    switch (type) {
+      case COMPONENT_TYPE.PASSAGE:
+        break
+      case COMPONENT_TYPE.JUMP:
+        const clonedJumpRefs = [...scene.jumps],
+          jumpRefIndex = clonedJumpRefs.findIndex(
+            (clonedJumpRef) => clonedJumpRef === id
+          )
+
+        if (jumpRefIndex !== -1) {
+          clonedJumpRefs.splice(jumpRefIndex, 1)
+
+          await api().scenes.saveJumpRefsToScene(
+            studioId,
+            scene.id,
+            clonedJumpRefs
+          )
+        }
+
+        await api().jumps.removeJump(studioId, id)
+
+        break
+      default:
+        break
+    }
+  }
 }
 
 const SceneView: React.FC<{
@@ -906,21 +941,25 @@ const SceneView: React.FC<{
                     'Add Passage',
                     async ({ clickPosition }) => {
                       if (scene) {
-                        const passageId = await onAddComponent(
-                          studioId,
-                          scene,
-                          COMPONENT_TYPE.PASSAGE,
-                          project(clickPosition)
-                        )
+                        try {
+                          const passageId = await addComponentToScene(
+                            studioId,
+                            scene,
+                            COMPONENT_TYPE.PASSAGE,
+                            project(clickPosition)
+                          )
 
-                        if (passageId)
-                          editorDispatch({
-                            type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
-                            savedComponent: {
-                              id: passageId,
-                              type: COMPONENT_TYPE.PASSAGE
-                            }
-                          })
+                          if (passageId)
+                            editorDispatch({
+                              type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
+                              savedComponent: {
+                                id: passageId,
+                                type: COMPONENT_TYPE.PASSAGE
+                              }
+                            })
+                        } catch (error) {
+                          throw new Error(error)
+                        }
                       }
                     }
                   ],
@@ -928,21 +967,25 @@ const SceneView: React.FC<{
                     'Add Jump',
                     async ({ clickPosition }) => {
                       if (scene) {
-                        const jumpId = await onAddComponent(
-                          studioId,
-                          scene,
-                          COMPONENT_TYPE.JUMP,
-                          project(clickPosition)
-                        )
+                        try {
+                          const jumpId = await addComponentToScene(
+                            studioId,
+                            scene,
+                            COMPONENT_TYPE.JUMP,
+                            project(clickPosition)
+                          )
 
-                        if (jumpId)
-                          editorDispatch({
-                            type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
-                            savedComponent: {
-                              id: jumpId,
-                              type: COMPONENT_TYPE.JUMP
-                            }
-                          })
+                          if (jumpId)
+                            editorDispatch({
+                              type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
+                              savedComponent: {
+                                id: jumpId,
+                                type: COMPONENT_TYPE.JUMP
+                              }
+                            })
+                        } catch (error) {
+                          throw new Error()
+                        }
                       }
                     }
                   ]
@@ -951,13 +994,38 @@ const SceneView: React.FC<{
               {
                 className: 'nodePassageHeader',
                 items: [
-                  ['Edit Passage', () => console.log('edit passage')],
-                  ['Remove Passage', () => console.log('remove passage')]
+                  [
+                    'Edit Passage',
+                    ({ componentId }) =>
+                      console.log(`edit passage: ${componentId}`)
+                  ],
+                  [
+                    'Remove Passage',
+                    ({ componentId }) =>
+                      console.log(`remove passage: ${componentId}`)
+                  ]
                 ]
               },
               {
                 className: 'nodeJumpHeader',
-                items: [['Remove Jump', () => console.log('remove jump')]]
+                items: [
+                  [
+                    'Remove Jump',
+                    async ({ componentId }) => {
+                      if (scene && componentId)
+                        try {
+                          await removeComponentFromScene(
+                            studioId,
+                            scene,
+                            COMPONENT_TYPE.JUMP,
+                            componentId
+                          )
+                        } catch (error) {
+                          throw new Error(error)
+                        }
+                    }
+                  ]
+                ]
               }
             ]}
             forceHide={paneMoving}
