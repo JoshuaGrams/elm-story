@@ -153,7 +153,20 @@ const ContextMenu: React.FC<{
             )
 
           if (foundFeature) {
-            foundFeature.items[parseInt(keyParts[1])][1]({ clickPosition })
+            const parentElement = document.getElementById(trigger)
+
+            // TODO: users may want node to drop where menu opened
+            // revert to click position
+            foundFeature.items[parseInt(keyParts[1])][1]({
+              clickPosition: {
+                x:
+                  info.domEvent.clientX -
+                  (parentElement?.getBoundingClientRect().left || 0),
+                y:
+                  info.domEvent.clientY -
+                  (parentElement?.getBoundingClientRect().top || 0)
+              }
+            })
 
             hideContextMenu()
           }
