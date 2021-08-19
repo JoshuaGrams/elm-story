@@ -31,7 +31,7 @@ const TitleBar: React.FC<{
   const history = useHistory()
 
   const { app } = useContext(AppContext),
-    { editorDispatch } = useContext(EditorContext)
+    { editor, editorDispatch } = useContext(EditorContext)
 
   const [editGameModalVisible, setEditGameModalVisible] = useState(false),
     [exportJSONModalVisible, setExportJSONModalVisible] = useState(false)
@@ -98,7 +98,42 @@ const TitleBar: React.FC<{
           </Button>
         </Tooltip>
 
-        <span>{game.title}</span>
+        <span
+          className={`${styles.gameTitle} ${
+            editor.selectedGameOutlineComponent.id === game.id
+              ? styles.selected
+              : ''
+          }`}
+          onClick={() => {
+            // TODO: reuse this in GameOutline
+            editor.selectedComponentEditorSceneViewPassage &&
+              editorDispatch({
+                type:
+                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                selectedComponentEditorSceneViewPassage: null
+              })
+
+            editor.selectedComponentEditorSceneViewJump &&
+              editorDispatch({
+                type:
+                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+                selectedComponentEditorSceneViewJump: null
+              })
+
+            editor.selectedGameOutlineComponent.id !== game.id &&
+              editorDispatch({
+                type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+                selectedGameOutlineComponent: {
+                  id: game.id,
+                  expanded: true,
+                  title: game.title,
+                  type: COMPONENT_TYPE.GAME
+                }
+              })
+          }}
+        >
+          {game.title}
+        </span>
 
         <div className={styles.gameButtons}>
           <Tooltip

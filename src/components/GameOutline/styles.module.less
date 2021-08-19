@@ -21,6 +21,26 @@
       padding: 4px 7px;
     }
 
+    .gameTitle {
+      height: 100%;
+      position: absolute;
+      top: 0px;
+      left: 28px;
+      right: 78px;
+      display: flex;
+      align-items: center;
+      color: hsl(0, 0%, 60%);
+
+      &.selected {
+        color: white;
+      }
+
+      &:hover {
+        color: white;
+        cursor: pointer;
+      }
+    }
+
     .gameButtons {
       display: inline-block;
       position: absolute;

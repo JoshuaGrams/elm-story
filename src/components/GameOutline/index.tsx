@@ -445,7 +445,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       }
 
       if (type !== COMPONENT_TYPE.PASSAGE) {
-        if (COMPONENT_TYPE.FOLDER) {
+        if (COMPONENT_TYPE.GAME || COMPONENT_TYPE.FOLDER) {
           editor.selectedComponentEditorSceneViewPassage &&
             editorDispatch({
               type:
