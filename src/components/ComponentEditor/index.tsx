@@ -2,9 +2,18 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { cloneDeep } from 'lodash-es'
 import logger from '../../lib/logger'
 
-import { ComponentId, COMPONENT_TYPE, Game, StudioId } from '../../data/types'
+import {
+  ComponentId,
+  COMPONENT_TYPE,
+  Game,
+  Passage,
+  Scene,
+  StudioId
+} from '../../data/types'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
+
+import { ReactFlowProvider } from 'react-flow-renderer'
 
 import DockLayout, {
   DropDirection,
@@ -17,8 +26,6 @@ import DockLayout, {
 import { find as findBox } from 'rc-dock/lib/Algorithm'
 
 import {
-  AlignLeftOutlined,
-  BookOutlined,
   PartitionOutlined,
   CloseOutlined,
   PlayCircleFilled,
@@ -28,12 +35,10 @@ import {
 import TabContent from './TabContent'
 import GameView, { GameViewTools } from './GameView'
 import SceneView, { SceneViewTools } from './SceneView'
-import PassageView, { PassageViewTools } from './PassageView'
 
 import styles from './styles.module.less'
 
 import api from '../../api'
-import { ReactFlowProvider } from 'react-flow-renderer'
 
 function createBaseLayoutData(studioId: StudioId, game: Game): LayoutData {
   if (!game.id)
@@ -93,16 +98,6 @@ function getTabContent(
           }
         />
       )
-    case COMPONENT_TYPE.PASSAGE:
-      return (
-        <TabContent
-          studioId={studioId}
-          id={id}
-          type={type}
-          tools={<PassageViewTools studioId={studioId} passageId={id} />}
-          view={<PassageView studioId={studioId} passageId={id} />}
-        />
-      )
     default:
       return <div>Unknown Content</div>
   }
@@ -112,12 +107,8 @@ function getTabIcon(type: COMPONENT_TYPE | undefined): JSX.Element {
   switch (type) {
     case COMPONENT_TYPE.GAME:
       return <PlayCircleFilled className={styles.gameTabIcon} />
-    case COMPONENT_TYPE.CHAPTER:
-      return <BookOutlined className={styles.tabIcon} />
     case COMPONENT_TYPE.SCENE:
       return <PartitionOutlined className={styles.tabIcon} />
-    case COMPONENT_TYPE.PASSAGE:
-      return <AlignLeftOutlined className={styles.tabIcon} />
     default:
       return <QuestionOutlined className={styles.tabIcon} />
   }
@@ -250,6 +241,8 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
       ) {
         logger.info(`Not removing tab`)
 
+        // Keep the passage selected in GameOutline
+        // if (editor.selectedGameOutlineComponent.type !== COMPONENT_TYPE.PASSAGE)
         editorDispatch({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
           selectedGameOutlineComponent:
@@ -267,70 +260,85 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
   }
 
   useEffect(() => {
-    if (
-      dockLayout.current &&
-      editor.selectedGameOutlineComponent.id &&
-      activePanelId
-    ) {
-      logger.info(
-        `ComponentEditor->editor.selectedGameOutlineComponent.id->useEffect->type: ${editor.selectedGameOutlineComponent.type}`
-      )
+    const selectedComponent = editor.selectedGameOutlineComponent
 
-      const foundTab = dockLayout.current.find(
-        editor.selectedGameOutlineComponent.id
-      ) as TabData
+    async function findTabAndOpen() {
+      if (dockLayout.current && selectedComponent.id && activePanelId) {
+        const passage: Passage | null =
+            selectedComponent.type === COMPONENT_TYPE.PASSAGE
+              ? await api().passages.getPassage(studioId, selectedComponent.id)
+              : null,
+          sceneFromPassage: Scene | null = passage
+            ? await api().scenes.getScene(studioId, passage.sceneId)
+            : null
 
-      if (
-        !foundTab &&
-        editor.selectedGameOutlineComponent.type !== COMPONENT_TYPE.FOLDER
-      ) {
-        dockLayout.current.dockMove(
-          {
-            title: getTabTitle(
-              editor.selectedGameOutlineComponent,
-              (componentId: ComponentId) => {
-                const tabToRemove = dockLayout.current?.find(componentId) as
-                  | TabData
-                  | undefined
+        const foundTab = dockLayout.current.find(
+          sceneFromPassage && sceneFromPassage.id
+            ? sceneFromPassage.id
+            : selectedComponent.id
+        ) as TabData
 
-                tabToRemove &&
-                  dockLayout.current &&
-                  // @ts-ignore
-                  dockLayout.current.dockMove(tabToRemove, null, 'remove')
+        if (!foundTab && selectedComponent.type !== COMPONENT_TYPE.FOLDER) {
+          dockLayout.current.dockMove(
+            {
+              title: getTabTitle(
+                sceneFromPassage
+                  ? {
+                      id: sceneFromPassage.id,
+                      expanded: true,
+                      title: sceneFromPassage.title,
+                      type: COMPONENT_TYPE.SCENE
+                    }
+                  : selectedComponent,
+                (componentId: ComponentId) => {
+                  const tabToRemove = dockLayout.current?.find(componentId) as
+                    | TabData
+                    | undefined
 
-                const clonedTabs = cloneDeep(tabs)
+                  tabToRemove &&
+                    dockLayout.current &&
+                    // @ts-ignore
+                    dockLayout.current.dockMove(tabToRemove, null, 'remove')
+                }
+              ),
+              id: sceneFromPassage?.id || selectedComponent.id,
+              content: getTabContent(
+                studioId,
+                sceneFromPassage?.id || selectedComponent.id,
+                sceneFromPassage ? COMPONENT_TYPE.SCENE : selectedComponent.type
+              ),
+              group: 'default',
+              closable: true,
+              cached: true
+            },
+            activePanelId,
+            'middle'
+          )
 
-                clonedTabs.splice(
-                  clonedTabs.findIndex(
-                    (clonedTab) => clonedTab.id === componentId
-                  ),
-                  1
-                )
+          setTabs([
+            ...tabs,
+            sceneFromPassage
+              ? {
+                  id: sceneFromPassage.id,
+                  expanded: true,
+                  title: sceneFromPassage.title,
+                  type: COMPONENT_TYPE.SCENE
+                }
+              : selectedComponent
+          ])
+        }
 
-                setTabs(clonedTabs)
-              }
-            ),
-            id: editor.selectedGameOutlineComponent.id,
-            content: getTabContent(
-              studioId,
-              editor.selectedGameOutlineComponent.id,
-              editor.selectedGameOutlineComponent.type
-            ),
-            group: 'default',
-            closable: true,
-            cached: true
-          },
-          activePanelId,
-          'middle'
-        )
-
-        setTabs([...tabs, editor.selectedGameOutlineComponent])
-      }
-
-      if (foundTab?.id) {
-        dockLayout.current.updateTab(foundTab.id, foundTab)
+        if (foundTab?.id) {
+          dockLayout.current.updateTab(foundTab.id, foundTab)
+        }
       }
     }
+
+    logger.info(
+      `ComponentEditor->editor.selectedGameOutlineComponent.id->useEffect->type: ${selectedComponent.type}`
+    )
+
+    findTabAndOpen()
   }, [editor.selectedGameOutlineComponent.id])
 
   useEffect(() => {
@@ -425,10 +433,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
         ).map((child) => child[1])
       }
 
-      if (
-        editor.removedComponent.type === COMPONENT_TYPE.CHAPTER ||
-        editor.removedComponent.type === COMPONENT_TYPE.SCENE
-      ) {
+      if (editor.removedComponent.type === COMPONENT_TYPE.SCENE) {
         await Promise.all(
           scenesById.map(async (sceneId) => {
             passagesById = [

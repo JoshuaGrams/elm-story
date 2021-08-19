@@ -413,18 +413,48 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     if (treeData) {
       const {
         id,
-        data: { type, title }
+        data: { type, title, parentId }
       } = treeData.items[componentId]
 
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-        selectedGameOutlineComponent: {
-          id: id as ComponentId,
-          type,
-          expanded: true,
-          title
-        }
-      })
+      if (type === COMPONENT_TYPE.PASSAGE) {
+        const parentItem = treeData.items[parentId]
+
+        if (editor.selectedGameOutlineComponent.id !== parentItem.id)
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+            selectedGameOutlineComponent: {
+              id: parentItem.id as ComponentId,
+              type: parentItem.data.type,
+              expanded: true,
+              title: parentItem.data.title
+            }
+          })
+
+        if (editor.selectedComponentEditorSceneViewPassage !== id)
+          // TODO: prevent infinite loop when selecting an unselected in an unselected scene
+          // from a selected scene by hacking event stack O__O
+          setTimeout(
+            () =>
+              editorDispatch({
+                type:
+                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                selectedComponentEditorSceneViewPassage: id as ComponentId
+              }),
+            1
+          )
+      }
+
+      if (type !== COMPONENT_TYPE.PASSAGE) {
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+          selectedGameOutlineComponent: {
+            id: id as ComponentId,
+            type,
+            expanded: true,
+            title
+          }
+        })
+      }
     }
   }
 
@@ -984,6 +1014,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   useEffect(() => {
     if (treeData) {
       logger.info('GameOutline->treeData->useEffect->tree data updated')
+      console.log(treeData)
     }
   }, [treeData])
 

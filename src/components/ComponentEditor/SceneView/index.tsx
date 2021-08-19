@@ -320,6 +320,12 @@ async function removeComponentFromScene(
   }
 }
 
+function findElement(elements: FlowElement[], componentId: ComponentId | null) {
+  if (!componentId) return undefined
+
+  return cloneDeep(elements.find((element) => element.id === componentId))
+}
+
 const SceneView: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
@@ -351,7 +357,9 @@ const SceneView: React.FC<{
     [totalSelectedPassages, setTotalSelectedPassages] = useState<number>(0),
     [totalSelectedRoutes, setTotalSelectedRoutes] = useState<number>(0),
     [selectedJump, setSelectedJump] = useState<ComponentId | null>(null),
-    [selectedPassage, setSelectedPassage] = useState<ComponentId | null>(null),
+    [selectedPassage, setSelectedPassage] = useState<ComponentId | null>(
+      editor.selectedComponentEditorSceneViewPassage
+    ),
     [selectedRoute, setSelectedRoute] = useState<ComponentId | null>(null),
     [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
     [elements, setElements] = useState<FlowElement[]>([]),
@@ -735,6 +743,26 @@ const SceneView: React.FC<{
     }
   }
 
+  // When selecting a nested component e.g. passage from the GameOutline
+  function selectElement(componentId: ComponentId | null) {
+    const foundElement = findElement(elements, componentId || null)
+
+    if (foundElement) {
+      setSelectedElements([foundElement])
+
+      setSelectedPassage(
+        editor.selectedComponentEditorSceneViewJump
+          ? null
+          : editor.selectedComponentEditorSceneViewPassage
+      )
+      setSelectedJump(
+        editor.selectedComponentEditorSceneViewPassage
+          ? null
+          : editor.selectedComponentEditorSceneViewJump
+      )
+    }
+  }
+
   useEffect(() => {
     logger.info(`SceneView->scene,passages,routes->useEffect`)
 
@@ -914,7 +942,17 @@ const SceneView: React.FC<{
   ])
 
   useEffect(() => {
-    logger.info(`SceneView->selectedElements->useEffect->nothing`)
+    selectElement(
+      editor.selectedComponentEditorSceneViewPassage ||
+        editor.selectedComponentEditorSceneViewJump
+    )
+  }, [
+    editor.selectedComponentEditorSceneViewPassage,
+    editor.selectedComponentEditorSceneViewJump
+  ])
+
+  useEffect(() => {
+    logger.info(`SceneView->selectedElements->useEffect`)
   }, [selectedElements])
 
   useEffect(() => {
@@ -926,12 +964,10 @@ const SceneView: React.FC<{
   useEffect(() => {
     logger.info(`SceneView->editor.savedComponent,elements->useEffect`)
 
-    if (editor.savedComponent.id) {
-      const foundElement = cloneDeep(
-        elements.find((element) => element.id === editor.savedComponent.id)
-      )
+    const foundElement = findElement(elements, editor.savedComponent.id || null)
 
-      foundElement && setSelectedElements([foundElement])
+    if (foundElement) {
+      setSelectedElements([foundElement])
 
       editorDispatch({
         type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
@@ -1079,7 +1115,14 @@ const SceneView: React.FC<{
             snapGrid={[4, 4]}
             onlyRenderVisibleElements={false}
             // TODO: fit to saved editor transform (pan/zoom)
-            onLoad={(reactFlowInstance) => reactFlowInstance.fitView()}
+            onLoad={(reactFlowInstance) => {
+              selectElement(
+                editor.selectedComponentEditorSceneViewPassage ||
+                  editor.selectedComponentEditorSceneViewJump
+              )
+
+              reactFlowInstance.fitView()
+            }}
             elements={elements}
             onElementsRemove={
               editor.selectedGameOutlineComponent.id === scene?.id
