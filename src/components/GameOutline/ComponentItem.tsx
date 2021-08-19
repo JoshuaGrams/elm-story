@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
 import { ComponentId, COMPONENT_TYPE } from '../../data/types'
 import {
@@ -7,6 +7,8 @@ import {
   OnRemoveComponent,
   OnSelectComponent
 } from '.'
+
+import { EditorContext } from '../../contexts/EditorContext'
 
 import { RenderItemParams } from '@atlaskit/tree'
 
@@ -40,6 +42,8 @@ const ComponentItem = ({
   onRemove: OnRemoveComponent
   OnEditComponentTitle: OnEditComponentTitle
 }) => {
+  const { editor } = useContext(EditorContext)
+
   const componentType: COMPONENT_TYPE = item.data.type,
     componentTitle: string = item.data.title
 
@@ -69,14 +73,19 @@ const ComponentItem = ({
           )
         : () => <QuestionOutlined className={componentIconClassNames} />
 
+  let compositeSelectionStyles: string[] = []
+
+  if (item.data.selected && !snapshot.isDragging)
+    compositeSelectionStyles.push(styles.selected)
+  if (item.id === editor.selectedComponentEditorSceneViewPassage)
+    compositeSelectionStyles.push(styles.sceneComponentSelected)
+
   return (
     <div
       ref={provided.innerRef}
       {...provided.draggableProps}
       {...provided.dragHandleProps}
-      className={`${styles.itemRow} ${
-        item.data.selected && !snapshot.isDragging ? styles.selected : ''
-      }`}
+      className={`${styles.itemRow} ${compositeSelectionStyles.join(' ')}`}
       onClick={(event) => {
         event.stopPropagation()
         if (!item.data.renaming) onSelect(item.id as ComponentId)
@@ -128,7 +137,11 @@ const ComponentItem = ({
                 {componentTitle || `New ${componentType}`}
               </Text>
             )}
-            {!item.data.renaming && <Text ellipsis>{componentTitle}</Text>}{' '}
+            {!item.data.renaming && (
+              <Text ellipsis className={styles.title}>
+                {componentTitle}
+              </Text>
+            )}{' '}
             {!item.isExpanded && !item.data.renaming && (
               <Badge
                 count={item.children.length}

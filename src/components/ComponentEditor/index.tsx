@@ -221,6 +221,18 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
 
         setTabs(clonedTabs)
 
+        editor.selectedComponentEditorSceneViewPassage &&
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+            selectedComponentEditorSceneViewPassage: null
+          })
+
+        editor.selectedComponentEditorSceneViewJump &&
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+            selectedComponentEditorSceneViewJump: null
+          })
+
         // TODO: This should be the next available
         editorDispatch({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,

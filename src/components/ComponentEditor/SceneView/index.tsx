@@ -748,18 +748,13 @@ const SceneView: React.FC<{
     const foundElement = findElement(elements, componentId || null)
 
     if (foundElement) {
+      const selectedPassageId = editor.selectedComponentEditorSceneViewPassage,
+        selectedJumpId = editor.selectedComponentEditorSceneViewJump
+
       setSelectedElements([foundElement])
 
-      setSelectedPassage(
-        editor.selectedComponentEditorSceneViewJump
-          ? null
-          : editor.selectedComponentEditorSceneViewPassage
-      )
-      setSelectedJump(
-        editor.selectedComponentEditorSceneViewPassage
-          ? null
-          : editor.selectedComponentEditorSceneViewJump
-      )
+      setSelectedPassage(selectedJumpId ? null : selectedPassageId)
+      setSelectedJump(selectedPassageId ? null : selectedJumpId)
     }
   }
 
@@ -942,6 +937,10 @@ const SceneView: React.FC<{
   ])
 
   useEffect(() => {
+    logger.info(
+      `SceneView->editor.selectedComponentEditorSceneViewPassage/Jump->useEffects`
+    )
+
     selectElement(
       editor.selectedComponentEditorSceneViewPassage ||
         editor.selectedComponentEditorSceneViewJump
@@ -1114,14 +1113,13 @@ const SceneView: React.FC<{
             }}
             snapGrid={[4, 4]}
             onlyRenderVisibleElements={false}
-            // TODO: fit to saved editor transform (pan/zoom)
-            onLoad={(reactFlowInstance) => {
+            onLoad={() => {
+              logger.info('SceneView->ReactFlow->onLoad')
+
               selectElement(
                 editor.selectedComponentEditorSceneViewPassage ||
                   editor.selectedComponentEditorSceneViewJump
               )
-
-              reactFlowInstance.fitView()
             }}
             elements={elements}
             onElementsRemove={

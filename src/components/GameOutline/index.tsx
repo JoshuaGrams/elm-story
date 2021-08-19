@@ -432,7 +432,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
         if (editor.selectedComponentEditorSceneViewPassage !== id)
           // TODO: prevent infinite loop when selecting an unselected in an unselected scene
-          // from a selected scene by hacking event stack O__O
+          // from a selected scene by hacking event stackO__O
           setTimeout(
             () =>
               editorDispatch({
@@ -445,6 +445,21 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       }
 
       if (type !== COMPONENT_TYPE.PASSAGE) {
+        if (COMPONENT_TYPE.FOLDER) {
+          editor.selectedComponentEditorSceneViewPassage &&
+            editorDispatch({
+              type:
+                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+              selectedComponentEditorSceneViewPassage: null
+            })
+
+          editor.selectedComponentEditorSceneViewJump &&
+            editorDispatch({
+              type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+              selectedComponentEditorSceneViewJump: null
+            })
+        }
+
         editorDispatch({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
           selectedGameOutlineComponent: {
