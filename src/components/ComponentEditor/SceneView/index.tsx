@@ -1049,7 +1049,7 @@ const SceneView: React.FC<{
                   [
                     'Edit Passage',
                     ({ componentId }) =>
-                      console.log(`edit passage: ${componentId}`)
+                      logger.info(`edit passage: ${componentId}`)
                   ],
                   [
                     'Remove Passage',

@@ -129,7 +129,6 @@ export default memo(
           y={centerY}
           totalConditions={conditionsCount || 0}
           totalEffects={effectsCount || 0}
-          onClick={() => console.log(data)}
         />
       </>
     )

@@ -1029,7 +1029,6 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   useEffect(() => {
     if (treeData) {
       logger.info('GameOutline->treeData->useEffect->tree data updated')
-      console.log(treeData)
     }
   }, [treeData])
 
