@@ -747,15 +747,7 @@ const SceneView: React.FC<{
   function selectElement(componentId: ComponentId | null) {
     const foundElement = findElement(elements, componentId || null)
 
-    if (foundElement) {
-      const selectedPassageId = editor.selectedComponentEditorSceneViewPassage,
-        selectedJumpId = editor.selectedComponentEditorSceneViewJump
-
-      setSelectedElements([foundElement])
-
-      setSelectedPassage(selectedJumpId ? null : selectedPassageId)
-      setSelectedJump(selectedPassageId ? null : selectedJumpId)
-    }
+    foundElement && setSelectedElements([foundElement])
   }
 
   useEffect(() => {
