@@ -293,7 +293,7 @@ const PassageNode: React.FC<NodeProps<{
 
   return (
     <div
-      className={styles.passageNode}
+      className={styles.PassageNode}
       key={data.passageId}
       id={data.passageId}
     >
@@ -306,13 +306,35 @@ const PassageNode: React.FC<NodeProps<{
               passageId={passage.id}
             />
 
-            <h1 className="nodePassageHeader" data-component-id={passage.id}>
+            <h1
+              // TODO: make class list work in ContextMenu
+              className="nodePassageHeader"
+              style={{
+                borderBottomLeftRadius:
+                  editor.selectedComponentEditorSceneViewPassage ===
+                    passage.id || passage.choices.length > 0
+                    ? '0px'
+                    : '5px',
+                borderBottomRightRadius:
+                  editor.selectedComponentEditorSceneViewPassage ===
+                    passage.id || passage.choices.length > 0
+                    ? '0px'
+                    : '5px'
+              }}
+              data-component-id={passage.id}
+            >
               <AlignLeftOutlined className={styles.headerIcon} />
               {passage.title}
             </h1>
           </div>
 
-          <div className={styles.choices}>
+          <div
+            className={`${styles.choices} ${
+              editor.selectedComponentEditorSceneViewPassage === passage.id
+                ? ''
+                : styles.bottomRadius
+            }`}
+          >
             {choices
               .sort(
                 (a, b) =>
@@ -432,64 +454,66 @@ const PassageNode: React.FC<NodeProps<{
               )}
           </div>
 
-          <div
-            className={`${styles.addChoiceButton} nodrag`}
-            onClick={async () => {
-              logger.info('PassageNode->addChoiceButton->onClick')
+          {editor.selectedComponentEditorSceneViewPassage === passage.id && (
+            <div
+              className={`${styles.addChoiceButton} nodrag`}
+              onClick={async () => {
+                logger.info('PassageNode->addChoiceButton->onClick')
 
-              if (
-                editor.selectedComponentEditorSceneViewPassage === passage.id
-              ) {
-                try {
-                  const choiceId = uuid()
+                if (
+                  editor.selectedComponentEditorSceneViewPassage === passage.id
+                ) {
+                  try {
+                    const choiceId = uuid()
 
-                  await api().passages.saveChoiceRefsToPassage(
-                    data.studioId,
-                    data.passageId,
-                    [...passage.choices, choiceId]
-                  )
-
-                  await api().choices.saveChoice(data.studioId, {
-                    id: choiceId,
-                    gameId: passage.gameId,
-                    passageId: data.passageId,
-                    title: 'Untitled Choice',
-                    tags: []
-                  })
-
-                  data.onChoiceSelect(passage.id, choiceId)
-                } catch (error) {
-                  throw new Error(error)
-                }
-              } else {
-                passage.id &&
-                  setSelectedElement([
-                    cloneDeep(
-                      passages.find(
-                        (passageNode) => passageNode.id === passage.id
-                      )
+                    await api().passages.saveChoiceRefsToPassage(
+                      data.studioId,
+                      data.passageId,
+                      [...passage.choices, choiceId]
                     )
-                  ]) &&
-                  editorDispatch({
-                    type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
-                    selectedComponentEditorSceneViewJump: null
-                  }) &&
-                  editorDispatch({
-                    type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                    selectedComponentEditorSceneViewPassage: passage.id
-                  }) &&
-                  editorDispatch({
-                    type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                    selectedComponentEditorSceneViewChoice: null
-                  })
-              }
-            }}
-          >
-            <PlusOutlined />
-          </div>
+
+                    await api().choices.saveChoice(data.studioId, {
+                      id: choiceId,
+                      gameId: passage.gameId,
+                      passageId: data.passageId,
+                      title: 'Untitled Choice',
+                      tags: []
+                    })
+
+                    data.onChoiceSelect(passage.id, choiceId)
+                  } catch (error) {
+                    throw new Error(error)
+                  }
+                } else {
+                  passage.id &&
+                    setSelectedElement([
+                      cloneDeep(
+                        passages.find(
+                          (passageNode) => passageNode.id === passage.id
+                        )
+                      )
+                    ]) &&
+                    editorDispatch({
+                      type:
+                        EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+                      selectedComponentEditorSceneViewJump: null
+                    }) &&
+                    editorDispatch({
+                      type:
+                        EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                      selectedComponentEditorSceneViewPassage: passage.id
+                    }) &&
+                    editorDispatch({
+                      type:
+                        EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                      selectedComponentEditorSceneViewChoice: null
+                    })
+                }
+              }}
+            >
+              <PlusOutlined />
+            </div>
+          )}
         </>
       ) : (
         <div>...</div>
