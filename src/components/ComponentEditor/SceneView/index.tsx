@@ -1089,8 +1089,20 @@ const SceneView: React.FC<{
                   [
                     'Remove Jump',
                     async ({ componentId }) => {
-                      if (scene && componentId)
+                      if (scene && componentId) {
                         try {
+                          editorDispatch({
+                            type:
+                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS,
+                            totalComponentEditorSceneViewSelectedJumps: 0
+                          })
+
+                          editorDispatch({
+                            type:
+                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+                            selectedComponentEditorSceneViewJump: null
+                          })
+
                           await removeComponentFromScene(
                             studioId,
                             scene,
@@ -1100,6 +1112,7 @@ const SceneView: React.FC<{
                         } catch (error) {
                           throw new Error(error)
                         }
+                      }
                     }
                   ]
                 ]

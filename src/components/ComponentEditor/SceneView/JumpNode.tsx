@@ -70,7 +70,43 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
           </div>
 
           {jump?.id && (
-            <div className={`${styles.jumpToContainer} nodrag`}>
+            <div
+              className={`${styles.jumpToContainer}`}
+              onMouseDown={() => {
+                if (
+                  jump.id &&
+                  editor.selectedComponentEditorSceneViewJump !== jump.id
+                ) {
+                  setSelectedElement([
+                    cloneDeep(jumps.find((jumpNode) => jumpNode.id === jump.id))
+                  ])
+
+                  editorDispatch({
+                    type:
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS,
+                    totalComponentEditorSceneViewSelectedJumps: 1
+                  })
+
+                  editorDispatch({
+                    type:
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+                    selectedComponentEditorSceneViewJump: jump.id
+                  })
+
+                  editorDispatch({
+                    type:
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                    selectedComponentEditorSceneViewPassage: null
+                  })
+
+                  editorDispatch({
+                    type:
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                    selectedComponentEditorSceneViewChoice: null
+                  })
+                }
+              }}
+            >
               <JumpTo
                 studioId={data.studioId}
                 jumpId={jump.id}
@@ -80,60 +116,6 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
               />
             </div>
           )}
-
-          <div
-            className={`${styles.removeJumpBtn} nodrag`}
-            onClick={async () => {
-              logger.info(`JumpNode->removeJumpBtn->onClick`)
-
-              if (editor.selectedComponentEditorSceneViewJump === jump.id) {
-                if (jump.sceneId) {
-                  const scene = await api().scenes.getScene(
-                      data.studioId,
-                      jump.sceneId
-                    ),
-                    clonedJumpRefs = [...scene.jumps],
-                    jumpRefIndex = clonedJumpRefs.findIndex(
-                      (clonedJumpRef) => clonedJumpRef === jump.id
-                    )
-
-                  if (jumpRefIndex !== -1) {
-                    clonedJumpRefs.splice(jumpRefIndex, 1)
-
-                    await api().scenes.saveJumpRefsToScene(
-                      data.studioId,
-                      jump.sceneId,
-                      clonedJumpRefs
-                    )
-                  }
-                }
-
-                await api().jumps.removeJump(data.studioId, jump.id)
-              } else {
-                jump.id &&
-                  setSelectedElement([
-                    cloneDeep(jumps.find((jumpNode) => jumpNode.id === jump.id))
-                  ]) &&
-                  editorDispatch({
-                    type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
-                    selectedComponentEditorSceneViewJump: jump.id
-                  }) &&
-                  editorDispatch({
-                    type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                    selectedComponentEditorSceneViewPassage: null
-                  }) &&
-                  editorDispatch({
-                    type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                    selectedComponentEditorSceneViewChoice: null
-                  })
-              }
-            }}
-          >
-            <DeleteOutlined />
-          </div>
         </>
       )}
     </div>

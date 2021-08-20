@@ -1,6 +1,6 @@
 import logger from '../../lib/logger'
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 import {
   ComponentId,
@@ -12,6 +12,8 @@ import {
 } from '../../data/types'
 
 import { useJump, usePassagesBySceneRef, useScenes } from '../../hooks'
+
+import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { Button, Divider, Select } from 'antd'
 import { RollbackOutlined } from '@ant-design/icons'
@@ -75,7 +77,7 @@ const JumpSelect: React.FC<{
             <h2>Scene</h2>
           </Divider>
 
-          <div className={styles.selectWrapper}>
+          <div className={`${styles.selectWrapper} nodrag`}>
             {selectedSceneId && (
               <>
                 <Select value={selectedSceneId} onChange={onChange}>
@@ -108,7 +110,7 @@ const JumpSelect: React.FC<{
             <h2>Passage</h2>
           </Divider>
 
-          <div className={styles.selectWrapper}>
+          <div className={`${styles.selectWrapper} nodrag`}>
             {selectedPassageId && (
               <>
                 <Select value={selectedPassageId} onChange={onChange}>
@@ -144,7 +146,7 @@ const JumpSelect: React.FC<{
                     onChange(scene.children[0][1])
                   }
                 }}
-                className={styles.jumpToBtn}
+                className={`${styles.jumpToBtn} nodrag`}
               >
                 Jump to Passage
               </Button>
@@ -163,6 +165,8 @@ const JumpTo: React.FC<{
 }> = ({ studioId, jumpId, onRemove }) => {
   const jump = useJump(studioId, jumpId, [studioId, jumpId])
 
+  const { editor, editorDispatch } = useContext(EditorContext)
+
   async function onChangeRoutePart(
     componentType: COMPONENT_TYPE,
     componentId: ComponentId | null
@@ -174,6 +178,20 @@ const JumpTo: React.FC<{
             (await api().jumps.saveJumpRoute(studioId, jump.id, [componentId]))
 
           if (!componentId) {
+            if (editor.selectedComponentEditorSceneViewJump) {
+              editorDispatch({
+                type:
+                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS,
+                totalComponentEditorSceneViewSelectedJumps: 0
+              })
+
+              editorDispatch({
+                type:
+                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+                selectedComponentEditorSceneViewJump: null
+              })
+            }
+
             await api().games.saveJumpRefToGame(studioId, jump.gameId, null)
 
             await api().jumps.removeJump(studioId, jump.id)
