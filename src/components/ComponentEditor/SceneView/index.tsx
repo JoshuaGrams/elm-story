@@ -41,6 +41,11 @@ import ReactFlow, {
 } from 'react-flow-renderer'
 
 import { Button } from 'antd'
+import {
+  AlignLeftOutlined,
+  ForwardOutlined,
+  PlusOutlined
+} from '@ant-design/icons'
 
 import ContextMenu from './ContextMenu'
 import RouteEdge, { RouteEdgeData } from './RouteEdge'
@@ -52,10 +57,11 @@ import styles from './styles.module.less'
 import api from '../../../api'
 
 export enum DEFAULT_NODE_SIZE {
-  PASSAGE_WIDTH = 197,
-  PASSAGE_HEIGHT = 68,
-  JUMP_WIDTH = 230,
-  JUMP_HEIGHT = 200
+  PASSAGE_WIDTH = 198,
+  PASSAGE_HEIGHT = 69,
+  JUMP_WIDTH = 214,
+  JUMP_HEIGHT = 117,
+  JUMP_HEIGHT_EXTENDED = 171
 }
 
 export const SceneViewTools: React.FC<{
@@ -101,7 +107,8 @@ export const SceneViewTools: React.FC<{
               }
             }}
           >
-            Add Passage
+            <PlusOutlined />
+            <AlignLeftOutlined />
           </Button>
 
           {/* Add Jump Button */}
@@ -117,7 +124,10 @@ export const SceneViewTools: React.FC<{
                     DEFAULT_NODE_SIZE.JUMP_WIDTH / 2,
                   y:
                     editor.selectedComponentEditorSceneViewCenter.y -
-                    DEFAULT_NODE_SIZE.JUMP_HEIGHT / 2
+                    (scene.children.length === 0
+                      ? DEFAULT_NODE_SIZE.JUMP_HEIGHT
+                      : DEFAULT_NODE_SIZE.JUMP_HEIGHT_EXTENDED) /
+                      2
                 }
               )
 
@@ -131,79 +141,21 @@ export const SceneViewTools: React.FC<{
                 })
             }}
           >
-            Add Jump
+            <PlusOutlined />
+            <ForwardOutlined />
           </Button>
 
-          {/* Remove Scene Button */}
           <Button
-            danger
-            onClick={async () => {
-              const sceneRemovePromises: Promise<void>[] = []
-              let foundSceneIndex = -1
-
+            onClick={() =>
+              !editor.centeredComponentEditorSceneViewSelection &&
               editorDispatch({
-                type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
-                removedComponent: {
-                  type: COMPONENT_TYPE.SCENE,
-                  id: sceneId
-                }
+                type:
+                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION,
+                centeredComponentEditorSceneViewSelection: true
               })
-
-              try {
-                if (scene.parent[0] === COMPONENT_TYPE.GAME) {
-                  const updatedGameChildren = (
-                    await api().games.getGame(studioId, scene.gameId)
-                  ).children
-
-                  foundSceneIndex = updatedGameChildren.findIndex(
-                    (child) => child[1] === scene.id
-                  )
-
-                  updatedGameChildren.splice(foundSceneIndex, 1)
-
-                  sceneRemovePromises.push(
-                    api().games.saveChildRefsToGame(
-                      studioId,
-                      scene.gameId,
-                      updatedGameChildren
-                    )
-                  )
-                }
-
-                if (
-                  scene.parent[0] === COMPONENT_TYPE.FOLDER &&
-                  scene.parent[1]
-                ) {
-                  const updatedFolderChildren = (
-                    await api().folders.getFolder(studioId, scene.parent[1])
-                  ).children
-
-                  foundSceneIndex = updatedFolderChildren.findIndex(
-                    (child) => child[1] === scene.id
-                  )
-
-                  updatedFolderChildren.splice(foundSceneIndex, 1)
-
-                  sceneRemovePromises.push(
-                    api().folders.saveChildRefsToFolder(
-                      studioId,
-                      scene.parent[1],
-                      updatedFolderChildren
-                    )
-                  )
-                }
-
-                sceneRemovePromises.push(
-                  api().scenes.removeScene(studioId, sceneId)
-                )
-
-                await Promise.all(sceneRemovePromises)
-              } catch (error) {
-                throw error
-              }
-            }}
+            }
           >
-            Remove Scene
+            Center Selection
           </Button>
         </>
       )}
@@ -344,12 +296,13 @@ const SceneView: React.FC<{
     passages = usePassagesBySceneRef(studioId, sceneId)
 
   const currentZoom = useStoreState((state) => state.transform[2]),
+    nodes = useStoreState((state) => state.nodes),
     selectedElements = useStoreState((state) => state.selectedElements),
     setInternalElements = useStoreActions((actions) => actions.setElements),
     setSelectedElements = useStoreActions(
       (actions) => actions.setSelectedElements
     ),
-    { transform, project } = useZoomPanHelper()
+    { transform, project, setCenter } = useZoomPanHelper()
 
   const [ready, setReady] = useState(false),
     // TODO: Support multiple selected jump and passages?
@@ -750,6 +703,59 @@ const SceneView: React.FC<{
     foundElement && setSelectedElements([foundElement])
   }
 
+  function centerSelection() {
+    if (nodes && selectedElements) {
+      if (selectedElements.length === 1) {
+        const foundNode = nodes.find(
+          (node) => node.id === selectedElements[0].id
+        )
+
+        foundNode &&
+          setCenter(
+            foundNode.position.x + foundNode.__rf.width / 2,
+            foundNode.position.y + foundNode.__rf.height / 2,
+            currentZoom
+          )
+      }
+
+      if (selectedElements.length > 1) {
+        const selectedNodes = nodes.filter(
+          (node) =>
+            selectedElements.findIndex((element) => node.id === element.id) !==
+            -1
+        )
+
+        const minXElement = selectedNodes.reduce((acc, loc) =>
+            acc.position.x < loc.position.x ? acc : loc
+          ),
+          maxXElement = selectedNodes.reduce((acc, loc) =>
+            acc.position.x > loc.position.x ? acc : loc
+          ),
+          minYElement = selectedNodes.reduce((acc, loc) =>
+            acc.position.y < loc.position.y ? acc : loc
+          ),
+          maxYElement = selectedNodes.reduce((acc, loc) =>
+            acc.position.y > loc.position.y ? acc : loc
+          )
+
+        const foundWidth =
+            selectedNodes.find((node) => node.id === maxXElement.id)?.__rf
+              .width || 0,
+          foundHeight =
+            selectedNodes.find((node) => node.id === maxYElement.id)?.__rf
+              .height || 0
+
+        setCenter(
+          (minXElement.position.x + maxXElement.position.x + foundWidth) / 2,
+          (minYElement.position.y + maxYElement.position.y + foundHeight) / 2,
+          currentZoom
+        )
+      }
+
+      setSelectedSceneViewCenter()
+    }
+  }
+
   useEffect(() => {
     logger.info(`SceneView->scene,passages,routes->useEffect`)
 
@@ -966,6 +972,29 @@ const SceneView: React.FC<{
       })
     }
   }, [editor.savedComponent, elements])
+
+  useEffect(() => {
+    if (
+      editor.centeredComponentEditorSceneViewSelection &&
+      editor.selectedGameOutlineComponent.id === sceneId
+    ) {
+      logger.info(
+        `SceneView->editor.centeredComponentEditorSceneViewSelection-useEffect`
+      )
+
+      centerSelection()
+
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION,
+        centeredComponentEditorSceneViewSelection: false
+      })
+    }
+  }, [
+    editor.centeredComponentEditorSceneViewSelection,
+    nodes,
+    selectedElements,
+    currentZoom
+  ])
 
   return (
     <>

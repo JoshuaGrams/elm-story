@@ -35,6 +35,7 @@ interface EditorState {
   selectedComponentEditorSceneViewPassage: ComponentId | null
   selectedComponentEditorSceneViewRoute: ComponentId | null
   selectedComponentEditorSceneViewChoice: ComponentId | null
+  centeredComponentEditorSceneViewSelection: boolean
   selectedComponentEditorComponents: {
     id?: ComponentId
     type?: COMPONENT_TYPE
@@ -60,6 +61,7 @@ export enum EDITOR_ACTION_TYPE {
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE',
+  COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION = 'COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION',
   COMPONENT_EDITOR_SELECT = 'COMPONENT_EDITOR_SELECT',
   COMPONENT_EDITOR_CLOSE_TAB = 'COMPONENT_EDITOR_CLOSE_TAB'
 }
@@ -142,6 +144,10 @@ type EditorActionType =
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE
       selectedComponentEditorSceneViewChoice: ComponentId | null
+    }
+  | {
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION
+      centeredComponentEditorSceneViewSelection: boolean
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SELECT
@@ -241,6 +247,12 @@ const editorReducer = (
         selectedComponentEditorSceneViewChoice:
           action.selectedComponentEditorSceneViewChoice
       }
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION:
+      return {
+        ...state,
+        centeredComponentEditorSceneViewSelection:
+          action.centeredComponentEditorSceneViewSelection
+      }
     case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SELECT:
       return {
         ...state,
@@ -296,6 +308,7 @@ const defaultEditorState: EditorState = {
   selectedComponentEditorSceneViewPassage: null,
   selectedComponentEditorSceneViewRoute: null,
   selectedComponentEditorSceneViewChoice: null,
+  centeredComponentEditorSceneViewSelection: false,
   selectedComponentEditorComponents: [],
   closedEditorTab: { id: undefined, type: undefined }
 }
