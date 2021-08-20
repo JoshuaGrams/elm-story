@@ -4,7 +4,6 @@ import useStudios, { useStudio } from './useStudios'
 import useGames, { useGame } from './useGames'
 import useFolders, { useFolder } from './useFolders'
 import useJumps, { useJump, useJumpsBySceneRef } from './useJumps'
-import useChapters, { useChapter } from './useChapters'
 import useScenes, { useScenesByChapterRef, useScene } from './useScenes'
 import useRoutes, {
   useRoute,
@@ -38,8 +37,6 @@ export {
   useJumps,
   useJump,
   useJumpsBySceneRef,
-  useChapters,
-  useChapter,
   useScenes,
   useScene,
   useScenesByChapterRef,
