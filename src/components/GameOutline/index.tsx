@@ -34,6 +34,9 @@ import styles from './styles.module.less'
 
 import api from '../../api'
 
+// TODO: build type for item.data
+// { title, type, selected, parentId, renaming }
+
 export type OnSelectComponent = (componentId: ComponentId) => void
 export type OnAddComponent = (
   parentComponentId: ComponentId,
@@ -752,6 +755,19 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
       const newTreeData = removeItemFromTree(treeData, item.id as ComponentId),
         parent = newTreeData.items[item.data.parentId]
 
+      if (
+        data.type === COMPONENT_TYPE.PASSAGE ||
+        (data.type === COMPONENT_TYPE.SCENE &&
+          editor.selectedComponentEditorSceneViewPassage &&
+          item.children.includes(
+            editor.selectedComponentEditorSceneViewPassage
+          ))
+      )
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+          selectedComponentEditorSceneViewPassage: null
+        })
+
       editorDispatch({
         type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
         removedComponent: { id: componentId, type: data.type }
@@ -1014,15 +1030,16 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
       setTreeData(removeItemFromTree(treeData, editor.removedComponent.id))
 
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-        selectedGameOutlineComponent: {
-          id: undefined,
-          expanded: false,
-          type: undefined,
-          title: undefined
-        }
-      })
+      if (editor.removedComponent.type !== COMPONENT_TYPE.PASSAGE)
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+          selectedGameOutlineComponent: {
+            id: undefined,
+            expanded: false,
+            type: undefined,
+            title: undefined
+          }
+        })
     }
   }, [editor.removedComponent])
 

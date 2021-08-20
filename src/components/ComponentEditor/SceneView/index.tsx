@@ -1057,6 +1057,12 @@ const SceneView: React.FC<{
                       if (scene && componentId)
                         try {
                           editorDispatch({
+                            type:
+                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                            selectedComponentEditorSceneViewPassage: null
+                          })
+
+                          editorDispatch({
                             type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
                             removedComponent: {
                               type: COMPONENT_TYPE.PASSAGE,
