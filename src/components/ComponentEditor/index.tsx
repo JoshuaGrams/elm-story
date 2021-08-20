@@ -181,15 +181,16 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
 
     if (dockLayout.current && changingTabId) {
       const oldLayoutParentPanel = dockLayout.current.find(changingTabId)
-        ?.parent as PanelData | undefined
+          ?.parent as PanelData | undefined,
+        newLayoutParentPanel =
+          (oldLayoutParentPanel?.id &&
+            (findBox(newLayout as LayoutData, oldLayoutParentPanel.id) as
+              | PanelData
+              | undefined)) ||
+          undefined
 
       // Set active panel ID
       if (oldLayoutParentPanel?.id) {
-        const newLayoutParentPanel = findBox(
-          newLayout as LayoutData,
-          oldLayoutParentPanel.id
-        ) as PanelData | undefined
-
         if (newLayoutParentPanel) {
           logger.info(
             `setting active panel to existing parent '${newLayoutParentPanel.id}'`
@@ -233,14 +234,26 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
             selectedComponentEditorSceneViewJump: null
           })
 
-        // TODO: This should be the next available
+        const removedTabIndex =
+            oldLayoutParentPanel?.tabs.findIndex(
+              (tab) => tab.id === changingTabId
+            ) || 0,
+          tabToSelectId =
+            newLayoutParentPanel?.tabs[
+              removedTabIndex > 0 ? removedTabIndex - 1 : 0
+            ].id,
+          tabToSelect =
+            (tabToSelectId &&
+              clonedTabs.find((clonedTab) => clonedTab.id === tabToSelectId)) ||
+            undefined
+
         editorDispatch({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
           selectedGameOutlineComponent: {
-            id: game.id,
+            id: tabToSelect?.id || game.id,
             expanded: true,
-            title: game.title,
-            type: COMPONENT_TYPE.GAME
+            title: tabToSelect?.title || game.title,
+            type: tabToSelect?.type || COMPONENT_TYPE.GAME
           }
         })
       }
