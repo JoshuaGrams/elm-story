@@ -222,6 +222,7 @@ const PassageNode: React.FC<NodeProps<{
   sceneId: ComponentId
   passageId: ComponentId
   selectedChoice: ComponentId | null
+  onEditPassage: (passageId: ComponentId) => void
   onChoiceSelect: (passageId: ComponentId, choiceId: ComponentId | null) => void
   type: COMPONENT_TYPE
 }>> = ({ data }) => {
@@ -322,6 +323,7 @@ const PassageNode: React.FC<NodeProps<{
                     : '5px'
               }}
               data-component-id={passage.id}
+              onDoubleClick={() => passage.id && data.onEditPassage(passage.id)}
             >
               <AlignLeftOutlined className={styles.headerIcon} />
               {passage.title}

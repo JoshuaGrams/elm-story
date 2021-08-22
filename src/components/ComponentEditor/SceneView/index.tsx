@@ -51,6 +51,7 @@ import ContextMenu from './ContextMenu'
 import RouteEdge, { RouteEdgeData } from './RouteEdge'
 import PassageNode from './PassageNode'
 import JumpNode from './JumpNode'
+import PassageView from '../PassageView'
 
 import styles from './styles.module.less'
 
@@ -64,10 +65,16 @@ export enum DEFAULT_NODE_SIZE {
   JUMP_HEIGHT_EXTENDED = 171
 }
 
+export enum SCENE_VIEW_CONTEXT {
+  SCENE = 'SCENE',
+  PASSAGE = 'PASSAGE'
+}
+
 export const SceneViewTools: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
-}> = ({ studioId, sceneId }) => {
+  context: SCENE_VIEW_CONTEXT
+}> = ({ studioId, sceneId, context }) => {
   const scene = useScene(studioId, sceneId, [sceneId])
 
   const { editor, editorDispatch } = useContext(EditorContext)
@@ -76,87 +83,91 @@ export const SceneViewTools: React.FC<{
     <>
       {scene && (
         <>
-          {/* Add Passage Button */}
-          <Button
-            onClick={async () => {
-              try {
-                const passageId = await addComponentToScene(
-                  studioId,
-                  scene,
-                  COMPONENT_TYPE.PASSAGE,
-                  {
-                    x:
-                      editor.selectedComponentEditorSceneViewCenter.x -
-                      DEFAULT_NODE_SIZE.PASSAGE_WIDTH / 2,
-                    y:
-                      editor.selectedComponentEditorSceneViewCenter.y -
-                      DEFAULT_NODE_SIZE.PASSAGE_HEIGHT / 2
-                  }
-                )
+          {!editor.selectedComponentEditorSceneViewPassage && (
+            <>
+              {/* Add Passage Button */}
+              <Button
+                onClick={async () => {
+                  try {
+                    const passageId = await addComponentToScene(
+                      studioId,
+                      scene,
+                      COMPONENT_TYPE.PASSAGE,
+                      {
+                        x:
+                          editor.selectedComponentEditorSceneViewCenter.x -
+                          DEFAULT_NODE_SIZE.PASSAGE_WIDTH / 2,
+                        y:
+                          editor.selectedComponentEditorSceneViewCenter.y -
+                          DEFAULT_NODE_SIZE.PASSAGE_HEIGHT / 2
+                      }
+                    )
 
-                if (passageId)
-                  editorDispatch({
-                    type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
-                    savedComponent: {
-                      id: passageId,
-                      type: COMPONENT_TYPE.PASSAGE
+                    if (passageId)
+                      editorDispatch({
+                        type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
+                        savedComponent: {
+                          id: passageId,
+                          type: COMPONENT_TYPE.PASSAGE
+                        }
+                      })
+                  } catch (error) {
+                    throw new Error(error)
+                  }
+                }}
+              >
+                <PlusOutlined />
+                <AlignLeftOutlined />
+              </Button>
+
+              {/* Add Jump Button */}
+              <Button
+                onClick={async () => {
+                  const jumpId = await addComponentToScene(
+                    studioId,
+                    scene,
+                    COMPONENT_TYPE.JUMP,
+                    {
+                      x:
+                        editor.selectedComponentEditorSceneViewCenter.x -
+                        DEFAULT_NODE_SIZE.JUMP_WIDTH / 2,
+                      y:
+                        editor.selectedComponentEditorSceneViewCenter.y -
+                        (scene.children.length === 0
+                          ? DEFAULT_NODE_SIZE.JUMP_HEIGHT
+                          : DEFAULT_NODE_SIZE.JUMP_HEIGHT_EXTENDED) /
+                          2
                     }
+                  )
+
+                  if (jumpId)
+                    editorDispatch({
+                      type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
+                      savedComponent: {
+                        id: jumpId,
+                        type: COMPONENT_TYPE.JUMP
+                      }
+                    })
+                }}
+              >
+                <PlusOutlined />
+                <ForwardOutlined />
+              </Button>
+
+              <Button
+                onClick={() =>
+                  !editor.centeredComponentEditorSceneViewSelection &&
+                  editorDispatch({
+                    type:
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION,
+                    centeredComponentEditorSceneViewSelection: true
                   })
-              } catch (error) {
-                throw new Error(error)
-              }
-            }}
-          >
-            <PlusOutlined />
-            <AlignLeftOutlined />
-          </Button>
-
-          {/* Add Jump Button */}
-          <Button
-            onClick={async () => {
-              const jumpId = await addComponentToScene(
-                studioId,
-                scene,
-                COMPONENT_TYPE.JUMP,
-                {
-                  x:
-                    editor.selectedComponentEditorSceneViewCenter.x -
-                    DEFAULT_NODE_SIZE.JUMP_WIDTH / 2,
-                  y:
-                    editor.selectedComponentEditorSceneViewCenter.y -
-                    (scene.children.length === 0
-                      ? DEFAULT_NODE_SIZE.JUMP_HEIGHT
-                      : DEFAULT_NODE_SIZE.JUMP_HEIGHT_EXTENDED) /
-                      2
                 }
-              )
-
-              if (jumpId)
-                editorDispatch({
-                  type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
-                  savedComponent: {
-                    id: jumpId,
-                    type: COMPONENT_TYPE.JUMP
-                  }
-                })
-            }}
-          >
-            <PlusOutlined />
-            <ForwardOutlined />
-          </Button>
-
-          <Button
-            onClick={() =>
-              !editor.centeredComponentEditorSceneViewSelection &&
-              editorDispatch({
-                type:
-                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION,
-                centeredComponentEditorSceneViewSelection: true
-              })
-            }
-          >
-            Center Selection
-          </Button>
+              >
+                Center Selection
+              </Button>
+            </>
+          )}
         </>
       )}
     </>
@@ -317,6 +328,11 @@ const SceneView: React.FC<{
     [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
     [elements, setElements] = useState<FlowElement[]>([]),
     [paneMoving, setPaneMoving] = useState(false)
+
+  const [passageViewToEdit, setPassageViewToEdit] = useState<{
+    visible: boolean
+    id: ComponentId | undefined
+  }>({ visible: false, id: undefined })
 
   function setSelectedSceneViewCenter() {
     editorDispatch({
@@ -773,6 +789,7 @@ const SceneView: React.FC<{
         jumpId?: ComponentId
         passageId?: ComponentId
         selectedChoice?: ComponentId | null
+        onEditPassage?: (passageId: ComponentId) => void
         onChoiceSelect?: (
           passageId: ComponentId,
           choiceId: ComponentId | null
@@ -804,6 +821,8 @@ const SceneView: React.FC<{
               sceneId: scene.id,
               passageId: passage.id,
               selectedChoice: null,
+              onEditPassage: (id: ComponentId) =>
+                setPassageViewToEdit({ visible: true, id }),
               onChoiceSelect,
               type: COMPONENT_TYPE.PASSAGE
             },
@@ -1003,7 +1022,19 @@ const SceneView: React.FC<{
           id={`scene-view-${sceneId}`}
           className={styles.SceneView}
           ref={flowWrapperRef}
+          style={{ width: '100%', height: '100%' }}
         >
+          {scene && passageViewToEdit.id && (
+            <PassageView
+              studioId={studioId}
+              scene={scene}
+              passageId={passageViewToEdit.id}
+              onClose={() =>
+                setPassageViewToEdit({ visible: false, id: undefined })
+              }
+            />
+          )}
+
           <ContextMenu
             trigger={`scene-view-${sceneId}`}
             features={[
@@ -1070,7 +1101,10 @@ const SceneView: React.FC<{
                   [
                     'Edit Passage',
                     ({ componentId }) =>
-                      logger.info(`edit passage: ${componentId}`)
+                      setPassageViewToEdit({
+                        visible: true,
+                        id: componentId || undefined
+                      })
                   ],
                   [
                     'Remove Passage',

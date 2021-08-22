@@ -7,13 +7,15 @@ import React, {
   useState,
   useEffect,
   useContext,
-  useCallback
+  useCallback,
+  useRef
 } from 'react'
 
 import {
   ComponentId,
   COMPONENT_TYPE,
   DEFAULT_PASSAGE_CONTENT,
+  Scene,
   StudioId
 } from '../../../data/types'
 
@@ -25,12 +27,14 @@ import {
 import { usePassage } from '../../../hooks'
 
 import { BaseEditor, createEditor, Descendant } from 'slate'
+import { withHistory } from 'slate-history'
 import {
   Slate,
   Editable,
   withReact,
   ReactEditor,
-  RenderElementProps
+  RenderElementProps,
+  useFocused
 } from 'slate-react'
 
 import { Button } from 'antd'
@@ -38,6 +42,7 @@ import { Button } from 'antd'
 import styles from './styles.module.less'
 
 import api from '../../../api'
+import useEventListener from '@use-it/event-listener'
 
 export type CustomText = { text: string }
 export type CustomElement = { type: 'paragraph'; children: CustomText[] }
@@ -112,17 +117,26 @@ const ParagraphElement: React.FC<RenderElementProps> = (props) => {
 
 const PassageView: React.FC<{
   studioId: StudioId
+  scene: Scene
   passageId: ComponentId
-}> = ({ studioId, passageId }) => {
-  const passage = usePassage(studioId, passageId)
+  onClose: () => void
+}> = ({ studioId, scene, passageId, onClose }) => {
+  const passage = usePassage(studioId, passageId, [studioId, passageId]),
+    sceneIdRef = useRef<ComponentId | undefined>(undefined)
 
-  const editor = useMemo(() => withReact(createEditor()), [])
+  const slateEditor = useMemo<ReactEditor>(
+    () => withHistory(withReact(createEditor())),
+    []
+  )
+
+  const isFocused = useFocused()
+
+  const { editor, editorDispatch } = useContext(EditorContext)
 
   const [ready, setReady] = useState(false),
     [passageContent, setPassageContent] = useState<Descendant[]>(
       initialPassageContent
-    ),
-    [editorIsFocused, setEditorIsFocused] = useState(false)
+    )
 
   const renderElement = useCallback((props: RenderElementProps) => {
     switch (props.element.type) {
@@ -133,17 +147,49 @@ const PassageView: React.FC<{
     }
   }, [])
 
+  function close() {
+    if (editor.selectedGameOutlineComponent.id === scene.id || !scene.id)
+      onClose()
+  }
+
+  const onKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event) {
+        switch (event.key) {
+          case 'Escape':
+            close()
+            break
+          default:
+            break
+        }
+      }
+    },
+    [editor.selectedGameOutlineComponent.id, scene]
+  )
+
+  useEventListener('keydown', onKeyDown, document)
+
   useEffect(() => {
     logger.info(`PassageView->passage->useEffect`)
 
-    passage &&
-      !ready &&
+    if (passage && !ready) {
+      sceneIdRef.current = passage.sceneId
+
       setPassageContent(
         passage.content ? JSON.parse(passage.content) : initialPassageContent
       )
+    }
 
     passage && setReady(true)
   }, [passage, ready])
+
+  useEffect(() => {
+    if (ready) ReactEditor.focus(slateEditor)
+  }, [ready])
+
+  useEffect(() => {
+    logger.info(`PassageView->isFocused->useEffect: ${isFocused}`)
+  }, [isFocused])
 
   useEffect(() => {
     logger.info(`PassageView->useEffect`)
@@ -153,7 +199,7 @@ const PassageView: React.FC<{
     <>
       {passage && (
         <Slate
-          editor={editor}
+          editor={slateEditor}
           value={passageContent}
           onChange={async (newContent) => {
             setPassageContent(newContent)
@@ -165,26 +211,33 @@ const PassageView: React.FC<{
             )
           }}
         >
-          <div
-            className={styles.PassageView}
-            onClick={() =>
-              passage && ready && !editorIsFocused && ReactEditor.focus(editor)
-            }
-          >
-            <>
+          <div className={styles.PassageView} onClick={close}>
+            <div
+              className={styles.editableContainer}
+              onClick={(event) => {
+                event.stopPropagation()
+
+                editor.selectedGameOutlineComponent.id !== scene.id &&
+                  editorDispatch({
+                    type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+                    selectedGameOutlineComponent: {
+                      expanded: true,
+                      id: scene.id,
+                      title: scene.title,
+                      type: COMPONENT_TYPE.SCENE
+                    }
+                  })
+              }}
+            >
               {!(passageContent[0] as CustomElement).children[0].text &&
-                !editorIsFocused && (
+                !isFocused && (
                   <div className={styles.placeholder}>
-                    Click here to start typing...
+                    Enter passage text...
                   </div>
                 )}
 
-              <Editable
-                renderElement={renderElement}
-                onFocus={() => setEditorIsFocused(true)}
-                onBlur={() => setEditorIsFocused(false)}
-              />
-            </>
+              <Editable renderElement={renderElement} />
+            </div>
           </div>
         </Slate>
       )}
