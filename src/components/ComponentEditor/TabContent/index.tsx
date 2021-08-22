@@ -14,7 +14,6 @@ import {
 
 import {
   useDebouncedResizeObserver,
-  useChapter,
   useGame,
   usePassage,
   useScene
@@ -52,9 +51,6 @@ const TabContent: React.FC<{
   switch (type) {
     case COMPONENT_TYPE.GAME:
       game = useGame(studioId, id)
-      break
-    case COMPONENT_TYPE.CHAPTER:
-      chapter = useChapter(studioId, id)
       break
     case COMPONENT_TYPE.SCENE:
       scene = useScene(studioId, id)
