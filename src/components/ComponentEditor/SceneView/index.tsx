@@ -676,30 +676,6 @@ const SceneView: React.FC<{
       }
     })
 
-    if (_totalSelectedJumps === 0 && _totalSelectedPassages === 0)
-      editorTabDispatch({
-        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
-        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_NONE
-      })
-
-    if (_totalSelectedJumps > 1 || _totalSelectedPassages > 1)
-      editorTabDispatch({
-        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
-        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION
-      })
-
-    if (_totalSelectedJumps === 1 && _totalSelectedPassages === 0)
-      editorTabDispatch({
-        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
-        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP
-      })
-
-    if (_totalSelectedJumps === 0 && _totalSelectedPassages === 1)
-      editorTabDispatch({
-        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
-        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP
-      })
-
     setTotalSelectedJumps(_totalSelectedJumps)
     setTotalSelectedPassages(_totalSelectedPassages)
     setTotalSelectedRoutes(_totalSelectedRoutes)
@@ -802,6 +778,48 @@ const SceneView: React.FC<{
 
       setSelectedSceneViewCenter()
     }
+  }
+
+  function setContext() {
+    if (
+      totalSelectedJumps === 0 &&
+      totalSelectedPassages === 0 &&
+      editorTab.sceneViewContext !== SCENE_VIEW_CONTEXT.SCENE_SELECTION_NONE
+    )
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_NONE
+      })
+
+    if (
+      totalSelectedJumps > 1 ||
+      (totalSelectedPassages > 1 &&
+        editorTab.sceneViewContext !== SCENE_VIEW_CONTEXT.SCENE_SELECTION)
+    )
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION
+      })
+
+    if (
+      totalSelectedJumps === 1 &&
+      totalSelectedPassages === 0 &&
+      editorTab.sceneViewContext !== SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP
+    )
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP
+      })
+
+    if (
+      totalSelectedJumps === 0 &&
+      totalSelectedPassages === 1 &&
+      editorTab.sceneViewContext !== SCENE_VIEW_CONTEXT.SCENE_SELECTION_PASSAGE
+    )
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_PASSAGE
+      })
   }
 
   useEffect(() => {
@@ -916,6 +934,8 @@ const SceneView: React.FC<{
     )
 
     if (editor.selectedGameOutlineComponent.id === sceneId) {
+      setContext()
+
       totalSelectedJumps !==
         editor.totalComponentEditorSceneViewSelectedJumps &&
         editorDispatch({
@@ -1047,6 +1067,17 @@ const SceneView: React.FC<{
     currentZoom
   ])
 
+  useEffect(() => {
+    if (passageViewToEdit.visible) {
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.PASSAGE
+      })
+    }
+
+    !passageViewToEdit.visible && setContext()
+  }, [passageViewToEdit.visible])
+
   return (
     <>
       {passages && (
@@ -1143,11 +1174,25 @@ const SceneView: React.FC<{
                     async ({ componentId }) => {
                       if (scene && componentId)
                         try {
-                          editorDispatch({
-                            type:
-                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                            selectedComponentEditorSceneViewPassage: null
-                          })
+                          await removeComponentFromScene(
+                            studioId,
+                            scene,
+                            COMPONENT_TYPE.PASSAGE,
+                            componentId
+                          )
+
+                          if (
+                            componentId ===
+                            editor.selectedComponentEditorSceneViewPassage
+                          ) {
+                            setTotalSelectedPassages(0)
+
+                            editorDispatch({
+                              type:
+                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                              selectedComponentEditorSceneViewPassage: null
+                            })
+                          }
 
                           editorDispatch({
                             type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
@@ -1156,13 +1201,6 @@ const SceneView: React.FC<{
                               id: componentId
                             }
                           })
-
-                          await removeComponentFromScene(
-                            studioId,
-                            scene,
-                            COMPONENT_TYPE.PASSAGE,
-                            componentId
-                          )
                         } catch (error) {
                           throw new Error(error)
                         }
@@ -1178,24 +1216,25 @@ const SceneView: React.FC<{
                     async ({ componentId }) => {
                       if (scene && componentId) {
                         try {
-                          editorDispatch({
-                            type:
-                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS,
-                            totalComponentEditorSceneViewSelectedJumps: 0
-                          })
-
-                          editorDispatch({
-                            type:
-                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
-                            selectedComponentEditorSceneViewJump: null
-                          })
-
                           await removeComponentFromScene(
                             studioId,
                             scene,
                             COMPONENT_TYPE.JUMP,
                             componentId
                           )
+
+                          if (
+                            componentId ===
+                            editor.selectedComponentEditorSceneViewJump
+                          ) {
+                            setTotalSelectedJumps(0)
+
+                            editorDispatch({
+                              type:
+                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+                              selectedComponentEditorSceneViewJump: null
+                            })
+                          }
                         } catch (error) {
                           throw new Error(error)
                         }
