@@ -23,6 +23,7 @@ import {
   EditorContext,
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
+import EditorTabProvider from '../../../contexts/EditorTabContext'
 
 import TabContentToolbar from './TabContentToolbar'
 
@@ -147,28 +148,30 @@ const TabContent: React.FC<{
   }, [type, tabContentViewWidth, tabContentViewHeight])
 
   return (
-    <div className={styles.TabContent}>
-      {/* This mask selects tab without interacting with tab content. */}
-      <div
-        onClick={onSelectTab}
-        onMouseDown={onSelectTab}
-        className={styles.interactionMask}
-        style={{
-          display:
-            editor.selectedGameOutlineComponent.id === id ? 'none' : 'block'
-        }}
-      />
-      <TabContentToolbar>{tools}</TabContentToolbar>
-      <div
-        ref={tabContentViewRef}
-        className={styles.TabContentView}
-        style={{
-          overflow: type === COMPONENT_TYPE.GAME ? 'hidden' : 'initial'
-        }}
-      >
-        {view}
+    <EditorTabProvider>
+      <div className={styles.TabContent}>
+        {/* This mask selects tab without interacting with tab content. */}
+        <div
+          onClick={onSelectTab}
+          onMouseDown={onSelectTab}
+          className={styles.interactionMask}
+          style={{
+            display:
+              editor.selectedGameOutlineComponent.id === id ? 'none' : 'block'
+          }}
+        />
+        <TabContentToolbar>{tools}</TabContentToolbar>
+        <div
+          ref={tabContentViewRef}
+          className={styles.TabContentView}
+          style={{
+            overflow: type === COMPONENT_TYPE.GAME ? 'hidden' : 'initial'
+          }}
+        >
+          {view}
+        </div>
       </div>
-    </div>
+    </EditorTabProvider>
   )
 }
 

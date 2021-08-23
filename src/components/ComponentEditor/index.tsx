@@ -34,7 +34,7 @@ import {
 
 import TabContent from './TabContent'
 import GameView, { GameViewTools } from './GameView'
-import SceneView, { SceneViewTools, SCENE_VIEW_CONTEXT } from './SceneView'
+import SceneView, { SceneViewTools } from './SceneView'
 
 import styles from './styles.module.less'
 
@@ -90,13 +90,7 @@ function getTabContent(
           studioId={studioId}
           id={id}
           type={type}
-          tools={
-            <SceneViewTools
-              studioId={studioId}
-              sceneId={id}
-              context={SCENE_VIEW_CONTEXT.SCENE}
-            />
-          }
+          tools={<SceneViewTools studioId={studioId} sceneId={id} />}
           view={
             <ReactFlowProvider>
               <SceneView studioId={studioId} sceneId={id} />

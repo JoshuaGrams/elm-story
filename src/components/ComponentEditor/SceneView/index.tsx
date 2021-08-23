@@ -15,6 +15,11 @@ import {
   EditorContext,
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
+import {
+  EditorTabContext,
+  EDITOR_TAB_ACTION_TYPE,
+  SCENE_VIEW_CONTEXT
+} from '../../../contexts/EditorTabContext'
 
 import {
   useDebouncedResizeObserver,
@@ -65,25 +70,21 @@ export enum DEFAULT_NODE_SIZE {
   JUMP_HEIGHT_EXTENDED = 171
 }
 
-export enum SCENE_VIEW_CONTEXT {
-  SCENE = 'SCENE',
-  PASSAGE = 'PASSAGE'
-}
-
 export const SceneViewTools: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
-  context: SCENE_VIEW_CONTEXT
-}> = ({ studioId, sceneId, context }) => {
+}> = ({ studioId, sceneId }) => {
   const scene = useScene(studioId, sceneId, [sceneId])
 
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { editor, editorDispatch } = useContext(EditorContext),
+    { editorTab } = useContext(EditorTabContext)
 
   return (
     <>
       {scene && (
         <>
-          {!editor.selectedComponentEditorSceneViewPassage && (
+          {editorTab.sceneViewContext ===
+            SCENE_VIEW_CONTEXT.SCENE_SELECTION_NONE && (
             <>
               {/* Add Passage Button */}
               <Button
@@ -153,7 +154,15 @@ export const SceneViewTools: React.FC<{
                 <PlusOutlined />
                 <ForwardOutlined />
               </Button>
+            </>
+          )}
 
+          {(editorTab.sceneViewContext === SCENE_VIEW_CONTEXT.SCENE_SELECTION ||
+            editorTab.sceneViewContext ===
+              SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP ||
+            editorTab.sceneViewContext ===
+              SCENE_VIEW_CONTEXT.SCENE_SELECTION_PASSAGE) &&
+            !editorTab.passageForEditing.visible && (
               <Button
                 onClick={() =>
                   !editor.centeredComponentEditorSceneViewSelection &&
@@ -166,8 +175,7 @@ export const SceneViewTools: React.FC<{
               >
                 Center Selection
               </Button>
-            </>
-          )}
+            )}
         </>
       )}
     </>
@@ -299,7 +307,8 @@ const SceneView: React.FC<{
     height: flowWrapperRefHeight
   } = useDebouncedResizeObserver(500)
 
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { editor, editorDispatch } = useContext(EditorContext),
+    { editorTab, editorTabDispatch } = useContext(EditorTabContext)
 
   const jumps = useJumpsBySceneRef(studioId, sceneId),
     scene = useScene(studioId, sceneId),
@@ -328,11 +337,6 @@ const SceneView: React.FC<{
     [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
     [elements, setElements] = useState<FlowElement[]>([]),
     [paneMoving, setPaneMoving] = useState(false)
-
-  const [passageViewToEdit, setPassageViewToEdit] = useState<{
-    visible: boolean
-    id: ComponentId | undefined
-  }>({ visible: false, id: undefined })
 
   function setSelectedSceneViewCenter() {
     editorDispatch({
@@ -772,6 +776,48 @@ const SceneView: React.FC<{
     }
   }
 
+  function setContext() {
+    if (
+      totalSelectedJumps === 0 &&
+      totalSelectedPassages === 0 &&
+      editorTab.sceneViewContext !== SCENE_VIEW_CONTEXT.SCENE_SELECTION_NONE
+    )
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_NONE
+      })
+
+    if (
+      totalSelectedJumps > 1 ||
+      (totalSelectedPassages > 1 &&
+        editorTab.sceneViewContext !== SCENE_VIEW_CONTEXT.SCENE_SELECTION)
+    )
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION
+      })
+
+    if (
+      totalSelectedJumps === 1 &&
+      totalSelectedPassages === 0 &&
+      editorTab.sceneViewContext !== SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP
+    )
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP
+      })
+
+    if (
+      totalSelectedJumps === 0 &&
+      totalSelectedPassages === 1 &&
+      editorTab.sceneViewContext !== SCENE_VIEW_CONTEXT.SCENE_SELECTION_PASSAGE
+    )
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_PASSAGE
+      })
+  }
+
   useEffect(() => {
     logger.info(`SceneView->scene,passages,routes->useEffect`)
 
@@ -822,7 +868,10 @@ const SceneView: React.FC<{
               passageId: passage.id,
               selectedChoice: null,
               onEditPassage: (id: ComponentId) =>
-                setPassageViewToEdit({ visible: true, id }),
+                editorTabDispatch({
+                  type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
+                  passageForEditing: { id, visible: true }
+                }),
               onChoiceSelect,
               type: COMPONENT_TYPE.PASSAGE
             },
@@ -884,6 +933,8 @@ const SceneView: React.FC<{
     )
 
     if (editor.selectedGameOutlineComponent.id === sceneId) {
+      setContext()
+
       totalSelectedJumps !==
         editor.totalComponentEditorSceneViewSelectedJumps &&
         editorDispatch({
@@ -1015,6 +1066,39 @@ const SceneView: React.FC<{
     currentZoom
   ])
 
+  useEffect(() => {
+    logger.info(
+      `SceneView->editorTab.passageForEditing->useEffect: ${editorTab.passageForEditing.visible}`
+    )
+
+    if (
+      editor.selectedGameOutlineComponent.id === sceneId &&
+      editorTab.passageForEditing.visible
+    ) {
+      editor.selectedComponentEditorSceneViewPassage &&
+        editor.selectedComponentEditorSceneViewPassage !==
+          editorTab.passageForEditing.id &&
+        editorTabDispatch({
+          type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
+          passageForEditing: {
+            id: editor.selectedComponentEditorSceneViewPassage,
+            visible: true
+          }
+        })
+
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.PASSAGE
+      })
+    }
+
+    !editorTab.passageForEditing.visible && setContext()
+  }, [
+    editorTab.passageForEditing,
+    editor.selectedGameOutlineComponent,
+    editor.selectedComponentEditorSceneViewPassage
+  ])
+
   return (
     <>
       {passages && (
@@ -1024,13 +1108,16 @@ const SceneView: React.FC<{
           ref={flowWrapperRef}
           style={{ width: '100%', height: '100%' }}
         >
-          {scene && passageViewToEdit.id && (
+          {scene && editorTab.passageForEditing.id && (
             <PassageView
               studioId={studioId}
               scene={scene}
-              passageId={passageViewToEdit.id}
+              passageId={editorTab.passageForEditing.id}
               onClose={() =>
-                setPassageViewToEdit({ visible: false, id: undefined })
+                editorTabDispatch({
+                  type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
+                  passageForEditing: { id: undefined, visible: false }
+                })
               }
             />
           )}
@@ -1100,22 +1187,53 @@ const SceneView: React.FC<{
                 items: [
                   [
                     'Edit Passage',
-                    ({ componentId }) =>
-                      setPassageViewToEdit({
-                        visible: true,
-                        id: componentId || undefined
-                      })
+                    ({ componentId }) => {
+                      if (componentId) {
+                        if (
+                          componentId !==
+                          editor.selectedComponentEditorSceneViewPassage
+                        ) {
+                          editorDispatch({
+                            type:
+                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                            selectedComponentEditorSceneViewPassage: componentId
+                          })
+                        }
+
+                        editorTabDispatch({
+                          type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
+                          passageForEditing: {
+                            id: componentId,
+                            visible: true
+                          }
+                        })
+                      }
+                    }
                   ],
                   [
                     'Remove Passage',
                     async ({ componentId }) => {
                       if (scene && componentId)
                         try {
-                          editorDispatch({
-                            type:
-                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                            selectedComponentEditorSceneViewPassage: null
-                          })
+                          await removeComponentFromScene(
+                            studioId,
+                            scene,
+                            COMPONENT_TYPE.PASSAGE,
+                            componentId
+                          )
+
+                          if (
+                            componentId ===
+                            editor.selectedComponentEditorSceneViewPassage
+                          ) {
+                            setTotalSelectedPassages(0)
+
+                            editorDispatch({
+                              type:
+                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                              selectedComponentEditorSceneViewPassage: null
+                            })
+                          }
 
                           editorDispatch({
                             type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
@@ -1124,13 +1242,6 @@ const SceneView: React.FC<{
                               id: componentId
                             }
                           })
-
-                          await removeComponentFromScene(
-                            studioId,
-                            scene,
-                            COMPONENT_TYPE.PASSAGE,
-                            componentId
-                          )
                         } catch (error) {
                           throw new Error(error)
                         }
@@ -1146,24 +1257,25 @@ const SceneView: React.FC<{
                     async ({ componentId }) => {
                       if (scene && componentId) {
                         try {
-                          editorDispatch({
-                            type:
-                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS,
-                            totalComponentEditorSceneViewSelectedJumps: 0
-                          })
-
-                          editorDispatch({
-                            type:
-                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
-                            selectedComponentEditorSceneViewJump: null
-                          })
-
                           await removeComponentFromScene(
                             studioId,
                             scene,
                             COMPONENT_TYPE.JUMP,
                             componentId
                           )
+
+                          if (
+                            componentId ===
+                            editor.selectedComponentEditorSceneViewJump
+                          ) {
+                            setTotalSelectedJumps(0)
+
+                            editorDispatch({
+                              type:
+                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+                              selectedComponentEditorSceneViewJump: null
+                            })
+                          }
                         } catch (error) {
                           throw new Error(error)
                         }
