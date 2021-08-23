@@ -15,6 +15,11 @@ import {
   EditorContext,
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
+import {
+  EditorTabContext,
+  EDITOR_TAB_ACTION_TYPE,
+  SCENE_VIEW_CONTEXT
+} from '../../../contexts/EditorTabContext'
 
 import {
   useDebouncedResizeObserver,
@@ -65,25 +70,21 @@ export enum DEFAULT_NODE_SIZE {
   JUMP_HEIGHT_EXTENDED = 171
 }
 
-export enum SCENE_VIEW_CONTEXT {
-  SCENE = 'SCENE',
-  PASSAGE = 'PASSAGE'
-}
-
 export const SceneViewTools: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
-  context: SCENE_VIEW_CONTEXT
-}> = ({ studioId, sceneId, context }) => {
+}> = ({ studioId, sceneId }) => {
   const scene = useScene(studioId, sceneId, [sceneId])
 
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { editor, editorDispatch } = useContext(EditorContext),
+    { editorTab } = useContext(EditorTabContext)
 
   return (
     <>
       {scene && (
         <>
-          {!editor.selectedComponentEditorSceneViewPassage && (
+          {editorTab.sceneViewContext ===
+            SCENE_VIEW_CONTEXT.SCENE_SELECTION_NONE && (
             <>
               {/* Add Passage Button */}
               <Button
@@ -153,20 +154,26 @@ export const SceneViewTools: React.FC<{
                 <PlusOutlined />
                 <ForwardOutlined />
               </Button>
-
-              <Button
-                onClick={() =>
-                  !editor.centeredComponentEditorSceneViewSelection &&
-                  editorDispatch({
-                    type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION,
-                    centeredComponentEditorSceneViewSelection: true
-                  })
-                }
-              >
-                Center Selection
-              </Button>
             </>
+          )}
+
+          {(editorTab.sceneViewContext === SCENE_VIEW_CONTEXT.SCENE_SELECTION ||
+            editorTab.sceneViewContext ===
+              SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP ||
+            editorTab.sceneViewContext ===
+              SCENE_VIEW_CONTEXT.SCENE_SELECTION_PASSAGE) && (
+            <Button
+              onClick={() =>
+                !editor.centeredComponentEditorSceneViewSelection &&
+                editorDispatch({
+                  type:
+                    EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION,
+                  centeredComponentEditorSceneViewSelection: true
+                })
+              }
+            >
+              Center Selection
+            </Button>
           )}
         </>
       )}
@@ -299,7 +306,8 @@ const SceneView: React.FC<{
     height: flowWrapperRefHeight
   } = useDebouncedResizeObserver(500)
 
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { editor, editorDispatch } = useContext(EditorContext),
+    { editorTab, editorTabDispatch } = useContext(EditorTabContext)
 
   const jumps = useJumpsBySceneRef(studioId, sceneId),
     scene = useScene(studioId, sceneId),
@@ -667,6 +675,30 @@ const SceneView: React.FC<{
           break
       }
     })
+
+    if (_totalSelectedJumps === 0 && _totalSelectedPassages === 0)
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_NONE
+      })
+
+    if (_totalSelectedJumps > 1 || _totalSelectedPassages > 1)
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION
+      })
+
+    if (_totalSelectedJumps === 1 && _totalSelectedPassages === 0)
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP
+      })
+
+    if (_totalSelectedJumps === 0 && _totalSelectedPassages === 1)
+      editorTabDispatch({
+        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
+        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP
+      })
 
     setTotalSelectedJumps(_totalSelectedJumps)
     setTotalSelectedPassages(_totalSelectedPassages)
