@@ -133,10 +133,9 @@ const PassageView: React.FC<{
 
   const { editor, editorDispatch } = useContext(EditorContext)
 
-  const [ready, setReady] = useState(false),
-    [passageContent, setPassageContent] = useState<Descendant[]>(
-      initialPassageContent
-    )
+  const [passageContent, setPassageContent] = useState<Descendant[]>(
+    initialPassageContent
+  )
 
   const renderElement = useCallback((props: RenderElementProps) => {
     switch (props.element.type) {
@@ -172,20 +171,14 @@ const PassageView: React.FC<{
   useEffect(() => {
     logger.info(`PassageView->passage->useEffect`)
 
-    if (passage && !ready) {
+    if (passage) {
       sceneIdRef.current = passage.sceneId
 
       setPassageContent(
         passage.content ? JSON.parse(passage.content) : initialPassageContent
       )
     }
-
-    passage && setReady(true)
-  }, [passage, ready])
-
-  useEffect(() => {
-    if (ready) ReactEditor.focus(slateEditor)
-  }, [ready])
+  }, [passage])
 
   useEffect(() => {
     logger.info(`PassageView->isFocused->useEffect: ${isFocused}`)
