@@ -192,10 +192,6 @@ const PassageView: React.FC<{
   }, [isFocused])
 
   useEffect(() => {
-    console.log(passageContent)
-  }, [passageContent])
-
-  useEffect(() => {
     logger.info(`PassageView->useEffect`)
   }, [])
 
