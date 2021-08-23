@@ -6,6 +6,7 @@
   height: 100%;
   z-index: 6;
   background: hsla(0, 0%, 1%, 0.9);
+  overflow-y: auto;
 
   .placeholder {
     color: hsl(0, 0%, 40%);
@@ -18,7 +19,7 @@
     box-shadow: 0px 0px 30px black;
     background: hsl(0, 0%, 3%);
     width: clamp(45ch, 50%, 75ch);
-    height: 100%;
+    min-height: 100%;
     margin: 0px auto;
     border-left: 1px solid var(--primary-border-color);
     border-right: 1px solid var(--primary-border-color);
