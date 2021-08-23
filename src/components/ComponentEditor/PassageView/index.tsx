@@ -192,6 +192,10 @@ const PassageView: React.FC<{
   }, [isFocused])
 
   useEffect(() => {
+    console.log(passageContent)
+  }, [passageContent])
+
+  useEffect(() => {
     logger.info(`PassageView->useEffect`)
   }, [])
 
@@ -228,7 +232,7 @@ const PassageView: React.FC<{
           >
             <div className={styles.editableContainer}>
               {!(passageContent[0] as CustomElement).children[0].text &&
-                !isFocused && (
+                passageContent.length <= 1 && (
                   <div className={styles.placeholder}>
                     Enter passage text...
                   </div>
