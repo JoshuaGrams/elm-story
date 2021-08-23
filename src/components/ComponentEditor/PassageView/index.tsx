@@ -211,24 +211,22 @@ const PassageView: React.FC<{
             )
           }}
         >
-          <div className={styles.PassageView} onClick={close}>
-            <div
-              className={styles.editableContainer}
-              onClick={(event) => {
-                event.stopPropagation()
-
-                editor.selectedGameOutlineComponent.id !== scene.id &&
-                  editorDispatch({
-                    type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-                    selectedGameOutlineComponent: {
-                      expanded: true,
-                      id: scene.id,
-                      title: scene.title,
-                      type: COMPONENT_TYPE.SCENE
-                    }
-                  })
-              }}
-            >
+          <div
+            className={styles.PassageView}
+            onClick={() =>
+              editor.selectedGameOutlineComponent.id !== scene.id &&
+              editorDispatch({
+                type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+                selectedGameOutlineComponent: {
+                  expanded: true,
+                  id: scene.id,
+                  title: scene.title,
+                  type: COMPONENT_TYPE.SCENE
+                }
+              })
+            }
+          >
+            <div className={styles.editableContainer}>
               {!(passageContent[0] as CustomElement).children[0].text &&
                 !isFocused && (
                   <div className={styles.placeholder}>
