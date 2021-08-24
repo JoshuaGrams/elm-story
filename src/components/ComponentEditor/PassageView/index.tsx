@@ -1,14 +1,14 @@
 // @refresh reset https://github.com/ianstormtaylor/slate/issues/3477
 
 import logger from '../../../lib/logger'
+import { debounce } from 'lodash-es'
 
 import React, {
   useMemo,
   useState,
   useEffect,
   useContext,
-  useCallback,
-  useRef
+  useCallback
 } from 'react'
 
 import {
@@ -26,7 +26,7 @@ import {
 
 import { usePassage } from '../../../hooks'
 
-import { BaseEditor, createEditor, Descendant } from 'slate'
+import { BaseEditor, createEditor, Descendant, Editor, Transforms } from 'slate'
 import { withHistory } from 'slate-history'
 import {
   Slate,
@@ -121,8 +121,7 @@ const PassageView: React.FC<{
   passageId: ComponentId
   onClose: () => void
 }> = ({ studioId, scene, passageId, onClose }) => {
-  const passage = usePassage(studioId, passageId, [studioId, passageId]),
-    sceneIdRef = useRef<ComponentId | undefined>(undefined)
+  const passage = usePassage(studioId, passageId, [studioId, passageId])
 
   const slateEditor = useMemo<ReactEditor>(
     () => withHistory(withReact(createEditor())),
@@ -134,8 +133,9 @@ const PassageView: React.FC<{
   const { editor, editorDispatch } = useContext(EditorContext)
 
   const [passageContent, setPassageContent] = useState<Descendant[]>(
-    initialPassageContent
-  )
+      initialPassageContent
+    ),
+    [ready, setReady] = useState(false)
 
   const renderElement = useCallback((props: RenderElementProps) => {
     switch (props.element.type) {
@@ -163,32 +163,44 @@ const PassageView: React.FC<{
         }
       }
     },
-    [editor.selectedGameOutlineComponent.id, scene]
+    [editor.selectedGameOutlineComponent.id, scene, passageContent]
+  )
+
+  const saveContent = debounce(
+    async (studioId: StudioId, passageId: ComponentId, content) => {
+      await api().passages.savePassageContent(studioId, passageId, content)
+    },
+    100
+  )
+
+  const debounceSaveContent = useCallback(
+    (content) => saveContent(studioId, passageId, content),
+    [studioId, passageId]
   )
 
   useEventListener('keydown', onKeyDown, document)
 
   useEffect(() => {
-    logger.info(`PassageView->passage->useEffect`)
+    logger.info(`PassageView->isFocused->useEffect: ${isFocused}`)
+  }, [isFocused])
 
-    if (passage) {
-      sceneIdRef.current = passage.sceneId
+  useEffect(() => {
+    if (ready && passage && passage.id !== passageId) setReady(false)
+
+    if (!ready && slateEditor && passage && passage.id === passageId) {
+      ReactEditor.deselect(slateEditor)
 
       setPassageContent(
         passage.content ? JSON.parse(passage.content) : initialPassageContent
       )
+
+      // TODO: stack hack
+      setTimeout(() => {
+        Transforms.select(slateEditor, Editor.end(slateEditor, []))
+        ReactEditor.focus(slateEditor)
+      }, 1)
     }
-  }, [passage])
-
-  useEffect(() => {
-    // TODO: stack hack
-    if (slateEditor && passage)
-      setTimeout(() => ReactEditor.focus(slateEditor), 1)
-  }, [slateEditor, passage])
-
-  useEffect(() => {
-    logger.info(`PassageView->isFocused->useEffect: ${isFocused}`)
-  }, [isFocused])
+  }, [ready, slateEditor, passage, passageId])
 
   useEffect(() => {
     logger.info(`PassageView->useEffect`)
@@ -200,14 +212,15 @@ const PassageView: React.FC<{
         <Slate
           editor={slateEditor}
           value={passageContent}
-          onChange={async (newContent) => {
-            setPassageContent(newContent)
+          onChange={(newContent) => {
+            if (!ready) setReady(true)
 
-            await api().passages.savePassageContent(
-              studioId,
-              passageId,
-              newContent
-            )
+            if (ready) {
+              setPassageContent(newContent)
+
+              saveContent.cancel()
+              debounceSaveContent(newContent)
+            }
           }}
         >
           <div
@@ -225,15 +238,19 @@ const PassageView: React.FC<{
               })
             }
           >
-            <div className={styles.editableContainer}>
-              {!(passageContent[0] as CustomElement).children[0].text &&
-                passageContent.length <= 1 && (
-                  <div className={styles.placeholder}>
-                    Enter passage text...
-                  </div>
-                )}
+            <div className={styles.contentContainer}>
+              <h1 className={styles.passageTitle}>{passage.title}</h1>
 
-              <Editable renderElement={renderElement} />
+              <div className={styles.editableContainer}>
+                {!(passageContent[0] as CustomElement).children[0].text &&
+                  passageContent.length <= 1 && (
+                    <div className={styles.placeholder}>
+                      Enter passage text...
+                    </div>
+                  )}
+
+                <Editable renderElement={renderElement} />
+              </div>
             </div>
           </div>
         </Slate>
