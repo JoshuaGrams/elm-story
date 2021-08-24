@@ -46,11 +46,7 @@ import ReactFlow, {
 } from 'react-flow-renderer'
 
 import { Button } from 'antd'
-import {
-  AlignLeftOutlined,
-  ForwardOutlined,
-  PlusOutlined
-} from '@ant-design/icons'
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 
 import ContextMenu from './ContextMenu'
 import RouteEdge, { RouteEdgeData } from './RouteEdge'
@@ -77,7 +73,7 @@ export const SceneViewTools: React.FC<{
   const scene = useScene(studioId, sceneId, [sceneId])
 
   const { editor, editorDispatch } = useContext(EditorContext),
-    { editorTab } = useContext(EditorTabContext)
+    { editorTab, editorTabDispatch } = useContext(EditorTabContext)
 
   return (
     <>
@@ -117,8 +113,7 @@ export const SceneViewTools: React.FC<{
                   }
                 }}
               >
-                <PlusOutlined />
-                <AlignLeftOutlined />
+                <PlusOutlined /> Passage
               </Button>
 
               {/* Add Jump Button */}
@@ -151,8 +146,7 @@ export const SceneViewTools: React.FC<{
                     })
                 }}
               >
-                <PlusOutlined />
-                <ForwardOutlined />
+                <PlusOutlined /> Jump
               </Button>
             </>
           )}
@@ -176,6 +170,19 @@ export const SceneViewTools: React.FC<{
                 Center Selection
               </Button>
             )}
+
+          {editorTab.passageForEditing.visible && (
+            <Button
+              onClick={() =>
+                editorTabDispatch({
+                  type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
+                  passageForEditing: { id: undefined, visible: false }
+                })
+              }
+            >
+              <CloseOutlined /> Close Passage
+            </Button>
+          )}
         </>
       )}
     </>
