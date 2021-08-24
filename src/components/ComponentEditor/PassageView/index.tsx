@@ -181,6 +181,12 @@ const PassageView: React.FC<{
   }, [passage])
 
   useEffect(() => {
+    // TODO: stack hack
+    if (slateEditor && passage)
+      setTimeout(() => ReactEditor.focus(slateEditor), 1)
+  }, [slateEditor, passage])
+
+  useEffect(() => {
     logger.info(`PassageView->isFocused->useEffect: ${isFocused}`)
   }, [isFocused])
 
