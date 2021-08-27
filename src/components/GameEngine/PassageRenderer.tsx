@@ -1,4 +1,7 @@
 import logger from '../../lib/logger'
+
+import reactStringReplace from 'react-string-replace'
+
 import {
   gameMethods,
   getProcessedTemplate,
@@ -14,8 +17,9 @@ import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
 import { usePassage, useRoutesByPassageRef } from '../../hooks'
 
-import ChoicesRenderer from './ChoicesRenderer'
+import { Tooltip } from 'antd'
 
+import ChoicesRenderer from './ChoicesRenderer'
 import { CustomElement } from '../ComponentEditor/PassageView'
 
 import api from '../../api'
@@ -53,6 +57,31 @@ const PassageContent: React.FC<{ title: string; content: string }> = ({
     )
   }
 
+  function decorate(template: string, processedTemplate: string) {
+    const expressions = getTemplateExpressions(template)
+    let matchExpressionCounter = 0
+
+    return reactStringReplace(processedTemplate, /{([^}]+)}/g, (match) => {
+      const matchedExpression = expressions[matchExpressionCounter]
+
+      matchExpressionCounter++
+
+      return (
+        <Tooltip title={matchedExpression}>
+          <span
+            className={
+              match === 'esg-error'
+                ? `es-engine-expression-error`
+                : `es-engine-expression-result`
+            }
+          >
+            {match === 'esg-error' ? 'ERROR' : match}
+          </span>
+        </Tooltip>
+      )
+    })
+  }
+
   return (
     <>
       {parsedContent.length > 0 && !parsedContent[0].children[0].text && (
@@ -68,7 +97,14 @@ const PassageContent: React.FC<{ title: string; content: string }> = ({
             }`}
             key={`p-${index}`}
           >
-            {processTemplateBlock(descendant.children[0].text) || <>&#65279;</>}
+            {descendant.children[0].text ? (
+              decorate(
+                descendant.children[0].text,
+                processTemplateBlock(descendant.children[0].text)
+              )
+            ) : (
+              <>&#65279;</>
+            )}
           </p>
         ))}
     </>
