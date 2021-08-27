@@ -1,4 +1,10 @@
 import logger from '../../lib/logger'
+import {
+  gameMethods,
+  getProcessedTemplate,
+  getTemplateExpressions,
+  parseTemplateExpressions
+} from '../../lib/templates'
 
 import React, { useContext, useEffect } from 'react'
 
@@ -18,9 +24,33 @@ const PassageContent: React.FC<{ title: string; content: string }> = ({
   title,
   content
 }) => {
+  const { engine } = useContext(EngineContext)
+
   const parsedContent: CustomElement[] = JSON.parse(content)
 
-  if (parsedContent.length > 0 && !parsedContent[0].children[0].text) {
+  function processTemplateBlock(template: string): string {
+    const expressions = getTemplateExpressions(template),
+      variables: { [variableId: string]: string } = {}
+
+    Object.entries(engine.gameState).map((variable) => {
+      const data = variable[1]
+
+      variables[data.title] = data.currentValue
+    })
+
+    const parsedExpressions = parseTemplateExpressions(
+      expressions,
+      variables,
+      gameMethods
+    )
+
+    return getProcessedTemplate(
+      template,
+      expressions,
+      parsedExpressions,
+      variables,
+      gameMethods
+    )
   }
 
   return (
@@ -38,7 +68,7 @@ const PassageContent: React.FC<{ title: string; content: string }> = ({
             }`}
             key={`p-${index}`}
           >
-            {descendant.children[0].text || <>&#65279;</>}
+            {processTemplateBlock(descendant.children[0].text) || <>&#65279;</>}
           </p>
         ))}
     </>
