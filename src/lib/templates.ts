@@ -409,7 +409,7 @@ export function getProcessedTemplate(
               ((parsedExpression.left?.variableName &&
                 variables[parsedExpression.left.variableName]) ||
                 parsedExpression.left?.value ||
-                0) <
+                0) <=
               ((parsedExpression.right?.variableName &&
                 variables[parsedExpression.right.variableName]) ||
                 parsedExpression.right?.value ||
@@ -461,11 +461,13 @@ export function getProcessedTemplate(
         }
         break
       case NODE_TYPES.EXPRESSION_ERROR:
-        value = '###ERROR###'
+        value = 'esg-error'
         break
       default:
         break
     }
+
+    value = value ? `{${value}}` : ''
 
     processedTemplate = processedTemplate
       .split('{' + expression + '}')
