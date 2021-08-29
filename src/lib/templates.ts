@@ -86,6 +86,19 @@ interface ExpressionError extends ExpressionBase {
   message: string
 }
 
+export function getTemplateExpressionRanges(
+  template: string
+): { start: number; end: number }[] {
+  const templateExpressionsWithIndex = [...template.matchAll(/{([^}]+)}/g)]
+
+  return templateExpressionsWithIndex.map((expression) => {
+    return {
+      start: expression.index || 0,
+      end: (expression.index || 0) + expression[0].length
+    }
+  })
+}
+
 export function getTemplateExpressions(template: string): string[] {
   const templateExpressions: string[] | null = template.match(/{([^}]+)}/g)
 

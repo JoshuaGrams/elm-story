@@ -26,7 +26,15 @@ import {
 
 import { usePassage } from '../../../hooks'
 
-import { BaseEditor, createEditor, Descendant, Editor, Transforms } from 'slate'
+import {
+  BaseEditor,
+  createEditor,
+  Descendant,
+  Editor,
+  Transforms,
+  Text,
+  Range
+} from 'slate'
 import { withHistory } from 'slate-history'
 import {
   Slate,
@@ -34,7 +42,8 @@ import {
   withReact,
   ReactEditor,
   RenderElementProps,
-  useFocused
+  useFocused,
+  RenderLeafProps
 } from 'slate-react'
 
 import { Button } from 'antd'
@@ -43,9 +52,21 @@ import styles from './styles.module.less'
 
 import api from '../../../api'
 import useEventListener from '@use-it/event-listener'
+import { getTemplateExpressionRanges } from '../../../lib/templates'
 
-export type CustomText = { text: string }
+export type CustomText = {
+  text: string
+  expression?: boolean
+  expressionStart?: boolean
+  expressionEnd?: boolean
+}
 export type CustomElement = { type: 'paragraph'; children: CustomText[] }
+
+export interface CustomRange extends Range {
+  expression?: boolean
+  expressionStart?: boolean
+  expressionEnd?: boolean
+}
 
 declare module 'slate' {
   interface CustomTypes {
@@ -115,6 +136,35 @@ const ParagraphElement: React.FC<RenderElementProps> = (props) => {
   )
 }
 
+const Leaf = (props: RenderLeafProps) => {
+  let leaf: JSX.Element | undefined = undefined
+
+  if (props.leaf.expression) {
+    leaf = (
+      <span
+        {...props.attributes}
+        className={styles.expression}
+        spellCheck="false"
+      >
+        {props.children}
+      </span>
+    )
+  }
+
+  if (props.leaf.expressionStart || props.leaf.expressionEnd) {
+    leaf = (
+      <span
+        {...props.attributes}
+        className={`${styles.expression} ${styles.expressionCap}`}
+      >
+        {props.children}
+      </span>
+    )
+  }
+
+  return leaf || <span {...props.attributes}>{props.children}</span>
+}
+
 const PassageView: React.FC<{
   studioId: StudioId
   scene: Scene
@@ -144,6 +194,40 @@ const PassageView: React.FC<{
       default:
         return <></>
     }
+  }, [])
+
+  const renderLeaf = useCallback((props) => {
+    return <Leaf {...props} />
+  }, [])
+
+  const decorate = useCallback(([node, path]) => {
+    const ranges: CustomRange[] = []
+
+    if (!Text.isText(node)) return ranges
+
+    const expressionRanges = getTemplateExpressionRanges(node.text)
+
+    expressionRanges.map((range) => {
+      ranges.push({
+        expressionStart: true,
+        anchor: { path, offset: range.start },
+        focus: { path, offset: range.start + 1 }
+      })
+
+      ranges.push({
+        expression: true,
+        anchor: { path, offset: range.start },
+        focus: { path, offset: range.end }
+      })
+
+      ranges.push({
+        expressionEnd: true,
+        anchor: { path, offset: range.end - 1 },
+        focus: { path, offset: range.end }
+      })
+    })
+
+    return ranges
   }, [])
 
   function close() {
@@ -242,14 +326,44 @@ const PassageView: React.FC<{
               <h1 className={styles.passageTitle}>{passage.title}</h1>
 
               <div className={styles.editableContainer}>
-                {!(passageContent[0] as CustomElement).children[0].text &&
-                  passageContent.length <= 1 && (
-                    <div className={styles.placeholder}>
-                      Enter passage text...
-                    </div>
-                  )}
+                <Editable
+                  renderElement={renderElement}
+                  renderLeaf={renderLeaf}
+                  decorate={decorate}
+                  placeholder="Enter passage text..."
+                  onKeyDown={(event) => {
+                    const { selection } = slateEditor
 
-                <Editable renderElement={renderElement} />
+                    switch (event.key) {
+                      case '{':
+                        if (selection) {
+                          Transforms.insertText(slateEditor, '  }', {
+                            at: {
+                              path: selection?.anchor.path,
+                              offset: selection?.anchor.offset + 1
+                            }
+                          })
+
+                          // TODO: stack hack
+                          setTimeout(
+                            () =>
+                              Transforms.move(slateEditor, {
+                                distance: 1,
+                                unit: 'offset'
+                              }),
+                            1
+                          )
+                        }
+                        logger.info('opening bracket')
+                        break
+                      case '}':
+                        logger.info('closing bracket')
+                        break
+                      default:
+                        break
+                    }
+                  }}
+                />
               </div>
             </div>
           </div>
