@@ -185,6 +185,10 @@ const PassageView: React.FC<{
   const [passageContent, setPassageContent] = useState<Descendant[]>(
       initialPassageContent
     ),
+    [selectedExpression, setSelectedExpression] = useState({
+      isInside: false,
+      outsideOffset: 0
+    }),
     [ready, setReady] = useState(false)
 
   const renderElement = useCallback((props: RenderElementProps) => {
@@ -287,6 +291,38 @@ const PassageView: React.FC<{
   }, [ready, slateEditor, passage, passageId])
 
   useEffect(() => {
+    const { selection } = slateEditor
+
+    if (selection) {
+      const expressionRanges = getTemplateExpressionRanges(
+        (passageContent[selection?.anchor.path[0]] as CustomElement).children[0]
+          .text
+      )
+
+      let foundInsideExpression = false
+
+      expressionRanges.map((range) => {
+        if (
+          selection.anchor.offset > range.start &&
+          selection.anchor.offset < range.end
+        ) {
+          setSelectedExpression({
+            isInside: true,
+            outsideOffset: range.end - selection.anchor.offset
+          })
+
+          foundInsideExpression = true
+          
+          return
+        }
+      })
+
+      !foundInsideExpression &&
+        setSelectedExpression({ isInside: false, outsideOffset: 0 })
+    }
+  }, [slateEditor.selection])
+
+  useEffect(() => {
     logger.info(`PassageView->useEffect`)
   }, [])
 
@@ -334,6 +370,8 @@ const PassageView: React.FC<{
                   onKeyDown={(event) => {
                     const { selection } = slateEditor
 
+                    logger.info(`PassageView->Key Pressed: ${event.key}`)
+
                     switch (event.key) {
                       case '{':
                         if (selection) {
@@ -354,10 +392,17 @@ const PassageView: React.FC<{
                             1
                           )
                         }
-                        logger.info('opening bracket')
                         break
                       case '}':
-                        logger.info('closing bracket')
+                        break
+                      case 'Tab':
+                        event.preventDefault()
+                        if (selectedExpression.isInside) {
+                          Transforms.move(slateEditor, {
+                            distance: selectedExpression.outsideOffset,
+                            unit: 'offset'
+                          })
+                        }
                         break
                       default:
                         break
