@@ -67,7 +67,10 @@ const PassageContent: React.FC<{ title: string; content: string }> = ({
       matchExpressionCounter++
 
       return (
-        <Tooltip title={matchedExpression}>
+        <Tooltip
+          title={matchedExpression}
+          key={`tooltip-${matchExpressionCounter}`}
+        >
           <span
             className={
               match === 'esg-error'
