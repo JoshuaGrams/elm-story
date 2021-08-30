@@ -682,7 +682,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               gameId: game.id,
               sceneId: parentItem.id as string,
               title: 'Untitled Passage',
-              type: PASSAGE_TYPE.INPUT,
+              type: PASSAGE_TYPE.CHOICE,
               tags: []
             })
           } catch (error) {
