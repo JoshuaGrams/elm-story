@@ -243,6 +243,7 @@
     "react-string-replace": "^0.4.4",
     "react-transition-group": "^4.4.1",
     "regenerator-runtime": "^0.13.5",
+    "semver": "^7.3.5",
     "slate": "^0.65.3",
     "slate-history": "^0.65.3",
     "slate-react": "^0.65.3",
