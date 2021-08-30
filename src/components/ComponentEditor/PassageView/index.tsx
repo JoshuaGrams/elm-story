@@ -312,7 +312,7 @@ const PassageView: React.FC<{
           })
 
           foundInsideExpression = true
-          
+
           return
         }
       })
@@ -374,6 +374,11 @@ const PassageView: React.FC<{
 
                     switch (event.key) {
                       case '{':
+                        if (selectedExpression.isInside) {
+                          event.preventDefault()
+                          return
+                        }
+
                         if (selection) {
                           Transforms.insertText(slateEditor, '  }', {
                             at: {
@@ -394,6 +399,11 @@ const PassageView: React.FC<{
                         }
                         break
                       case '}':
+                        if (selectedExpression.isInside) {
+                          event.preventDefault()
+                          return
+                        }
+
                         break
                       case 'Tab':
                         event.preventDefault()
