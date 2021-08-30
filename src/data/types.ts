@@ -131,12 +131,6 @@ export interface Jump extends Component {
   route: JumpRoute
 }
 
-// TODO: #220 remove; replaced with Folder
-export interface Chapter extends Component {
-  gameId: GameId
-  scenes: ComponentId[]
-}
-
 // To reduce dupe, set null when parent is of type GAME
 export type SceneParentRef = [
   COMPONENT_TYPE.GAME | COMPONENT_TYPE.FOLDER,
@@ -176,6 +170,8 @@ export interface Effect extends Component {
   variableId: ComponentId
   set: [ComponentId, SET_OPERATOR_TYPE, string] // variable ref
 }
+
+// export enum
 
 export interface Passage extends Component {
   gameId: GameId
