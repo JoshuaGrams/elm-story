@@ -12,9 +12,10 @@ export default (database: Dexie) => {
       try {
         const passagesTable = tx.table(LIBRARY_TABLE.PASSAGES)
 
-        await passagesTable
-          .toCollection()
-          .modify((passage) => (passage.type = PASSAGE_TYPE.CHOICE))
+        await passagesTable.toCollection().modify((passage) => {
+          passage.input = undefined
+          passage.type = PASSAGE_TYPE.CHOICE
+        })
       } catch (error) {}
     })
   }
