@@ -9,7 +9,7 @@ import api from '../api'
 
 import validateGameData from './transport/validate'
 
-import v020 from './transport/upgrade/0.2.0'
+import v020Upgrade from './transport/upgrade/0.2.0'
 
 export default (
   gameData: GameDataJSON_013 & GameDataJSON_020,
@@ -40,7 +40,7 @@ export default (
       if (errors.length === 0) {
         const upgradedGameData =
           engineVersion === '0.1.3'
-            ? v020(cloneDeep(gameData) as GameDataJSON_013)
+            ? v020Upgrade(cloneDeep(gameData) as GameDataJSON_013)
             : gameData
 
         const {
