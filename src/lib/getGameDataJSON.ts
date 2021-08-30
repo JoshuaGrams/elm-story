@@ -1,5 +1,5 @@
 import { ComponentId, GameId, StudioId } from '../data/types'
-import { GameDataJSON } from './transport/types/0.2.0'
+import { GameDataJSON } from './transport/types/0.4.0'
 
 import api from '../api'
 
@@ -114,15 +114,28 @@ export default async (
     )
 
     passages.map(
-      ({ choices, content, editor, id, sceneId, tags, title, updated }) =>
+      ({
+        choices,
+        content,
+        editor,
+        id,
+        input,
+        sceneId,
+        tags,
+        title,
+        type,
+        updated
+      }) =>
         (gameData.passages[id as string] = {
           choices,
           content,
           editor,
           id: id as string,
+          input,
           sceneId,
           tags,
           title,
+          type,
           updated: updated as number
         })
     )

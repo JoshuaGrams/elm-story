@@ -171,13 +171,18 @@ export interface Effect extends Component {
   set: [ComponentId, SET_OPERATOR_TYPE, string] // variable ref
 }
 
-// export enum
+export enum PASSAGE_TYPE {
+  CHOICE = 'CHOICE',
+  INPUT = 'INPUT'
+}
 
 export interface Passage extends Component {
   gameId: GameId
   sceneId: ComponentId
-  choices: ComponentId[]
+  choices?: ComponentId[]
   content: string
+  input?: ComponentId // variable ref
+  type: PASSAGE_TYPE
 }
 
 export interface Choice extends Component {

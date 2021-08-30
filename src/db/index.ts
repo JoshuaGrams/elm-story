@@ -9,7 +9,6 @@ import {
   GameId,
   ComponentId,
   Folder,
-  Chapter,
   Scene,
   Passage,
   Choice,
@@ -35,6 +34,7 @@ import v1 from './v1'
 import v2 from './v2'
 import v3 from './v3'
 import v4 from './v4'
+import v5 from './v5'
 
 export enum DB_NAME {
   APP = 'esg-app',
@@ -50,7 +50,6 @@ export enum LIBRARY_TABLE {
   GAMES = 'games',
   JUMPS = 'jumps',
   FOLDERS = 'folders',
-  CHAPTERS = 'chapters',
   SCENES = 'scenes',
   ROUTES = 'routes',
   EFFECTS = 'effects',
@@ -147,7 +146,6 @@ export class LibraryDatabase extends Dexie {
   public games: Dexie.Table<Game, string>
   public jumps: Dexie.Table<Jump, string>
   public folders: Dexie.Table<Folder, string>
-  public chapters: Dexie.Table<Chapter, string>
   public scenes: Dexie.Table<Scene, string>
   public routes: Dexie.Table<Route, string>
   public conditions: Dexie.Table<Condition, string>
@@ -163,6 +161,7 @@ export class LibraryDatabase extends Dexie {
     v2(this)
     v3(this)
     v4(this)
+    v5(this)
 
     this.tables.map((table) => table.name)
 

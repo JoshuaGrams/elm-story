@@ -7,6 +7,7 @@ import {
   ComponentId,
   COMPONENT_TYPE,
   DEFAULT_PASSAGE_CONTENT,
+  PASSAGE_TYPE,
   Scene,
   StudioId
 } from '../../../data/types'
@@ -205,6 +206,7 @@ async function addComponentToScene(
           choices: [],
           content: JSON.stringify([...DEFAULT_PASSAGE_CONTENT]),
           tags: [],
+          type: PASSAGE_TYPE.CHOICE,
           editor: {
             componentEditorPosX: position.x,
             componentEditorPosY: position.y

@@ -26,7 +26,7 @@ export default (database: Dexie) => {
         try {
           const gamesTable = tx.table(LIBRARY_TABLE.GAMES)
 
-          gamesTable.toCollection().modify((game) => {
+          await gamesTable.toCollection().modify((game) => {
             const chapterIds: ComponentId[] = game.chapters,
               gameChildren: GameChildRefs = []
 
@@ -40,9 +40,7 @@ export default (database: Dexie) => {
 
           const folderTable = tx.table(LIBRARY_TABLE.FOLDERS)
 
-          await folderTable.bulkAdd(
-            await tx.table(LIBRARY_TABLE.CHAPTERS).toArray()
-          )
+          await folderTable.bulkAdd(await tx.table('chapters').toArray())
 
           await folderTable.toCollection().modify((folder) => {
             folder.parent = [COMPONENT_TYPE.GAME, null]

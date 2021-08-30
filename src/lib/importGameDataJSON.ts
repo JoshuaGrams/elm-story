@@ -1,18 +1,23 @@
 import { cloneDeep } from 'lodash'
+import semver from 'semver'
 import { ValidationError } from 'jsonschema'
 
 import { GAME_TEMPLATE } from '../data/types'
 import { GameDataJSON as GameDataJSON_013 } from './transport/types/0.1.3'
 import { GameDataJSON as GameDataJSON_020 } from './transport/types/0.2.0'
+import { GameDataJSON as GameDataJSON_030 } from './transport/types/0.3.0'
+import { GameDataJSON as GameDataJSON_031 } from './transport/types/0.3.1'
+import { GameDataJSON as GameDataJSON_040 } from './transport/types/0.4.0'
 
 import api from '../api'
 
 import validateGameData from './transport/validate'
 
 import v020Upgrade from './transport/upgrade/0.2.0'
+import v040Upgrade from './transport/upgrade/0.4.0'
 
 export default (
-  gameData: GameDataJSON_013 & GameDataJSON_020,
+  gameData: GameDataJSON_013 & GameDataJSON_020 & GameDataJSON_040,
   skipValidation?: boolean
 ): {
   errors: string[]
@@ -38,10 +43,39 @@ export default (
     errors,
     finish: async (): Promise<string[]> => {
       if (errors.length === 0) {
-        const upgradedGameData =
-          engineVersion === '0.1.3'
-            ? v020Upgrade(cloneDeep(gameData) as GameDataJSON_013)
-            : gameData
+        let upgradedGameData:
+          | GameDataJSON_020
+          | GameDataJSON_040
+          | undefined = undefined
+
+        // Upgrade from 0.1.3 to 0.4.0
+        if (engineVersion === '0.1.3') {
+          upgradedGameData = v020Upgrade(
+            cloneDeep(gameData) as GameDataJSON_013
+          )
+
+          upgradedGameData = v040Upgrade(cloneDeep(upgradedGameData))
+        }
+
+        // #288
+        // Upgrade from 0.2.0+ to 0.4.0
+        if (
+          semver.gt(engineVersion, '0.2.0') &&
+          semver.lt(engineVersion, '0.4.0')
+        ) {
+          upgradedGameData = v040Upgrade(
+            cloneDeep(gameData) as
+              | GameDataJSON_020
+              | GameDataJSON_030
+              | GameDataJSON_031
+          )
+        }
+
+        // No upgrade; current version
+        if (engineVersion === '0.4.0') upgradedGameData = gameData
+
+        if (!upgradedGameData)
+          throw new Error('Unable to import game data. Version conflict.')
 
         const {
           _,
@@ -142,7 +176,18 @@ export default (
           // Save passages
           for await (const [
             __,
-            { choices, content, editor, id, sceneId, tags, title, updated }
+            {
+              choices,
+              content,
+              editor,
+              id,
+              sceneId,
+              tags,
+              title,
+              input,
+              type,
+              updated
+            }
           ] of Object.entries(passages)) {
             await api().passages.savePassage(_.studioId, {
               choices,
@@ -150,9 +195,11 @@ export default (
               editor,
               gameId: _.id,
               id,
+              input,
               sceneId,
               tags,
               title,
+              type,
               updated
             })
           }

@@ -9,6 +9,7 @@ import {
   COMPONENT_TYPE,
   DEFAULT_PASSAGE_CONTENT,
   Game,
+  PASSAGE_TYPE,
   StudioId
 } from '../../data/types'
 import { DEFAULT_NODE_SIZE } from '../ComponentEditor/SceneView'
@@ -681,7 +682,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               gameId: game.id,
               sceneId: parentItem.id as string,
               title: 'Untitled Passage',
-
+              type: PASSAGE_TYPE.INPUT,
               tags: []
             })
           } catch (error) {
