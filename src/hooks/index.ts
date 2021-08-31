@@ -24,6 +24,7 @@ import useRouteEffects, {
 } from './useRouteEffects'
 import usePassages, { usePassagesBySceneRef, usePassage } from './usePassages'
 import useChoices, { useChoice, useChoicesByPassageRef } from './useChoices'
+import useInputs, { useInput } from './useInputs'
 import useVariables, { useVariable } from './useVariables'
 
 export {
@@ -60,6 +61,8 @@ export {
   useChoices,
   useChoice,
   useChoicesByPassageRef,
+  useInputs,
+  useInput,
   useVariables,
   useVariable
 }

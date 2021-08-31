@@ -81,6 +81,18 @@ export async function savePassageType(
   }
 }
 
+export async function savePassageInput(
+  studioId: StudioId,
+  passageId: ComponentId,
+  inputId?: ComponentId
+) {
+  try {
+    await new LibraryDatabase(studioId).savePassageInput(passageId, inputId)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export async function savePassageContent(
   studioId: StudioId,
   passageId: ComponentId,

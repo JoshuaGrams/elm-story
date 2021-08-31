@@ -11,7 +11,9 @@ export default (database: Dexie) => {
     database
       .version(5)
       .stores({
-        inputs: '&id,gameId,passageId,title,*tags,updated'
+        routes:
+          '&id,gameId,sceneId,title,originId,choiceId,inputId,originType,destinationId,destinationType,*tags,updated',
+        inputs: '&id,gameId,passageId,variableId,title,*tags,updated'
       })
       .upgrade(async (tx) => {
         try {

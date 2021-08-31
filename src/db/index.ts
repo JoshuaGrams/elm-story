@@ -328,6 +328,7 @@ export class LibraryDatabase extends Dexie {
         conditions = await this.conditions.where({ gameId }).toArray(),
         effects = await this.effects.where({ gameId }).toArray(),
         choices = await this.choices.where({ gameId }).toArray(),
+        inputs = await this.inputs.where({ gameId }).toArray(),
         variables = await this.variables.where({ gameId }).toArray()
 
       logger.info(`Removing game with ID: ${gameId}`)
@@ -339,6 +340,7 @@ export class LibraryDatabase extends Dexie {
       logger.info(`ROUTE CONDITIONS: Remove ${conditions.length}...`)
       logger.info(`ROUTE EFFECTS: Remove ${effects.length}...`)
       logger.info(`CHOICES: Removing ${choices.length}...`)
+      logger.info(`INPUTS: Removing ${inputs.length}...`)
       logger.info(`VARIABLES: Removing ${variables.length}...`)
 
       // TODO: replace 'delete' method with methods that handle children
@@ -366,6 +368,12 @@ export class LibraryDatabase extends Dexie {
         }),
         choices.map(async (passage) => {
           if (passage.id) await this.choices.delete(passage.id)
+        }),
+        inputs.map(async (passage) => {
+          if (passage.id) await this.inputs.delete(passage.id)
+        }),
+        variables.map(async (passage) => {
+          if (passage.id) await this.variables.delete(passage.id)
         })
       ])
 
@@ -1498,6 +1506,33 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async savePassageInput(passageId: ComponentId, inputId?: ComponentId) {
+    try {
+      await this.transaction('rw', this.passages, async () => {
+        if (passageId) {
+          const component = await this.getComponent(
+            LIBRARY_TABLE.PASSAGES,
+            passageId
+          )
+
+          if (component) {
+            await this.passages.update(passageId, {
+              ...component,
+              input: inputId,
+              updated: Date.now()
+            })
+          } else {
+            throw new Error('Unable to save input to passage. Passage missing.')
+          }
+        } else {
+          throw new Error('Unable to save input to passage. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async savePassageContent(passageId: ComponentId, content: string) {
     try {
       await this.transaction('rw', this.passages, async () => {
@@ -1588,7 +1623,8 @@ export class LibraryDatabase extends Dexie {
         routes = await this.routes
           .where({ destinationId: passageId })
           .toArray(),
-        choices = await this.choices.where({ passageId }).toArray()
+        choices = await this.choices.where({ passageId }).toArray(),
+        inputs = await this.inputs.where({ passageId }).toArray()
 
       if (routes.length > 0) {
         logger.info(
@@ -1624,6 +1660,18 @@ export class LibraryDatabase extends Dexie {
       await Promise.all(
         choices.map(
           async (choice) => choice.id && (await this.removeChoice(choice.id))
+        )
+      )
+
+      if (inputs.length > 0) {
+        logger.info(
+          `LibraryDatabase->removePassage->Removing ${inputs.length} input(s) from passage with ID: ${passageId}`
+        )
+      }
+
+      await Promise.all(
+        inputs.map(
+          async (input) => input.id && (await this.removeInput(input.id))
         )
       )
 
@@ -1744,6 +1792,122 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async getInput(inputId: ComponentId): Promise<Input> {
+    logger.info(`LibraryDatabase->getInput`)
+
+    try {
+      const input = await this.inputs.get(inputId)
+
+      if (input) {
+        return input
+      } else {
+        throw new Error(
+          `LibraryDatabase->getInput->Unable to get input with ID: ${inputId}. Does not exist.`
+        )
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async getInputsByGameRef(gameId: GameId): Promise<Input[]> {
+    try {
+      return await this.inputs.where({ gameId }).toArray()
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async saveInput(input: Input): Promise<Input> {
+    if (!input.gameId)
+      throw new Error('Unable to save input to database. Missing game ID.')
+    if (!input.passageId)
+      throw new Error('Unable to save input to database. Missing passage ID.')
+    if (!input.id)
+      throw new Error('Unable to save input to database. Missing ID.')
+
+    try {
+      await this.transaction('rw', this.inputs, async () => {
+        if (input.id) {
+          if (await this.getComponent(LIBRARY_TABLE.INPUTS, input.id)) {
+            await this.inputs.update(input.id, {
+              ...input,
+              updated: Date.now()
+            })
+          } else {
+            await this.inputs.add({
+              ...input,
+              updated: input.updated || Date.now()
+            })
+          }
+        } else {
+          throw new Error('Unable to save input to database. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    return input
+  }
+
+  public async saveVariableRefToInput(
+    inputId: ComponentId,
+    variableId?: ComponentId
+  ) {
+    logger.info(
+      `LibraryDatabase->saveVariableRefToInput->input: ${inputId}->variable: ${variableId}`
+    )
+
+    try {
+      const input = await this.getComponent(LIBRARY_TABLE.INPUTS, inputId)
+
+      if (input?.id) {
+        await this.inputs.update(input.id, {
+          ...input,
+          variableId,
+          updated: Date.now()
+        })
+      } else {
+        throw new Error('Unable to save variable ID. Missing input.')
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  public async removeInput(inputId: ComponentId) {
+    try {
+      const routes = await this.routes.where({ inputId }).toArray()
+
+      if (routes.length > 0) {
+        logger.info(
+          `removeInput->Removing ${routes.length} route(s) from input with ID: ${inputId}`
+        )
+      }
+
+      await Promise.all(
+        routes.map(
+          async (route) => route.id && (await this.removeRoute(route.id))
+        )
+      )
+
+      await this.transaction('rw', this.inputs, async () => {
+        if (await this.getComponent(LIBRARY_TABLE.INPUTS, inputId)) {
+          logger.info(`removeInput->Removing input with ID: ${inputId}`)
+
+          await this.inputs.delete(inputId)
+        } else {
+          throw new Error(
+            `removeInput->Unable to remove input with ID: '${inputId}'. Does not exist.`
+          )
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   public async getVariable(variableId: ComponentId): Promise<Variable> {
     try {
       const variable = await this.variables.get(variableId)
@@ -1804,7 +1968,8 @@ export class LibraryDatabase extends Dexie {
 
     try {
       const conditions = await this.conditions.where({ variableId }).toArray(),
-        effects = await this.effects.where({ variableId }).toArray()
+        effects = await this.effects.where({ variableId }).toArray(),
+        inputs = await this.inputs.where({ variableId }).toArray()
 
       await Promise.all([
         conditions.map(
@@ -1813,6 +1978,10 @@ export class LibraryDatabase extends Dexie {
         ),
         effects.map(
           async (effect) => effect.id && (await this.removeEffect(effect.id))
+        ),
+        inputs.map(
+          async (input) =>
+            input.id && (await this.saveVariableRefToInput(input.id, undefined))
         )
       ])
 

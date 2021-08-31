@@ -150,6 +150,7 @@ export interface Route extends Component {
   sceneId: ComponentId
   originId: ComponentId
   choiceId?: ComponentId
+  inputId?: ComponentId
   originType: COMPONENT_TYPE
   destinationId: ComponentId
   destinationType: COMPONENT_TYPE
@@ -181,7 +182,7 @@ export interface Passage extends Component {
   sceneId: ComponentId
   choices?: ComponentId[]
   content: string
-  input?: ComponentId // variable ref
+  input?: ComponentId // input ref
   type: PASSAGE_TYPE
 }
 
@@ -193,6 +194,7 @@ export interface Choice extends Component {
 export interface Input extends Component {
   gameId: GameId
   passageId: ComponentId
+  variableId?: ComponentId
 }
 
 export interface Variable extends Component {

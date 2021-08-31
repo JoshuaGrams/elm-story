@@ -11,6 +11,7 @@ import * as conditions from './conditions'
 import * as effects from './effects'
 import * as passages from './passages'
 import * as choices from './choices'
+import * as inputs from './inputs'
 import * as variables from './variables'
 
 export default () => ({
@@ -24,5 +25,6 @@ export default () => ({
   effects,
   passages,
   choices,
+  inputs,
   variables
 })
