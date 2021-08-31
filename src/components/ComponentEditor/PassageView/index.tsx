@@ -1,7 +1,9 @@
-// @refresh reset https://github.com/ianstormtaylor/slate/issues/3477
-
 import logger from '../../../lib/logger'
+
 import { debounce } from 'lodash-es'
+import useEventListener from '@use-it/event-listener'
+
+import { getTemplateExpressionRanges } from '../../../lib/templates'
 
 import React, {
   useMemo,
@@ -51,8 +53,6 @@ import { Button } from 'antd'
 import styles from './styles.module.less'
 
 import api from '../../../api'
-import useEventListener from '@use-it/event-listener'
-import { getTemplateExpressionRanges } from '../../../lib/templates'
 
 export type CustomText = {
   text: string

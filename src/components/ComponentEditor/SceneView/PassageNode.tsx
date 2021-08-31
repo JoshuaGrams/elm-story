@@ -15,6 +15,7 @@ import {
   Choice,
   ComponentId,
   COMPONENT_TYPE,
+  PASSAGE_TYPE,
   Route,
   StudioId
 } from '../../../data/types'
@@ -313,12 +314,14 @@ const PassageNode: React.FC<NodeProps<{
               style={{
                 borderBottomLeftRadius:
                   editor.selectedComponentEditorSceneViewPassage ===
-                    passage.id || passage.choices.length > 0
+                    passage.id ||
+                  (passage.choices && passage.choices.length > 0)
                     ? '0px'
                     : '5px',
                 borderBottomRightRadius:
                   editor.selectedComponentEditorSceneViewPassage ===
-                    passage.id || passage.choices.length > 0
+                    passage.id ||
+                  (passage.choices && passage.choices.length > 0)
                     ? '0px'
                     : '5px'
               }}
@@ -338,11 +341,12 @@ const PassageNode: React.FC<NodeProps<{
             }`}
           >
             {choices
-              .sort(
-                (a, b) =>
-                  passage.choices.findIndex((choiceId) => a.id === choiceId) -
-                  passage.choices.findIndex((choiceId) => b.id === choiceId)
-              )
+              .sort((a, b) => {
+                return passage.choices
+                  ? passage.choices.findIndex((choiceId) => a.id === choiceId) -
+                      passage.choices.findIndex((choiceId) => b.id === choiceId)
+                  : 0
+              })
               .map(
                 (choice, index) =>
                   choice.id && (
@@ -388,7 +392,9 @@ const PassageNode: React.FC<NodeProps<{
                           `ChoiceRow->onReorder->passageId: ${passageId} choiceId: ${choiceId} newPosition: ${newPosition}`
                         )
 
-                        const clonedChoiceRefs = cloneDeep(passage.choices),
+                        const clonedChoiceRefs = cloneDeep(
+                            passage.choices || []
+                          ),
                           foundChoiceRefIndex = clonedChoiceRefs.findIndex(
                             (choiceRef) => choiceRef == choiceId
                           )
@@ -456,65 +462,72 @@ const PassageNode: React.FC<NodeProps<{
               )}
           </div>
 
-          {editor.selectedComponentEditorSceneViewPassage === passage.id && (
-            <div
-              className={`${styles.addChoiceButton} nodrag`}
-              onClick={async () => {
-                logger.info('PassageNode->addChoiceButton->onClick')
+          {editor.selectedComponentEditorSceneViewPassage === passage.id &&
+            passage.type === PASSAGE_TYPE.CHOICE && (
+              <div
+                className={`${styles.addChoiceButton} nodrag`}
+                onClick={async () => {
+                  logger.info('PassageNode->addChoiceButton->onClick')
 
-                if (
-                  editor.selectedComponentEditorSceneViewPassage === passage.id
-                ) {
-                  try {
-                    const choiceId = uuid()
+                  if (
+                    editor.selectedComponentEditorSceneViewPassage ===
+                      passage.id &&
+                    passage.choices
+                  ) {
+                    try {
+                      const choiceId = uuid()
 
-                    await api().passages.saveChoiceRefsToPassage(
-                      data.studioId,
-                      data.passageId,
-                      [...passage.choices, choiceId]
-                    )
-
-                    await api().choices.saveChoice(data.studioId, {
-                      id: choiceId,
-                      gameId: passage.gameId,
-                      passageId: data.passageId,
-                      title: 'Untitled Choice',
-                      tags: []
-                    })
-
-                    data.onChoiceSelect(passage.id, choiceId)
-                  } catch (error) {
-                    throw new Error(error)
-                  }
-                } else {
-                  passage.id &&
-                    setSelectedElement([
-                      cloneDeep(
-                        passages.find(
-                          (passageNode) => passageNode.id === passage.id
-                        )
+                      await api().passages.saveChoiceRefsToPassage(
+                        data.studioId,
+                        data.passageId,
+                        [...passage.choices, choiceId]
                       )
-                    ]) &&
-                    editorDispatch({
-                      type:
-                        EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
-                      selectedComponentEditorSceneViewJump: null
-                    }) &&
-                    editorDispatch({
-                      type:
-                        EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                      selectedComponentEditorSceneViewPassage: passage.id
-                    }) &&
-                    editorDispatch({
-                      type:
-                        EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                      selectedComponentEditorSceneViewChoice: null
-                    })
-                }
-              }}
-            >
-              <PlusOutlined />
-            </div>
+
+                      await api().choices.saveChoice(data.studioId, {
+                        id: choiceId,
+                        gameId: passage.gameId,
+                        passageId: data.passageId,
+                        title: 'Untitled Choice',
+                        tags: []
+                      })
+
+                      data.onChoiceSelect(passage.id, choiceId)
+                    } catch (error) {
+                      throw new Error(error)
+                    }
+                  } else {
+                    passage.id &&
+                      setSelectedElement([
+                        cloneDeep(
+                          passages.find(
+                            (passageNode) => passageNode.id === passage.id
+                          )
+                        )
+                      ]) &&
+                      editorDispatch({
+                        type:
+                          EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+                        selectedComponentEditorSceneViewJump: null
+                      }) &&
+                      editorDispatch({
+                        type:
+                          EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                        selectedComponentEditorSceneViewPassage: passage.id
+                      }) &&
+                      editorDispatch({
+                        type:
+                          EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                        selectedComponentEditorSceneViewChoice: null
+                      })
+                  }
+                }}
+              >
+                <PlusOutlined />
+              </div>
+            )}
+
+          {passage.type === PASSAGE_TYPE.INPUT && (
+            <div>{passage.input || 'No input set.'}</div>
           )}
         </>
       ) : (
