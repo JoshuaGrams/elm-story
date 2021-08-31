@@ -190,6 +190,11 @@ export interface Choice extends Component {
   passageId: ComponentId
 }
 
+export interface Input extends Component {
+  gameId: GameId
+  passageId: ComponentId
+}
+
 export interface Variable extends Component {
   gameId: GameId
   type: VARIABLE_TYPE

@@ -26,7 +26,9 @@ import {
   SceneParentRef,
   SceneChildRefs,
   COMPONENT_TYPE,
-  FolderParentRef
+  FolderParentRef,
+  PASSAGE_TYPE,
+  Input
 } from '../data/types'
 
 // DATABASE VERSIONS / UPGRADES
@@ -55,6 +57,7 @@ export enum LIBRARY_TABLE {
   EFFECTS = 'effects',
   PASSAGES = 'passages',
   CHOICES = 'choices',
+  INPUTS = 'inputs',
   CONDITIONS = 'conditions',
   VARIABLES = 'variables'
 }
@@ -152,6 +155,7 @@ export class LibraryDatabase extends Dexie {
   public effects: Dexie.Table<Effect, string>
   public passages: Dexie.Table<Passage, string>
   public choices: Dexie.Table<Choice, string>
+  public inputs: Dexie.Table<Input, string>
   public variables: Dexie.Table<Variable, string>
 
   public constructor(studioId: string) {
@@ -174,6 +178,7 @@ export class LibraryDatabase extends Dexie {
     this.effects = this.table(LIBRARY_TABLE.EFFECTS)
     this.passages = this.table(LIBRARY_TABLE.PASSAGES)
     this.choices = this.table(LIBRARY_TABLE.CHOICES)
+    this.inputs = this.table(LIBRARY_TABLE.INPUTS)
     this.variables = this.table(LIBRARY_TABLE.VARIABLES)
   }
 
@@ -1464,6 +1469,33 @@ export class LibraryDatabase extends Dexie {
     }
 
     return passage
+  }
+
+  public async savePassageType(passageId: ComponentId, type: PASSAGE_TYPE) {
+    try {
+      await this.transaction('rw', this.passages, async () => {
+        if (passageId) {
+          const component = await this.getComponent(
+            LIBRARY_TABLE.PASSAGES,
+            passageId
+          )
+
+          if (component) {
+            await this.passages.update(passageId, {
+              ...component,
+              type,
+              updated: Date.now()
+            })
+          } else {
+            throw new Error('Unable to save type to passage. Passage missing.')
+          }
+        } else {
+          throw new Error('Unable to save type to passage. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 
   public async savePassageContent(passageId: ComponentId, content: string) {

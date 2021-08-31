@@ -2,7 +2,13 @@ import { LibraryDatabase, LIBRARY_TABLE } from '../db'
 import { v4 as uuid } from 'uuid'
 
 import { Descendant } from 'slate'
-import { Passage, ComponentId, StudioId, GameId } from '../data/types'
+import {
+  Passage,
+  ComponentId,
+  StudioId,
+  GameId,
+  PASSAGE_TYPE
+} from '../data/types'
 
 export async function getPassage(studioId: StudioId, passageId: ComponentId) {
   try {
@@ -58,6 +64,18 @@ export async function savePassageTitle(
       LIBRARY_TABLE.PASSAGES,
       title
     )
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export async function savePassageType(
+  studioId: StudioId,
+  passageId: ComponentId,
+  type: PASSAGE_TYPE
+) {
+  try {
+    await new LibraryDatabase(studioId).savePassageType(passageId, type)
   } catch (error) {
     throw new Error(error)
   }
