@@ -373,14 +373,12 @@ const PassageNode: React.FC<NodeProps<{
               style={{
                 borderBottomLeftRadius:
                   editor.selectedComponentEditorSceneViewPassage ===
-                    passage.id ||
-                  (passage.choices && passage.choices.length > 0)
+                    passage.id || passage.choices.length > 0
                     ? '0px'
                     : '5px',
                 borderBottomRightRadius:
                   editor.selectedComponentEditorSceneViewPassage ===
-                    passage.id ||
-                  (passage.choices && passage.choices.length > 0)
+                    passage.id || passage.choices.length > 0
                     ? '0px'
                     : '5px'
               }}
@@ -402,16 +400,13 @@ const PassageNode: React.FC<NodeProps<{
                 }`}
               >
                 {choices
-                  .sort((a, b) => {
-                    return passage.choices
-                      ? passage.choices.findIndex(
-                          (choiceId) => a.id === choiceId
-                        ) -
-                          passage.choices.findIndex(
-                            (choiceId) => b.id === choiceId
-                          )
-                      : 0
-                  })
+                  .sort(
+                    (a, b) =>
+                      passage.choices.findIndex(
+                        (choiceId) => a.id === choiceId
+                      ) -
+                      passage.choices.findIndex((choiceId) => b.id === choiceId)
+                  )
                   .map(
                     (choice, index) =>
                       choice.id && (

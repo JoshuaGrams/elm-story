@@ -44,19 +44,18 @@ const PassageType: React.FC<{
               selectedComponentEditorSceneViewChoice: null
             })
 
-          if (passage.choices)
-            await Promise.all([
-              passage.choices.map(
-                async (choiceId) =>
-                  await api().choices.removeChoice(studioId, choiceId)
-              ),
-              api().passages.saveChoiceRefsToPassage(studioId, passage.id, []),
-              api().passages.savePassageType(
-                studioId,
-                passage.id,
-                PASSAGE_TYPE.INPUT
-              )
-            ])
+          await Promise.all([
+            passage.choices.map(
+              async (choiceId) =>
+                await api().choices.removeChoice(studioId, choiceId)
+            ),
+            api().passages.saveChoiceRefsToPassage(studioId, passage.id, []),
+            api().passages.savePassageType(
+              studioId,
+              passage.id,
+              PASSAGE_TYPE.INPUT
+            )
+          ])
 
           const input = await api().inputs.saveInput(studioId, {
             gameId: passage.gameId,

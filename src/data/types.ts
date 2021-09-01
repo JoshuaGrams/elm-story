@@ -181,7 +181,7 @@ export enum PASSAGE_TYPE {
 export interface Passage extends Component {
   gameId: GameId
   sceneId: ComponentId
-  choices?: ComponentId[]
+  choices: ComponentId[]
   content: string
   input?: ComponentId // input ref
   type: PASSAGE_TYPE
