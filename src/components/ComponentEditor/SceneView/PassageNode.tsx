@@ -15,6 +15,7 @@ import {
   Choice,
   ComponentId,
   COMPONENT_TYPE,
+  GameId,
   PASSAGE_TYPE,
   Route,
   StudioId
@@ -40,9 +41,50 @@ import {
   EditorContext,
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
+import VariableSelectForInput from '../../VariableSelectForInput'
 
 interface MenuInfo {
   domEvent: React.MouseEvent<HTMLElement>
+}
+
+const ChoiceHandle: React.FC<{
+  studioId: StudioId
+  sceneId: ComponentId
+  choiceId: ComponentId
+}> = ({ studioId, sceneId, choiceId }) => {
+  // TODO: do we really need to get access to routes on every choice?
+  const routes = useRoutesBySceneRef(studioId, sceneId)
+
+  return (
+    <Handle
+      key={choiceId}
+      type="source"
+      className={styles.choiceHandle}
+      style={{ top: '50%', bottom: '50%' }}
+      position={Position.Right}
+      id={choiceId}
+      isValidConnection={(connection: Connection): boolean => {
+        logger.info('isValidConnection')
+
+        if (
+          routes &&
+          !routes.find(
+            (route) =>
+              route.choiceId === connection.sourceHandle &&
+              route.destinationId === connection.target
+          )
+        ) {
+          logger.info(
+            `Route possible from choice: ${connection.sourceHandle} to passage: ${connection.target}`
+          )
+          return true
+        } else {
+          logger.info('Duplicate route not possible.')
+          return false
+        }
+      }}
+    />
+  )
 }
 
 const ChoiceRow: React.FC<{
@@ -139,6 +181,41 @@ const ChoiceRow: React.FC<{
   )
 }
 
+const InputHandle: React.FC<{
+  studioId: StudioId
+  sceneId: ComponentId
+  inputId: ComponentId
+}> = ({ studioId, sceneId, inputId }) => {
+  return (
+    <Handle
+      key={inputId}
+      type="source"
+      className={styles.inputHandle}
+      style={{ top: '50%', bottom: '50%' }}
+      position={Position.Right}
+      id={inputId}
+    />
+  )
+}
+
+const InputRow: React.FC<{
+  studioId: StudioId
+  gameId: GameId
+  inputId: ComponentId
+  handle: JSX.Element
+}> = ({ studioId, gameId, inputId, handle }) => {
+  return (
+    <>
+      <VariableSelectForInput
+        studioId={studioId}
+        gameId={gameId}
+        inputId={inputId}
+      />{' '}
+      {handle}
+    </>
+  )
+}
+
 const PassageHandle: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
@@ -154,46 +231,6 @@ const PassageHandle: React.FC<{
       className={styles.passageHandle}
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Left}
-      isValidConnection={(connection: Connection): boolean => {
-        logger.info('isValidConnection')
-
-        if (
-          routes &&
-          !routes.find(
-            (route) =>
-              route.choiceId === connection.sourceHandle &&
-              route.destinationId === connection.target
-          )
-        ) {
-          logger.info(
-            `Route possible from choice: ${connection.sourceHandle} to passage: ${connection.target}`
-          )
-          return true
-        } else {
-          logger.info('Duplicate route not possible.')
-          return false
-        }
-      }}
-    />
-  )
-}
-
-const ChoiceHandle: React.FC<{
-  studioId: StudioId
-  sceneId: ComponentId
-  choiceId: ComponentId
-}> = ({ studioId, sceneId, choiceId }) => {
-  // TODO: do we really need to get access to routes on every choice?
-  const routes = useRoutesBySceneRef(studioId, sceneId)
-
-  return (
-    <Handle
-      key={choiceId}
-      type="source"
-      className={styles.choiceHandle}
-      style={{ top: '50%', bottom: '50%' }}
-      position={Position.Right}
-      id={choiceId}
       isValidConnection={(connection: Connection): boolean => {
         logger.info('isValidConnection')
 
@@ -333,201 +370,229 @@ const PassageNode: React.FC<NodeProps<{
             </h1>
           </div>
 
-          <div
-            className={`${styles.choices} ${
-              editor.selectedComponentEditorSceneViewPassage === passage.id
-                ? ''
-                : styles.bottomRadius
-            }`}
-          >
-            {choices
-              .sort((a, b) => {
-                return passage.choices
-                  ? passage.choices.findIndex((choiceId) => a.id === choiceId) -
-                      passage.choices.findIndex((choiceId) => b.id === choiceId)
-                  : 0
-              })
-              .map(
-                (choice, index) =>
-                  choice.id && (
-                    <ChoiceRow
-                      key={choice.id}
-                      studioId={data.studioId}
-                      choiceId={choice.id}
-                      title={choice.title}
-                      order={[index, choices.length]}
-                      showDivider={choices.length - 1 !== index}
-                      handle={choice.handle}
-                      selected={data.selectedChoice === choice.id}
-                      onSelect={(passageId, choiceId) => {
-                        logger.info(`PassageNode->onClick: choice: ${choiceId}`)
-
-                        editor.selectedComponentEditorSceneViewPassage !==
-                          passageId &&
-                          setSelectedElement([
-                            cloneDeep(
-                              passages.find(
-                                (passageNode) => passageNode.id === passageId
-                              )
-                            )
-                          ]) &&
-                          editorDispatch({
-                            type:
-                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                            selectedComponentEditorSceneViewPassage: passageId
-                          })
-
-                        editor.selectedComponentEditorSceneViewPassage ===
-                          passageId &&
-                          data.onChoiceSelect(
-                            passageId,
-                            editor.selectedComponentEditorSceneViewChoice !==
-                              choice.id
-                              ? choiceId
-                              : null
+          {passage.type === PASSAGE_TYPE.CHOICE && (
+            <>
+              <div
+                className={`${styles.choices} ${
+                  editor.selectedComponentEditorSceneViewPassage === passage.id
+                    ? ''
+                    : styles.bottomRadius
+                }`}
+              >
+                {choices
+                  .sort((a, b) => {
+                    return passage.choices
+                      ? passage.choices.findIndex(
+                          (choiceId) => a.id === choiceId
+                        ) -
+                          passage.choices.findIndex(
+                            (choiceId) => b.id === choiceId
                           )
-                      }}
-                      onReorder={async (passageId, choiceId, newPosition) => {
-                        logger.info(
-                          `ChoiceRow->onReorder->passageId: ${passageId} choiceId: ${choiceId} newPosition: ${newPosition}`
-                        )
-
-                        const clonedChoiceRefs = cloneDeep(
-                            passage.choices || []
-                          ),
-                          foundChoiceRefIndex = clonedChoiceRefs.findIndex(
-                            (choiceRef) => choiceRef == choiceId
-                          )
-
-                        clonedChoiceRefs.splice(foundChoiceRefIndex, 1)
-                        clonedChoiceRefs.splice(newPosition, 0, choiceId)
-
-                        await api().passages.saveChoiceRefsToPassage(
-                          data.studioId,
-                          data.passageId,
-                          clonedChoiceRefs
-                        )
-                      }}
-                      onDelete={async (choiceId, outgoingRoutes) => {
-                        try {
-                          editor.selectedComponentEditorSceneViewChoice ===
-                            choice.id &&
-                            editorDispatch({
-                              type:
-                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                              selectedComponentEditorSceneViewChoice: null
-                            })
-
-                          const clonedChoices = cloneDeep(choices),
-                            foundChoiceIndex = clonedChoices.findIndex(
-                              (clonedChoice) => clonedChoice.id === choiceId
+                      : 0
+                  })
+                  .map(
+                    (choice, index) =>
+                      choice.id && (
+                        <ChoiceRow
+                          key={choice.id}
+                          studioId={data.studioId}
+                          choiceId={choice.id}
+                          title={choice.title}
+                          order={[index, choices.length]}
+                          showDivider={choices.length - 1 !== index}
+                          handle={choice.handle}
+                          selected={data.selectedChoice === choice.id}
+                          onSelect={(passageId, choiceId) => {
+                            logger.info(
+                              `PassageNode->onClick: choice: ${choiceId}`
                             )
 
-                          if (foundChoiceIndex !== -1) {
-                            await Promise.all(
-                              outgoingRoutes.map(async (outgoingRoute) => {
-                                if (!outgoingRoute.id)
-                                  throw new Error(
-                                    'Unable to remove route. Missing ID'
+                            editor.selectedComponentEditorSceneViewPassage !==
+                              passageId &&
+                              setSelectedElement([
+                                cloneDeep(
+                                  passages.find(
+                                    (passageNode) =>
+                                      passageNode.id === passageId
                                   )
-
-                                await api().routes.removeRoute(
-                                  data.studioId,
-                                  outgoingRoute.id
                                 )
+                              ]) &&
+                              editorDispatch({
+                                type:
+                                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                                selectedComponentEditorSceneViewPassage: passageId
                               })
+
+                            editor.selectedComponentEditorSceneViewPassage ===
+                              passageId &&
+                              data.onChoiceSelect(
+                                passageId,
+                                editor.selectedComponentEditorSceneViewChoice !==
+                                  choice.id
+                                  ? choiceId
+                                  : null
+                              )
+                          }}
+                          onReorder={async (
+                            passageId,
+                            choiceId,
+                            newPosition
+                          ) => {
+                            logger.info(
+                              `ChoiceRow->onReorder->passageId: ${passageId} choiceId: ${choiceId} newPosition: ${newPosition}`
                             )
 
-                            await api().choices.removeChoice(
-                              data.studioId,
-                              clonedChoices[foundChoiceIndex].id
-                            )
+                            const clonedChoiceRefs = cloneDeep(
+                                passage.choices || []
+                              ),
+                              foundChoiceRefIndex = clonedChoiceRefs.findIndex(
+                                (choiceRef) => choiceRef == choiceId
+                              )
 
-                            clonedChoices.splice(foundChoiceIndex, 1)
+                            clonedChoiceRefs.splice(foundChoiceRefIndex, 1)
+                            clonedChoiceRefs.splice(newPosition, 0, choiceId)
 
                             await api().passages.saveChoiceRefsToPassage(
                               data.studioId,
                               data.passageId,
-                              clonedChoices.map(
-                                (clonedChoice) => clonedChoice.id
-                              )
+                              clonedChoiceRefs
                             )
-                          }
-                        } catch (error) {
-                          throw new Error(error)
-                        }
-                      }}
-                    />
-                  )
-              )}
-          </div>
+                          }}
+                          onDelete={async (choiceId, outgoingRoutes) => {
+                            try {
+                              editor.selectedComponentEditorSceneViewChoice ===
+                                choice.id &&
+                                editorDispatch({
+                                  type:
+                                    EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                                  selectedComponentEditorSceneViewChoice: null
+                                })
 
-          {editor.selectedComponentEditorSceneViewPassage === passage.id &&
-            passage.type === PASSAGE_TYPE.CHOICE && (
-              <div
-                className={`${styles.addChoiceButton} nodrag`}
-                onClick={async () => {
-                  logger.info('PassageNode->addChoiceButton->onClick')
+                              const clonedChoices = cloneDeep(choices),
+                                foundChoiceIndex = clonedChoices.findIndex(
+                                  (clonedChoice) => clonedChoice.id === choiceId
+                                )
 
-                  if (
-                    editor.selectedComponentEditorSceneViewPassage ===
-                      passage.id &&
-                    passage.choices
-                  ) {
-                    try {
-                      const choiceId = uuid()
+                              if (foundChoiceIndex !== -1) {
+                                await Promise.all(
+                                  outgoingRoutes.map(async (outgoingRoute) => {
+                                    if (!outgoingRoute.id)
+                                      throw new Error(
+                                        'Unable to remove route. Missing ID'
+                                      )
 
-                      await api().passages.saveChoiceRefsToPassage(
-                        data.studioId,
-                        data.passageId,
-                        [...passage.choices, choiceId]
+                                    await api().routes.removeRoute(
+                                      data.studioId,
+                                      outgoingRoute.id
+                                    )
+                                  })
+                                )
+
+                                await api().choices.removeChoice(
+                                  data.studioId,
+                                  clonedChoices[foundChoiceIndex].id
+                                )
+
+                                clonedChoices.splice(foundChoiceIndex, 1)
+
+                                await api().passages.saveChoiceRefsToPassage(
+                                  data.studioId,
+                                  data.passageId,
+                                  clonedChoices.map(
+                                    (clonedChoice) => clonedChoice.id
+                                  )
+                                )
+                              }
+                            } catch (error) {
+                              throw new Error(error)
+                            }
+                          }}
+                        />
                       )
-
-                      await api().choices.saveChoice(data.studioId, {
-                        id: choiceId,
-                        gameId: passage.gameId,
-                        passageId: data.passageId,
-                        title: 'Untitled Choice',
-                        tags: []
-                      })
-
-                      data.onChoiceSelect(passage.id, choiceId)
-                    } catch (error) {
-                      throw new Error(error)
-                    }
-                  } else {
-                    passage.id &&
-                      setSelectedElement([
-                        cloneDeep(
-                          passages.find(
-                            (passageNode) => passageNode.id === passage.id
-                          )
-                        )
-                      ]) &&
-                      editorDispatch({
-                        type:
-                          EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
-                        selectedComponentEditorSceneViewJump: null
-                      }) &&
-                      editorDispatch({
-                        type:
-                          EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                        selectedComponentEditorSceneViewPassage: passage.id
-                      }) &&
-                      editorDispatch({
-                        type:
-                          EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                        selectedComponentEditorSceneViewChoice: null
-                      })
-                  }
-                }}
-              >
-                <PlusOutlined />
+                  )}
               </div>
-            )}
 
-          {passage.type === PASSAGE_TYPE.INPUT && (
-            <div>{passage.input || 'No input set.'}</div>
+              {editor.selectedComponentEditorSceneViewPassage ===
+                passage.id && (
+                <div
+                  className={`${styles.addChoiceButton} nodrag`}
+                  onClick={async () => {
+                    logger.info('PassageNode->addChoiceButton->onClick')
+
+                    if (
+                      editor.selectedComponentEditorSceneViewPassage ===
+                        passage.id &&
+                      passage.choices
+                    ) {
+                      try {
+                        const choiceId = uuid()
+
+                        await api().passages.saveChoiceRefsToPassage(
+                          data.studioId,
+                          data.passageId,
+                          [...passage.choices, choiceId]
+                        )
+
+                        await api().choices.saveChoice(data.studioId, {
+                          id: choiceId,
+                          gameId: passage.gameId,
+                          passageId: data.passageId,
+                          title: 'Untitled Choice',
+                          tags: []
+                        })
+
+                        data.onChoiceSelect(passage.id, choiceId)
+                      } catch (error) {
+                        throw new Error(error)
+                      }
+                    } else {
+                      passage.id &&
+                        setSelectedElement([
+                          cloneDeep(
+                            passages.find(
+                              (passageNode) => passageNode.id === passage.id
+                            )
+                          )
+                        ]) &&
+                        editorDispatch({
+                          type:
+                            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+                          selectedComponentEditorSceneViewJump: null
+                        }) &&
+                        editorDispatch({
+                          type:
+                            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                          selectedComponentEditorSceneViewPassage: passage.id
+                        }) &&
+                        editorDispatch({
+                          type:
+                            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                          selectedComponentEditorSceneViewChoice: null
+                        })
+                    }
+                  }}
+                >
+                  <PlusOutlined />
+                </div>
+              )}
+            </>
+          )}
+
+          {passage.type === PASSAGE_TYPE.INPUT && passage.input && (
+            <div className={`${styles.input} ${styles.bottomRadius}`}>
+              <InputRow
+                studioId={data.studioId}
+                gameId={passage.gameId}
+                inputId={passage.input}
+                handle={
+                  <InputHandle
+                    studioId={data.studioId}
+                    sceneId={data.sceneId}
+                    inputId={passage.input}
+                  />
+                }
+              />
+            </div>
           )}
         </>
       ) : (

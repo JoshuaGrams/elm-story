@@ -1,15 +1,13 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext } from 'react'
 
 import {
   ComponentId,
-  GameId,
-  Input,
   Passage,
   PASSAGE_TYPE,
   StudioId
 } from '../../../data/types'
 
-import { useInput, usePassage, useVariables } from '../../../hooks'
+import { usePassage } from '../../../hooks'
 
 import {
   EditorContext,
@@ -25,75 +23,11 @@ import styles from './styles.module.less'
 
 import api from '../../../api'
 
-const VariableSelectForInput: React.FC<{
-  studioId: StudioId
-  gameId: GameId
-  inputId: ComponentId
-}> = ({ studioId, gameId, inputId }) => {
-  const input = useInput(studioId, inputId, [studioId, inputId]),
-    variables = useVariables(studioId, gameId, [studioId, gameId])
-
-  const changeInput = useCallback(
-    async (variableId: ComponentId) => {
-      if (input?.id)
-        await api().inputs.saveVariableRefToInput(
-          studioId,
-          input.id,
-          variableId
-        )
-    },
-    [studioId, input?.id]
-  )
-
-  return (
-    <>
-      {variables && variables.length > 0 && (
-        <>
-          <Select
-            className={`${styles.select} ${styles.inputVariable}`}
-            style={{
-              borderBottom: !input?.variableId
-                ? '1px solid hsl(0, 0%, 15%)'
-                : 'none'
-            }}
-            value={input?.variableId}
-            placeholder={'Select Input Variable'}
-            onChange={changeInput}
-          >
-            {variables.map(
-              (variable) =>
-                variable.id && (
-                  <Select.Option value={variable.id} key={variable.id}>
-                    {variable.title}
-                  </Select.Option>
-                )
-            )}
-          </Select>
-
-          {!input?.variableId && (
-            <div className={styles.warningMessage}>
-              Variable selection is required for passage input.
-            </div>
-          )}
-        </>
-      )}
-
-      {variables && variables.length === 0 && (
-        <div className={styles.warningMessage}>
-          At least 1 game variable is required for passage input.
-        </div>
-      )}
-    </>
-  )
-}
-
 const PassageType: React.FC<{
   studioId: StudioId
   passage: Passage
 }> = ({ studioId, passage }) => {
   const { editor, editorDispatch } = useContext(EditorContext)
-
-  const [input, setInput] = useState<Input | undefined>(undefined)
 
   const changeType = useCallback(
     async (type: PASSAGE_TYPE) => {
@@ -162,27 +96,13 @@ const PassageType: React.FC<{
     [studioId, passage.type, passage.choices]
   )
 
-  useEffect(() => {
-    async function getInput() {
-      setInput(
-        passage.input
-          ? await api().inputs.getInput(studioId, passage.input)
-          : undefined
-      )
-    }
-
-    getInput()
-  }, [passage.input])
-
   return (
     <div className={styles.PassageType}>
       <div className={styles.header}>Type</div>
       <Select
         value={passage.type}
         onChange={changeType}
-        className={`${styles.select} ${
-          passage.type === PASSAGE_TYPE.CHOICE ? styles.choice : ''
-        }`}
+        className={styles.select}
       >
         <Select.Option value={PASSAGE_TYPE.CHOICE} key="choice">
           Choice
@@ -191,14 +111,6 @@ const PassageType: React.FC<{
           Input
         </Select.Option>
       </Select>
-
-      {passage.type === PASSAGE_TYPE.INPUT && input?.id && (
-        <VariableSelectForInput
-          studioId={studioId}
-          gameId={passage.gameId}
-          inputId={input.id}
-        />
-      )}
     </div>
   )
 }
