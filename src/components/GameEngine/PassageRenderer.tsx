@@ -1,5 +1,6 @@
 import logger from '../../lib/logger'
 
+import { cloneDeep } from 'lodash-es'
 import reactStringReplace from 'react-string-replace'
 
 import {
@@ -11,18 +12,171 @@ import {
 
 import React, { useContext, useEffect } from 'react'
 
-import { ComponentId, COMPONENT_TYPE, StudioId } from '../../data/types'
+import {
+  COMPARE_OPERATOR_TYPE,
+  ComponentId,
+  COMPONENT_TYPE,
+  Condition,
+  Effect,
+  GameState,
+  PASSAGE_TYPE,
+  Route,
+  SET_OPERATOR_TYPE,
+  StudioId,
+  VARIABLE_TYPE
+} from '../../data/types'
+import { CustomElement } from '../ComponentEditor/PassageView'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
-import { usePassage, useRoutesByPassageRef } from '../../hooks'
+import {
+  usePassage,
+  useRouteConditionsByRouteRefs,
+  useRoutesByPassageRef
+} from '../../hooks'
 
 import { Tooltip } from 'antd'
 
 import ChoicesRenderer from './ChoicesRenderer'
-import { CustomElement } from '../ComponentEditor/PassageView'
+import InputRenderer from './InputRenderer'
 
 import api from '../../api'
+
+export function isRouteOpen(
+  gameState: GameState,
+  conditions: Condition[]
+): boolean {
+  let isOpen = conditions.length === 0 ? true : false
+
+  conditions.length > 0 &&
+    conditions.map((condition) => {
+      const currentValue =
+        condition.compare[3] === VARIABLE_TYPE.NUMBER
+          ? Number(gameState[condition.compare[0]].currentValue)
+          : gameState[condition.compare[0]].currentValue
+
+      switch (condition.compare[1]) {
+        case COMPARE_OPERATOR_TYPE.EQ:
+          isOpen = currentValue === `${condition.compare[2]}`
+          break
+        case COMPARE_OPERATOR_TYPE.GT:
+          isOpen = currentValue > condition.compare[2]
+          break
+        case COMPARE_OPERATOR_TYPE.GTE:
+          isOpen = currentValue >= condition.compare[2]
+          break
+        case COMPARE_OPERATOR_TYPE.LT:
+          isOpen = currentValue < condition.compare[2]
+          break
+        case COMPARE_OPERATOR_TYPE.LTE:
+          isOpen = currentValue <= condition.compare[2]
+          break
+        case COMPARE_OPERATOR_TYPE.NE:
+          isOpen = currentValue !== condition.compare[2]
+          break
+        default:
+          break
+      }
+    })
+
+  return isOpen
+}
+
+export async function processEffectsByRoute(
+  studioId: StudioId,
+  gameState: GameState,
+  routeId: ComponentId
+): Promise<GameState | null> {
+  const effects = (await api().effects.getEffectsByRouteRef(
+    studioId,
+    routeId
+  )) as Effect[]
+
+  if (effects.length > 0) {
+    const newGameState = cloneDeep(gameState)
+
+    effects.map((effect) => {
+      if (effect.id && newGameState[effect.variableId]) {
+        switch (effect.set[1]) {
+          case SET_OPERATOR_TYPE.ASSIGN:
+            newGameState[effect.variableId].currentValue = effect.set[2]
+            break
+          case SET_OPERATOR_TYPE.ADD:
+            newGameState[effect.variableId].currentValue = `${
+              Number(newGameState[effect.variableId].currentValue) +
+              Number(effect.set[2])
+            }`
+            break
+          case SET_OPERATOR_TYPE.SUBTRACT:
+            newGameState[effect.variableId].currentValue = `${
+              Number(newGameState[effect.variableId].currentValue) -
+              Number(effect.set[2])
+            }`
+            break
+          case SET_OPERATOR_TYPE.MULTIPLY:
+            newGameState[effect.variableId].currentValue = `${
+              Number(newGameState[effect.variableId].currentValue) *
+              Number(effect.set[2])
+            }`
+            break
+          case SET_OPERATOR_TYPE.DIVIDE:
+            newGameState[effect.variableId].currentValue = `${
+              Number(newGameState[effect.variableId].currentValue) /
+              Number(effect.set[2])
+            }`
+            break
+          default:
+            break
+        }
+      }
+    })
+
+    return newGameState
+  } else {
+    return null
+  }
+}
+
+export const SelectedRouteHandler: React.FC<{
+  studioId: StudioId
+  routes: Route[]
+  onSelectedRoute: (routeId: ComponentId | undefined) => void
+}> = ({ studioId, routes, onSelectedRoute }) => {
+  const conditionsByRoutes = useRouteConditionsByRouteRefs(
+    studioId,
+    routes.map((route) => route.id as ComponentId),
+    [studioId, routes]
+  )
+
+  const { engine } = useContext(EngineContext)
+
+  useEffect(() => {
+    logger.info(
+      `SelectedRouteHandler->conditionsByRoutes,engine.gameState->useEffect`
+    )
+
+    const openRoutes: ComponentId[] = []
+
+    if (conditionsByRoutes) {
+      routes.map((route) => {
+        route.id &&
+          isRouteOpen(
+            cloneDeep(engine.gameState),
+            conditionsByRoutes.filter(
+              (condition) => condition.routeId === route.id
+            )
+          ) &&
+          openRoutes.push(route.id)
+      })
+
+      openRoutes.length > 0
+        ? onSelectedRoute(openRoutes[(openRoutes.length * Math.random()) | 0])
+        : onSelectedRoute(undefined)
+    }
+  }, [conditionsByRoutes, routes, engine.gameState])
+
+  return null
+}
 
 const PassageContent: React.FC<{ title: string; content: string }> = ({
   title,
@@ -123,17 +277,10 @@ const PassageRenderer: React.FC<{
 
   const { engine, engineDispatch } = useContext(EngineContext)
 
-  async function onChoice(
-    choiceId: ComponentId,
+  async function navigate(
     destinationId: ComponentId,
     destinationType: COMPONENT_TYPE
   ) {
-    logger.info(
-      `PassageRenderer->onChoice->${choiceId}
-      destinationId: ${destinationId}
-      destinationType: ${destinationType}`
-    )
-
     if (destinationType === COMPONENT_TYPE.PASSAGE) {
       engineDispatch({
         type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
@@ -161,6 +308,34 @@ const PassageRenderer: React.FC<{
     })
   }
 
+  async function onChoice(
+    choiceId: ComponentId,
+    destinationId: ComponentId,
+    destinationType: COMPONENT_TYPE
+  ) {
+    logger.info(
+      `PassageRenderer->onChoice->${choiceId}
+      destinationId: ${destinationId}
+      destinationType: ${destinationType}`
+    )
+
+    navigate(destinationId, destinationType)
+  }
+
+  async function onInput(
+    inputId: ComponentId,
+    destinationId: ComponentId,
+    destinationType: COMPONENT_TYPE
+  ) {
+    logger.info(
+      `PassageRenderer->onInput->${inputId}
+        destinationId: ${destinationId}
+        destinationType: ${destinationType}`
+    )
+
+    navigate(destinationId, destinationType)
+  }
+
   useEffect(() => {
     logger.info(`PassageRenderer->passage,passageId->useEffect`)
 
@@ -180,16 +355,28 @@ const PassageRenderer: React.FC<{
         <>
           <PassageContent title={passage.title} content={passage.content} />
 
-          {passage.choices.length === 0 && (
-            <div className="es-engine-game-over-message">The End</div>
+          {passage.type === PASSAGE_TYPE.CHOICE && (
+            <>
+              {passage.choices.length === 0 && (
+                <div className="es-engine-game-over-message">The End</div>
+              )}
+
+              {passage.choices.length > 0 && (
+                <ChoicesRenderer
+                  studioId={studioId}
+                  passageId={passageId}
+                  order={passage.choices}
+                  onChoice={onChoice}
+                />
+              )}
+            </>
           )}
 
-          {passage.choices.length > 0 && (
-            <ChoicesRenderer
+          {passage.type === PASSAGE_TYPE.INPUT && passage.input && (
+            <InputRenderer
               studioId={studioId}
-              passageId={passageId}
-              order={passage.choices}
-              onChoice={onChoice}
+              inputId={passage.input}
+              onInput={onInput}
             />
           )}
         </>

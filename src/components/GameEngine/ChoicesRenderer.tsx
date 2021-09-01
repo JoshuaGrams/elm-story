@@ -1,164 +1,18 @@
 import logger from '../../lib/logger'
 
-import { cloneDeep } from 'lodash'
-
 import React, { useContext, useEffect, useState } from 'react'
 
-import {
-  COMPARE_OPERATOR_TYPE,
-  ComponentId,
-  COMPONENT_TYPE,
-  Condition,
-  Effect,
-  GameState,
-  Route,
-  SET_OPERATOR_TYPE,
-  StudioId,
-  VARIABLE_TYPE
-} from '../../data/types'
+import { ComponentId, COMPONENT_TYPE, StudioId } from '../../data/types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
 import {
   useChoice,
   useChoicesByPassageRef,
-  useRoutesByChoiceRef,
-  useRouteConditionsByRouteRefs
+  useRoutesByChoiceRef
 } from '../../hooks'
-import api from '../../api'
 
-function isRouteOpen(gameState: GameState, conditions: Condition[]): boolean {
-  let isOpen = conditions.length === 0 ? true : false
-
-  conditions.length > 0 &&
-    conditions.map((condition) => {
-      const currentValue =
-        condition.compare[3] === VARIABLE_TYPE.NUMBER
-          ? Number(gameState[condition.compare[0]].currentValue)
-          : gameState[condition.compare[0]].currentValue
-
-      switch (condition.compare[1]) {
-        case COMPARE_OPERATOR_TYPE.EQ:
-          isOpen = currentValue === `${condition.compare[2]}`
-          break
-        case COMPARE_OPERATOR_TYPE.GT:
-          isOpen = currentValue > condition.compare[2]
-          break
-        case COMPARE_OPERATOR_TYPE.GTE:
-          isOpen = currentValue >= condition.compare[2]
-          break
-        case COMPARE_OPERATOR_TYPE.LT:
-          isOpen = currentValue < condition.compare[2]
-          break
-        case COMPARE_OPERATOR_TYPE.LTE:
-          isOpen = currentValue <= condition.compare[2]
-          break
-        case COMPARE_OPERATOR_TYPE.NE:
-          isOpen = currentValue !== condition.compare[2]
-          break
-        default:
-          break
-      }
-    })
-
-  return isOpen
-}
-
-async function processEffectsByRoute(
-  studioId: StudioId,
-  gameState: GameState,
-  routeId: ComponentId
-): Promise<GameState | null> {
-  const effects = (await api().effects.getEffectsByRouteRef(
-    studioId,
-    routeId
-  )) as Effect[]
-
-  if (effects.length > 0) {
-    const newGameState = cloneDeep(gameState)
-
-    effects.map((effect) => {
-      if (effect.id && newGameState[effect.variableId]) {
-        switch (effect.set[1]) {
-          case SET_OPERATOR_TYPE.ASSIGN:
-            newGameState[effect.variableId].currentValue = effect.set[2]
-            break
-          case SET_OPERATOR_TYPE.ADD:
-            newGameState[effect.variableId].currentValue = `${
-              Number(newGameState[effect.variableId].currentValue) +
-              Number(effect.set[2])
-            }`
-            break
-          case SET_OPERATOR_TYPE.SUBTRACT:
-            newGameState[effect.variableId].currentValue = `${
-              Number(newGameState[effect.variableId].currentValue) -
-              Number(effect.set[2])
-            }`
-            break
-          case SET_OPERATOR_TYPE.MULTIPLY:
-            newGameState[effect.variableId].currentValue = `${
-              Number(newGameState[effect.variableId].currentValue) *
-              Number(effect.set[2])
-            }`
-            break
-          case SET_OPERATOR_TYPE.DIVIDE:
-            newGameState[effect.variableId].currentValue = `${
-              Number(newGameState[effect.variableId].currentValue) /
-              Number(effect.set[2])
-            }`
-            break
-          default:
-            break
-        }
-      }
-    })
-
-    return newGameState
-  } else {
-    return null
-  }
-}
-
-const SelectedRouteHandler: React.FC<{
-  studioId: StudioId
-  routes: Route[]
-  onSelectedRoute: (routeId: ComponentId | undefined) => void
-}> = ({ studioId, routes, onSelectedRoute }) => {
-  const conditionsByRoutes = useRouteConditionsByRouteRefs(
-    studioId,
-    routes.map((route) => route.id as ComponentId),
-    [studioId, routes]
-  )
-
-  const { engine } = useContext(EngineContext)
-
-  useEffect(() => {
-    logger.info(
-      `SelectedRouteHandler->conditionsByRoutes,engine.gameState->useEffect`
-    )
-
-    const openRoutes: ComponentId[] = []
-
-    if (conditionsByRoutes) {
-      routes.map((route) => {
-        route.id &&
-          isRouteOpen(
-            cloneDeep(engine.gameState),
-            conditionsByRoutes.filter(
-              (condition) => condition.routeId === route.id
-            )
-          ) &&
-          openRoutes.push(route.id)
-      })
-
-      openRoutes.length > 0
-        ? onSelectedRoute(openRoutes[(openRoutes.length * Math.random()) | 0])
-        : onSelectedRoute(undefined)
-    }
-  }, [conditionsByRoutes, routes, engine.gameState])
-
-  return null
-}
+import { processEffectsByRoute, SelectedRouteHandler } from './PassageRenderer'
 
 const ChoiceButtonRenderer: React.FC<{
   studioId: StudioId

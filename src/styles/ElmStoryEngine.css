@@ -82,7 +82,8 @@ html {
   border-top: 0.1rem solid var(--divider-color);
 }
 
-.es-engine-choice-button {
+.es-engine-choice-button,
+.es-engine-input-button {
   display: block;
   font-size: 1.4rem;
   height: var(--button-height);
@@ -97,19 +98,35 @@ html {
     border var(--animation-duration);
 }
 
-.es-engine-choice-button-disabled {
+.es-engine-input-button {
+  margin-top: 0.8rem;
+}
+
+.es-engine-choice-button-disabled,
+.es-engine-input-button-disabled {
   background: transparent;
   border: 0.1rem dashed var(--disabled-color);
   color: var(--disabled-color);
   pointer-events: none;
 }
 
-.es-engine-choice-button:last-of-type {
+.es-engine-choice-button:last-of-type,
+.es-engine-input-button:last-of-type {
   margin-bottom: 0;
 }
 
-.es-engine-choice-button:hover {
+.es-engine-choice-button:hover,
+.es-engine-input-button:hover {
   background: var(--button-color-hover);
+}
+
+.es-engine-input-text,
+.es-engine-input-number {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid hsl(0, 0%, 30%);
+  width: 100%;
+  padding-bottom: 4px;
 }
 
 .es-engine-game-over-message {

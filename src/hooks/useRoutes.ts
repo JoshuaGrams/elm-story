@@ -73,11 +73,26 @@ const useRoutesByChoiceRef = (
   return routes
 }
 
+const useRoutesByInputRef = (
+  studioId: StudioId,
+  inputId: ComponentId,
+  deps?: any[]
+): Route[] | undefined => {
+  const routes = useLiveQuery(
+    () => new LibraryDatabase(studioId).routes.where({ inputId }).toArray(),
+    deps || [],
+    undefined
+  )
+
+  return routes
+}
+
 export {
   useRoute,
   useRoutesBySceneRef,
   useRoutesByPassageRef,
-  useRoutesByChoiceRef
+  useRoutesByChoiceRef,
+  useRoutesByInputRef
 }
 
 export default useRoutes
