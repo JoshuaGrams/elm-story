@@ -186,6 +186,8 @@ const InputHandle: React.FC<{
   sceneId: ComponentId
   inputId: ComponentId
 }> = ({ studioId, sceneId, inputId }) => {
+  const routes = useRoutesBySceneRef(studioId, sceneId)
+
   return (
     <Handle
       key={inputId}
@@ -194,6 +196,26 @@ const InputHandle: React.FC<{
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Right}
       id={inputId}
+      isValidConnection={(connection: Connection): boolean => {
+        logger.info('isValidConnection')
+
+        if (
+          routes &&
+          !routes.find(
+            (route) =>
+              route.inputId === connection.sourceHandle &&
+              route.destinationId === connection.target
+          )
+        ) {
+          logger.info(
+            `Route possible from input: ${connection.sourceHandle} to passage: ${connection.target}`
+          )
+          return true
+        } else {
+          logger.info('Duplicate route not possible.')
+          return false
+        }
+      }}
     />
   )
 }

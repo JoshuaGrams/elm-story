@@ -67,6 +67,22 @@ export enum DEFAULT_NODE_SIZE {
   JUMP_HEIGHT_EXTENDED = 171
 }
 
+interface NodeData {
+  studioId: StudioId
+  sceneId?: ComponentId
+  jumpId?: ComponentId
+  passageId?: ComponentId
+  passageType?: PASSAGE_TYPE
+  selectedChoice?: ComponentId | null
+  onEditPassage?: (passageId: ComponentId) => void
+  onChoiceSelect?: (
+    passageId: ComponentId,
+    choiceId: ComponentId | null
+  ) => void
+  inputId?: ComponentId
+  type: COMPONENT_TYPE
+}
+
 export const SceneViewTools: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
@@ -512,20 +528,35 @@ const SceneView: React.FC<{
       connection.sourceHandle &&
       connection.targetHandle
     ) {
-      const foundDestinationNode:
-        | FlowElement<{ type: COMPONENT_TYPE }>
-        | undefined = elements.find(
-        (element) => element.id === connection.targetHandle
-      )
+      const foundSourceNode:
+          | FlowElement<{ passageType: PASSAGE_TYPE }>
+          | undefined = elements.find(
+          (element) => element.id === connection.source
+        ),
+        foundDestinationNode:
+          | FlowElement<{ type: COMPONENT_TYPE }>
+          | undefined = elements.find(
+          (element) => element.id === connection.targetHandle
+        )
 
-      if (foundDestinationNode?.data?.type) {
+      if (
+        foundSourceNode?.data?.passageType &&
+        foundDestinationNode?.data?.type
+      ) {
         api().routes.saveRoute(studioId, {
           title: 'Untitled Route',
           gameId: scene.gameId,
           sceneId,
           originId: connection.source,
-          choiceId: connection.sourceHandle,
-          originType: COMPONENT_TYPE.CHOICE,
+          choiceId:
+            foundSourceNode?.data.passageType === PASSAGE_TYPE.CHOICE
+              ? connection.sourceHandle
+              : undefined,
+          inputId:
+            foundSourceNode?.data.passageType === PASSAGE_TYPE.INPUT
+              ? connection.sourceHandle
+              : undefined,
+          originType: foundSourceNode?.data.passageType,
           destinationId: connection.targetHandle,
           destinationType: foundDestinationNode.data.type,
           tags: []
@@ -838,19 +869,7 @@ const SceneView: React.FC<{
       !ready && setReady(true)
 
       // TODO: optimize; this is re-rendering too much
-      const nodes: Node<{
-        studioId: StudioId
-        sceneId?: ComponentId
-        jumpId?: ComponentId
-        passageId?: ComponentId
-        selectedChoice?: ComponentId | null
-        onEditPassage?: (passageId: ComponentId) => void
-        onChoiceSelect?: (
-          passageId: ComponentId,
-          choiceId: ComponentId | null
-        ) => void
-        type: COMPONENT_TYPE
-      }>[] = []
+      const nodes: Node<NodeData>[] = []
 
       jumps.map((jump) => {
         jump.id &&
@@ -868,22 +887,43 @@ const SceneView: React.FC<{
       })
 
       passages.map((passage) => {
-        passage.id &&
+        if (scene.id && passage.id) {
+          let passageNodeData: NodeData = {
+            studioId,
+            sceneId: scene.id,
+            onEditPassage: (id: ComponentId) =>
+              editorTabDispatch({
+                type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
+                passageForEditing: { id, visible: true }
+              }),
+            passageId: passage.id,
+            passageType: passage.type,
+
+            type: COMPONENT_TYPE.PASSAGE
+          }
+
+          switch (passage.type) {
+            case PASSAGE_TYPE.CHOICE:
+              passageNodeData = {
+                ...passageNodeData,
+                selectedChoice: null,
+                onChoiceSelect
+              }
+              break
+            case PASSAGE_TYPE.INPUT:
+              if (passage.input)
+                passageNodeData = {
+                  ...passageNodeData,
+                  inputId: passage.input
+                }
+              break
+            default:
+              break
+          }
+
           nodes.push({
             id: passage.id,
-            data: {
-              studioId,
-              sceneId: scene.id,
-              passageId: passage.id,
-              selectedChoice: null,
-              onEditPassage: (id: ComponentId) =>
-                editorTabDispatch({
-                  type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
-                  passageForEditing: { id, visible: true }
-                }),
-              onChoiceSelect,
-              type: COMPONENT_TYPE.PASSAGE
-            },
+            data: passageNodeData,
             type: 'passageNode',
             position: passage.editor
               ? {
@@ -892,6 +932,7 @@ const SceneView: React.FC<{
                 }
               : { x: 0, y: 0 }
           })
+        }
       })
 
       const edges: Edge<RouteEdgeData>[] = routes.map((route) => {

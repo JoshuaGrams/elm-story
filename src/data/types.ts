@@ -16,6 +16,7 @@ export enum COMPONENT_TYPE {
   ROUTE = 'ROUTE',
   PASSAGE = 'PASSAGE',
   CHOICE = 'CHOICE',
+  INPUT = 'INPUT',
   CONDITION = 'CONDITION',
   EFFECT = 'EFFECT',
   VARIABLE = 'VARIABLE'
@@ -151,7 +152,7 @@ export interface Route extends Component {
   originId: ComponentId
   choiceId?: ComponentId
   inputId?: ComponentId
-  originType: COMPONENT_TYPE
+  originType: COMPONENT_TYPE | PASSAGE_TYPE
   destinationId: ComponentId
   destinationType: COMPONENT_TYPE
 }
