@@ -1,6 +1,6 @@
 import { cloneDeep } from 'lodash-es'
 
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 import {
   ComponentId,
@@ -25,8 +25,6 @@ const VariableInput: React.FC<{
     destinationType: COMPONENT_TYPE
   ) => void
 }> = ({ studioId, inputId, variableId, onInput }) => {
-  const inputRef = useRef<HTMLInputElement>(null)
-
   const variable = useVariable(studioId, variableId, [studioId, variableId]),
     routes = useRoutesByInputRef(studioId, inputId, [studioId, inputId])
 
@@ -38,12 +36,13 @@ const VariableInput: React.FC<{
   useEffect(() => {
     variable &&
       variable.id &&
+      variable.id === variableId &&
       setValue(
         engine.gameState[variable.id].currentValue ||
           variable.initialValue ||
           ''
       )
-  }, [variable, engine.gameState])
+  }, [variable, variableId, engine.gameState])
 
   return (
     <>
@@ -89,7 +88,7 @@ const VariableInput: React.FC<{
               <>
                 <input
                   type="radio"
-                  id="false"
+                  id="variable-false"
                   name="option"
                   value="false"
                   checked={value === 'false'}
@@ -98,7 +97,7 @@ const VariableInput: React.FC<{
                 <label htmlFor="false">No</label>{' '}
                 <input
                   type="radio"
-                  id="true"
+                  id="variable-true"
                   name="option"
                   value="true"
                   checked={value === 'true'}
@@ -110,23 +109,25 @@ const VariableInput: React.FC<{
 
             {variable.type === VARIABLE_TYPE.NUMBER && (
               <input
-                ref={inputRef}
+                id="variable-number"
                 autoFocus
                 type="number"
                 className="es-engine-input-number"
                 value={value}
                 onChange={(event) => setValue(`${event.target.value}`)}
+                onFocus={(event) => setTimeout(() => event.target.select(), 1)}
               />
             )}
 
             {variable.type === VARIABLE_TYPE.STRING && (
               <input
-                ref={inputRef}
+                id="variable-string"
                 autoFocus
                 type="text"
                 className="es-engine-input-text"
                 value={value}
                 onChange={(event) => setValue(event.target.value)}
+                onFocus={(event) => setTimeout(() => event.target.select(), 1)}
               />
             )}
 
@@ -151,7 +152,11 @@ const VariableInput: React.FC<{
 const InputRenderer: React.FC<{
   studioId: StudioId
   inputId: ComponentId
-  onInput: (inputId: string) => void
+  onInput: (
+    inputId: string,
+    destinationId: string,
+    destinationType: COMPONENT_TYPE
+  ) => void
 }> = ({ studioId, inputId, onInput }) => {
   const input = useInput(studioId, inputId, [studioId, inputId])
 
