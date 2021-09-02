@@ -364,7 +364,7 @@ const PassageNode: React.FC<NodeProps<{
       key={data.passageId}
       id={data.passageId}
     >
-      {passage?.id ? (
+      {passage?.id && (
         <>
           <div>
             <PassageHandle
@@ -618,8 +618,6 @@ const PassageNode: React.FC<NodeProps<{
             </div>
           )}
         </>
-      ) : (
-        <div>...</div>
       )}
     </div>
   )
