@@ -44,33 +44,10 @@ const PassageType: React.FC<{
               selectedComponentEditorSceneViewChoice: null
             })
 
-          await Promise.all([
-            passage.choices.map(
-              async (choiceId) =>
-                await api().choices.removeChoice(studioId, choiceId)
-            ),
-            api().passages.saveChoiceRefsToPassage(studioId, passage.id, []),
-            api().passages.savePassageType(
-              studioId,
-              passage.id,
-              PASSAGE_TYPE.INPUT
-            )
-          ])
-
-          const input = await api().inputs.saveInput(studioId, {
-            gameId: passage.gameId,
-            passageId: passage.id,
-            tags: [],
-            title: 'Untitled Input',
-            variableId: undefined
-          })
-
-          input.id &&
-            (await api().passages.savePassageInput(
-              studioId,
-              passage.id,
-              input.id
-            ))
+          await api().passages.switchPassageFromChoiceToInputType(
+            studioId,
+            passage
+          )
         }
 
         // Change to choice
@@ -80,15 +57,10 @@ const PassageType: React.FC<{
         ) {
           // It will be necessary to remove input and associated routes
           if (passage.input)
-            await Promise.all([
-              api().inputs.removeInput(studioId, passage.input),
-              api().passages.savePassageInput(studioId, passage.id, undefined),
-              api().passages.savePassageType(
-                studioId,
-                passage.id,
-                PASSAGE_TYPE.CHOICE
-              )
-            ])
+            await api().passages.switchPassageFromInputToChoiceType(
+              studioId,
+              passage
+            )
         }
       }
     },
