@@ -1,5 +1,7 @@
 import * as acorn from 'acorn'
 
+import { VARIABLE_TYPE } from '../data/types'
+
 interface AcornNode extends acorn.Node {
   body?: AcornNode[]
   expression?: AcornNode
@@ -32,7 +34,10 @@ enum NODE_TYPES {
 }
 
 interface GameVariables {
-  [variableName: string]: boolean | string | number | undefined
+  [variableName: string]: {
+    value: string | undefined
+    type: VARIABLE_TYPE
+  }
 }
 
 interface GameMethods {
@@ -185,14 +190,6 @@ function processConditionalExpression(
 
   if (
     test &&
-    test.type === NODE_TYPES.BINARY_EXPRESSION &&
-    test.left &&
-    (test.left.type === NODE_TYPES.IDENTIFIER ||
-      test.left.type === NODE_TYPES.LITERAL) &&
-    test.operator && // Check supported operator
-    test.right &&
-    (test.right.type === NODE_TYPES.IDENTIFIER ||
-      test.right.type === NODE_TYPES.LITERAL) &&
     consequent &&
     (consequent.type === NODE_TYPES.IDENTIFIER ||
       consequent.type === NODE_TYPES.LITERAL) &&
@@ -202,41 +199,95 @@ function processConditionalExpression(
       alternate.type === NODE_TYPES.LITERAL) &&
     (alternate.name !== undefined || alternate.value !== undefined)
   ) {
-    return {
-      type: NODE_TYPES.CONDITIONAL_EXPRESSION,
-      left: {
-        type: test.left.type,
-        variableName:
-          test.left.type === NODE_TYPES.IDENTIFIER ? test.left.name : undefined,
-        value:
-          test.left.type === NODE_TYPES.LITERAL ? test.left.value : undefined
-      },
-      right: {
-        type: test.right.type,
-        variableName:
-          test.right.type === NODE_TYPES.IDENTIFIER
-            ? test.right.name
-            : undefined,
-        value:
-          test.right.type === NODE_TYPES.LITERAL ? test.right.value : undefined
-      },
-      operator: test.operator,
-      consequent: {
-        type: consequent.type,
-        variableName:
-          consequent.type === NODE_TYPES.IDENTIFIER
-            ? consequent.name
-            : undefined,
-        value:
-          consequent.type === NODE_TYPES.LITERAL ? consequent.value : undefined
-      },
-      alternate: {
-        type: alternate.type,
-        variableName:
-          alternate.type === NODE_TYPES.IDENTIFIER ? alternate.name : undefined,
-        value:
-          alternate.type === NODE_TYPES.LITERAL ? alternate.value : undefined
+    if (test.type === NODE_TYPES.IDENTIFIER && test.name) {
+      return {
+        type: NODE_TYPES.CONDITIONAL_EXPRESSION,
+        identifier: {
+          type: NODE_TYPES.IDENTIFIER,
+          variableName: test.name
+        },
+        consequent: {
+          type: consequent.type,
+          variableName:
+            consequent.type === NODE_TYPES.IDENTIFIER
+              ? consequent.name
+              : undefined,
+          value:
+            consequent.type === NODE_TYPES.LITERAL
+              ? consequent.value
+              : undefined
+        },
+        alternate: {
+          type: alternate.type,
+          variableName:
+            alternate.type === NODE_TYPES.IDENTIFIER
+              ? alternate.name
+              : undefined,
+          value:
+            alternate.type === NODE_TYPES.LITERAL ? alternate.value : undefined
+        }
       }
+    }
+
+    if (
+      test.type === NODE_TYPES.BINARY_EXPRESSION &&
+      test.left &&
+      (test.left.type === NODE_TYPES.IDENTIFIER ||
+        test.left.type === NODE_TYPES.LITERAL) &&
+      test.operator && // Check supported operator
+      test.right &&
+      (test.right.type === NODE_TYPES.IDENTIFIER ||
+        test.right.type === NODE_TYPES.LITERAL)
+    ) {
+      return {
+        type: NODE_TYPES.CONDITIONAL_EXPRESSION,
+        left: {
+          type: test.left.type,
+          variableName:
+            test.left.type === NODE_TYPES.IDENTIFIER
+              ? test.left.name
+              : undefined,
+          value:
+            test.left.type === NODE_TYPES.LITERAL ? test.left.value : undefined
+        },
+        right: {
+          type: test.right.type,
+          variableName:
+            test.right.type === NODE_TYPES.IDENTIFIER
+              ? test.right.name
+              : undefined,
+          value:
+            test.right.type === NODE_TYPES.LITERAL
+              ? test.right.value
+              : undefined
+        },
+        operator: test.operator,
+        consequent: {
+          type: consequent.type,
+          variableName:
+            consequent.type === NODE_TYPES.IDENTIFIER
+              ? consequent.name
+              : undefined,
+          value:
+            consequent.type === NODE_TYPES.LITERAL
+              ? consequent.value
+              : undefined
+        },
+        alternate: {
+          type: alternate.type,
+          variableName:
+            alternate.type === NODE_TYPES.IDENTIFIER
+              ? alternate.name
+              : undefined,
+          value:
+            alternate.type === NODE_TYPES.LITERAL ? alternate.value : undefined
+        }
+      }
+    }
+
+    return {
+      type: NODE_TYPES.EXPRESSION_ERROR,
+      message: `Unable to process conditional expression. Example format: '{ variableName > 0 ? "Greater than 0." : "Not greater than zero." }`
     }
   } else {
     return {
@@ -248,8 +299,8 @@ function processConditionalExpression(
 
 export function parseTemplateExpressions(
   templateExpressions: string[],
-  gameVariables: GameVariables,
-  gameMethods: GameMethods
+  variables: GameVariables,
+  methods: GameMethods
 ): (
   | IdentifierExpression
   | CallExpression
@@ -279,12 +330,12 @@ export function parseTemplateExpressions(
         switch (expression.type) {
           case NODE_TYPES.IDENTIFIER:
             parsedExpressions.push(
-              processIdentifierExpression(expression, gameVariables)
+              processIdentifierExpression(expression, variables)
             )
             break
           case NODE_TYPES.CALL_EXPRESSION:
             parsedExpressions.push(
-              processCallExpression(expression, gameVariables, gameMethods)
+              processCallExpression(expression, variables, methods)
             )
             break
           case NODE_TYPES.CONDITIONAL_EXPRESSION:
@@ -341,11 +392,11 @@ export function getProcessedTemplate(
 
     switch (parsedExpression.type) {
       case NODE_TYPES.IDENTIFIER:
-        value = variables[parsedExpression.variableName]
+        value = variables[parsedExpression.variableName].value
         break
       case NODE_TYPES.CALL_EXPRESSION:
         value = methods[parsedExpression.methodName]?.(
-          variables[parsedExpression.variableName]
+          variables[parsedExpression.variableName].value
         )
         break
       case NODE_TYPES.CONDITIONAL_EXPRESSION:
@@ -354,120 +405,160 @@ export function getProcessedTemplate(
           case '>':
             if (
               ((parsedExpression.left?.variableName &&
-                variables[parsedExpression.left.variableName]) ||
+                variables[parsedExpression.left.variableName].value) ||
                 parsedExpression.left?.value ||
                 0) >
               ((parsedExpression.right?.variableName &&
-                variables[parsedExpression.right.variableName]) ||
+                variables[parsedExpression.right.variableName].value) ||
                 parsedExpression.right?.value ||
                 0)
             ) {
               value =
                 parsedExpression.consequent.value ||
                 (parsedExpression.consequent.variableName &&
-                  variables[parsedExpression.consequent.variableName])
+                  variables[parsedExpression.consequent.variableName].value)
             } else {
               value =
                 parsedExpression.alternate.value ||
                 (parsedExpression.alternate.variableName &&
-                  variables[parsedExpression.alternate.variableName])
+                  variables[parsedExpression.alternate.variableName].value)
             }
             break
           case '>=':
             if (
               ((parsedExpression.left?.variableName &&
-                variables[parsedExpression.left.variableName]) ||
+                variables[parsedExpression.left.variableName].value) ||
                 parsedExpression.left?.value ||
                 0) >=
               ((parsedExpression.right?.variableName &&
-                variables[parsedExpression.right.variableName]) ||
+                variables[parsedExpression.right.variableName].value) ||
                 parsedExpression.right?.value ||
                 0)
             ) {
               value =
                 parsedExpression.consequent.value ||
                 (parsedExpression.consequent.variableName &&
-                  variables[parsedExpression.consequent.variableName])
+                  variables[parsedExpression.consequent.variableName].value)
             } else {
               value =
                 parsedExpression.alternate.value ||
                 (parsedExpression.alternate.variableName &&
-                  variables[parsedExpression.alternate.variableName])
+                  variables[parsedExpression.alternate.variableName].value)
             }
             break
           case '<':
             if (
               ((parsedExpression.left?.variableName &&
-                variables[parsedExpression.left.variableName]) ||
+                variables[parsedExpression.left.variableName].value) ||
                 parsedExpression.left?.value ||
                 0) <
               ((parsedExpression.right?.variableName &&
-                variables[parsedExpression.right.variableName]) ||
+                variables[parsedExpression.right.variableName].value) ||
                 parsedExpression.right?.value ||
                 0)
             ) {
               value =
                 parsedExpression.consequent.value ||
                 (parsedExpression.consequent.variableName &&
-                  variables[parsedExpression.consequent.variableName])
+                  variables[parsedExpression.consequent.variableName].value)
             } else {
               value =
                 parsedExpression.alternate.value ||
                 (parsedExpression.alternate.variableName &&
-                  variables[parsedExpression.alternate.variableName])
+                  variables[parsedExpression.alternate.variableName].value)
             }
             break
           case '<=':
             if (
               ((parsedExpression.left?.variableName &&
-                variables[parsedExpression.left.variableName]) ||
+                variables[parsedExpression.left.variableName].value) ||
                 parsedExpression.left?.value ||
                 0) <=
               ((parsedExpression.right?.variableName &&
-                variables[parsedExpression.right.variableName]) ||
+                variables[parsedExpression.right.variableName].value) ||
                 parsedExpression.right?.value ||
                 0)
             ) {
               value =
                 parsedExpression.consequent.value ||
                 (parsedExpression.consequent.variableName &&
-                  variables[parsedExpression.consequent.variableName])
+                  variables[parsedExpression.consequent.variableName].value)
             } else {
               value =
                 parsedExpression.alternate.value ||
                 (parsedExpression.alternate.variableName &&
-                  variables[parsedExpression.alternate.variableName])
+                  variables[parsedExpression.alternate.variableName].value)
             }
             break
           case '==':
             if (
               ((parsedExpression.left?.variableName &&
-                variables[parsedExpression.left.variableName]) ||
+                variables[parsedExpression.left.variableName]?.value) ||
                 parsedExpression.left?.value ||
                 0) ===
               ((parsedExpression.right?.variableName &&
-                variables[parsedExpression.right.variableName]) ||
+                variables[parsedExpression.right.variableName]?.value) ||
                 parsedExpression.right?.value ||
                 0)
             ) {
               value =
                 parsedExpression.consequent.value ||
                 (parsedExpression.consequent.variableName &&
-                  variables[parsedExpression.consequent.variableName])
+                  variables[parsedExpression.consequent.variableName]?.value)
             } else {
               value =
                 parsedExpression.alternate.value ||
                 (parsedExpression.alternate.variableName &&
-                  variables[parsedExpression.alternate.variableName])
+                  variables[parsedExpression.alternate.variableName]?.value)
+            }
+            break
+          case '!=':
+            if (
+              ((parsedExpression.left?.variableName &&
+                variables[parsedExpression.left.variableName]?.value) ||
+                parsedExpression.left?.value) ===
+              ((parsedExpression.right?.variableName &&
+                variables[parsedExpression.right.variableName]?.value) ||
+                parsedExpression.right?.value)
+            ) {
+              value =
+                parsedExpression.consequent.value ||
+                (parsedExpression.consequent.variableName &&
+                  variables[parsedExpression.consequent.variableName]?.value)
+            } else {
+              value =
+                parsedExpression.alternate.value ||
+                (parsedExpression.alternate.variableName &&
+                  variables[parsedExpression.alternate.variableName].value)
             }
             break
           default:
             break
         }
-        if (
-          parsedExpression.left?.type === NODE_TYPES.IDENTIFIER &&
-          parsedExpression.left.variableName
-        ) {
+
+        if (parsedExpression.identifier?.variableName) {
+          const foundVariable =
+            variables[parsedExpression.identifier.variableName]
+
+          if (foundVariable) {
+            if (foundVariable.type === VARIABLE_TYPE.BOOLEAN) {
+              value =
+                foundVariable.value === 'true'
+                  ? parsedExpression.consequent.value
+                  : parsedExpression.alternate.value
+            }
+
+            if (foundVariable.type !== VARIABLE_TYPE.BOOLEAN) {
+              value =
+                foundVariable && foundVariable.value
+                  ? parsedExpression.consequent.value
+                  : parsedExpression.alternate.value
+            }
+          }
+
+          if (!foundVariable) {
+            value = parsedExpression.alternate.value
+          }
         }
 
         if (parsedExpression.left?.type === NODE_TYPES.LITERAL) {

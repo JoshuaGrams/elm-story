@@ -10,7 +10,7 @@ import {
   parseTemplateExpressions
 } from '../../lib/templates'
 
-import React, { useContext, useEffect } from 'react'
+import React, { useCallback, useContext, useEffect } from 'react'
 
 import {
   COMPARE_OPERATOR_TYPE,
@@ -186,30 +186,38 @@ const PassageContent: React.FC<{ title: string; content: string }> = ({
 
   const parsedContent: CustomElement[] = JSON.parse(content)
 
-  function processTemplateBlock(template: string): string {
-    const expressions = getTemplateExpressions(template),
-      variables: { [variableId: string]: string } = {}
+  const processTemplateBlock = useCallback(
+    (template: string): string => {
+      const expressions = getTemplateExpressions(template),
+        variables: {
+          [variableId: string]: { value: string; type: VARIABLE_TYPE }
+        } = {}
 
-    Object.entries(engine.gameState).map((variable) => {
-      const data = variable[1]
+      Object.entries(engine.gameState).map((variable) => {
+        const data = variable[1]
 
-      variables[data.title] = data.currentValue
-    })
+        variables[data.title] = {
+          value: data.currentValue,
+          type: data.type
+        }
+      })
 
-    const parsedExpressions = parseTemplateExpressions(
-      expressions,
-      variables,
-      gameMethods
-    )
+      const parsedExpressions = parseTemplateExpressions(
+        expressions,
+        variables,
+        gameMethods
+      )
 
-    return getProcessedTemplate(
-      template,
-      expressions,
-      parsedExpressions,
-      variables,
-      gameMethods
-    )
-  }
+      return getProcessedTemplate(
+        template,
+        expressions,
+        parsedExpressions,
+        variables,
+        gameMethods
+      )
+    },
+    [engine.gameState]
+  )
 
   function decorate(template: string, processedTemplate: string) {
     const expressions = getTemplateExpressions(template)
