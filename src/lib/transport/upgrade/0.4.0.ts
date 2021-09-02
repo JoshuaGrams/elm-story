@@ -31,7 +31,6 @@ export default ({
   Object.keys(clonedPassages).map((passageId) => {
     upgradedPassages[passageId] = {
       ...clonedPassages[passageId],
-      input: undefined,
       type: PASSAGE_TYPE.CHOICE
     }
   })
@@ -45,6 +44,7 @@ export default ({
     conditions,
     effects,
     folders,
+    inputs: {},
     jumps,
     passages: upgradedPassages,
     routes,

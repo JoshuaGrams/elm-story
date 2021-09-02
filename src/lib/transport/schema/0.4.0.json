@@ -162,6 +162,22 @@
         "additionalProperties": false
       }
     },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "passageId": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "updated": { "type": "number" },
+          "variableId": { "type": "string" }
+        },
+        "required": ["id", "passageId", "tags", "title", "updated"],
+        "additionalProperties": false
+      }
+    },
     "jumps": {
       "type": "object",
       "additionalProperties": {
@@ -234,6 +250,7 @@
           "destinationId": { "type": "string" },
           "destinationType": { "type": "string" },
           "id": { "type": "string" },
+          "inputId": { "type": "string" },
           "originId": { "type": "string" },
           "originType": { "type": "string" },
           "sceneId": { "type": "string" },
@@ -328,6 +345,7 @@
     "conditions",
     "effects",
     "folders",
+    "inputs",
     "jumps",
     "passages",
     "routes",

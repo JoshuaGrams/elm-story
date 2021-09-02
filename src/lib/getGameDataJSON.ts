@@ -19,6 +19,7 @@ export default async (
       ),
       effects = await api().effects.getEffectsByGameRef(studioId, gameId),
       folders = await api().folders.getFoldersByGameRef(studioId, gameId),
+      inputs = await api().inputs.getInputsByGameRef(studioId, gameId),
       jumps = await api().jumps.getJumpsByGameRef(studioId, gameId),
       routes = await api().routes.getRoutesByGameRef(studioId, gameId),
       passages = await api().passages.getPassagesByGameRef(studioId, gameId),
@@ -44,6 +45,7 @@ export default async (
       conditions: {},
       effects: {},
       folders: {},
+      inputs: {},
       jumps: {},
       passages: {},
       routes: {},
@@ -100,6 +102,18 @@ export default async (
         })
     )
 
+    inputs.map(
+      ({ id, passageId, tags, title, updated, variableId }) =>
+        (gameData.inputs[id as string] = {
+          id: id as string,
+          passageId,
+          tags,
+          title,
+          updated: updated as number,
+          variableId
+        })
+    )
+
     jumps.map(
       ({ editor, id, route, sceneId, tags, title, updated }) =>
         (gameData.jumps[id as string] = {
@@ -146,6 +160,7 @@ export default async (
         destinationId,
         destinationType,
         id,
+        inputId,
         originId,
         originType,
         sceneId,
@@ -158,6 +173,7 @@ export default async (
           destinationId,
           destinationType,
           id: id as string,
+          inputId,
           originId,
           originType,
           sceneId,

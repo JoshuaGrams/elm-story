@@ -83,12 +83,13 @@ export default (
           conditions,
           effects,
           folders,
+          inputs,
           jumps,
           passages,
           routes,
           scenes,
           variables
-        } = upgradedGameData
+        } = upgradedGameData as GameDataJSON_040
 
         try {
           // Save choices
@@ -156,6 +157,22 @@ export default (
             })
           }
 
+          // Save inputs
+          for await (const [
+            __,
+            { id, passageId, tags, title, updated, variableId }
+          ] of Object.entries(inputs)) {
+            await api().inputs.saveInput(_.studioId, {
+              gameId: _.id,
+              id,
+              passageId,
+              tags,
+              title,
+              updated,
+              variableId
+            })
+          }
+
           // Save jumps
           for await (const [
             __,
@@ -212,6 +229,7 @@ export default (
               destinationId,
               destinationType,
               id,
+              inputId,
               originId,
               originType,
               sceneId,
@@ -225,6 +243,7 @@ export default (
               destinationId,
               destinationType,
               id,
+              inputId,
               gameId: _.id,
               originId,
               originType,

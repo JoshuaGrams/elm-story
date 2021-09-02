@@ -94,12 +94,25 @@ export interface JumpData {
   updated: number
 }
 
+export interface InputData {
+  id: ComponentId
+  passageId: ComponentId
+  tags: string[]
+  title: string
+  updated: number
+  variableId?: ComponentId
+}
+
+export interface InputCollection {
+  [choiceId: string]: InputData
+}
+
 export interface JumpCollection {
   [jumpId: string]: JumpData
 }
 
 export interface PassageData {
-  choices?: ComponentId[]
+  choices: ComponentId[]
   content: string
   editor?: {
     componentEditorPosX?: number
@@ -123,8 +136,9 @@ export interface RouteData {
   destinationId: ComponentId
   destinationType: COMPONENT_TYPE
   id: ComponentId
+  inputId?: ComponentId
   originId: ComponentId
-  originType: COMPONENT_TYPE
+  originType: COMPONENT_TYPE | PASSAGE_TYPE
   sceneId: ComponentId
   tags: string[]
   title: string
@@ -173,6 +187,7 @@ export interface GameDataJSON {
   conditions: ConditionCollection
   effects: EffectCollection
   folders: FolderCollection
+  inputs: InputCollection
   jumps: JumpCollection
   passages: PassageCollection
   routes: RouteCollection
