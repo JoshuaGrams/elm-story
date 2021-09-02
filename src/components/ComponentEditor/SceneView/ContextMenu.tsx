@@ -1,6 +1,6 @@
 import logger from '../../../lib/logger'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import { ComponentId } from '../../../data/types'
 
@@ -24,7 +24,10 @@ const ContextMenu: React.FC<{
   trigger: string
   features: {
     className: string
-    items: [string, (featureReturn: MenuItemReturnData) => void][]
+    items: [
+      ((componentId: string | null) => string) | string,
+      (featureReturn: MenuItemReturnData) => void
+    ][]
   }[]
   forceHide: boolean
 }> = ({ trigger, features, forceHide }) => {
@@ -46,59 +49,67 @@ const ContextMenu: React.FC<{
 
   const whitelistByClassName = features.map((feature) => feature.className)
 
-  function showContextMenu(event: MouseEvent) {
-    const parentElement = document.getElementById(trigger),
-      targetElement = event.target as Element,
-      triggered = parentElement?.contains(targetElement)
+  const showContextMenu = useCallback(
+    (event: MouseEvent) => {
+      const parentElement = document.getElementById(trigger),
+        targetElement = event.target as Element,
+        triggered = parentElement?.contains(targetElement)
 
-    if (
-      triggered &&
-      event
-        .composedPath()
-        .findIndex((target) =>
-          whitelistByClassName.includes((target as Element).className)
-        ) !== -1
-    ) {
-      logger.info('SceneView->showContextMenu->visible')
+      if (
+        triggered &&
+        event
+          .composedPath()
+          .findIndex((target) =>
+            whitelistByClassName.includes((target as Element).className)
+          ) !== -1
+      ) {
+        logger.info('SceneView->showContextMenu->visible')
 
-      document.addEventListener('click', hideContextMenu)
-      document.addEventListener('mousedown', hideContextMenu)
+        setMenuContents(
+          features
+            .find((feature) => feature.className === targetElement.className)
+            ?.items.map((item, index) => {
+              return (
+                <Menu.Item
+                  key={`${targetElement.className},${index}`}
+                  className={`${MENU_ITEM_CLASS_NAME} ant-dropdown-menu-item`}
+                >
+                  {' '}
+                  {typeof item[0] === 'function'
+                    ? item[0](
+                        targetElement.getAttribute(COMPONENT_ID_ATTRIBUTE_NAME)
+                      )
+                    : item[0]}
+                </Menu.Item>
+              )
+            })
+        )
 
-      setMenuContents(
-        features
-          .find((feature) => feature.className === targetElement.className)
-          ?.items.map((item, index) => (
-            <Menu.Item
-              key={`${targetElement.className},${index}`}
-              className={`${MENU_ITEM_CLASS_NAME} ant-dropdown-menu-item`}
-            >
-              {' '}
-              {item[0]}
-            </Menu.Item>
-          ))
-      )
+        const parentRect = parentElement?.getBoundingClientRect(),
+          menuRect = menuRef.current?.getBoundingClientRect()
 
-      const parentRect = parentElement?.getBoundingClientRect(),
-        menuRect = menuRef.current?.getBoundingClientRect()
+        if (menuRect && parentRect)
+          setMenuPosition({
+            x:
+              event.offsetX + menuRect.width > parentRect.width
+                ? event.clientX - menuRect.width
+                : event.clientX,
+            y:
+              event.offsetY + menuRect.height > parentRect.height
+                ? event.clientY - menuRect.height
+                : event.clientY
+          })
 
-      if (menuRect && parentRect)
-        setMenuPosition({
-          x:
-            event.offsetX + menuRect.width > parentRect.width
-              ? event.clientX - menuRect.width
-              : event.clientX,
-          y:
-            event.offsetY + menuRect.height > parentRect.height
-              ? event.clientY - menuRect.height
-              : event.clientY
-        })
+        setClickPosition({ x: event.offsetX, y: event.offsetY })
+        setByComponentId(
+          targetElement.getAttribute(COMPONENT_ID_ATTRIBUTE_NAME)
+        )
 
-      setClickPosition({ x: event.offsetX, y: event.offsetY })
-      setByComponentId(targetElement.getAttribute(COMPONENT_ID_ATTRIBUTE_NAME))
-
-      setMenuVisible(true)
-    }
-  }
+        setMenuVisible(true)
+      }
+    },
+    [features]
+  )
 
   function hideContextMenu(event?: MouseEvent) {
     if (
@@ -112,12 +123,7 @@ const ContextMenu: React.FC<{
       return
 
     setMenuVisible((isVisible: boolean) => {
-      if (isVisible) {
-        logger.info('SceneView->hideContextMenu->not visible')
-
-        document.removeEventListener('click', hideContextMenu)
-        document.removeEventListener('mousedown', hideContextMenu)
-      }
+      isVisible && logger.info('SceneView->hideContextMenu->not visible')
 
       return false
     })
@@ -133,13 +139,15 @@ const ContextMenu: React.FC<{
 
   useEffect(() => {
     document.addEventListener('contextmenu', showContextMenu)
+    document.addEventListener('click', hideContextMenu)
+    document.addEventListener('mousedown', hideContextMenu)
 
     return () => {
       document.removeEventListener('contextmenu', showContextMenu)
       document.removeEventListener('click', hideContextMenu)
       document.removeEventListener('mousedown', hideContextMenu)
     }
-  }, [])
+  })
 
   return (
     <div

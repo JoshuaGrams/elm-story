@@ -1261,6 +1261,55 @@ const SceneView: React.FC<{
                     }
                   ],
                   [
+                    // #292
+                    (componentId) => {
+                      const foundPassage = passages.find(
+                        (passage) => passage.id === componentId
+                      )
+
+                      if (foundPassage)
+                        switch (foundPassage.type) {
+                          case PASSAGE_TYPE.CHOICE:
+                            return 'Switch to Input'
+                          case PASSAGE_TYPE.INPUT:
+                            return 'Switch to Choice'
+                          default:
+                            break
+                        }
+
+                      return 'Unknown Passage Type'
+                    },
+                    async ({ componentId }) => {
+                      const foundPassage = passages.find(
+                        (passage) => passage.id === componentId
+                      )
+
+                      if (foundPassage && foundPassage.id) {
+                        if (foundPassage.type === PASSAGE_TYPE.CHOICE) {
+                          editor.selectedComponentEditorSceneViewPassage ===
+                            foundPassage.id &&
+                            editorDispatch({
+                              type:
+                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                              selectedComponentEditorSceneViewChoice: null
+                            })
+
+                          await api().passages.switchPassageFromChoiceToInputType(
+                            studioId,
+                            foundPassage
+                          )
+                        }
+
+                        foundPassage.type === PASSAGE_TYPE.INPUT &&
+                          foundPassage.input &&
+                          (await api().passages.switchPassageFromInputToChoiceType(
+                            studioId,
+                            foundPassage
+                          ))
+                      }
+                    }
+                  ],
+                  [
                     'Remove Passage',
                     async ({ componentId }) => {
                       if (scene && componentId)
