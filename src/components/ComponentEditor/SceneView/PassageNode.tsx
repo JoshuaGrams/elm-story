@@ -32,7 +32,11 @@ import {
 import { Handle, Position, NodeProps, Connection } from 'react-flow-renderer'
 
 import { Dropdown, Menu } from 'antd'
-import { AlignLeftOutlined, PlusOutlined } from '@ant-design/icons'
+import {
+  AlignLeftOutlined,
+  BranchesOutlined,
+  PlusOutlined
+} from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
@@ -174,7 +178,9 @@ const ChoiceRow: React.FC<{
           </Menu>
         }
       >
-        <div>{title}</div>
+        <div>
+          <BranchesOutlined className={styles.choiceRowIcon} /> {title}
+        </div>
       </Dropdown>
       {handle}
     </div>
