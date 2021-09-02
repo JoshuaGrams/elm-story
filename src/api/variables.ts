@@ -83,13 +83,13 @@ export async function saveVariableType(
   }
 }
 
-export async function saveVariableDefaultValue(
+export async function saveVariableInitialValue(
   studioId: StudioId,
   variableId: ComponentId,
   initialValue: string
 ) {
   try {
-    return await new LibraryDatabase(studioId).saveVariableDefaultValue(
+    return await new LibraryDatabase(studioId).saveVariableInitialValue(
       variableId,
       initialValue
     )

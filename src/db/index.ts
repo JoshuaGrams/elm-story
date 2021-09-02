@@ -2027,7 +2027,7 @@ export class LibraryDatabase extends Dexie {
     })
   }
 
-  public async saveVariableDefaultValue(
+  public async saveVariableInitialValue(
     variableId: ComponentId,
     initialValue: string
   ) {
