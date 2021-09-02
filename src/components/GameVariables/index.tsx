@@ -156,7 +156,7 @@ export const VariableRow: React.FC<{
 
     variable?.id &&
       newVariableDefaultValue !== variableDefaultValue &&
-      (await api().variables.saveVariableDefaultValue(
+      (await api().variables.saveVariableInitialValue(
         studioId,
         variable.id,
         newVariableDefaultValue
@@ -172,7 +172,7 @@ export const VariableRow: React.FC<{
 
     if (variable?.id && changedValues.initialValue !== variableDefaultValue) {
       variableType === VARIABLE_TYPE.STRING &&
-        (await api().variables.saveVariableDefaultValue(
+        (await api().variables.saveVariableInitialValue(
           studioId,
           variable.id,
           changedValues.initialValue
@@ -184,7 +184,7 @@ export const VariableRow: React.FC<{
           changedValues.initialValue === '' ||
           !changedValues.initialValue
         ) {
-          await api().variables.saveVariableDefaultValue(
+          await api().variables.saveVariableInitialValue(
             studioId,
             variable.id,
             `${changedValues.initialValue}`
