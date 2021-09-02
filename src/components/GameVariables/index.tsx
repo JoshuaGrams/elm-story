@@ -64,10 +64,10 @@ export const VariableRow: React.FC<{
 }) => {
   const variable = useVariable(studioId, variableId, [studioId, variableId]),
     [editVariableTitleForm] = Form.useForm(),
-    [editVariableDefaultValueForm] = Form.useForm()
+    [editVariableInitialValueForm] = Form.useForm()
 
   const variableTitleInputRef = useRef<Input | null>(null),
-    variableDefaultValueInputRef = useRef<Input | null>(null)
+    variableInitialValueInputRef = useRef<Input | null>(null)
 
   const [variableTitle, setVariableTitle] = useState<string | undefined>(
       variable?.type
@@ -75,7 +75,7 @@ export const VariableRow: React.FC<{
     [variableType, setVariableType] = useState<VARIABLE_TYPE | undefined>(
       variable?.type
     ),
-    [variableDefaultValue, setVariableDefaultValue] = useState<
+    [variableInitialValue, setVariableInitialValue] = useState<
       string | undefined
     >(variable?.initialValue)
 
@@ -147,30 +147,30 @@ export const VariableRow: React.FC<{
     }
   }
 
-  async function onDefaultValueChangeFromSelect(
-    newVariableDefaultValue: string
+  async function onInitialValueChangeFromSelect(
+    newVariableInitialValue: string
   ) {
     logger.info(
-      `VariableRow->onDefaultValueChangeFromSelect->${newVariableDefaultValue}`
+      `VariableRow->onInitialValueChangeFromSelect->${newVariableInitialValue}`
     )
 
     variable?.id &&
-      newVariableDefaultValue !== variableDefaultValue &&
+      newVariableInitialValue !== variableInitialValue &&
       (await api().variables.saveVariableInitialValue(
         studioId,
         variable.id,
-        newVariableDefaultValue
+        newVariableInitialValue
       ))
   }
 
-  async function onVariableDefaultValueChangeFromInput(changedValues: {
+  async function onVariableInitialValueChangeFromInput(changedValues: {
     initialValue: string
   }) {
     logger.info(
-      `VariableRow->onDefaultValueChangeFromInput->${changedValues.initialValue}`
+      `VariableRow->onVariableInitialValueChangeFromInput->${changedValues.initialValue}`
     )
 
-    if (variable?.id && changedValues.initialValue !== variableDefaultValue) {
+    if (variable?.id && changedValues.initialValue !== variableInitialValue) {
       variableType === VARIABLE_TYPE.STRING &&
         (await api().variables.saveVariableInitialValue(
           studioId,
@@ -190,8 +190,8 @@ export const VariableRow: React.FC<{
             `${changedValues.initialValue}`
           )
         } else {
-          editVariableDefaultValueForm.resetFields()
-          variableDefaultValueInputRef.current?.focus()
+          editVariableInitialValueForm.resetFields()
+          variableInitialValueInputRef.current?.focus()
         }
       }
     }
@@ -215,21 +215,21 @@ export const VariableRow: React.FC<{
 
     variable?.type && setVariableType(variable.type)
 
-    editVariableDefaultValueForm.resetFields()
+    editVariableInitialValueForm.resetFields()
   }, [variable?.type])
 
   useEffect(() => {
     logger.info(`VariableRow->variable.initialValue->${variable?.initialValue}`)
 
-    variable?.initialValue && setVariableDefaultValue(variable.initialValue)
+    variable?.initialValue && setVariableInitialValue(variable.initialValue)
   }, [variable?.initialValue])
 
   useEffect(() => {
     logger.info(`VariableRow->value->useEffect->${value}`)
 
     // if (value) {
-    // editVariableDefaultValueForm.resetFields()
-    // variableDefaultValueInputRef.current?.focus()
+    // editVariableInitialValueForm.resetFields()
+    // variableInitialValueInputRef.current?.focus()
     // }
   }, [value])
 
@@ -335,11 +335,11 @@ export const VariableRow: React.FC<{
               </Col>
             )}
 
-            <Col className={styles.defaultValueCol}>
+            <Col className={styles.initialValueCol}>
               {variable.type === VARIABLE_TYPE.BOOLEAN && (
                 <Select
-                  value={value || variableDefaultValue}
-                  onChange={onChangeValue || onDefaultValueChangeFromSelect}
+                  value={value || variableInitialValue}
+                  onChange={onChangeValue || onInitialValueChangeFromSelect}
                 >
                   <Option value={'true'}>true</Option>
                   <Option value={'false'}>false</Option>
@@ -349,7 +349,7 @@ export const VariableRow: React.FC<{
               {(variable.type === VARIABLE_TYPE.STRING ||
                 variable.type === VARIABLE_TYPE.NUMBER) && (
                 <Form
-                  form={editVariableDefaultValueForm}
+                  form={editVariableInitialValueForm}
                   initialValues={{
                     initialValue:
                       rowType === VARIABLE_ROW_TYPE.VARIABLE
@@ -361,16 +361,16 @@ export const VariableRow: React.FC<{
                       ? (changedValues: { initialValue: string }) => {
                           onChangeValue(changedValues.initialValue)
                         }
-                      : onVariableDefaultValueChangeFromInput,
+                      : onVariableInitialValueChangeFromInput,
                     100
                   )}
-                  onFinish={() => variableDefaultValueInputRef.current?.blur()}
+                  onFinish={() => variableInitialValueInputRef.current?.blur()}
                 >
                   {variable.type === VARIABLE_TYPE.STRING && (
                     <Form.Item name="initialValue">
                       <Input
                         placeholder="Undefined"
-                        ref={variableDefaultValueInputRef}
+                        ref={variableInitialValueInputRef}
                       />
                     </Form.Item>
                   )}
@@ -379,7 +379,7 @@ export const VariableRow: React.FC<{
                     <Form.Item name="initialValue">
                       <InputNumber
                         placeholder="Undefined"
-                        ref={variableDefaultValueInputRef}
+                        ref={variableInitialValueInputRef}
                       />
                     </Form.Item>
                   )}
@@ -419,7 +419,7 @@ const GameVariables: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
           </Col>
           <Col className={`${styles.typeCol} ${styles.typeHeader}`}>Type</Col>
           <Col
-            className={`${styles.defaultValueCol} ${styles.defaultValueHeader}`}
+            className={`${styles.initialValueCol} ${styles.initialValueHeader}`}
           >
             Initial
           </Col>
