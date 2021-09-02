@@ -400,96 +400,134 @@ export function getProcessedTemplate(
         )
         break
       case NODE_TYPES.CONDITIONAL_EXPRESSION:
+        const leftVariable = parsedExpression.left,
+          rightVariable = parsedExpression.right
+
+        const consequent = parsedExpression.consequent,
+          alternate = parsedExpression.alternate
+
+        const foundLeftVariable = leftVariable?.variableName
+            ? variables[leftVariable.variableName]
+            : undefined,
+          foundRightVariable = rightVariable?.variableName
+            ? variables[rightVariable.variableName]
+            : undefined
+
         switch (parsedExpression.operator) {
-          // TODO: must be a better way
+          // NUMBERS
           case '>':
-            if (
-              ((parsedExpression.left?.variableName &&
-                variables[parsedExpression.left.variableName].value) ||
-                parsedExpression.left?.value ||
-                0) >
-              ((parsedExpression.right?.variableName &&
-                variables[parsedExpression.right.variableName].value) ||
-                parsedExpression.right?.value ||
-                0)
-            ) {
-              value =
-                parsedExpression.consequent.value ||
-                (parsedExpression.consequent.variableName &&
-                  variables[parsedExpression.consequent.variableName].value)
-            } else {
-              value =
-                parsedExpression.alternate.value ||
-                (parsedExpression.alternate.variableName &&
-                  variables[parsedExpression.alternate.variableName].value)
-            }
-            break
           case '>=':
-            if (
-              ((parsedExpression.left?.variableName &&
-                variables[parsedExpression.left.variableName].value) ||
-                parsedExpression.left?.value ||
-                0) >=
-              ((parsedExpression.right?.variableName &&
-                variables[parsedExpression.right.variableName].value) ||
-                parsedExpression.right?.value ||
-                0)
-            ) {
-              value =
-                parsedExpression.consequent.value ||
-                (parsedExpression.consequent.variableName &&
-                  variables[parsedExpression.consequent.variableName].value)
-            } else {
-              value =
-                parsedExpression.alternate.value ||
-                (parsedExpression.alternate.variableName &&
-                  variables[parsedExpression.alternate.variableName].value)
-            }
-            break
           case '<':
-            if (
-              ((parsedExpression.left?.variableName &&
-                variables[parsedExpression.left.variableName].value) ||
-                parsedExpression.left?.value ||
-                0) <
-              ((parsedExpression.right?.variableName &&
-                variables[parsedExpression.right.variableName].value) ||
-                parsedExpression.right?.value ||
-                0)
-            ) {
-              value =
-                parsedExpression.consequent.value ||
-                (parsedExpression.consequent.variableName &&
-                  variables[parsedExpression.consequent.variableName].value)
-            } else {
-              value =
-                parsedExpression.alternate.value ||
-                (parsedExpression.alternate.variableName &&
-                  variables[parsedExpression.alternate.variableName].value)
-            }
-            break
           case '<=':
-            if (
-              ((parsedExpression.left?.variableName &&
-                variables[parsedExpression.left.variableName].value) ||
-                parsedExpression.left?.value ||
-                0) <=
-              ((parsedExpression.right?.variableName &&
-                variables[parsedExpression.right.variableName].value) ||
-                parsedExpression.right?.value ||
-                0)
-            ) {
-              value =
-                parsedExpression.consequent.value ||
-                (parsedExpression.consequent.variableName &&
-                  variables[parsedExpression.consequent.variableName].value)
-            } else {
-              value =
-                parsedExpression.alternate.value ||
-                (parsedExpression.alternate.variableName &&
-                  variables[parsedExpression.alternate.variableName].value)
+            // variables on both sides
+            if (leftVariable?.variableName && rightVariable?.variableName) {
+              if (
+                foundLeftVariable &&
+                foundLeftVariable.type === VARIABLE_TYPE.NUMBER &&
+                foundLeftVariable.value &&
+                foundRightVariable &&
+                foundRightVariable.type === VARIABLE_TYPE.NUMBER &&
+                foundRightVariable.value
+              ) {
+                switch (parsedExpression.operator) {
+                  case '>':
+                    value =
+                      Number(foundLeftVariable.value) >
+                      Number(foundRightVariable.value)
+                        ? consequent.value
+                        : alternate.value
+                    break
+                  case '>=':
+                    value =
+                      Number(foundLeftVariable.value) >=
+                      Number(foundRightVariable.value)
+                        ? consequent.value
+                        : alternate.value
+                    break
+                  case '<':
+                    value =
+                      Number(foundLeftVariable.value) <
+                      Number(foundRightVariable.value)
+                        ? consequent.value
+                        : alternate.value
+                    break
+                  case '<=':
+                    value =
+                      Number(foundLeftVariable.value) <=
+                      Number(foundRightVariable.value)
+                        ? consequent.value
+                        : alternate.value
+                    break
+                  default:
+                    value = 'esg-error'
+                }
+              } else {
+                value = 'esg-error'
+              }
             }
+
+            // variable on left or right
+            if (
+              (leftVariable?.variableName &&
+                rightVariable &&
+                !rightVariable.variableName) ||
+              (rightVariable?.variableName &&
+                leftVariable &&
+                !leftVariable.variableName)
+            ) {
+              if (
+                (foundLeftVariable &&
+                  foundLeftVariable.type === VARIABLE_TYPE.NUMBER &&
+                  foundLeftVariable.value &&
+                  (rightVariable.value || rightVariable.value === 0) &&
+                  typeof rightVariable.value === 'number') ||
+                (foundRightVariable &&
+                  foundRightVariable.type === VARIABLE_TYPE.NUMBER &&
+                  foundRightVariable.value &&
+                  (leftVariable.value || leftVariable.value === 0) &&
+                  typeof leftVariable.value === 'number')
+              ) {
+                switch (parsedExpression.operator) {
+                  case '>':
+                    value =
+                      Number(foundLeftVariable?.value || leftVariable.value) >
+                      Number(foundRightVariable?.value || rightVariable.value)
+                        ? consequent.value
+                        : alternate.value
+                    break
+                  case '>=':
+                    value =
+                      Number(foundLeftVariable?.value || leftVariable.value) >=
+                      Number(foundRightVariable?.value || rightVariable.value)
+                        ? consequent.value
+                        : alternate.value
+                    break
+                  case '<':
+                    value =
+                      Number(foundLeftVariable?.value || leftVariable.value) <
+                      Number(foundRightVariable?.value || rightVariable.value)
+                        ? consequent.value
+                        : alternate.value
+                    break
+                  case '<=':
+                    value =
+                      Number(foundLeftVariable?.value || leftVariable.value) <=
+                      Number(foundRightVariable?.value || rightVariable.value)
+                        ? consequent.value
+                        : alternate.value
+                    break
+                  default:
+                    value = 'esg-error'
+                }
+              } else {
+                value = 'esg-error'
+              }
+            }
+
+            if (!value) value = 'esg-error'
+
             break
+          // EQUALITY
           case '==':
             if (
               ((parsedExpression.left?.variableName &&
@@ -512,6 +550,7 @@ export function getProcessedTemplate(
                   variables[parsedExpression.alternate.variableName]?.value)
             }
             break
+          // INEQUALITY
           case '!=':
             if (
               ((parsedExpression.left?.variableName &&
@@ -533,9 +572,11 @@ export function getProcessedTemplate(
             }
             break
           default:
+            value = 'esg-error'
             break
         }
 
+        // IDENTIFIER
         if (parsedExpression.identifier?.variableName) {
           const foundVariable =
             variables[parsedExpression.identifier.variableName]
@@ -559,9 +600,6 @@ export function getProcessedTemplate(
           if (!foundVariable) {
             value = parsedExpression.alternate.value
           }
-        }
-
-        if (parsedExpression.left?.type === NODE_TYPES.LITERAL) {
         }
         break
       case NODE_TYPES.EXPRESSION_ERROR:
