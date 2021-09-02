@@ -1619,62 +1619,6 @@ export class LibraryDatabase extends Dexie {
     try {
       logger.info('LibraryDatabase->removePassage')
 
-      const jumps = await this.jumps.where({ route: passageId }).toArray(),
-        routes = await this.routes
-          .where({ destinationId: passageId })
-          .toArray(),
-        choices = await this.choices.where({ passageId }).toArray(),
-        inputs = await this.inputs.where({ passageId }).toArray()
-
-      if (routes.length > 0) {
-        logger.info(
-          `LibraryDatabase->removePassage->Updating ${jumps.length} jump(s) from passage with ID: ${passageId}`
-        )
-      }
-
-      await Promise.all(
-        jumps.map(
-          async (jump) =>
-            jump.id && (await this.saveJumpRoute(jump.id, [jump.route[0]]))
-        )
-      )
-
-      if (routes.length > 0) {
-        logger.info(
-          `LibraryDatabase->removePassage->Removing ${routes.length} route(s) from passage with ID: ${passageId}`
-        )
-      }
-
-      await Promise.all(
-        routes.map(
-          async (route) => route.id && (await this.removeRoute(route.id))
-        )
-      )
-
-      if (choices.length > 0) {
-        logger.info(
-          `LibraryDatabase->removePassage->Removing ${choices.length} choice(s) from passage with ID: ${passageId}`
-        )
-      }
-
-      await Promise.all(
-        choices.map(
-          async (choice) => choice.id && (await this.removeChoice(choice.id))
-        )
-      )
-
-      if (inputs.length > 0) {
-        logger.info(
-          `LibraryDatabase->removePassage->Removing ${inputs.length} input(s) from passage with ID: ${passageId}`
-        )
-      }
-
-      await Promise.all(
-        inputs.map(
-          async (input) => input.id && (await this.removeInput(input.id))
-        )
-      )
-
       await this.transaction('rw', this.passages, async () => {
         if (await this.getComponent(LIBRARY_TABLE.PASSAGES, passageId)) {
           logger.info(
@@ -1688,6 +1632,49 @@ export class LibraryDatabase extends Dexie {
           )
         }
       })
+
+      const jumps = await this.jumps.where({ route: passageId }).toArray(),
+        routes = await this.routes
+          .where({ destinationId: passageId })
+          .toArray(),
+        choices = await this.choices.where({ passageId }).toArray(),
+        inputs = await this.inputs.where({ passageId }).toArray()
+
+      jumps.length > 0 &&
+        logger.info(
+          `LibraryDatabase->removePassage->Updating ${jumps.length} jump(s) from passage with ID: ${passageId}`
+        )
+
+      routes.length > 0 &&
+        logger.info(
+          `LibraryDatabase->removePassage->Removing ${routes.length} route(s) from passage with ID: ${passageId}`
+        )
+
+      choices.length > 0 &&
+        logger.info(
+          `LibraryDatabase->removePassage->Removing ${choices.length} choice(s) from passage with ID: ${passageId}`
+        )
+
+      inputs.length > 0 &&
+        logger.info(
+          `LibraryDatabase->removePassage->Removing ${inputs.length} input(s) from passage with ID: ${passageId}`
+        )
+
+      await Promise.all([
+        jumps.map(
+          async (jump) =>
+            jump.id && (await this.saveJumpRoute(jump.id, [jump.route[0]]))
+        ),
+        routes.map(
+          async (route) => route.id && (await this.removeRoute(route.id))
+        ),
+        choices.map(
+          async (choice) => choice.id && (await this.removeChoice(choice.id))
+        ),
+        inputs.map(
+          async (input) => input.id && (await this.removeInput(input.id))
+        )
+      ])
     } catch (error) {
       throw new Error(error)
     }
