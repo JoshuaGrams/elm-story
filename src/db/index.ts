@@ -2015,7 +2015,12 @@ export class LibraryDatabase extends Dexie {
           await this.variables.update(variableId, {
             ...component,
             type,
-            initialValue: type === VARIABLE_TYPE.BOOLEAN ? 'false' : '',
+            initialValue:
+              type === VARIABLE_TYPE.BOOLEAN
+                ? 'false'
+                : type === VARIABLE_TYPE.NUMBER
+                ? '0'
+                : '',
             updated: Date.now()
           })
         } else {

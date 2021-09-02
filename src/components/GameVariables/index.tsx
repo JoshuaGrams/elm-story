@@ -187,8 +187,12 @@ export const VariableRow: React.FC<{
           await api().variables.saveVariableInitialValue(
             studioId,
             variable.id,
-            `${changedValues.initialValue}`
+            `${changedValues.initialValue || 0}`
           )
+
+          // #298: detect user pressing return or clicking outside
+          changedValues.initialValue === null &&
+            editVariableInitialValueForm.resetFields()
         } else {
           editVariableInitialValueForm.resetFields()
           variableInitialValueInputRef.current?.focus()
@@ -354,7 +358,9 @@ export const VariableRow: React.FC<{
                     initialValue:
                       rowType === VARIABLE_ROW_TYPE.VARIABLE
                         ? variable.initialValue
-                        : value || undefined
+                        : value || variable.type === VARIABLE_TYPE.NUMBER
+                        ? '0'
+                        : undefined
                   }}
                   onValuesChange={debounce(
                     onChangeValue
@@ -377,10 +383,7 @@ export const VariableRow: React.FC<{
 
                   {variable.type === VARIABLE_TYPE.NUMBER && (
                     <Form.Item name="initialValue">
-                      <InputNumber
-                        placeholder="Undefined"
-                        ref={variableInitialValueInputRef}
-                      />
+                      <InputNumber ref={variableInitialValueInputRef} />
                     </Form.Item>
                   )}
                 </Form>
