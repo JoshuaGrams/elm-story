@@ -93,6 +93,7 @@ const ChoiceHandle: React.FC<{
 
 const ChoiceRow: React.FC<{
   studioId: StudioId
+  sceneId: ComponentId
   choiceId: ComponentId
   title: string
   order: [number, number] // [position, total]
@@ -108,10 +109,11 @@ const ChoiceRow: React.FC<{
   onDelete: (choiceId: ComponentId, outgoingRoutes: Route[]) => void
 }> = ({
   studioId,
+  sceneId,
   choiceId,
   title,
   order,
-  showDivider = true,
+  showDivider = true, // last choice
   handle,
   selected = false,
   onSelect,
@@ -120,6 +122,8 @@ const ChoiceRow: React.FC<{
 }) => {
   const choice = useChoice(studioId, choiceId),
     outgoingRoutes = useRoutesByChoiceRef(studioId, choiceId)
+
+  const { editor } = useContext(EditorContext)
 
   function _onReorder(event: MenuInfo, newPosition: number) {
     event.domEvent.stopPropagation()
@@ -131,8 +135,12 @@ const ChoiceRow: React.FC<{
 
   return (
     <div
-      className={`${styles.choiceRow} nodrag ${
+      className={`${styles.ChoiceRow} nodrag ${
         selected && styles.choiceSelected
+      } ${
+        sceneId !== editor.selectedGameOutlineComponent.id && !showDivider
+          ? styles.bottomRadius
+          : ''
       }`}
       style={{
         borderBottom: showDivider ? '1px solid hsl(0, 0%, 15%)' : 'none'
@@ -400,7 +408,9 @@ const PassageNode: React.FC<NodeProps<{
             <>
               <div
                 className={`${styles.choices} ${
-                  editor.selectedComponentEditorSceneViewPassage === passage.id
+                  editor.selectedComponentEditorSceneViewPassage ===
+                    passage.id &&
+                  passage.sceneId === editor.selectedGameOutlineComponent.id
                     ? ''
                     : styles.bottomRadius
                 }`}
@@ -419,6 +429,7 @@ const PassageNode: React.FC<NodeProps<{
                         <ChoiceRow
                           key={choice.id}
                           studioId={data.studioId}
+                          sceneId={passage.sceneId}
                           choiceId={choice.id}
                           title={choice.title}
                           order={[index, choices.length]}
@@ -482,21 +493,21 @@ const PassageNode: React.FC<NodeProps<{
                             )
                           }}
                           onDelete={async (choiceId, outgoingRoutes) => {
-                            try {
-                              editor.selectedComponentEditorSceneViewChoice ===
-                                choice.id &&
-                                editorDispatch({
-                                  type:
-                                    EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                                  selectedComponentEditorSceneViewChoice: null
-                                })
+                            editor.selectedComponentEditorSceneViewChoice ===
+                              choice.id &&
+                              editorDispatch({
+                                type:
+                                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                                selectedComponentEditorSceneViewChoice: null
+                              })
 
-                              const clonedChoices = cloneDeep(choices),
-                                foundChoiceIndex = clonedChoices.findIndex(
-                                  (clonedChoice) => clonedChoice.id === choiceId
-                                )
+                            const clonedChoices = cloneDeep(choices),
+                              foundChoiceIndex = clonedChoices.findIndex(
+                                (clonedChoice) => clonedChoice.id === choiceId
+                              )
 
-                              if (foundChoiceIndex !== -1) {
+                            if (foundChoiceIndex !== -1) {
+                              try {
                                 await Promise.all(
                                   outgoingRoutes.map(async (outgoingRoute) => {
                                     if (!outgoingRoute.id)
@@ -525,9 +536,10 @@ const PassageNode: React.FC<NodeProps<{
                                     (clonedChoice) => clonedChoice.id
                                   )
                                 )
+                              } catch (error) {
+                                if (error instanceof Error)
+                                  throw new Error(error.message)
                               }
-                            } catch (error) {
-                              throw new Error(error)
                             }
                           }}
                         />
@@ -535,69 +547,70 @@ const PassageNode: React.FC<NodeProps<{
                   )}
               </div>
 
-              {editor.selectedComponentEditorSceneViewPassage ===
-                passage.id && (
-                <div
-                  className={`${styles.addChoiceButton} nodrag`}
-                  onClick={async () => {
-                    logger.info('PassageNode->addChoiceButton->onClick')
+              {editor.selectedComponentEditorSceneViewPassage === passage.id &&
+                passage.sceneId === editor.selectedGameOutlineComponent.id && (
+                  <div
+                    className={`${styles.addChoiceButton} nodrag`}
+                    onClick={async () => {
+                      logger.info('PassageNode->addChoiceButton->onClick')
 
-                    if (
-                      editor.selectedComponentEditorSceneViewPassage ===
-                        passage.id &&
-                      passage.choices
-                    ) {
-                      try {
+                      if (
+                        editor.selectedComponentEditorSceneViewPassage ===
+                          passage.id &&
+                        passage.choices
+                      ) {
                         const choiceId = uuid()
 
-                        await api().passages.saveChoiceRefsToPassage(
-                          data.studioId,
-                          data.passageId,
-                          [...passage.choices, choiceId]
-                        )
-
-                        await api().choices.saveChoice(data.studioId, {
-                          id: choiceId,
-                          gameId: passage.gameId,
-                          passageId: data.passageId,
-                          title: 'Untitled Choice',
-                          tags: []
-                        })
-
-                        data.onChoiceSelect(passage.id, choiceId)
-                      } catch (error) {
-                        throw new Error(error)
-                      }
-                    } else {
-                      passage.id &&
-                        setSelectedElement([
-                          cloneDeep(
-                            passages.find(
-                              (passageNode) => passageNode.id === passage.id
-                            )
+                        try {
+                          await api().passages.saveChoiceRefsToPassage(
+                            data.studioId,
+                            data.passageId,
+                            [...passage.choices, choiceId]
                           )
-                        ]) &&
-                        editorDispatch({
-                          type:
-                            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
-                          selectedComponentEditorSceneViewJump: null
-                        }) &&
-                        editorDispatch({
-                          type:
-                            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                          selectedComponentEditorSceneViewPassage: passage.id
-                        }) &&
-                        editorDispatch({
-                          type:
-                            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                          selectedComponentEditorSceneViewChoice: null
-                        })
-                    }
-                  }}
-                >
-                  <PlusOutlined />
-                </div>
-              )}
+
+                          await api().choices.saveChoice(data.studioId, {
+                            id: choiceId,
+                            gameId: passage.gameId,
+                            passageId: data.passageId,
+                            title: 'Untitled Choice',
+                            tags: []
+                          })
+
+                          data.onChoiceSelect(passage.id, choiceId)
+                        } catch (error) {
+                          if (error instanceof Error)
+                            throw new Error(error.message)
+                        }
+                      } else {
+                        passage.id &&
+                          setSelectedElement([
+                            cloneDeep(
+                              passages.find(
+                                (passageNode) => passageNode.id === passage.id
+                              )
+                            )
+                          ]) &&
+                          editorDispatch({
+                            type:
+                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
+                            selectedComponentEditorSceneViewJump: null
+                          }) &&
+                          editorDispatch({
+                            type:
+                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                            selectedComponentEditorSceneViewPassage: passage.id
+                          }) &&
+                          editorDispatch({
+                            type:
+                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
+                            selectedComponentEditorSceneViewChoice: null
+                          })
+                      }
+                    }}
+                  >
+                    <PlusOutlined />
+                  </div>
+                )}
             </>
           )}
 
