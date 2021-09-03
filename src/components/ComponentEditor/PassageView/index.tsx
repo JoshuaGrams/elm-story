@@ -374,25 +374,20 @@ const PassageView: React.FC<{
 
                     switch (event.key) {
                       case '{':
-                        if (selectedExpression.isInside) {
-                          event.preventDefault()
-                          return
-                        }
+                        event.preventDefault()
+
+                        if (selectedExpression.isInside) return
 
                         if (selection) {
-                          Transforms.insertText(slateEditor, '  }', {
-                            at: {
-                              path: selection?.anchor.path,
-                              offset: selection?.anchor.offset + 1
-                            }
-                          })
+                          Transforms.insertText(slateEditor, '{  }')
 
                           // TODO: stack hack
                           setTimeout(
                             () =>
                               Transforms.move(slateEditor, {
-                                distance: 1,
-                                unit: 'offset'
+                                distance: 2,
+                                unit: 'offset',
+                                reverse: true
                               }),
                             1
                           )
