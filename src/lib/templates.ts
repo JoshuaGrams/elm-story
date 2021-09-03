@@ -15,6 +15,10 @@ interface AcornNode extends acorn.Node {
   property?: AcornNode
   // ConditionalExpression
   test?: AcornNode
+  argument?: {
+    type: NODE_TYPES.IDENTIFIER
+    name: string
+  }
   left?: AcornNode
   right?: AcornNode
   operator?: string
@@ -32,7 +36,8 @@ enum NODE_TYPES {
   CALL_EXPRESSION = 'CallExpression',
   CONDITIONAL_EXPRESSION = 'ConditionalExpression',
   BINARY_EXPRESSION = 'BinaryExpression',
-  MEMBER_EXPRESSION = 'MemberExpression'
+  MEMBER_EXPRESSION = 'MemberExpression',
+  UNARY_EXPRESSION = 'UnaryExpression'
 }
 
 interface GameVariables {
@@ -64,6 +69,10 @@ interface ConditionalExpression extends ExpressionBase {
   identifier?: {
     type: NODE_TYPES.IDENTIFIER
     variableName: string
+  }
+  argument?: {
+    type: NODE_TYPES.IDENTIFIER
+    name: string
   }
   left?: {
     type: NODE_TYPES.IDENTIFIER | NODE_TYPES.LITERAL
@@ -201,6 +210,41 @@ function processConditionalExpression(
       alternate.type === NODE_TYPES.LITERAL) &&
     (alternate.name !== undefined || alternate.value !== undefined)
   ) {
+    if (
+      test.type === NODE_TYPES.UNARY_EXPRESSION &&
+      test.argument?.type === NODE_TYPES.IDENTIFIER &&
+      test.argument?.name &&
+      test.operator === '!'
+    ) {
+      return {
+        type: NODE_TYPES.CONDITIONAL_EXPRESSION,
+        argument: {
+          name: test.argument.name,
+          type: test.argument.type
+        },
+        consequent: {
+          type: consequent.type,
+          variableName:
+            consequent.type === NODE_TYPES.IDENTIFIER
+              ? consequent.name
+              : undefined,
+          value:
+            consequent.type === NODE_TYPES.LITERAL
+              ? consequent.value
+              : undefined
+        },
+        alternate: {
+          type: alternate.type,
+          variableName:
+            alternate.type === NODE_TYPES.IDENTIFIER
+              ? alternate.name
+              : undefined,
+          value:
+            alternate.type === NODE_TYPES.LITERAL ? alternate.value : undefined
+        }
+      }
+    }
+
     if (test.type === NODE_TYPES.IDENTIFIER && test.name) {
       return {
         type: NODE_TYPES.CONDITIONAL_EXPRESSION,
@@ -586,7 +630,6 @@ export function getProcessedTemplate(
             }
 
             if (foundLeftVariable && !foundRightVariable) {
-              console.log(foundRightVariable)
               logger.info(`templates->foundLeftVariable|!foundRightVariable`)
 
               // booleans
@@ -749,9 +792,29 @@ export function getProcessedTemplate(
             }
           }
 
-          if (!foundVariable) {
-            value = parsedExpression.alternate.value
+          if (!foundVariable) value = 'esg-error'
+        }
+
+        // UNARY
+        if (
+          parsedExpression.argument &&
+          parsedExpression.argument.name &&
+          parsedExpression.argument.type
+        ) {
+          const foundVariable = variables[parsedExpression.argument.name]
+
+          if (foundVariable) {
+            value =
+              // boolean
+              foundVariable.type === VARIABLE_TYPE.BOOLEAN
+                ? foundVariable.value === 'false'
+                  ? parsedExpression.consequent.value
+                  : parsedExpression.alternate.value
+                : // not boolean
+                  parsedExpression.alternate.value
           }
+
+          if (!foundVariable) value = 'esg-error'
         }
         break
       case NODE_TYPES.EXPRESSION_ERROR:
