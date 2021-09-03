@@ -49,46 +49,48 @@ const ChoiceButtonRenderer: React.FC<{
               setSelectedRoute(routeId)
             }
           />
-          <a
-            className={`es-engine-choice-button ${
-              !selectedRoute ? 'es-engine-choice-button-disabled' : ''
-            }`}
-            onClick={
-              selectedRoute
-                ? async () => {
-                    if (choice.id) {
-                      const foundRoute = routes.find(
-                        (route) => route.id === selectedRoute
-                      )
-
-                      if (foundRoute?.id) {
-                        const newGameState = await processEffectsByRoute(
-                          studioId,
-                          engine.gameState,
-                          foundRoute.id
+          {(selectedRoute || engine.showBlockedChoices) && (
+            <a
+              className={`es-engine-choice-button ${
+                !selectedRoute ? 'es-engine-choice-button-disabled' : ''
+              }`}
+              onClick={
+                selectedRoute
+                  ? async () => {
+                      if (choice.id) {
+                        const foundRoute = routes.find(
+                          (route) => route.id === selectedRoute
                         )
 
-                        newGameState &&
-                          engineDispatch({
-                            type: ENGINE_ACTION_TYPE.GAME_STATE,
-                            gameState: newGameState
-                          })
+                        if (foundRoute?.id) {
+                          const newGameState = await processEffectsByRoute(
+                            studioId,
+                            engine.gameState,
+                            foundRoute.id
+                          )
 
-                        // TODO: Choice may point to multiple passages and jumps.
-                        // Track, calculate probability. For now, we'll go to the first. #111
-                        onChoice(
-                          choice.id,
-                          foundRoute.destinationId,
-                          foundRoute.destinationType
-                        )
+                          newGameState &&
+                            engineDispatch({
+                              type: ENGINE_ACTION_TYPE.GAME_STATE,
+                              gameState: newGameState
+                            })
+
+                          // TODO: Choice may point to multiple passages and jumps.
+                          // Track, calculate probability. For now, we'll go to the first. #111
+                          onChoice(
+                            choice.id,
+                            foundRoute.destinationId,
+                            foundRoute.destinationType
+                          )
+                        }
                       }
                     }
-                  }
-                : () => null
-            }
-          >
-            {choice.title}
-          </a>
+                  : () => null
+              }
+            >
+              {choice.title}
+            </a>
+          )}
         </>
       )}
     </>

@@ -228,7 +228,7 @@ const PassageContent: React.FC<{ title: string; content: string }> = ({
 
       matchExpressionCounter++
 
-      return (
+      return engine.highlightExpressions ? (
         <Tooltip
           title={matchedExpression}
           key={`tooltip-${matchExpressionCounter}`}
@@ -243,6 +243,15 @@ const PassageContent: React.FC<{ title: string; content: string }> = ({
             {match === 'esg-error' ? 'ERROR' : match}
           </span>
         </Tooltip>
+      ) : match === 'esg-error' ? (
+        <Tooltip
+          title={matchedExpression}
+          key={`tooltip-${matchExpressionCounter}`}
+        >
+          <span className="es-engine-expression-error">ERROR</span>
+        </Tooltip>
+      ) : (
+        <span>{match}</span>
       )
     })
   }

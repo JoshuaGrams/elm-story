@@ -15,13 +15,15 @@ import { Button } from 'antd'
 
 import GameEngine from '../../GameEngine'
 
+import styles from '../TabContent/styles.module.less'
+
 export const GameViewTools: React.FC<{
   studioId: StudioId
   gameId: GameId
 }> = () => {
-  const { engineDispatch } = useContext(EngineContext)
+  const { engine, engineDispatch } = useContext(EngineContext)
 
-  function onRestartGame() {
+  function restartGame() {
     engineDispatch({ type: ENGINE_ACTION_TYPE.GAME_RESTART })
     engineDispatch({
       type: ENGINE_ACTION_TYPE.SCROLL_TO,
@@ -31,7 +33,33 @@ export const GameViewTools: React.FC<{
 
   return (
     <div>
-      <Button onClick={onRestartGame}>Restart Game</Button>
+      <Button
+        onClick={() =>
+          engineDispatch({ type: ENGINE_ACTION_TYPE.TOGGLE_EXPRESSIONS })
+        }
+      >
+        <span
+          className={`${
+            engine.highlightExpressions ? styles.enabled : styles.disabled
+          }`}
+        >
+          Highlight Expressions
+        </span>
+      </Button>
+      <Button onClick={restartGame}>Restart</Button>
+      <Button
+        onClick={() =>
+          engineDispatch({ type: ENGINE_ACTION_TYPE.TOGGLE_BLOCKED_CHOICES })
+        }
+      >
+        <span
+          className={`${
+            engine.showBlockedChoices ? styles.enabled : styles.disabled
+          }`}
+        >
+          Show Blocked Choices
+        </span>
+      </Button>
     </div>
   )
 }

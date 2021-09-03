@@ -4,6 +4,8 @@ import { ComponentId, GameState } from '../data/types'
 
 interface EngineState {
   devToolsEnabled: boolean
+  highlightExpressions: boolean
+  showBlockedChoices: boolean
   gameState: GameState
   startingScene: ComponentId | null
   currentScene: ComponentId | null
@@ -15,6 +17,8 @@ interface EngineState {
 export enum ENGINE_ACTION_TYPE {
   TOGGLE_DEV_TOOLS = 'TOGGLE_DEV_TOOLS',
   DISABLE_DEV_TOOLS = 'DISABLE_DEV_TOOLS',
+  TOGGLE_EXPRESSIONS = 'TOGGLE_HIGHLIGHT_EXPRESSIONS',
+  TOGGLE_BLOCKED_CHOICES = 'TOGGLE_BLOCKED_CHOICES',
   GAME_STATE = 'GAME_STATE',
   GAME_RESTART = 'GAME_RESTART',
   SCENE_START = 'SCENE_START',
@@ -26,6 +30,8 @@ export enum ENGINE_ACTION_TYPE {
 
 type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEV_TOOLS }
+  | { type: ENGINE_ACTION_TYPE.TOGGLE_EXPRESSIONS }
+  | { type: ENGINE_ACTION_TYPE.TOGGLE_BLOCKED_CHOICES }
   | { type: ENGINE_ACTION_TYPE.GAME_STATE; gameState: GameState }
   | { type: ENGINE_ACTION_TYPE.GAME_RESTART }
   | {
@@ -58,6 +64,16 @@ const engineReducer = (
       return {
         ...state,
         devToolsEnabled: !state.devToolsEnabled
+      }
+    case ENGINE_ACTION_TYPE.TOGGLE_EXPRESSIONS:
+      return {
+        ...state,
+        highlightExpressions: !state.highlightExpressions
+      }
+    case ENGINE_ACTION_TYPE.TOGGLE_BLOCKED_CHOICES:
+      return {
+        ...state,
+        showBlockedChoices: !state.showBlockedChoices
       }
     case ENGINE_ACTION_TYPE.GAME_STATE:
       return {
@@ -117,6 +133,8 @@ interface EngineContextType {
 
 const defaultEngineState: EngineState = {
   devToolsEnabled: false,
+  highlightExpressions: true,
+  showBlockedChoices: true,
   gameState: {},
   startingScene: null,
   currentScene: null,

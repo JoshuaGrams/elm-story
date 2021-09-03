@@ -131,11 +131,13 @@ const VariableInput: React.FC<{
               />
             )}
 
-            {value && (
+            {((value && selectedRoute) || engine.showBlockedChoices) && (
               <button
                 type="submit"
                 className={`es-engine-input-button ${
-                  !selectedRoute ? 'es-engine-input-button-disabled' : ''
+                  !value || !selectedRoute
+                    ? 'es-engine-input-button-disabled'
+                    : ''
                 }`}
                 style={{ width: '100%' }}
               >

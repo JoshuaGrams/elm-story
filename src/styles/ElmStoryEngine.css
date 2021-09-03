@@ -14,8 +14,8 @@ html {
   --button-color-hover: hsl(265, 100%, 65%);
   --button-height: 3.2rem;
   --animation-duration: 0.2s;
-  --expression-result-highlight: hsl(0, 0%, 8%);
-  --expression-result-highlight-hover: hsl(0, 0%, 20%);
+  --expression-result-highlight: hsla(265, 100%, 60%, 0.5);
+  --expression-result-highlight-hover: hsla(265, 100%, 60%, 0.6);
 
   background: var(--background-color);
   min-height: 100%;
@@ -53,6 +53,7 @@ html {
 
 .es-engine-passage-p .es-engine-expression-result {
   background-color: var(--expression-result-highlight);
+  cursor: pointer;
 }
 
 .es-engine-passage-p .es-engine-expression-result:hover {
@@ -63,6 +64,7 @@ html {
   text-decoration: dotted;
   color: white;
   background-color: red;
+  cursor: pointer;
 }
 
 .es-engine-passage-p:last-of-type {
