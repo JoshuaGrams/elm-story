@@ -386,13 +386,19 @@ const PassageNode: React.FC<NodeProps<{
               className="nodePassageHeader"
               style={{
                 borderBottomLeftRadius:
-                  editor.selectedComponentEditorSceneViewPassage ===
-                    passage.id || passage.choices.length > 0
+                  (editor.selectedComponentEditorSceneViewPassage ===
+                    passage.id &&
+                    editor.selectedGameOutlineComponent.id ===
+                      passage.sceneId) ||
+                  passage.choices.length > 0
                     ? '0px'
                     : '5px',
                 borderBottomRightRadius:
-                  editor.selectedComponentEditorSceneViewPassage ===
-                    passage.id || passage.choices.length > 0
+                  (editor.selectedComponentEditorSceneViewPassage ===
+                    passage.id &&
+                    editor.selectedGameOutlineComponent.id ===
+                      passage.sceneId) ||
+                  passage.choices.length > 0
                     ? '0px'
                     : '5px'
               }}
