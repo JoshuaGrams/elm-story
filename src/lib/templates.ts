@@ -1,3 +1,5 @@
+import logger from './logger'
+
 import * as acorn from 'acorn'
 
 import { VARIABLE_TYPE } from '../data/types'
@@ -403,6 +405,8 @@ export function getProcessedTemplate(
         const leftVariable = parsedExpression.left,
           rightVariable = parsedExpression.right
 
+        const operator = parsedExpression.operator
+
         const consequent = parsedExpression.consequent,
           alternate = parsedExpression.alternate
 
@@ -413,7 +417,7 @@ export function getProcessedTemplate(
             ? variables[rightVariable.variableName]
             : undefined
 
-        switch (parsedExpression.operator) {
+        switch (operator) {
           // NUMBERS
           case '>':
           case '>=':
@@ -429,7 +433,7 @@ export function getProcessedTemplate(
                 foundRightVariable.type === VARIABLE_TYPE.NUMBER &&
                 foundRightVariable.value
               ) {
-                switch (parsedExpression.operator) {
+                switch (operator) {
                   case '>':
                     value =
                       Number(foundLeftVariable.value) >
@@ -487,7 +491,7 @@ export function getProcessedTemplate(
                   (leftVariable.value || leftVariable.value === 0) &&
                   typeof leftVariable.value === 'number')
               ) {
-                switch (parsedExpression.operator) {
+                switch (operator) {
                   case '>':
                     value =
                       Number(foundLeftVariable?.value || leftVariable.value) >
@@ -527,49 +531,197 @@ export function getProcessedTemplate(
             if (!value) value = 'esg-error'
 
             break
-          // EQUALITY
+          // (IN)EQUALITY
           case '==':
-            if (
-              ((parsedExpression.left?.variableName &&
-                variables[parsedExpression.left.variableName]?.value) ||
-                parsedExpression.left?.value ||
-                0) ===
-              ((parsedExpression.right?.variableName &&
-                variables[parsedExpression.right.variableName]?.value) ||
-                parsedExpression.right?.value ||
-                0)
-            ) {
-              value =
-                parsedExpression.consequent.value ||
-                (parsedExpression.consequent.variableName &&
-                  variables[parsedExpression.consequent.variableName]?.value)
-            } else {
-              value =
-                parsedExpression.alternate.value ||
-                (parsedExpression.alternate.variableName &&
-                  variables[parsedExpression.alternate.variableName]?.value)
-            }
-            break
-          // INEQUALITY
           case '!=':
-            if (
-              ((parsedExpression.left?.variableName &&
-                variables[parsedExpression.left.variableName]?.value) ||
-                parsedExpression.left?.value) ===
-              ((parsedExpression.right?.variableName &&
-                variables[parsedExpression.right.variableName]?.value) ||
-                parsedExpression.right?.value)
-            ) {
-              value =
-                parsedExpression.consequent.value ||
-                (parsedExpression.consequent.variableName &&
-                  variables[parsedExpression.consequent.variableName]?.value)
-            } else {
-              value =
-                parsedExpression.alternate.value ||
-                (parsedExpression.alternate.variableName &&
-                  variables[parsedExpression.alternate.variableName].value)
+            if (foundLeftVariable && foundRightVariable) {
+              logger.info(`templates->foundLeftVariable|foundRightVariable`)
+
+              // booleans
+              if (
+                foundLeftVariable.type === VARIABLE_TYPE.BOOLEAN &&
+                foundRightVariable.type === VARIABLE_TYPE.BOOLEAN
+              ) {
+                logger.info(
+                  `templates->foundLeftVariable|foundRightVariable->booleans`
+                )
+
+                value =
+                  operator === '=='
+                    ? (foundLeftVariable.value === 'true' &&
+                        foundRightVariable.value === 'true') ||
+                      (foundLeftVariable.value === 'false' &&
+                        foundRightVariable.value === 'false')
+                      ? consequent.value
+                      : alternate.value
+                    : // !=
+                    (foundLeftVariable.value === 'true' &&
+                        foundRightVariable.value === 'false') ||
+                      (foundLeftVariable.value === 'false' &&
+                        foundRightVariable.value === 'true')
+                    ? consequent.value
+                    : alternate.value
+              }
+
+              // strings and numbers
+              if (
+                !value &&
+                foundLeftVariable.value &&
+                foundRightVariable.value
+              ) {
+                logger.info(
+                  `templates->foundLeftVariable|foundRightVariable->strings|numbers`
+                )
+
+                value =
+                  operator === '=='
+                    ? foundLeftVariable.value === foundRightVariable.value
+                      ? consequent.value
+                      : alternate.value
+                    : // !=
+                    foundLeftVariable.value !== foundRightVariable.value
+                    ? consequent.value
+                    : alternate.value
+              }
             }
+
+            if (foundLeftVariable && !foundRightVariable) {
+              console.log(foundRightVariable)
+              logger.info(`templates->foundLeftVariable|!foundRightVariable`)
+
+              // booleans
+              if (
+                foundLeftVariable.type === VARIABLE_TYPE.BOOLEAN &&
+                typeof rightVariable?.value === 'boolean'
+              ) {
+                logger.info(
+                  `templates->foundLeftVariable|!foundRightVariable->booleans`
+                )
+
+                value =
+                  operator === '=='
+                    ? (foundLeftVariable.value === 'true' &&
+                        rightVariable.value) ||
+                      (foundLeftVariable.value === 'false' &&
+                        !rightVariable.value)
+                      ? consequent.value
+                      : alternate.value
+                    : // !=
+                    (foundLeftVariable.value === 'false' &&
+                        rightVariable.value) ||
+                      (foundLeftVariable.value === 'true' &&
+                        !rightVariable.value)
+                    ? consequent.value
+                    : alternate.value
+              }
+
+              // numbers
+              if (
+                foundLeftVariable.type === VARIABLE_TYPE.NUMBER &&
+                typeof rightVariable?.value === 'number'
+              ) {
+                logger.info(
+                  `templates->foundLeftVariable|!foundRightVariable->numbers`
+                )
+
+                value =
+                  operator === '=='
+                    ? Number(foundLeftVariable.value) === rightVariable.value
+                      ? consequent.value
+                      : alternate.value
+                    : // !=
+                    Number(foundLeftVariable.value) !== rightVariable.value
+                    ? consequent.value
+                    : alternate.value
+              }
+
+              // strings
+              if (!value && foundLeftVariable.value && rightVariable?.value) {
+                logger.info(
+                  `templates->foundLeftVariable|!foundRightVariable->strings`
+                )
+
+                value =
+                  operator === '=='
+                    ? foundLeftVariable.value === rightVariable?.value
+                      ? consequent.value
+                      : alternate.value
+                    : // !=
+                    foundLeftVariable.value !== rightVariable?.value
+                    ? consequent.value
+                    : alternate.value
+              }
+            }
+
+            if (!foundLeftVariable && foundRightVariable) {
+              logger.info(`templates->!foundLeftVariable|foundRightVariable`)
+
+              // booleans
+              if (
+                foundRightVariable.type === VARIABLE_TYPE.BOOLEAN &&
+                typeof leftVariable?.value === 'boolean'
+              ) {
+                logger.info(
+                  `templates->!foundLeftVariable|foundRightVariable->booleans`
+                )
+
+                value =
+                  operator === '=='
+                    ? (foundRightVariable.value === 'true' &&
+                        leftVariable.value) ||
+                      (foundRightVariable.value === 'false' &&
+                        !leftVariable.value)
+                      ? consequent.value
+                      : alternate.value
+                    : // !=
+                    (foundRightVariable.value === 'false' &&
+                        leftVariable.value) ||
+                      (foundRightVariable.value === 'true' &&
+                        !leftVariable.value)
+                    ? consequent.value
+                    : alternate.value
+              }
+
+              // numbers
+              if (
+                foundRightVariable.type === VARIABLE_TYPE.NUMBER &&
+                typeof leftVariable?.value === 'number'
+              ) {
+                logger.info(
+                  `templates->!foundLeftVariable|foundRightVariable->numbers`
+                )
+
+                value =
+                  operator === '=='
+                    ? Number(foundRightVariable.value) === leftVariable.value
+                      ? consequent.value
+                      : alternate.value
+                    : // !=
+                    Number(foundRightVariable.value) !== leftVariable.value
+                    ? consequent.value
+                    : alternate.value
+              }
+
+              // strings
+              if (!value && foundRightVariable.value && leftVariable?.value) {
+                logger.info(
+                  `templates->!foundLeftVariable|foundRightVariable->strings`
+                )
+
+                value =
+                  operator === '=='
+                    ? foundRightVariable.value === leftVariable?.value
+                      ? consequent.value
+                      : alternate.value
+                    : // !=
+                    foundRightVariable.value !== leftVariable?.value
+                    ? consequent.value
+                    : alternate.value
+              }
+            }
+
+            if (!value) value = 'esg-error'
+
             break
           default:
             value = 'esg-error'
