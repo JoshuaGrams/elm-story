@@ -251,7 +251,7 @@ const PassageContent: React.FC<{ title: string; content: string }> = ({
           <span className="es-engine-expression-error">ERROR</span>
         </Tooltip>
       ) : (
-        <span>{match}</span>
+        <span key={`span-${matchExpressionCounter}`}>{match}</span>
       )
     })
   }
@@ -308,10 +308,22 @@ const PassageRenderer: React.FC<{
     if (destinationType === COMPONENT_TYPE.JUMP) {
       const jump = await api().jumps.getJump(studioId, destinationId)
 
-      engineDispatch({
-        type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
-        currentPassage: jump.route[1] || null
-      })
+      if (jump.route[0] && !jump.route[1]) {
+        const scene = await api().scenes.getScene(studioId, jump.route[0])
+
+        engineDispatch({
+          type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
+          currentPassage:
+            scene && scene.children[0] ? scene.children[0][1] : null
+        })
+      }
+
+      if (jump.route[1]) {
+        engineDispatch({
+          type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
+          currentPassage: jump.route[1]
+        })
+      }
 
       engineDispatch({
         type: ENGINE_ACTION_TYPE.SCENE_CURRENT,
@@ -353,22 +365,9 @@ const PassageRenderer: React.FC<{
     navigate(destinationId, destinationType)
   }
 
-  useEffect(() => {
-    logger.info(`PassageRenderer->passage,passageId->useEffect`)
-
-    // Passage has been removed.
-    !passage &&
-      passageId &&
-      engine.currentPassage &&
-      engineDispatch({
-        type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
-        currentPassage: null
-      })
-  }, [passage, passageId])
-
   return (
     <>
-      {passage && routes && (
+      {passage && routes && engine.currentPassage && (
         <>
           <PassageContent title={passage.title} content={passage.content} />
 

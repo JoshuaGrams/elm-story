@@ -1,14 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react'
 
-import { ComponentId, VARIABLE_TYPE } from '../../data/types'
+import {
+  ComponentId,
+  COMPONENT_TYPE,
+  StudioId,
+  VARIABLE_TYPE
+} from '../../data/types'
 
+import { usePassage, useScene } from '../../hooks'
+
+import { AppContext } from '../../contexts/AppContext'
 import { EngineContext } from '../../contexts/EngineContext'
 
 import { Table } from 'antd'
 
 import styles from './styles.module.less'
 
-const columns = [
+const navigationDataColumns = [
   {
     title: 'Component ID',
     dataIndex: 'id',
@@ -22,12 +30,43 @@ const columns = [
   {
     title: 'Type',
     dataIndex: 'type',
+    key: 'title'
+  },
+  {
+    title: 'Position',
+    dataIndex: 'position',
+    key: 'position'
+  }
+]
+
+interface NavigationData {
+  id: ComponentId
+  key: string
+  position: 'STARTING' | 'CURRENT'
+  title: string | JSX.Element
+  type: COMPONENT_TYPE
+}
+
+const variableDataColumns = [
+  {
+    title: 'Component ID',
+    dataIndex: 'id',
+    key: 'id'
+  },
+  {
+    title: 'Title / ID',
+    dataIndex: 'title',
+    key: 'title'
+  },
+  {
+    title: 'Type',
+    dataIndex: 'type',
     key: 'type'
   },
   {
     title: 'Initial',
-    dataIndex: 'default',
-    key: 'default'
+    dataIndex: 'initial',
+    key: 'initial'
   },
   {
     title: 'Current',
@@ -36,47 +75,227 @@ const columns = [
   }
 ]
 
-interface Data {
-  key: string
+interface VariableData {
   id: ComponentId
+  key: string
   title: string
   type: VARIABLE_TYPE
-  default: string
+  initial: string
   current: string
 }
 
-const GameStateView: React.FC = () => {
+const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
   const { engine } = useContext(EngineContext)
 
-  const [dataSource, setDataSource] = useState<Data[]>([])
+  const startingScene = useScene(studioId, engine.startingScene, [
+      studioId,
+      engine.startingScene
+    ]),
+    currentScene = useScene(studioId, engine.currentScene, [
+      studioId,
+      engine.currentScene
+    ]),
+    startingPassage = usePassage(studioId, engine.startingPassage, [
+      studioId,
+      engine.startingPassage
+    ]),
+    currentPassage = usePassage(studioId, engine.currentPassage, [
+      studioId,
+      engine.currentPassage
+    ])
+
+  const [navigationData, setNavigationData] = useState<NavigationData[]>([])
+
+  function openNavLink(
+    componentId: ComponentId,
+    componentType: COMPONENT_TYPE
+  ) {
+    console.log(`${componentId} ${componentType}`)
+  }
 
   useEffect(() => {
-    const newDataSource: Data[] = []
+    const newNavigationData: NavigationData[] = []
+
+    if (startingScene?.id)
+      newNavigationData.push({
+        id: startingScene.id,
+        key: `starting-scene-${startingScene.id}`,
+        position: 'STARTING',
+        title: (
+          <span
+            className={styles.navLink}
+            onClick={() =>
+              startingScene.id &&
+              openNavLink(startingScene.id, COMPONENT_TYPE.SCENE)
+            }
+          >
+            {startingScene.title}
+          </span>
+        ),
+        type: COMPONENT_TYPE.SCENE
+      })
+
+    if (!startingScene?.id)
+      newNavigationData.push({
+        id: 'N/A',
+        key: 'starting-scene-na',
+        position: 'STARTING',
+        title: 'N/A',
+        type: COMPONENT_TYPE.SCENE
+      })
+
+    if (currentScene?.id)
+      newNavigationData.push({
+        id: currentScene.id,
+        key: `current-scene-${currentScene.id}`,
+        position: 'CURRENT',
+        title: (
+          <span
+            className={styles.navLink}
+            onClick={() =>
+              currentScene.id &&
+              openNavLink(currentScene.id, COMPONENT_TYPE.SCENE)
+            }
+          >
+            {currentScene.title}
+          </span>
+        ),
+        type: COMPONENT_TYPE.SCENE
+      })
+
+    if (!currentScene?.id)
+      newNavigationData.push({
+        id: 'N/A',
+        key: 'current-scene-na',
+        position: 'CURRENT',
+        title: 'N/A',
+        type: COMPONENT_TYPE.SCENE
+      })
+
+    if (startingPassage?.id)
+      newNavigationData.push({
+        id: startingPassage.id,
+        key: `starting-passage-${startingPassage.id}`,
+        position: 'STARTING',
+        title: (
+          <span
+            className={styles.navLink}
+            onClick={() =>
+              startingPassage.id &&
+              openNavLink(startingPassage.id, COMPONENT_TYPE.PASSAGE)
+            }
+          >
+            {startingPassage.title}
+          </span>
+        ),
+        type: COMPONENT_TYPE.PASSAGE
+      })
+
+    if (!startingPassage?.id)
+      newNavigationData.push({
+        id: 'N/A',
+        key: 'starting-passage-na',
+        position: 'STARTING',
+        title: 'N/A',
+        type: COMPONENT_TYPE.PASSAGE
+      })
+
+    if (currentPassage?.id)
+      newNavigationData.push({
+        id: currentPassage.id,
+        key: `current-passage-${currentPassage.id}`,
+        position: 'CURRENT',
+        title: (
+          <span
+            className={styles.navLink}
+            onClick={() =>
+              currentPassage.id &&
+              openNavLink(currentPassage.id, COMPONENT_TYPE.PASSAGE)
+            }
+          >
+            {currentPassage.title}
+          </span>
+        ),
+        type: COMPONENT_TYPE.PASSAGE
+      })
+
+    if (!currentPassage?.id)
+      newNavigationData.push({
+        id: 'N/A',
+        key: 'current-passage-na',
+        position: 'CURRENT',
+        title: 'N/A',
+        type: COMPONENT_TYPE.PASSAGE
+      })
+
+    setNavigationData(newNavigationData)
+  }, [startingScene, currentScene, startingPassage, currentPassage])
+
+  return (
+    <div>
+      <div className={styles.dataHeader}>Navigation</div>
+      {navigationData.length > 0 && (
+        <Table
+          dataSource={navigationData}
+          columns={navigationDataColumns}
+          pagination={false}
+        />
+      )}
+    </div>
+  )
+}
+
+const VariablesTable: React.FC = () => {
+  const { engine } = useContext(EngineContext)
+
+  const [variableData, setVariableData] = useState<VariableData[]>([])
+
+  useEffect(() => {
+    const newVariableData: VariableData[] = []
 
     Object.keys(engine.gameState).map((key) =>
-      newDataSource.push({
+      newVariableData.push({
         key,
         id: key,
         title: engine.gameState[key].title,
         type: engine.gameState[key].type,
-        default: `${engine.gameState[key].initialValue || 'undefined'}`,
+        initial: `${engine.gameState[key].initialValue || 'undefined'}`,
         current: `${engine.gameState[key].currentValue || 'undefined'}`
       })
     )
 
-    setDataSource(newDataSource)
+    setVariableData(newVariableData)
   }, [engine.gameState])
 
   return (
-    <div className={styles.GameStateView}>
-      {dataSource.length === 0 && (
+    <div>
+      <div className={styles.dataHeader}>Variables</div>
+      {variableData.length === 0 && (
         <div className={styles.noData}>
           Add global variables to see game state.
         </div>
       )}
-      {dataSource.length > 0 && (
-        <Table dataSource={dataSource} columns={columns} pagination={false} />
+      {variableData.length > 0 && (
+        <Table
+          dataSource={variableData}
+          columns={variableDataColumns}
+          pagination={false}
+        />
       )}
+    </div>
+  )
+}
+
+const GameStateView: React.FC = () => {
+  const { app } = useContext(AppContext)
+
+  return (
+    <div className={styles.GameStateView}>
+      {app.selectedStudioId && (
+        <NavigationTable studioId={app.selectedStudioId} />
+      )}
+
+      <VariablesTable />
     </div>
   )
 }

@@ -2,7 +2,13 @@ import logger from '../../lib/logger'
 
 import React, { useContext, useEffect, useRef } from 'react'
 
-import { COMPONENT_TYPE, GameId, GameState, StudioId } from '../../data/types'
+import {
+  ComponentId,
+  COMPONENT_TYPE,
+  GameId,
+  GameState,
+  StudioId
+} from '../../data/types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
@@ -15,6 +21,8 @@ import GameStylesView from './GameStylesView'
 import SceneRenderer from './SceneRenderer'
 
 import styles from './styles.module.less'
+
+import api from '../../api'
 
 const gameEngineDevTools: LayoutData = {
   dockbox: {
@@ -56,56 +64,111 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   useEffect(() => {
     logger.info(`GameEngine->game,jumps->useEffect`)
 
-    if (game && variables && jumps && scenes) {
-      if (game.jump) {
-        const foundJump = jumps?.find((jump) => jump.id === game.jump)
+    async function setup() {
+      if (game && variables && jumps && scenes) {
+        if (game.jump) {
+          const foundJump = jumps?.find((jump) => jump.id === game.jump)
 
-        engineDispatch({
-          type: ENGINE_ACTION_TYPE.PASSAGE_START,
-          startingPassage: foundJump?.route[1] || null
-        })
+          if (foundJump) {
+            if (foundJump.route[0] && !foundJump.route[1]) {
+              const scene = await api().scenes.getScene(
+                studioId,
+                foundJump.route[0]
+              )
 
-        engineDispatch({
-          type: ENGINE_ACTION_TYPE.SCENE_START,
-          startingScene: foundJump?.route[0] || null
-        })
+              engineDispatch({
+                type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
+                currentPassage:
+                  scene && scene.children[0] ? scene.children[0][1] : null
+              })
 
-        engineDispatch({
-          type: ENGINE_ACTION_TYPE.SCENE_CURRENT,
-          currentScene: foundJump?.route[0] || null
-        })
-      }
+              engineDispatch({
+                type: ENGINE_ACTION_TYPE.PASSAGE_START,
+                startingPassage:
+                  scene && scene.children[0] ? scene.children[0][1] : null
+              })
+            }
 
-      if (!game.jump) {
-        const rootScenes = game.children.filter(
-          (child) => child[0] === COMPONENT_TYPE.SCENE
-        )
-        let defaultScene = null
+            if (foundJump.route[1]) {
+              engineDispatch({
+                type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
+                currentPassage: foundJump.route[1]
+              })
 
-        if (rootScenes.length > 0) {
-          defaultScene = rootScenes[0][1]
+              engineDispatch({
+                type: ENGINE_ACTION_TYPE.PASSAGE_START,
+                startingPassage: foundJump.route[1]
+              })
+            }
+
+            engineDispatch({
+              type: ENGINE_ACTION_TYPE.SCENE_START,
+              startingScene: foundJump?.route[0] || null
+            })
+
+            engineDispatch({
+              type: ENGINE_ACTION_TYPE.SCENE_CURRENT,
+              currentScene: foundJump?.route[0] || null
+            })
+          }
         }
 
-        if (rootScenes.length === 0 && scenes.length > 0) {
-          defaultScene = scenes[0].id || null
+        if (!game.jump) {
+          const rootScenes = game.children.filter(
+            (child) => child[0] === COMPONENT_TYPE.SCENE
+          )
+          let defaultSceneId: ComponentId | null = null
+
+          if (rootScenes.length > 0) {
+            defaultSceneId = rootScenes[0][1]
+          }
+
+          if (rootScenes.length === 0 && scenes.length > 0) {
+            defaultSceneId = scenes[0].id || null
+          }
+
+          if (defaultSceneId) {
+            const scene = await api().scenes.getScene(studioId, defaultSceneId)
+
+            engineDispatch({
+              type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
+              currentPassage:
+                scene && scene.children[0] ? scene.children[0][1] : null
+            })
+
+            engineDispatch({
+              type: ENGINE_ACTION_TYPE.PASSAGE_START,
+              startingPassage:
+                scene && scene.children[0] ? scene.children[0][1] : null
+            })
+          }
+
+          if (!defaultSceneId) {
+            engineDispatch({
+              type: ENGINE_ACTION_TYPE.PASSAGE_CURRENT,
+              currentPassage: null
+            })
+
+            engineDispatch({
+              type: ENGINE_ACTION_TYPE.PASSAGE_START,
+              startingPassage: null
+            })
+          }
+
+          engineDispatch({
+            type: ENGINE_ACTION_TYPE.SCENE_CURRENT,
+            currentScene: defaultSceneId
+          })
+
+          engineDispatch({
+            type: ENGINE_ACTION_TYPE.SCENE_START,
+            startingScene: defaultSceneId
+          })
         }
-
-        engineDispatch({
-          type: ENGINE_ACTION_TYPE.PASSAGE_START,
-          startingPassage: null
-        })
-
-        engineDispatch({
-          type: ENGINE_ACTION_TYPE.SCENE_START,
-          startingScene: defaultScene
-        })
-
-        engineDispatch({
-          type: ENGINE_ACTION_TYPE.SCENE_CURRENT,
-          currentScene: defaultScene
-        })
       }
     }
+
+    setup()
   }, [game, variables, jumps, scenes])
 
   useEffect(() => {

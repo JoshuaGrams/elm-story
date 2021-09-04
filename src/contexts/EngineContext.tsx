@@ -93,8 +93,8 @@ const engineReducer = (
       return {
         ...state,
         gameState: resetGameState,
-        currentScene: null,
-        currentPassage: null
+        currentScene: state.startingScene,
+        currentPassage: state.startingPassage
       }
     case ENGINE_ACTION_TYPE.SCENE_START:
       return {
