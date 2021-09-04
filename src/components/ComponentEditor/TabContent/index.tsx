@@ -81,23 +81,14 @@ const TabContent: React.FC<{
                 expanded: true
               }
             })
-          }
-          return
-        case COMPONENT_TYPE.CHAPTER:
-          if (chapter && chapter.id) {
-            logger.info(
-              `TabContent->onClick: setSelectedGameOutlineComponent to chapter: ${chapter.id}`
-            )
 
-            editorDispatch({
-              type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-              selectedGameOutlineComponent: {
-                id: chapter.id,
-                title: chapter.title,
-                type: COMPONENT_TYPE.CHAPTER,
-                expanded: true
-              }
-            })
+            // #305
+            if (editor.selectedComponentEditorSceneViewPassage)
+              editorDispatch({
+                type:
+                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+                selectedComponentEditorSceneViewPassage: null
+              })
           }
           return
         case COMPONENT_TYPE.SCENE:
@@ -112,23 +103,6 @@ const TabContent: React.FC<{
                 id: scene.id,
                 title: scene.title,
                 type: COMPONENT_TYPE.SCENE,
-                expanded: true
-              }
-            })
-          }
-          return
-        case COMPONENT_TYPE.PASSAGE:
-          if (passage && passage.id) {
-            logger.info(
-              `TabContent->onClick: setSelectedGameOutlineComponent to passage: ${passage.id}`
-            )
-
-            editorDispatch({
-              type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-              selectedGameOutlineComponent: {
-                id: passage.id,
-                title: passage.title,
-                type: COMPONENT_TYPE.PASSAGE,
                 expanded: true
               }
             })

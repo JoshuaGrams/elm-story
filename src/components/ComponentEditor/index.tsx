@@ -273,6 +273,16 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
           selectedGameOutlineComponent:
             clonedTabIndex !== -1 ? cloneDeep(tabs[clonedTabIndex]) : {}
         })
+
+        // #305
+        if (
+          tabs[clonedTabIndex].type === COMPONENT_TYPE.GAME &&
+          editor.selectedComponentEditorSceneViewPassage
+        )
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+            selectedComponentEditorSceneViewPassage: null
+          })
       }
 
       if (editor.renamedComponent.id) {
