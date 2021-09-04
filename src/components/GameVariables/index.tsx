@@ -82,7 +82,8 @@ export const VariableRow: React.FC<{
   async function onVariableTitleChange(values: { title: string }) {
     logger.info(`VariableRow->onVariableTitleChange->${values.title}`)
 
-    values.title.length === 0 && editVariableTitleForm.resetFields()
+    // #307
+    // values.title.length === 0 && editVariableTitleForm.resetFields()
 
     variable?.id &&
       values.title.length > 0 &&
@@ -211,7 +212,8 @@ export const VariableRow: React.FC<{
 
     variable?.title && setVariableTitle(variable.title)
 
-    editVariableTitleForm.resetFields()
+    // #307
+    // editVariableTitleForm.resetFields()
   }, [variable?.title])
 
   useEffect(() => {
@@ -257,11 +259,9 @@ export const VariableRow: React.FC<{
                 <Form
                   form={editVariableTitleForm}
                   initialValues={{ title: variable.title }}
-                  onFinish={onVariableTitleChange}
-                  onBlur={() => {
-                    variableTitleInputRef.current?.blur()
-                    editVariableTitleForm.resetFields()
-                  }}
+                  onFinish={() => editVariableTitleForm.resetFields()}
+                  onBlur={() => editVariableTitleForm.resetFields()}
+                  onValuesChange={debounce(onVariableTitleChange, 100)}
                 >
                   <Form.Item name="title">
                     <Input ref={variableTitleInputRef} spellCheck={false} />
