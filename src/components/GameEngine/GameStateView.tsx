@@ -144,34 +144,6 @@ const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         type: COMPONENT_TYPE.SCENE
       })
 
-    if (currentScene?.id)
-      newNavigationData.push({
-        id: currentScene.id,
-        key: `current-scene-${currentScene.id}`,
-        position: 'CURRENT',
-        title: (
-          <span
-            className={styles.navLink}
-            onClick={() =>
-              currentScene.id &&
-              openNavLink(currentScene.id, COMPONENT_TYPE.SCENE)
-            }
-          >
-            {currentScene.title}
-          </span>
-        ),
-        type: COMPONENT_TYPE.SCENE
-      })
-
-    if (!currentScene?.id)
-      newNavigationData.push({
-        id: 'N/A',
-        key: 'current-scene-na',
-        position: 'CURRENT',
-        title: 'N/A',
-        type: COMPONENT_TYPE.SCENE
-      })
-
     if (startingPassage?.id)
       newNavigationData.push({
         id: startingPassage.id,
@@ -198,6 +170,34 @@ const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         position: 'STARTING',
         title: 'N/A',
         type: COMPONENT_TYPE.PASSAGE
+      })
+
+    if (currentScene?.id)
+      newNavigationData.push({
+        id: currentScene.id,
+        key: `current-scene-${currentScene.id}`,
+        position: 'CURRENT',
+        title: (
+          <span
+            className={styles.navLink}
+            onClick={() =>
+              currentScene.id &&
+              openNavLink(currentScene.id, COMPONENT_TYPE.SCENE)
+            }
+          >
+            {currentScene.title}
+          </span>
+        ),
+        type: COMPONENT_TYPE.SCENE
+      })
+
+    if (!currentScene?.id)
+      newNavigationData.push({
+        id: 'N/A',
+        key: 'current-scene-na',
+        position: 'CURRENT',
+        title: 'N/A',
+        type: COMPONENT_TYPE.SCENE
       })
 
     if (currentPassage?.id)
