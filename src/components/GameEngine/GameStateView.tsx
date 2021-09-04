@@ -11,6 +11,7 @@ import { usePassage, useScene } from '../../hooks'
 
 import { AppContext } from '../../contexts/AppContext'
 import { EngineContext } from '../../contexts/EngineContext'
+import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { Table } from 'antd'
 
@@ -85,7 +86,8 @@ interface VariableData {
 }
 
 const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
-  const { engine } = useContext(EngineContext)
+  const { engine } = useContext(EngineContext),
+    { editorDispatch } = useContext(EditorContext)
 
   const startingScene = useScene(studioId, engine.startingScene, [
       studioId,
@@ -106,11 +108,34 @@ const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
 
   const [navigationData, setNavigationData] = useState<NavigationData[]>([])
 
-  function openNavLink(
-    componentId: ComponentId,
-    componentType: COMPONENT_TYPE
-  ) {
-    console.log(`${componentId} ${componentType}`)
+  function openNavLink({
+    id,
+    parentId, // scene
+    parentTitle, // scene
+    title,
+    type
+  }: {
+    id: ComponentId
+    parentId?: ComponentId
+    parentTitle?: string
+    title: string
+    type: COMPONENT_TYPE
+  }) {
+    editorDispatch({
+      type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+      selectedGameOutlineComponent: {
+        expanded: true,
+        id: parentId || id,
+        title: parentTitle || title,
+        type: COMPONENT_TYPE.SCENE
+      }
+    })
+
+    if (type === COMPONENT_TYPE.PASSAGE)
+      editorDispatch({
+        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+        selectedComponentEditorSceneViewPassage: id
+      })
   }
 
   useEffect(() => {
@@ -126,7 +151,11 @@ const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
             className={styles.navLink}
             onClick={() =>
               startingScene.id &&
-              openNavLink(startingScene.id, COMPONENT_TYPE.SCENE)
+              openNavLink({
+                id: startingScene.id,
+                title: startingScene.title,
+                type: COMPONENT_TYPE.SCENE
+              })
             }
           >
             {startingScene.title}
@@ -144,7 +173,7 @@ const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         type: COMPONENT_TYPE.SCENE
       })
 
-    if (startingPassage?.id)
+    if (startingScene?.id && startingPassage?.id)
       newNavigationData.push({
         id: startingPassage.id,
         key: `starting-passage-${startingPassage.id}`,
@@ -153,8 +182,15 @@ const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
           <span
             className={styles.navLink}
             onClick={() =>
+              startingScene.id &&
               startingPassage.id &&
-              openNavLink(startingPassage.id, COMPONENT_TYPE.PASSAGE)
+              openNavLink({
+                id: startingPassage.id,
+                parentId: startingScene.id,
+                parentTitle: startingScene.title,
+                title: startingPassage.title,
+                type: COMPONENT_TYPE.PASSAGE
+              })
             }
           >
             {startingPassage.title}
@@ -182,7 +218,11 @@ const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
             className={styles.navLink}
             onClick={() =>
               currentScene.id &&
-              openNavLink(currentScene.id, COMPONENT_TYPE.SCENE)
+              openNavLink({
+                id: currentScene.id,
+                title: currentScene.title,
+                type: COMPONENT_TYPE.SCENE
+              })
             }
           >
             {currentScene.title}
@@ -200,7 +240,7 @@ const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         type: COMPONENT_TYPE.SCENE
       })
 
-    if (currentPassage?.id)
+    if (currentScene?.id && currentPassage?.id)
       newNavigationData.push({
         id: currentPassage.id,
         key: `current-passage-${currentPassage.id}`,
@@ -209,8 +249,15 @@ const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
           <span
             className={styles.navLink}
             onClick={() =>
+              currentScene.id &&
               currentPassage.id &&
-              openNavLink(currentPassage.id, COMPONENT_TYPE.PASSAGE)
+              openNavLink({
+                id: currentPassage.id,
+                parentId: currentScene.id,
+                parentTitle: currentScene.title,
+                title: currentPassage.title,
+                type: COMPONENT_TYPE.PASSAGE
+              })
             }
           >
             {currentPassage.title}
