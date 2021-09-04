@@ -375,7 +375,7 @@ export const VariableRow: React.FC<{
                   {variable.type === VARIABLE_TYPE.STRING && (
                     <Form.Item name="initialValue">
                       <Input
-                        placeholder="Undefined"
+                        placeholder="undefined"
                         ref={variableInitialValueInputRef}
                       />
                     </Form.Item>

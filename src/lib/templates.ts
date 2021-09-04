@@ -438,7 +438,7 @@ export function getProcessedTemplate(
 
     switch (parsedExpression.type) {
       case NODE_TYPES.IDENTIFIER:
-        value = variables[parsedExpression.variableName].value
+        value = variables[parsedExpression.variableName].value || 'undefined'
         break
       case NODE_TYPES.CALL_EXPRESSION:
         value = methods[parsedExpression.methodName]?.(
@@ -453,6 +453,19 @@ export function getProcessedTemplate(
 
         const consequent = parsedExpression.consequent,
           alternate = parsedExpression.alternate
+
+        const consequentValue =
+            consequent &&
+            consequent.variableName &&
+            consequent.type === NODE_TYPES.IDENTIFIER
+              ? variables[consequent.variableName]?.value || 'undefined'
+              : consequent.value,
+          alternateValue =
+            alternate &&
+            alternate.variableName &&
+            alternate.type === NODE_TYPES.IDENTIFIER
+              ? variables[alternate.variableName]?.value || 'undefined'
+              : alternate.value
 
         const foundLeftVariable = leftVariable?.variableName
             ? variables[leftVariable.variableName]
@@ -482,29 +495,29 @@ export function getProcessedTemplate(
                     value =
                       Number(foundLeftVariable.value) >
                       Number(foundRightVariable.value)
-                        ? consequent.value
-                        : alternate.value
+                        ? consequentValue
+                        : alternateValue
                     break
                   case '>=':
                     value =
                       Number(foundLeftVariable.value) >=
                       Number(foundRightVariable.value)
-                        ? consequent.value
-                        : alternate.value
+                        ? consequentValue
+                        : alternateValue
                     break
                   case '<':
                     value =
                       Number(foundLeftVariable.value) <
                       Number(foundRightVariable.value)
-                        ? consequent.value
-                        : alternate.value
+                        ? consequentValue
+                        : alternateValue
                     break
                   case '<=':
                     value =
                       Number(foundLeftVariable.value) <=
                       Number(foundRightVariable.value)
-                        ? consequent.value
-                        : alternate.value
+                        ? consequentValue
+                        : alternateValue
                     break
                   default:
                     value = 'esg-error'
@@ -540,29 +553,29 @@ export function getProcessedTemplate(
                     value =
                       Number(foundLeftVariable?.value || leftVariable.value) >
                       Number(foundRightVariable?.value || rightVariable.value)
-                        ? consequent.value
-                        : alternate.value
+                        ? consequentValue
+                        : alternateValue
                     break
                   case '>=':
                     value =
                       Number(foundLeftVariable?.value || leftVariable.value) >=
                       Number(foundRightVariable?.value || rightVariable.value)
-                        ? consequent.value
-                        : alternate.value
+                        ? consequentValue
+                        : alternateValue
                     break
                   case '<':
                     value =
                       Number(foundLeftVariable?.value || leftVariable.value) <
                       Number(foundRightVariable?.value || rightVariable.value)
-                        ? consequent.value
-                        : alternate.value
+                        ? consequentValue
+                        : alternateValue
                     break
                   case '<=':
                     value =
                       Number(foundLeftVariable?.value || leftVariable.value) <=
                       Number(foundRightVariable?.value || rightVariable.value)
-                        ? consequent.value
-                        : alternate.value
+                        ? consequentValue
+                        : alternateValue
                     break
                   default:
                     value = 'esg-error'
@@ -596,15 +609,15 @@ export function getProcessedTemplate(
                         foundRightVariable.value === 'true') ||
                       (foundLeftVariable.value === 'false' &&
                         foundRightVariable.value === 'false')
-                      ? consequent.value
-                      : alternate.value
+                      ? consequentValue
+                      : alternateValue
                     : // !=
                     (foundLeftVariable.value === 'true' &&
                         foundRightVariable.value === 'false') ||
                       (foundLeftVariable.value === 'false' &&
                         foundRightVariable.value === 'true')
-                    ? consequent.value
-                    : alternate.value
+                    ? consequentValue
+                    : alternateValue
               }
 
               // strings and numbers
@@ -620,12 +633,12 @@ export function getProcessedTemplate(
                 value =
                   operator === '=='
                     ? foundLeftVariable.value === foundRightVariable.value
-                      ? consequent.value
-                      : alternate.value
+                      ? consequentValue
+                      : alternateValue
                     : // !=
                     foundLeftVariable.value !== foundRightVariable.value
-                    ? consequent.value
-                    : alternate.value
+                    ? consequentValue
+                    : alternateValue
               }
             }
 
@@ -647,15 +660,15 @@ export function getProcessedTemplate(
                         rightVariable.value) ||
                       (foundLeftVariable.value === 'false' &&
                         !rightVariable.value)
-                      ? consequent.value
-                      : alternate.value
+                      ? consequentValue
+                      : alternateValue
                     : // !=
                     (foundLeftVariable.value === 'false' &&
                         rightVariable.value) ||
                       (foundLeftVariable.value === 'true' &&
                         !rightVariable.value)
-                    ? consequent.value
-                    : alternate.value
+                    ? consequentValue
+                    : alternateValue
               }
 
               // numbers
@@ -670,12 +683,12 @@ export function getProcessedTemplate(
                 value =
                   operator === '=='
                     ? Number(foundLeftVariable.value) === rightVariable.value
-                      ? consequent.value
-                      : alternate.value
+                      ? consequentValue
+                      : alternateValue
                     : // !=
                     Number(foundLeftVariable.value) !== rightVariable.value
-                    ? consequent.value
-                    : alternate.value
+                    ? consequentValue
+                    : alternateValue
               }
 
               // strings
@@ -687,12 +700,12 @@ export function getProcessedTemplate(
                 value =
                   operator === '=='
                     ? foundLeftVariable.value === rightVariable?.value
-                      ? consequent.value
-                      : alternate.value
+                      ? consequentValue
+                      : alternateValue
                     : // !=
                     foundLeftVariable.value !== rightVariable?.value
-                    ? consequent.value
-                    : alternate.value
+                    ? consequentValue
+                    : alternateValue
               }
             }
 
@@ -714,15 +727,15 @@ export function getProcessedTemplate(
                         leftVariable.value) ||
                       (foundRightVariable.value === 'false' &&
                         !leftVariable.value)
-                      ? consequent.value
-                      : alternate.value
+                      ? consequentValue
+                      : alternateValue
                     : // !=
                     (foundRightVariable.value === 'false' &&
                         leftVariable.value) ||
                       (foundRightVariable.value === 'true' &&
                         !leftVariable.value)
-                    ? consequent.value
-                    : alternate.value
+                    ? consequentValue
+                    : alternateValue
               }
 
               // numbers
@@ -737,12 +750,12 @@ export function getProcessedTemplate(
                 value =
                   operator === '=='
                     ? Number(foundRightVariable.value) === leftVariable.value
-                      ? consequent.value
-                      : alternate.value
+                      ? consequentValue
+                      : alternateValue
                     : // !=
                     Number(foundRightVariable.value) !== leftVariable.value
-                    ? consequent.value
-                    : alternate.value
+                    ? consequentValue
+                    : alternateValue
               }
 
               // strings
@@ -754,12 +767,12 @@ export function getProcessedTemplate(
                 value =
                   operator === '=='
                     ? foundRightVariable.value === leftVariable?.value
-                      ? consequent.value
-                      : alternate.value
+                      ? consequentValue
+                      : alternateValue
                     : // !=
                     foundRightVariable.value !== leftVariable?.value
-                    ? consequent.value
-                    : alternate.value
+                    ? consequentValue
+                    : alternateValue
               }
             }
 
@@ -780,15 +793,15 @@ export function getProcessedTemplate(
             if (foundVariable.type === VARIABLE_TYPE.BOOLEAN) {
               value =
                 foundVariable.value === 'true'
-                  ? parsedExpression.consequent.value
-                  : parsedExpression.alternate.value
+                  ? consequentValue
+                  : alternateValue
             }
 
             if (foundVariable.type !== VARIABLE_TYPE.BOOLEAN) {
               value =
                 foundVariable && foundVariable.value
-                  ? parsedExpression.consequent.value
-                  : parsedExpression.alternate.value
+                  ? consequentValue
+                  : alternateValue
             }
           }
 
@@ -808,10 +821,10 @@ export function getProcessedTemplate(
               // boolean
               foundVariable.type === VARIABLE_TYPE.BOOLEAN
                 ? foundVariable.value === 'false'
-                  ? parsedExpression.consequent.value
-                  : parsedExpression.alternate.value
+                  ? consequentValue
+                  : alternateValue
                 : // not boolean
-                  parsedExpression.alternate.value
+                  alternateValue
           }
 
           if (!foundVariable) value = 'esg-error'
