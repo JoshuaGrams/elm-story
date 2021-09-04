@@ -458,13 +458,17 @@ export function getProcessedTemplate(
             consequent &&
             consequent.variableName &&
             consequent.type === NODE_TYPES.IDENTIFIER
-              ? variables[consequent.variableName]?.value || 'undefined'
+              ? variables[consequent.variableName]
+                ? variables[consequent.variableName].value || 'undefined'
+                : 'esg-error'
               : consequent.value,
           alternateValue =
             alternate &&
             alternate.variableName &&
             alternate.type === NODE_TYPES.IDENTIFIER
-              ? variables[alternate.variableName]?.value || 'undefined'
+              ? variables[alternate.variableName]
+                ? variables[alternate.variableName].value || 'undefined'
+                : 'esg-error'
               : alternate.value
 
         const foundLeftVariable = leftVariable?.variableName
