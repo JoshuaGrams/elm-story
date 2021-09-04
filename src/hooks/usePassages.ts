@@ -37,12 +37,14 @@ const usePassagesBySceneRef = (
 
 const usePassage = (
   studioId: StudioId,
-  passageId: ComponentId,
+  passageId: ComponentId | undefined | null,
   deps?: any[]
 ): Passage | undefined =>
   useLiveQuery(
     () =>
-      new LibraryDatabase(studioId).passages.where({ id: passageId }).first(),
+      new LibraryDatabase(studioId).passages
+        .where({ id: passageId || '' })
+        .first(),
     deps || [],
     undefined
   )

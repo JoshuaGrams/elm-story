@@ -37,11 +37,12 @@ const useScenesByChapterRef = (
 
 const useScene = (
   studioId: StudioId,
-  sceneId: ComponentId,
+  sceneId: ComponentId | undefined | null,
   deps?: any[]
 ): Scene | undefined =>
   useLiveQuery(
-    () => new LibraryDatabase(studioId).scenes.where({ id: sceneId }).first(),
+    () =>
+      new LibraryDatabase(studioId).scenes.where({ id: sceneId || '' }).first(),
     deps || [],
     undefined
   )
