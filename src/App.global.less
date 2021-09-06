@@ -19,6 +19,7 @@
   --highlight-color-20a: hsla(265, 100%, 60%, 0.2);
   --highlight-color-10a: hsla(265, 100%, 60%, 0.1);
   --disabled-color: hsl(0, 0%, 20%);
+  --disabled-color-bright: hsl(0, 0%, 40%);
   --jump-node-color: hsl(160, 100%, 60%);
   --warning-color: hsl(350, 100%, 60%);
   --warning-color-bright: hsl(350, 100%, 65%);
@@ -276,6 +277,31 @@ h3 {
     &.ant-select-item-option-active {
       color: white;
       background: var(--dropdown-selected-item-color) !important;
+    }
+  }
+}
+
+.ant-menu-submenu-popup {
+  .ant-menu {
+    text-transform: uppercase !important;
+    font-size: 12px;
+
+    .ant-menu-item {
+      background: transparent;
+      color: var(--highlight-color);
+
+      &.esg-menu-item-enabled {
+        text-decoration: underline !important;
+      }
+
+      &.esg-menu-item-disabled {
+        color: var(--disabled-color-bright) !important;
+      }
+
+      &:hover,
+      &.ant-menu-item-active {
+        color: var(--highlight-color-bright);
+      }
     }
   }
 }

@@ -46,7 +46,7 @@ import ReactFlow, {
   useStoreState
 } from 'react-flow-renderer'
 
-import { Button } from 'antd'
+import { Button, Menu } from 'antd'
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 
 import ContextMenu from './ContextMenu'
@@ -95,12 +95,12 @@ export const SceneViewTools: React.FC<{
   return (
     <>
       {scene && (
-        <>
+        <Menu mode="horizontal">
           {editorTab.sceneViewContext ===
             SCENE_VIEW_CONTEXT.SCENE_SELECTION_NONE && (
             <>
-              {/* Add Passage Button */}
-              <Button
+              {/* Add Passage Menu Item */}
+              <Menu.Item
                 onClick={async () => {
                   try {
                     const passageId = await addComponentToScene(
@@ -126,15 +126,16 @@ export const SceneViewTools: React.FC<{
                         }
                       })
                   } catch (error) {
-                    throw new Error(error)
+                    throw error
                   }
                 }}
               >
-                <PlusOutlined /> Passage
-              </Button>
+                <PlusOutlined />
+                Passage
+              </Menu.Item>
 
-              {/* Add Jump Button */}
-              <Button
+              {/* Add Jump Menu Item */}
+              <Menu.Item
                 onClick={async () => {
                   const jumpId = await addComponentToScene(
                     studioId,
@@ -163,8 +164,9 @@ export const SceneViewTools: React.FC<{
                     })
                 }}
               >
-                <PlusOutlined /> Jump
-              </Button>
+                <PlusOutlined />
+                Jump
+              </Menu.Item>
             </>
           )}
 
@@ -174,7 +176,7 @@ export const SceneViewTools: React.FC<{
             editorTab.sceneViewContext ===
               SCENE_VIEW_CONTEXT.SCENE_SELECTION_PASSAGE) &&
             !editorTab.passageForEditing.visible && (
-              <Button
+              <Menu.Item
                 onClick={() =>
                   !editor.centeredComponentEditorSceneViewSelection &&
                   editorDispatch({
@@ -185,11 +187,11 @@ export const SceneViewTools: React.FC<{
                 }
               >
                 Center Selection
-              </Button>
+              </Menu.Item>
             )}
 
           {editorTab.passageForEditing.visible && (
-            <Button
+            <Menu.Item
               onClick={() =>
                 editorTabDispatch({
                   type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
@@ -197,10 +199,11 @@ export const SceneViewTools: React.FC<{
                 })
               }
             >
-              <CloseOutlined /> Close Passage
-            </Button>
+              <CloseOutlined />
+              Close Passage
+            </Menu.Item>
           )}
-        </>
+        </Menu>
       )}
     </>
   )

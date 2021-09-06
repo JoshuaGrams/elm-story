@@ -11,7 +11,7 @@ import {
   ENGINE_ACTION_TYPE
 } from '../../../contexts/EngineContext'
 
-import { Button } from 'antd'
+import { Button, Menu } from 'antd'
 
 import GameEngine from '../../GameEngine'
 
@@ -30,6 +30,36 @@ export const GameViewTools: React.FC<{
       scrollTo: { top: 0, left: 0 }
     })
   }
+
+  return (
+    <Menu mode="horizontal">
+      <Menu.Item
+        onClick={() =>
+          engineDispatch({ type: ENGINE_ACTION_TYPE.TOGGLE_EXPRESSIONS })
+        }
+        className={`${
+          engine.highlightExpressions
+            ? 'esg-menu-item-enabled'
+            : 'esg-menu-item-disabled'
+        }`}
+      >
+        Highlight Expressions
+      </Menu.Item>
+      <Menu.Item onClick={restartGame}>Restart</Menu.Item>
+      <Menu.Item
+        onClick={() =>
+          engineDispatch({ type: ENGINE_ACTION_TYPE.TOGGLE_BLOCKED_CHOICES })
+        }
+        className={`${
+          engine.showBlockedChoices
+            ? 'esg-menu-item-enabled'
+            : 'esg-menu-item-disabled'
+        }`}
+      >
+        Show Blocked Choices
+      </Menu.Item>
+    </Menu>
+  )
 
   return (
     <div>
