@@ -132,10 +132,15 @@ const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
     })
 
     if (type === COMPONENT_TYPE.PASSAGE)
-      editorDispatch({
-        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-        selectedComponentEditorSceneViewPassage: id
-      })
+      // #313: stack hack
+      setTimeout(
+        () =>
+          editorDispatch({
+            type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+            selectedComponentEditorSceneViewPassage: id
+          }),
+        1
+      )
   }
 
   useEffect(() => {
