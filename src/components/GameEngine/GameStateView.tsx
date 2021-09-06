@@ -141,73 +141,6 @@ const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
   useEffect(() => {
     const newNavigationData: NavigationData[] = []
 
-    if (startingScene?.id)
-      newNavigationData.push({
-        id: startingScene.id,
-        key: `starting-scene-${startingScene.id}`,
-        position: 'STARTING',
-        title: (
-          <span
-            className={styles.navLink}
-            onClick={() =>
-              startingScene.id &&
-              openNavLink({
-                id: startingScene.id,
-                title: startingScene.title,
-                type: COMPONENT_TYPE.SCENE
-              })
-            }
-          >
-            {startingScene.title}
-          </span>
-        ),
-        type: COMPONENT_TYPE.SCENE
-      })
-
-    if (!startingScene?.id)
-      newNavigationData.push({
-        id: 'N/A',
-        key: 'starting-scene-na',
-        position: 'STARTING',
-        title: 'N/A',
-        type: COMPONENT_TYPE.SCENE
-      })
-
-    if (startingScene?.id && startingPassage?.id)
-      newNavigationData.push({
-        id: startingPassage.id,
-        key: `starting-passage-${startingPassage.id}`,
-        position: 'STARTING',
-        title: (
-          <span
-            className={styles.navLink}
-            onClick={() =>
-              startingScene.id &&
-              startingPassage.id &&
-              openNavLink({
-                id: startingPassage.id,
-                parentId: startingScene.id,
-                parentTitle: startingScene.title,
-                title: startingPassage.title,
-                type: COMPONENT_TYPE.PASSAGE
-              })
-            }
-          >
-            {startingPassage.title}
-          </span>
-        ),
-        type: COMPONENT_TYPE.PASSAGE
-      })
-
-    if (!startingPassage?.id)
-      newNavigationData.push({
-        id: 'N/A',
-        key: 'starting-passage-na',
-        position: 'STARTING',
-        title: 'N/A',
-        type: COMPONENT_TYPE.PASSAGE
-      })
-
     if (currentScene?.id)
       newNavigationData.push({
         id: currentScene.id,
@@ -271,6 +204,73 @@ const NavigationTable: React.FC<{ studioId: StudioId }> = ({ studioId }) => {
         id: 'N/A',
         key: 'current-passage-na',
         position: 'CURRENT',
+        title: 'N/A',
+        type: COMPONENT_TYPE.PASSAGE
+      })
+
+    if (startingScene?.id)
+      newNavigationData.push({
+        id: startingScene.id,
+        key: `starting-scene-${startingScene.id}`,
+        position: 'STARTING',
+        title: (
+          <span
+            className={styles.navLink}
+            onClick={() =>
+              startingScene.id &&
+              openNavLink({
+                id: startingScene.id,
+                title: startingScene.title,
+                type: COMPONENT_TYPE.SCENE
+              })
+            }
+          >
+            {startingScene.title}
+          </span>
+        ),
+        type: COMPONENT_TYPE.SCENE
+      })
+
+    if (!startingScene?.id)
+      newNavigationData.push({
+        id: 'N/A',
+        key: 'starting-scene-na',
+        position: 'STARTING',
+        title: 'N/A',
+        type: COMPONENT_TYPE.SCENE
+      })
+
+    if (startingScene?.id && startingPassage?.id)
+      newNavigationData.push({
+        id: startingPassage.id,
+        key: `starting-passage-${startingPassage.id}`,
+        position: 'STARTING',
+        title: (
+          <span
+            className={styles.navLink}
+            onClick={() =>
+              startingScene.id &&
+              startingPassage.id &&
+              openNavLink({
+                id: startingPassage.id,
+                parentId: startingScene.id,
+                parentTitle: startingScene.title,
+                title: startingPassage.title,
+                type: COMPONENT_TYPE.PASSAGE
+              })
+            }
+          >
+            {startingPassage.title}
+          </span>
+        ),
+        type: COMPONENT_TYPE.PASSAGE
+      })
+
+    if (!startingPassage?.id)
+      newNavigationData.push({
+        id: 'N/A',
+        key: 'starting-passage-na',
+        position: 'STARTING',
         title: 'N/A',
         type: COMPONENT_TYPE.PASSAGE
       })
