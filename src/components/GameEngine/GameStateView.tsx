@@ -323,7 +323,7 @@ const VariablesTable: React.FC = () => {
     <div>
       <div className={styles.dataHeader}>Variables</div>
       {variableData.length === 0 && (
-        <div className={styles.noData}>
+        <div className={`warningMessage ${styles.noData}`}>
           Add global variables to see game state.
         </div>
       )}

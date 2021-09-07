@@ -225,7 +225,9 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
                 )}
 
                 {!engine.startingScene && (
-                  <div>Game requires at least 1 scene and passage to play.</div>
+                  <div className="es-engine-passage-no-content">
+                    Game requires at least 1 scene and passage to play.
+                  </div>
                 )}
               </div>
             </div>

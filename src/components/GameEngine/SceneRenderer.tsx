@@ -19,7 +19,7 @@ const SceneRenderer: React.FC<{
   return (
     <>
       {scene && scene.children.length === 0 && (
-        <div>{`Scene '${scene.title}' requires a passage to render.`}</div>
+        <div className="es-engine-passage-no-content">{`Scene '${scene.title}' requires a passage to render.`}</div>
       )}
 
       {scene && (

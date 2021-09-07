@@ -63,9 +63,9 @@ const GameDetails: React.FC<{
                     className={`${parentStyles.content} ${styles.jumpPanel}`}
                   >
                     {scenes.length === 0 && (
-                      <div>
-                        To define jump on game start, games require at least
-                        1 scene.
+                      <div className="warningMessage">
+                        To define jump on game start, games require at least 1
+                        scene.
                       </div>
                     )}
 

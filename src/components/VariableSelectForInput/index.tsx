@@ -56,7 +56,7 @@ const VariableSelectForInput: React.FC<{
           </Select>
 
           {!input?.variableId && (
-            <div className={styles.warningMessage}>
+            <div className="warningMessage">
               Variable selection is required for passage input.
             </div>
           )}
@@ -64,7 +64,7 @@ const VariableSelectForInput: React.FC<{
       )}
 
       {variables && variables.length === 0 && (
-        <div className={styles.warningMessage}>
+        <div className="warningMessage">
           At least 1 game variable is required for passage input.
         </div>
       )}
