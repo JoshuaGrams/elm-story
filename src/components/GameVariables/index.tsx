@@ -297,8 +297,7 @@ export const VariableRow: React.FC<{
                 <Form
                   form={editVariableTitleForm}
                   initialValues={{ title: variable.title }}
-                  onFinish={() => editVariableTitleForm.resetFields()}
-                  onBlur={() => editVariableTitleForm.resetFields()}
+                  onFinish={() => variableTitleInputRef.current?.blur()}
                   onValuesChange={debounce(onVariableTitleChange, 100)}
                 >
                   <Form.Item name="title">
