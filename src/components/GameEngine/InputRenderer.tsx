@@ -1,3 +1,5 @@
+import logger from '../../lib/logger'
+
 import { cloneDeep } from 'lodash-es'
 
 import React, { useContext, useEffect, useState } from 'react'
@@ -13,7 +15,7 @@ import { EngineContext, ENGINE_ACTION_TYPE } from '../../contexts/EngineContext'
 
 import { useInput, useRoutesByInputRef, useVariable } from '../../hooks'
 
-import { SelectedRouteHandler } from './PassageRenderer'
+import { processEffectsByRoute, SelectedRouteHandler } from './PassageRenderer'
 
 const VariableInput: React.FC<{
   studioId: StudioId
@@ -31,7 +33,36 @@ const VariableInput: React.FC<{
   const { engine, engineDispatch } = useContext(EngineContext)
 
   const [value, setValue] = useState<string | undefined>(undefined),
-    [selectedRoute, setSelectedRoute] = useState<string | undefined>(undefined)
+    [selectedRoute, setSelectedRoute] = useState<string | undefined>(undefined),
+    [inputDone, setInputDone] = useState<boolean>(false)
+
+  useEffect(() => {
+    logger.info(`InputRenderer->useEffect->selectedRoute:${selectedRoute}`)
+
+    async function processPostInput() {
+      if (routes && inputDone) {
+        setInputDone(false)
+
+        const foundRoute = routes.find((route) => route.id === selectedRoute)
+
+        if (foundRoute?.id) {
+          engineDispatch({
+            type: ENGINE_ACTION_TYPE.GAME_STATE,
+            gameState:
+              (await processEffectsByRoute(
+                studioId,
+                engine.gameState,
+                foundRoute.id
+              )) || cloneDeep(engine.gameState)
+          })
+
+          onInput(inputId, foundRoute.destinationId, foundRoute.destinationType)
+        }
+      }
+    }
+
+    processPostInput()
+  }, [routes, selectedRoute, inputDone])
 
   useEffect(() => {
     variable &&
@@ -61,26 +92,16 @@ const VariableInput: React.FC<{
               event.preventDefault()
 
               if (variable.id && value) {
-                const foundRoute = routes.find(
-                  (route) => route.id === selectedRoute
-                )
+                const newGameState = cloneDeep(engine.gameState)
 
-                if (foundRoute?.id) {
-                  const newGameState = cloneDeep(engine.gameState)
+                newGameState[variable.id].currentValue = value
 
-                  newGameState[variable.id].currentValue = value
+                engineDispatch({
+                  type: ENGINE_ACTION_TYPE.GAME_STATE,
+                  gameState: newGameState
+                })
 
-                  engineDispatch({
-                    type: ENGINE_ACTION_TYPE.GAME_STATE,
-                    gameState: newGameState
-                  })
-
-                  onInput(
-                    inputId,
-                    foundRoute.destinationId,
-                    foundRoute.destinationType
-                  )
-                }
+                setTimeout(() => setInputDone(true), 1)
               }
             }}
           >
