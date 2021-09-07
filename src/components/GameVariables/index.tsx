@@ -1,6 +1,6 @@
 import logger from '../../lib/logger'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { debounce } from 'lodash-es'
 
 import {
@@ -110,35 +110,48 @@ export const VariableRow: React.FC<{
         )
 
       await Promise.all([
-        relatedConditions.map(async (relatedCondition) => {
-          if (relatedCondition.id) {
-            const condition = await api().conditions.getCondition(
+        // #314: set values first
+        relatedConditions.map(
+          async (relatedCondition) =>
+            relatedCondition.id &&
+            (await api().conditions.saveConditionValue(
               studioId,
-              relatedCondition.id
-            )
-
-            await api().conditions.saveCondition(studioId, {
-              ...condition,
-              compare: [
-                condition.compare[0],
-                COMPARE_OPERATOR_TYPE.EQ,
-                selectedVariableType === VARIABLE_TYPE.BOOLEAN ? 'false' : '',
-                selectedVariableType
-              ]
-            })
-          }
-        }),
+              relatedCondition.id,
+              selectedVariableType === VARIABLE_TYPE.BOOLEAN
+                ? 'false'
+                : selectedVariableType === VARIABLE_TYPE.NUMBER
+                ? '0'
+                : ''
+            ))
+        ),
         relatedEffects.map(
           async (relatedEffect) =>
             relatedEffect.id &&
             (await api().effects.saveEffectValue(
               studioId,
               relatedEffect.id,
-              // TODO: Use better method that doesn't dupe DB code
-              selectedVariableType === VARIABLE_TYPE.BOOLEAN ? 'false' : ''
+              selectedVariableType === VARIABLE_TYPE.BOOLEAN
+                ? 'false'
+                : selectedVariableType === VARIABLE_TYPE.NUMBER
+                ? '0'
+                : ''
             ))
         )
       ])
+
+      // #314: set type second
+      // TODO: consider preserving the operator in certain cases
+      await Promise.all(
+        relatedConditions.map(
+          async (relatedCondition) =>
+            relatedCondition.id &&
+            (await api().conditions.saveConditionCompareOperatorType(
+              studioId,
+              relatedCondition.id,
+              COMPARE_OPERATOR_TYPE.EQ
+            ))
+        )
+      )
 
       await api().variables.saveVariableType(
         studioId,
@@ -207,6 +220,30 @@ export const VariableRow: React.FC<{
       (await api().variables.removeVariable(studioId, variable.id))
   }
 
+  const getVariableInitialValue = useCallback(():
+    | Number
+    | string
+    | undefined => {
+    if (rowType === VARIABLE_ROW_TYPE.VARIABLE) {
+      if (variable?.type === VARIABLE_TYPE.NUMBER) {
+        return Number(variable.initialValue || 0) || 0
+      } else {
+        return variable?.initialValue || undefined
+      }
+    } else {
+      switch (variable?.type) {
+        case VARIABLE_TYPE.BOOLEAN:
+          return value || 'false'
+        case VARIABLE_TYPE.NUMBER:
+          return Number(value) || 0
+        case VARIABLE_TYPE.STRING:
+          return value || undefined
+        default:
+          return undefined
+      }
+    }
+  }, [rowType, variable, value])
+
   useEffect(() => {
     logger.info(`VariableRow->variable.title->${variable?.title}`)
 
@@ -221,7 +258,7 @@ export const VariableRow: React.FC<{
 
     variable?.type && setVariableType(variable.type)
 
-    editVariableInitialValueForm.resetFields()
+    setTimeout(() => editVariableInitialValueForm.resetFields(), 1)
   }, [variable?.type])
 
   useEffect(() => {
@@ -249,6 +286,7 @@ export const VariableRow: React.FC<{
               style={{
                 width:
                   rowType !== VARIABLE_ROW_TYPE.VARIABLE &&
+                  rowType === VARIABLE_ROW_TYPE.EFFECT &&
                   (variableType === VARIABLE_TYPE.BOOLEAN ||
                     variableType === VARIABLE_TYPE.STRING)
                     ? '65%'
@@ -284,35 +322,37 @@ export const VariableRow: React.FC<{
               </Col>
             )}
 
-            {rowType === VARIABLE_ROW_TYPE.CONDITION &&
-              variableType !== VARIABLE_TYPE.BOOLEAN &&
-              variableType !== VARIABLE_TYPE.STRING && (
-                <Col className={styles.typeCol}>
-                  <Select
-                    value={compareOperatorType}
-                    onChange={onCompareOperatorTypeChange}
-                  >
-                    <Option value={COMPARE_OPERATOR_TYPE.EQ}>
-                      {COMPARE_OPERATOR_TYPE.EQ}
-                    </Option>
-                    <Option value={COMPARE_OPERATOR_TYPE.NE}>
-                      {COMPARE_OPERATOR_TYPE.NE}
-                    </Option>
-                    <Option value={COMPARE_OPERATOR_TYPE.GTE}>
-                      {COMPARE_OPERATOR_TYPE.GTE}
-                    </Option>
-                    <Option value={COMPARE_OPERATOR_TYPE.GT}>
-                      {COMPARE_OPERATOR_TYPE.GT}
-                    </Option>
-                    <Option value={COMPARE_OPERATOR_TYPE.LTE}>
-                      {COMPARE_OPERATOR_TYPE.LTE}
-                    </Option>
-                    <Option value={COMPARE_OPERATOR_TYPE.LT}>
-                      {COMPARE_OPERATOR_TYPE.LT}
-                    </Option>
-                  </Select>
-                </Col>
-              )}
+            {rowType === VARIABLE_ROW_TYPE.CONDITION && (
+              <Col className={styles.typeCol}>
+                <Select
+                  value={compareOperatorType}
+                  onChange={onCompareOperatorTypeChange}
+                >
+                  <Option value={COMPARE_OPERATOR_TYPE.EQ}>
+                    {COMPARE_OPERATOR_TYPE.EQ}
+                  </Option>
+                  <Option value={COMPARE_OPERATOR_TYPE.NE}>
+                    {COMPARE_OPERATOR_TYPE.NE}
+                  </Option>
+                  {variableType === VARIABLE_TYPE.NUMBER && (
+                    <>
+                      <Option value={COMPARE_OPERATOR_TYPE.GTE}>
+                        {COMPARE_OPERATOR_TYPE.GTE}
+                      </Option>
+                      <Option value={COMPARE_OPERATOR_TYPE.GT}>
+                        {COMPARE_OPERATOR_TYPE.GT}
+                      </Option>
+                      <Option value={COMPARE_OPERATOR_TYPE.LTE}>
+                        {COMPARE_OPERATOR_TYPE.LTE}
+                      </Option>
+                      <Option value={COMPARE_OPERATOR_TYPE.LT}>
+                        {COMPARE_OPERATOR_TYPE.LT}
+                      </Option>
+                    </>
+                  )}
+                </Select>
+              </Col>
+            )}
 
             {allowSetOperator && (
               <Col className={styles.typeCol}>
@@ -355,12 +395,7 @@ export const VariableRow: React.FC<{
                 <Form
                   form={editVariableInitialValueForm}
                   initialValues={{
-                    initialValue:
-                      rowType === VARIABLE_ROW_TYPE.VARIABLE
-                        ? variable.initialValue
-                        : value || variable.type === VARIABLE_TYPE.NUMBER
-                        ? '0'
-                        : undefined
+                    initialValue: getVariableInitialValue()
                   }}
                   onValuesChange={debounce(
                     onChangeValue
