@@ -28,6 +28,7 @@ const ComponentTitle: React.FC<{
         label="Title"
         name="title"
         rules={[{ required: true, message: 'Title is required.' }]}
+        style={{ marginBottom: '15px' }}
       >
         <Input />
       </Form.Item>
