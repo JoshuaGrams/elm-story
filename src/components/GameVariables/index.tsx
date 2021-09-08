@@ -249,8 +249,9 @@ export const VariableRow: React.FC<{
 
     variable?.title && setVariableTitle(variable.title)
 
-    // #307
-    // editVariableTitleForm.resetFields()
+    // #166, #307
+    !variableTitleInputRef.current?.state.focused &&
+      editVariableTitleForm.resetFields()
   }, [variable?.title])
 
   useEffect(() => {
@@ -299,6 +300,10 @@ export const VariableRow: React.FC<{
                   initialValues={{ title: variable.title }}
                   onFinish={() => variableTitleInputRef.current?.blur()}
                   onValuesChange={debounce(onVariableTitleChange, 100)}
+                  onBlur={() => {
+                    // safety check for #166
+                    setTimeout(editVariableTitleForm.resetFields, 200)
+                  }}
                 >
                   <Form.Item name="title">
                     <Input ref={variableTitleInputRef} spellCheck={false} />
