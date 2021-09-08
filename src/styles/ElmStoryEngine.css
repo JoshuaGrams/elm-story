@@ -98,6 +98,7 @@ html {
   border: 0.1rem solid var(--highlight-color);
   transition: background-color var(--animation-duration),
     border var(--animation-duration);
+  text-decoration: none !important;
 }
 
 .es-engine-input-button {
