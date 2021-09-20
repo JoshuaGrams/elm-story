@@ -8,6 +8,7 @@ import { GameDataJSON as GameDataJSON_020 } from './transport/types/0.2.0'
 import { GameDataJSON as GameDataJSON_030 } from './transport/types/0.3.0'
 import { GameDataJSON as GameDataJSON_031 } from './transport/types/0.3.1'
 import { GameDataJSON as GameDataJSON_040 } from './transport/types/0.4.0'
+import { GameDataJSON as GameDataJSON_050 } from './transport/types/0.5.0'
 
 import api from '../api'
 
@@ -15,9 +16,13 @@ import validateGameData from './transport/validate'
 
 import v020Upgrade from './transport/upgrade/0.2.0'
 import v040Upgrade from './transport/upgrade/0.4.0'
+import v050Upgrade from './transport/upgrade/0.5.0'
 
 export default (
-  gameData: GameDataJSON_013 & GameDataJSON_020 & GameDataJSON_040,
+  gameData: GameDataJSON_013 &
+    GameDataJSON_020 &
+    GameDataJSON_040 &
+    GameDataJSON_050,
   skipValidation?: boolean
 ): {
   errors: string[]
@@ -48,20 +53,21 @@ export default (
           | GameDataJSON_040
           | undefined = undefined
 
-        // Upgrade from 0.1.3 to 0.4.0
+        // Upgrade from 0.1.3 to 0.5.0
         if (engineVersion === '0.1.3') {
           upgradedGameData = v020Upgrade(
             cloneDeep(gameData) as GameDataJSON_013
           )
 
           upgradedGameData = v040Upgrade(cloneDeep(upgradedGameData))
+          upgradedGameData = v050Upgrade(cloneDeep(upgradedGameData))
         }
 
         // #288
-        // Upgrade from 0.2.0+ to 0.4.0
+        // Upgrade from 0.2.0+ to 0.5.0
         if (
           semver.gt(engineVersion, '0.2.0') &&
-          semver.lt(engineVersion, '0.4.0')
+          semver.lt(engineVersion, '0.5.0')
         ) {
           upgradedGameData = v040Upgrade(
             cloneDeep(gameData) as
@@ -69,10 +75,11 @@ export default (
               | GameDataJSON_030
               | GameDataJSON_031
           )
+
+          upgradedGameData = v050Upgrade(cloneDeep(upgradedGameData))
         }
 
-        // No upgrade; current version
-        if (engineVersion === '0.4.0') upgradedGameData = gameData
+        if (engineVersion === '0.5.0') upgradedGameData = gameData
 
         if (!upgradedGameData)
           throw new Error('Unable to import game data. Version conflict.')
@@ -89,7 +96,7 @@ export default (
           routes,
           scenes,
           variables
-        } = upgradedGameData as GameDataJSON_040
+        } = upgradedGameData as GameDataJSON_050
 
         try {
           // Save choices
@@ -197,6 +204,7 @@ export default (
               choices,
               content,
               editor,
+              gameEnd,
               id,
               sceneId,
               tags,
@@ -210,6 +218,7 @@ export default (
               choices,
               content,
               editor,
+              gameEnd,
               gameId: _.id,
               id,
               input,

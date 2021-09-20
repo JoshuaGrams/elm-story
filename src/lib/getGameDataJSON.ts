@@ -1,5 +1,5 @@
 import { ComponentId, GameId, StudioId } from '../data/types'
-import { GameDataJSON } from './transport/types/0.4.0'
+import { GameDataJSON } from './transport/types/0.5.0'
 
 import api from '../api'
 
@@ -132,6 +132,7 @@ export default async (
         choices,
         content,
         editor,
+        gameEnd,
         id,
         input,
         sceneId,
@@ -144,6 +145,7 @@ export default async (
           choices,
           content,
           editor,
+          gameEnd,
           id: id as string,
           input,
           sceneId,
