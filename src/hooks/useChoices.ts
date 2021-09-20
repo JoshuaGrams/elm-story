@@ -33,14 +33,11 @@ const useChoice = (
 
 const useChoicesByPassageRef = (
   studioId: StudioId,
-  passageId: ComponentId,
+  passageId?: ComponentId,
   deps?: any[]
 ): Choice[] | undefined => {
   const choices = useLiveQuery(
-    () =>
-      new LibraryDatabase(studioId).choices
-        .where({ passageId: passageId })
-        .toArray(),
+    () => new LibraryDatabase(studioId).choices.where({ passageId }).toArray(),
     deps || [],
     undefined
   )

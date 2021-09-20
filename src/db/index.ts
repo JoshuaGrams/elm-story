@@ -85,7 +85,7 @@ export class AppDatabase extends Dexie {
     try {
       exists = (await this[table].where({ id }).first()) ? true : false
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return exists
@@ -95,7 +95,7 @@ export class AppDatabase extends Dexie {
     try {
       return await this.studios.get(studioId)
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -119,7 +119,7 @@ export class AppDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     if (studio.id) {
@@ -141,7 +141,7 @@ export class AppDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 }
@@ -190,7 +190,7 @@ export class LibraryDatabase extends Dexie {
     try {
       component = (await this[table].where({ id }).first()) || undefined
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return component
@@ -200,7 +200,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this[table].where({ gameId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -228,7 +228,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -244,7 +244,7 @@ export class LibraryDatabase extends Dexie {
         )
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -268,7 +268,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return game
@@ -292,7 +292,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -314,7 +314,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -389,7 +389,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -405,7 +405,7 @@ export class LibraryDatabase extends Dexie {
         )
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -434,7 +434,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return folder.id
@@ -457,7 +457,7 @@ export class LibraryDatabase extends Dexie {
         throw new Error('Unable to save parent ref. Missing folder.')
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -485,7 +485,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -568,7 +568,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return
@@ -578,7 +578,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.folders.where({ gameId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -594,7 +594,7 @@ export class LibraryDatabase extends Dexie {
         throw new Error('Folder not found.')
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -610,7 +610,7 @@ export class LibraryDatabase extends Dexie {
         )
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -618,7 +618,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.jumps.where({ gameId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -644,7 +644,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return jump
@@ -668,7 +668,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -722,7 +722,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -730,7 +730,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.jumps.where({ route: sceneId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -738,7 +738,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.jumps.where({ route: passageId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -754,7 +754,7 @@ export class LibraryDatabase extends Dexie {
         )
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -783,7 +783,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return scene.id
@@ -806,7 +806,7 @@ export class LibraryDatabase extends Dexie {
         throw new Error('Unable to save parent ref. Missing scene.')
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -831,7 +831,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -853,7 +853,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -884,7 +884,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -951,7 +951,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -959,7 +959,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.scenes.where({ gameId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -975,7 +975,7 @@ export class LibraryDatabase extends Dexie {
         throw new Error('Scene not found.')
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -991,7 +991,7 @@ export class LibraryDatabase extends Dexie {
         )
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -999,7 +999,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.routes.where({ gameId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1028,7 +1028,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return route.id
@@ -1066,7 +1066,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1092,7 +1092,7 @@ export class LibraryDatabase extends Dexie {
         )
       ])
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1106,7 +1106,7 @@ export class LibraryDatabase extends Dexie {
         )
       )
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1122,7 +1122,7 @@ export class LibraryDatabase extends Dexie {
         )
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1130,7 +1130,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.conditions.where({ gameId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1143,7 +1143,7 @@ export class LibraryDatabase extends Dexie {
         ? await this.conditions.where({ routeId }).count()
         : await this.conditions.where({ routeId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1153,7 +1153,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.conditions.where({ variableId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1182,7 +1182,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return condition.id
@@ -1222,7 +1222,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1253,7 +1253,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1276,7 +1276,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1292,7 +1292,7 @@ export class LibraryDatabase extends Dexie {
         )
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1300,7 +1300,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.effects.where({ gameId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1313,7 +1313,7 @@ export class LibraryDatabase extends Dexie {
         ? await this.effects.where({ routeId }).count()
         : await this.effects.where({ routeId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1323,7 +1323,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.effects.where({ variableId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1352,7 +1352,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return effect.id
@@ -1383,7 +1383,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1407,7 +1407,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1430,7 +1430,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1446,7 +1446,7 @@ export class LibraryDatabase extends Dexie {
         )
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1475,7 +1475,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return passage
@@ -1504,7 +1504,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1531,7 +1531,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1560,7 +1560,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1585,7 +1585,7 @@ export class LibraryDatabase extends Dexie {
         throw new Error('Unable to save scene ID. Missing passage.')
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1613,7 +1613,32 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
+    }
+  }
+
+  public async setPassageGameEnd(passageId: ComponentId, gameEnd: boolean) {
+    try {
+      await this.transaction('rw', this.passages, async () => {
+        if (passageId) {
+          const passage = await this.getComponent(
+            LIBRARY_TABLE.PASSAGES,
+            passageId
+          )
+
+          if (passage) {
+            this.passages.update(passageId, {
+              ...passage,
+              gameEnd,
+              updated: Date.now()
+            })
+          } else {
+            throw new Error('Unable to save game end. Passage missing.')
+          }
+        }
+      })
+    } catch (error) {
+      throw error
     }
   }
 
@@ -1678,7 +1703,7 @@ export class LibraryDatabase extends Dexie {
         )
       ])
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1686,7 +1711,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.passages.where({ gameId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1704,7 +1729,7 @@ export class LibraryDatabase extends Dexie {
         )
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1712,7 +1737,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.choices.where({ gameId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1743,7 +1768,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return choice
@@ -1777,7 +1802,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1795,7 +1820,7 @@ export class LibraryDatabase extends Dexie {
         )
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1803,7 +1828,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.inputs.where({ gameId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1834,7 +1859,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return input
@@ -1861,7 +1886,7 @@ export class LibraryDatabase extends Dexie {
         throw new Error('Unable to save variable ID. Missing input.')
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1893,7 +1918,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1909,7 +1934,7 @@ export class LibraryDatabase extends Dexie {
         )
       }
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1917,7 +1942,7 @@ export class LibraryDatabase extends Dexie {
     try {
       return await this.variables.where({ gameId }).toArray()
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 
@@ -1946,7 +1971,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
 
     return variable.id
@@ -1988,7 +2013,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 

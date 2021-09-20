@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react'
+import React, { useCallback, useContext, useEffect } from 'react'
 
 import {
   ComponentId,
@@ -7,14 +7,15 @@ import {
   StudioId
 } from '../../../data/types'
 
-import { usePassage } from '../../../hooks'
+import { useChoicesByPassageRef, usePassage } from '../../../hooks'
 
 import {
   EditorContext,
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
 
-import { Select } from 'antd'
+import { Checkbox, Select } from 'antd'
+import { CheckboxChangeEvent } from 'antd/lib/checkbox'
 
 import ComponentTitle from '../ComponentTitle'
 
@@ -26,7 +27,7 @@ import api from '../../../api'
 const PassageType: React.FC<{
   studioId: StudioId
   passage: Passage
-}> = ({ studioId, passage }) => {
+}> = React.memo(({ studioId, passage }) => {
   const { editor, editorDispatch } = useContext(EditorContext)
 
   const changeType = useCallback(
@@ -84,12 +85,64 @@ const PassageType: React.FC<{
       </Select>
     </div>
   )
-}
+})
+
+PassageType.displayName = 'PassageType'
+
+const PassageEndToggle: React.FC<{
+  studioId: StudioId
+  passage: Passage
+}> = React.memo(({ studioId, passage }) => {
+  const { editor } = useContext(EditorContext)
+
+  const choices = useChoicesByPassageRef(studioId, passage.id, [passage])
+
+  const toggleGameEnd = async (event: CheckboxChangeEvent) => {
+    passage.id &&
+      (await api().passages.setPassageGameEnd(
+        studioId,
+        passage.id,
+        event.target.checked
+      ))
+  }
+
+  useEffect(() => {
+    async function disableGameEnd() {
+      passage.id &&
+        (await api().passages.setPassageGameEnd(studioId, passage.id, false))
+    }
+
+    if (
+      ((choices && choices.length > 0) ||
+        passage.type === PASSAGE_TYPE.INPUT) &&
+      passage.gameEnd &&
+      editor.selectedComponentEditorSceneViewPassage === passage.id
+    ) {
+      disableGameEnd()
+    }
+  }, [choices, passage.type])
+
+  return (
+    <div className={styles.PassageEndToggle}>
+      <Checkbox
+        onChange={toggleGameEnd}
+        checked={passage.gameEnd}
+        disabled={
+          (choices && choices.length > 0) || passage.type === PASSAGE_TYPE.INPUT
+        }
+      >
+        Entering Passage Ends Game
+      </Checkbox>
+    </div>
+  )
+})
+
+PassageEndToggle.displayName = 'PassageEndToggle'
 
 const PassageDetails: React.FC<{
   studioId: StudioId
   passageId: ComponentId
-}> = ({ studioId, passageId }) => {
+}> = React.memo(({ studioId, passageId }) => {
   const passage = usePassage(studioId, passageId, [passageId])
 
   const { editorDispatch } = useContext(EditorContext)
@@ -121,12 +174,19 @@ const PassageDetails: React.FC<{
               }}
             />
             <div className={parentStyles.componentId}>{passage.id}</div>
+
             <PassageType studioId={studioId} passage={passage} />
+
+            {passage.id && (
+              <PassageEndToggle studioId={studioId} passage={passage} />
+            )}
           </div>
         </div>
       )}
     </>
   )
-}
+})
+
+PassageDetails.displayName = 'PassageDetails'
 
 export default PassageDetails

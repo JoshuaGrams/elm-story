@@ -16,7 +16,7 @@ export async function getPassage(studioId: StudioId, passageId: ComponentId) {
   try {
     return await new LibraryDatabase(studioId).getPassage(passageId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -29,7 +29,7 @@ export async function savePassage(
   try {
     return await new LibraryDatabase(studioId).savePassage(passage)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -40,7 +40,7 @@ export async function removePassage(
   try {
     await new LibraryDatabase(studioId).removePassage(passageId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -51,7 +51,7 @@ export async function getPassagesByGameRef(
   try {
     return await new LibraryDatabase(studioId).getPassagesByGameRef(gameId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -67,7 +67,7 @@ export async function savePassageTitle(
       title
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -79,7 +79,7 @@ export async function savePassageType(
   try {
     await new LibraryDatabase(studioId).savePassageType(passageId, type)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -91,7 +91,7 @@ export async function savePassageInput(
   try {
     await new LibraryDatabase(studioId).savePassageInput(passageId, inputId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -106,7 +106,7 @@ export async function savePassageContent(
       JSON.stringify(contentObject)
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -121,7 +121,7 @@ export async function saveSceneRefToPassage(
       passageId
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -136,7 +136,7 @@ export async function saveChoiceRefsToPassage(
       choices
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -145,24 +145,29 @@ export async function switchPassageFromChoiceToInputType(
   passage: Passage
 ) {
   if (passage && passage.id) {
-    await Promise.all([
-      passage.choices.map(
-        async (choiceId) => await api().choices.removeChoice(studioId, choiceId)
-      ),
-      api().passages.saveChoiceRefsToPassage(studioId, passage.id, []),
-      api().passages.savePassageType(studioId, passage.id, PASSAGE_TYPE.INPUT)
-    ])
+    try {
+      await Promise.all([
+        passage.choices.map(
+          async (choiceId) =>
+            await api().choices.removeChoice(studioId, choiceId)
+        ),
+        api().passages.saveChoiceRefsToPassage(studioId, passage.id, []),
+        api().passages.savePassageType(studioId, passage.id, PASSAGE_TYPE.INPUT)
+      ])
 
-    const input = await api().inputs.saveInput(studioId, {
-      gameId: passage.gameId,
-      passageId: passage.id,
-      tags: [],
-      title: 'Untitled Input',
-      variableId: undefined
-    })
+      const input = await api().inputs.saveInput(studioId, {
+        gameId: passage.gameId,
+        passageId: passage.id,
+        tags: [],
+        title: 'Untitled Input',
+        variableId: undefined
+      })
 
-    input.id &&
-      (await api().passages.savePassageInput(studioId, passage.id, input.id))
+      input.id &&
+        (await api().passages.savePassageInput(studioId, passage.id, input.id))
+    } catch (error) {
+      throw error
+    }
   } else {
     throw new Error(
       'Unable to switch passage type from choice to input. Missing passage or passage ID.'
@@ -175,14 +180,34 @@ export async function switchPassageFromInputToChoiceType(
   passage: Passage
 ) {
   if (passage && passage.id && passage.input) {
-    await Promise.all([
-      api().inputs.removeInput(studioId, passage.input),
-      api().passages.savePassageInput(studioId, passage.id, undefined),
-      api().passages.savePassageType(studioId, passage.id, PASSAGE_TYPE.CHOICE)
-    ])
+    try {
+      await Promise.all([
+        api().inputs.removeInput(studioId, passage.input),
+        api().passages.savePassageInput(studioId, passage.id, undefined),
+        api().passages.savePassageType(
+          studioId,
+          passage.id,
+          PASSAGE_TYPE.CHOICE
+        )
+      ])
+    } catch (error) {
+      throw error
+    }
   } else {
     throw new Error(
       'Unable to switch passage type from input to choice. Missing passage, passage ID or input ID.'
     )
+  }
+}
+
+export async function setPassageGameEnd(
+  studioId: StudioId,
+  passageId: ComponentId,
+  gameEnd: boolean
+) {
+  try {
+    await new LibraryDatabase(studioId).setPassageGameEnd(passageId, gameEnd)
+  } catch (error) {
+    throw error
   }
 }
