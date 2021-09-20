@@ -179,7 +179,7 @@ export enum PASSAGE_TYPE {
 }
 
 export interface Passage extends Component {
-  gameEnd: boolean // game end
+  gameOver: boolean // game end
   gameId: GameId
   sceneId: ComponentId
   choices: ComponentId[]

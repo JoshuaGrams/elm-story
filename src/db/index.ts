@@ -1617,7 +1617,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async setPassageGameEnd(passageId: ComponentId, gameEnd: boolean) {
+  public async setPassageGameEnd(passageId: ComponentId, gameOver: boolean) {
     try {
       await this.transaction('rw', this.passages, async () => {
         if (passageId) {
@@ -1629,7 +1629,7 @@ export class LibraryDatabase extends Dexie {
           if (passage) {
             this.passages.update(passageId, {
               ...passage,
-              gameEnd,
+              gameOver,
               updated: Date.now()
             })
           } else {

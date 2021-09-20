@@ -26,7 +26,7 @@ export default ({
   Object.keys(clonedPassages).map((passageId) => {
     upgradedPassages[passageId] = {
       ...clonedPassages[passageId],
-      gameEnd: false
+      gameOver: false
     }
   })
 

@@ -219,7 +219,7 @@ async function addComponentToScene(
     switch (type) {
       case COMPONENT_TYPE.PASSAGE:
         const passage = await api().passages.savePassage(studioId, {
-          gameEnd: false,
+          gameOver: false,
           gameId: scene.gameId,
           sceneId: scene.id,
           title: 'Untitled Passage',

@@ -226,7 +226,7 @@
             },
             "additionalProperties": false
           },
-          "gameEnd": { "type": "boolean" },
+          "gameOver": { "type": "boolean" },
           "id": { "type": "string" },
           "input": { "type": "string" },
           "sceneId": { "type": "string" },
@@ -237,7 +237,7 @@
         },
         "required": [
           "content",
-          "gameEnd",
+          "gameOver",
           "id",
           "sceneId",
           "tags",

@@ -203,10 +203,10 @@ export async function switchPassageFromInputToChoiceType(
 export async function setPassageGameEnd(
   studioId: StudioId,
   passageId: ComponentId,
-  gameEnd: boolean
+  gameOver: boolean
 ) {
   try {
-    await new LibraryDatabase(studioId).setPassageGameEnd(passageId, gameEnd)
+    await new LibraryDatabase(studioId).setPassageGameEnd(passageId, gameOver)
   } catch (error) {
     throw error
   }

@@ -115,7 +115,7 @@ const PassageEndToggle: React.FC<{
     if (
       ((choices && choices.length > 0) ||
         passage.type === PASSAGE_TYPE.INPUT) &&
-      passage.gameEnd &&
+      passage.gameOver &&
       editor.selectedComponentEditorSceneViewPassage === passage.id
     ) {
       disableGameEnd()
@@ -126,7 +126,7 @@ const PassageEndToggle: React.FC<{
     <div className={styles.PassageEndToggle}>
       <Checkbox
         onChange={toggleGameEnd}
-        checked={passage.gameEnd}
+        checked={passage.gameOver}
         disabled={
           (choices && choices.length > 0) || passage.type === PASSAGE_TYPE.INPUT
         }

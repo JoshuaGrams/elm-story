@@ -118,7 +118,7 @@ export interface PassageData {
     componentEditorPosX?: number
     componentEditorPosY?: number
   }
-  gameEnd: boolean
+  gameOver: boolean
   id: ComponentId
   input?: ComponentId // variable ID
   sceneId: ComponentId

@@ -11,7 +11,7 @@ export default (database: Dexie) => {
     database
       .version(6)
       .stores({
-        passages: '&id,gameEnd,gameId,sceneId,title,*tags,updated'
+        passages: '&id,gameOver,gameId,sceneId,title,*tags,updated'
       })
       .upgrade(async (tx) => {
         try {
@@ -20,7 +20,7 @@ export default (database: Dexie) => {
           )
 
           await passagesTable.toCollection().modify((passage) => {
-            passage.gameEnd = false
+            passage.gameOver = false
           })
         } catch (error) {}
       })
