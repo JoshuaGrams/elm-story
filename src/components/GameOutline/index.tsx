@@ -679,6 +679,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                   editor.selectedComponentEditorSceneViewCenter.y -
                   DEFAULT_NODE_SIZE.PASSAGE_HEIGHT / 2
               },
+              gameEnd: false,
               gameId: game.id,
               sceneId: parentItem.id as string,
               title: 'Untitled Passage',
