@@ -55,24 +55,29 @@ export function isRouteOpen(
           ? Number(gameState[condition.compare[0]].currentValue)
           : gameState[condition.compare[0]].currentValue
 
+      const compareValue =
+        condition.compare[3] === VARIABLE_TYPE.NUMBER
+          ? Number(condition.compare[2])
+          : condition.compare[2]
+
       switch (condition.compare[1]) {
         case COMPARE_OPERATOR_TYPE.EQ:
-          isOpen = currentValue === `${condition.compare[2]}`
+          isOpen = currentValue === compareValue
           break
         case COMPARE_OPERATOR_TYPE.GT:
-          isOpen = currentValue > condition.compare[2]
+          isOpen = currentValue > compareValue
           break
         case COMPARE_OPERATOR_TYPE.GTE:
-          isOpen = currentValue >= condition.compare[2]
+          isOpen = currentValue >= compareValue
           break
         case COMPARE_OPERATOR_TYPE.LT:
-          isOpen = currentValue < condition.compare[2]
+          isOpen = currentValue < compareValue
           break
         case COMPARE_OPERATOR_TYPE.LTE:
-          isOpen = currentValue <= condition.compare[2]
+          isOpen = currentValue <= compareValue
           break
         case COMPARE_OPERATOR_TYPE.NE:
-          isOpen = currentValue !== condition.compare[2]
+          isOpen = currentValue !== compareValue
           break
         default:
           break
