@@ -1,4 +1,6 @@
+// 0.5.0
 // #325
+// #339
 
 import Dexie from 'dexie'
 
@@ -11,7 +13,11 @@ export default (database: Dexie) => {
     database
       .version(6)
       .stores({
-        passages: '&id,gameOver,gameId,sceneId,title,*tags,updated'
+        bookmarks: '&id,gameId,event,updated',
+        events:
+          '&id,gameId,destination,origin,prev,next,type,updated,[gameId+updated]',
+        passages: '&id,gameOver,gameId,sceneId,title,*tags,updated',
+        settings: '&id,gameId'
       })
       .upgrade(async (tx) => {
         try {

@@ -30,6 +30,11 @@ import {
   PASSAGE_TYPE,
   Input
 } from '../data/types'
+import {
+  EngineBookmarkData,
+  EngineEventData,
+  EngineSettingsData
+} from '../lib/transport/types/0.5.0'
 
 // DATABASE VERSIONS / UPGRADES
 import v1 from './v1'
@@ -38,6 +43,7 @@ import v3 from './v3'
 import v4 from './v4'
 import v5 from './v5'
 import v6 from './v6'
+
 
 export enum DB_NAME {
   APP = 'esg-app',
@@ -50,16 +56,19 @@ export enum APP_TABLE {
 }
 
 export enum LIBRARY_TABLE {
-  GAMES = 'games',
-  JUMPS = 'jumps',
-  FOLDERS = 'folders',
-  SCENES = 'scenes',
-  ROUTES = 'routes',
-  EFFECTS = 'effects',
-  PASSAGES = 'passages',
+  BOOKMARKS = 'bookmarks',
   CHOICES = 'choices',
-  INPUTS = 'inputs',
   CONDITIONS = 'conditions',
+  EFFECTS = 'effects',
+  EVENTS = 'events',
+  FOLDERS = 'folders',
+  GAMES = 'games',
+  INPUTS = 'inputs',
+  JUMPS = 'jumps',
+  PASSAGES = 'passages',
+  ROUTES = 'routes',
+  SCENES = 'scenes',
+  SETTINGS = 'settings',
   VARIABLES = 'variables'
 }
 
@@ -147,16 +156,19 @@ export class AppDatabase extends Dexie {
 }
 
 export class LibraryDatabase extends Dexie {
+  public bookmarks: Dexie.Table<EngineBookmarkData, string>
+  public effects: Dexie.Table<Effect, string>
+  public events: Dexie.Table<EngineEventData, string>
+  public choices: Dexie.Table<Choice, string>
+  public conditions: Dexie.Table<Condition, string>
   public games: Dexie.Table<Game, string>
+  public inputs: Dexie.Table<Input, string>
   public jumps: Dexie.Table<Jump, string>
   public folders: Dexie.Table<Folder, string>
-  public scenes: Dexie.Table<Scene, string>
-  public routes: Dexie.Table<Route, string>
-  public conditions: Dexie.Table<Condition, string>
-  public effects: Dexie.Table<Effect, string>
   public passages: Dexie.Table<Passage, string>
-  public choices: Dexie.Table<Choice, string>
-  public inputs: Dexie.Table<Input, string>
+  public routes: Dexie.Table<Route, string>
+  public scenes: Dexie.Table<Scene, string>
+  public settings: Dexie.Table<EngineSettingsData, string>
   public variables: Dexie.Table<Variable, string>
 
   public constructor(studioId: string) {
@@ -171,16 +183,19 @@ export class LibraryDatabase extends Dexie {
 
     this.tables.map((table) => table.name)
 
-    this.games = this.table(LIBRARY_TABLE.GAMES)
-    this.folders = this.table(LIBRARY_TABLE.FOLDERS)
-    this.jumps = this.table(LIBRARY_TABLE.JUMPS)
-    this.scenes = this.table(LIBRARY_TABLE.SCENES)
-    this.routes = this.table(LIBRARY_TABLE.ROUTES)
+    this.bookmarks = this.table(LIBRARY_TABLE.BOOKMARKS)
+    this.choices = this.table(LIBRARY_TABLE.CHOICES)
     this.conditions = this.table(LIBRARY_TABLE.CONDITIONS)
     this.effects = this.table(LIBRARY_TABLE.EFFECTS)
-    this.passages = this.table(LIBRARY_TABLE.PASSAGES)
-    this.choices = this.table(LIBRARY_TABLE.CHOICES)
+    this.events = this.table(LIBRARY_TABLE.EVENTS)
+    this.folders = this.table(LIBRARY_TABLE.FOLDERS)
+    this.games = this.table(LIBRARY_TABLE.GAMES)
     this.inputs = this.table(LIBRARY_TABLE.INPUTS)
+    this.jumps = this.table(LIBRARY_TABLE.JUMPS)
+    this.passages = this.table(LIBRARY_TABLE.PASSAGES)
+    this.routes = this.table(LIBRARY_TABLE.ROUTES)
+    this.scenes = this.table(LIBRARY_TABLE.SCENES)
+    this.settings = this.table(LIBRARY_TABLE.SETTINGS)
     this.variables = this.table(LIBRARY_TABLE.VARIABLES)
   }
 
