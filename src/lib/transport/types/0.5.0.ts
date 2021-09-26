@@ -255,19 +255,6 @@ export enum ENGINE_THEME {
   CONSOLE = 'CONSOLE'
 }
 
-export interface EngineRootData {
-  children: ComponentId[] // scene ids
-  designer: string
-  id: GameId
-  jump: ComponentId | null
-  studioId: StudioId
-  studioTitle: string
-  tags: string[]
-  title: string
-  updated: number
-  version: string
-}
-
 export interface EngineBookmarkData {
   gameId: GameId
   id: string // or AUTO_ENGINE_BOOKMARK_KEY
@@ -356,10 +343,21 @@ export interface EngineEventCollection {
   [eventId: ComponentId | '___initial___']: EngineEventData
 }
 
+export interface EngineGameMeta {
+  studioId: StudioId
+  gameId: GameId
+}
+
 export interface EngineGameData {
+  children: [COMPONENT_TYPE.SCENE, ComponentId][]
   designer: string
+  engine: string
   id: GameId
   jump: ComponentId
+  schema: string
+  studioId: StudioId
+  studioTitle: string
+  tags?: []
   title: string
   updated: number
   version: string
@@ -456,10 +454,11 @@ export interface EngineVariableCollection {
 }
 
 export interface ESGEngineCollectionData {
-  _: EngineRootData
+  _: EngineGameData
   choices: EngineChoiceCollection
   conditions: EngineConditionCollection
   effects: EngineEffectCollection
+  games: EngineGameData
   inputs: EngineInputCollection
   jumps: EngineJumpCollection
   passages: EnginePassageCollection

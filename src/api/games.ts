@@ -1,7 +1,13 @@
 import { LibraryDatabase } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { StudioId, Game, GameId, ComponentId, GameChildRefs } from '../data/types'
+import {
+  StudioId,
+  Game,
+  GameId,
+  ComponentId,
+  GameChildRefs
+} from '../data/types'
 
 import api from '.'
 
@@ -12,7 +18,7 @@ export async function getGame(
   try {
     return await new LibraryDatabase(studioId).getGame(gameId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -31,7 +37,7 @@ export async function saveGame(studioId: StudioId, game: Game): Promise<Game> {
 
     return await new LibraryDatabase(studioId).saveGame(game)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -43,7 +49,7 @@ export async function saveChildRefsToGame(
   try {
     await new LibraryDatabase(studioId).saveChildRefsToGame(gameId, children)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -55,7 +61,7 @@ export async function saveJumpRefToGame(
   try {
     await new LibraryDatabase(studioId).saveJumpRefToGame(gameId, jumpId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -65,6 +71,6 @@ export async function removeGame(studioId: StudioId, gameId: GameId) {
 
     await new LibraryDatabase(studioId).removeGame(gameId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
