@@ -250,7 +250,12 @@
     "source-map-support": "^0.5.19",
     "unique-names-generator": "^4.4.0",
     "use-resize-observer": "^7.0.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "@react-hook/resize-observer": "^1.2.4",
+    "lodash": "^4.17.21",
+    "react-query": "^3.24.4",
+    "react-spring": "^9.2.4",
+    "lzwcompress": "^1.1.0"
   },
   "devEngines": {
     "node": ">=10.x",

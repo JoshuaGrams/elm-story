@@ -3,7 +3,6 @@ import React from 'react'
 import { Switch, Route } from 'react-router-dom'
 
 import EditorProvider from '../contexts/EditorContext'
-import EngineProvider from '../contexts/EngineContext'
 
 import Dashboard from './Dashboard'
 import Editor from './Editor'
@@ -15,11 +14,9 @@ const Routes: React.FC = () => (
     <div className={styles.routes}>
       <Switch>
         <Route path="/editor">
-          <EngineProvider>
-            <EditorProvider>
-              <Editor />
-            </EditorProvider>
-          </EngineProvider>
+          <EditorProvider>
+            <Editor />
+          </EditorProvider>
         </Route>
         <Route path="/">
           <Dashboard />
