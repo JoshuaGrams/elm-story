@@ -50,8 +50,6 @@ export const EventPassage: React.FC<{
 
   const { studioId, id: gameId } = engine.gameInfo
 
-  console.log(passageId)
-
   const passage = useLiveQuery(
     () => new LibraryDatabase(studioId).passages.get(passageId),
     [passageId]

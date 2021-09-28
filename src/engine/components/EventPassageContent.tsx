@@ -66,8 +66,10 @@ const EventPassageContent: React.FC<{
   content: string
   state: EngineEventStateCollection
 }> = React.memo(({ content, state }) => {
-  const parsedContent: { type: 'paragraph'; children: { text: string }[] }[] =
-    JSON.parse(content)
+  const parsedContent: {
+    type: 'paragraph'
+    children: { text: string }[]
+  }[] = JSON.parse(content)
 
   return (
     <>
@@ -78,6 +80,10 @@ const EventPassageContent: React.FC<{
           </p>
         )
       })}
+
+      {!parsedContent[0].children[0].text && parsedContent.length === 1 && (
+        <div>Empty Passage.</div>
+      )}
     </>
   )
 })

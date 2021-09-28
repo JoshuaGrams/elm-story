@@ -1,7 +1,9 @@
 import React from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
-import { GameId, StudioId } from './types/0.5.0'
+import { unpackEngineData } from './lib/api'
+
+import { GameId, StudioId, ESGEngineCollectionData } from './types/0.5.0'
 
 import EngineProvider from './contexts/EngineContext'
 import SettingsProvider from './contexts/SettingsContext'
@@ -11,6 +13,8 @@ import Renderer from './components/Renderer'
 
 import Settings from './components/Settings'
 import Theme from './components/Theme'
+
+import StartingDestinationGate from './components/StartingDestinationGate'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false } }
@@ -23,31 +27,47 @@ const Runtime: React.FC<{
     data?: string
     packed?: boolean
   }
-}> = React.memo(({ studioId, game: { id, data, packed } }) => (
-  <QueryClientProvider client={queryClient}>
-    <EngineProvider>
-      <Installer
-        studioId={studioId}
-        gameId={id}
-        data={data}
-        packed={packed}
-        isEditor={studioId ? true : false}
-      >
-        <SettingsProvider>
-          {!studioId && (
-            <Theme>
-              <Settings />
+}> = React.memo(({ studioId, game: { id, data, packed } }) => {
+  const isEditor = studioId ? true : false
 
-              <Renderer />
-            </Theme>
-          )}
+  const gameMeta = !isEditor ? localStorage.getItem(id) : null
 
-          {studioId && <Renderer />}
-        </SettingsProvider>
-      </Installer>
-    </EngineProvider>
-  </QueryClientProvider>
-))
+  const engineData: ESGEngineCollectionData | undefined =
+    !gameMeta && data
+      ? packed
+        ? unpackEngineData(data)
+        : JSON.parse(data)
+      : undefined
+
+  const _studioId = studioId || engineData?._.studioId
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <EngineProvider>
+        {_studioId && (
+          <StartingDestinationGate studioId={_studioId} gameId={id}>
+            <Installer
+              studioId={_studioId}
+              gameId={id}
+              data={engineData}
+              isEditor={isEditor}
+            >
+              <SettingsProvider>
+                <Theme>
+                  <Settings />
+
+                  <Renderer />
+                </Theme>
+
+                <Renderer />
+              </SettingsProvider>
+            </Installer>
+          </StartingDestinationGate>
+        )}
+      </EngineProvider>
+    </QueryClientProvider>
+  )
+})
 
 Runtime.displayName = 'Runtime'
 

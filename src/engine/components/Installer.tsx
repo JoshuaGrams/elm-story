@@ -5,34 +5,30 @@ import { pick } from 'lodash'
 import {
   getGameInfo,
   saveEngineCollectionData,
-  saveEngineDefaultGameCollectionData,
-  unpackEngineData
+  saveEngineDefaultGameCollectionData
 } from '../lib/api'
 
-import { GameId, StudioId } from '../types/0.5.0'
+import { GameId, StudioId, ESGEngineCollectionData } from '../types/0.5.0'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
 const Installer: React.FC<{
-  studioId?: StudioId
+  studioId: StudioId
   gameId: GameId
-  data?: string
-  packed?: boolean
+  data?: ESGEngineCollectionData
   isEditor: boolean
-}> = React.memo(({ children, studioId, gameId, data, packed, isEditor }) => {
+}> = React.memo(({ children, studioId, gameId, data, isEditor }) => {
   const { engine, engineDispatch } = useContext(EngineContext)
 
-  const installed = useQuery(
+  const { data: installed } = useQuery(
     ['installed', engine.installed],
     async () => {
       try {
         if (!isEditor && data) {
-          await saveEngineCollectionData(
-            packed ? unpackEngineData(data) : JSON.parse(data)
-          )
+          await saveEngineCollectionData(data)
         }
 
-        if (isEditor && studioId) {
+        if (isEditor) {
           await saveEngineDefaultGameCollectionData(studioId, gameId)
         }
 
@@ -45,7 +41,7 @@ const Installer: React.FC<{
   )
 
   useEffect(() => {
-    if (installed.data) {
+    if (installed) {
       studioId && engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_EDITOR })
 
       engineDispatch({
@@ -53,12 +49,12 @@ const Installer: React.FC<{
         installed: true
       })
     }
-  }, [installed.data])
+  }, [installed])
 
   useEffect(() => {
     async function setGameData() {
       if (engine.installed) {
-        const gameInfo = await getGameInfo(gameId)
+        const gameInfo = await getGameInfo(studioId, gameId)
 
         gameInfo &&
           engineDispatch({

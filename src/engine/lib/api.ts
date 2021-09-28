@@ -30,28 +30,22 @@ import {
   EngineInputData,
   StudioId,
   EngineVariableCollection,
-  EngineGameData,
-  EngineGameMeta
+  EngineGameData
 } from '../types/0.5.0'
 
 export const getGameInfo = async (
+  studioId: StudioId,
+
   gameId: GameId
 ): Promise<EngineGameData | null> => {
-  const gameMeta = localStorage.getItem(gameId)
+  try {
+    const foundGame = await new LibraryDatabase(studioId).games.get(gameId)
 
-  if (gameMeta) {
-    try {
-      const parsedGameMeta: EngineGameMeta = JSON.parse(gameMeta),
-        foundGame = await new LibraryDatabase(
-          parsedGameMeta.studioId
-        ).games.get(gameId)
-
-      if (foundGame) {
-        return foundGame
-      }
-    } catch (error) {
-      throw error
+    if (foundGame) {
+      return foundGame
     }
+  } catch (error) {
+    throw error
   }
 
   return null
@@ -83,6 +77,8 @@ export const saveEngineCollectionData = async (
   const databaseExists = await Dexie.exists(`${DB_NAME}-${studioId}`)
 
   if (!databaseExists) {
+    saveGameMeta(studioId, gameId)
+
     const libraryDatabase = new LibraryDatabase(studioId)
 
     try {
@@ -126,8 +122,6 @@ export const saveEngineDefaultGameCollectionData = async (
   studioId: StudioId,
   gameId: GameId
 ) => {
-  saveGameMeta(studioId, gameId)
-
   const libraryDatabase = new LibraryDatabase(studioId)
 
   try {
@@ -195,16 +189,23 @@ export const saveEngineDefaultGameCollectionData = async (
         initialGameState[key] = { gameId, title, type, value: initialValue }
       })
 
-      await libraryDatabase.saveEventCollectionData(gameId, {
-        INITIAL_ENGINE_EVENT: {
-          gameId,
-          id: `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`,
-          destination: await findStartingDestinationPassage(studioId, gameId),
-          state: initialGameState,
-          type: ENGINE_EVENT_TYPE.INITIAL,
-          updated: Date.now()
-        }
-      })
+      const startingDestination = await findStartingDestinationPassage(
+        studioId,
+        gameId
+      )
+
+      if (startingDestination) {
+        await libraryDatabase.saveEventCollectionData(gameId, {
+          INITIAL_ENGINE_EVENT: {
+            gameId,
+            id: `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`,
+            destination: startingDestination,
+            state: initialGameState,
+            type: ENGINE_EVENT_TYPE.INITIAL,
+            updated: Date.now()
+          }
+        })
+      }
     }
   } catch (error) {
     throw error
@@ -239,7 +240,7 @@ export const resetGame = async (studioId: StudioId, gameId: GameId) => {
 export const findStartingDestinationPassage = async (
   studioId: StudioId,
   gameId: GameId
-): Promise<ComponentId> => {
+): Promise<ComponentId | undefined> => {
   const libraryDatabase = new LibraryDatabase(studioId),
     game = await libraryDatabase.games.get(gameId)
 
@@ -258,16 +259,11 @@ export const findStartingDestinationPassage = async (
               foundJump.route[0]
             )
 
-            if (!foundScene)
-              throw 'Unable to find starting passage. Missing scene.'
+            if (!foundScene) return undefined
 
             if (foundScene.children[0][1]) {
               return foundScene.children[0][1]
-            } else {
-              throw 'Unable to find starting passage. Missing passage in scene.'
             }
-          } else {
-            throw 'Unable to find starting passage. Missing scene in route.'
           }
         }
       }
@@ -275,21 +271,18 @@ export const findStartingDestinationPassage = async (
       if (!game.jump) {
         const libraryDatabase = new LibraryDatabase(studioId),
           foundScene = game.children[0]
-            ? await libraryDatabase.scenes.get(game.children[0])
-            : await libraryDatabase.scenes.toCollection().first()
+            ? await libraryDatabase.scenes.get(game.children[0][1])
+            : await libraryDatabase.scenes.where({ gameId }).first()
 
-        if (!foundScene) throw 'Unable to find starting passage. Missing scene.'
+        if (!foundScene) return undefined
 
         if (foundScene.children[0][1]) {
           // TODO: scenes may eventually have nested folders
-
           return foundScene.children[0][1]
-        } else {
-          throw 'Unable to find starting passage. Missing passage in scene.'
         }
       }
 
-      throw 'Unable to find starting passage.'
+      return undefined
     } catch (error) {
       throw error
     }
@@ -396,6 +389,8 @@ export const saveBookmarkEvent = async (
 
       return updatedBookmark
     }
+
+    return undefined
   } catch (error) {
     throw error
   }

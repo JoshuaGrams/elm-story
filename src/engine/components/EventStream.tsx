@@ -21,8 +21,6 @@ const EventStream: React.FC = React.memo(() => {
 
   const { studioId, id: gameId } = engine.gameInfo
 
-  console.log(gameId)
-
   useQuery(
     [`recentEvents-${gameId}`, studioId, gameId, engine.currentEvent],
     async () => {
