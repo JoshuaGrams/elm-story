@@ -9,10 +9,9 @@ const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   gameId
 }) => {
   return (
-    <>
-      {studioId} {gameId}
+    <div id="runtime">
       <Runtime studioId={studioId} game={{ id: gameId }} />
-    </>
+    </div>
   )
 }
 

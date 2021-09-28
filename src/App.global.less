@@ -3,8 +3,8 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 @import './styles/variables';
-@import './styles/ElmStoryEngine.css';
 @import '~antd/dist/antd.dark.less';
+@import './styles/engine.less';
 @import './styles/ant.less'; // overrides
 @import '~rc-dock/dist/rc-dock.css';
 @import '@fontsource/fira-mono';
@@ -78,6 +78,10 @@
   &::selection {
     background: var(--highlight-color-50a);
   }
+}
+
+html {
+  font-size: 62.5%;
 }
 
 html,
