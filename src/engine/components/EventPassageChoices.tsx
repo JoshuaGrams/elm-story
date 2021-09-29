@@ -175,13 +175,17 @@ const EventPassageChoices: React.FC<{
             <button onClick={restartGame}>New Game</button>
           </div>
 
-          <div className="event-choice">
-            <button
-              onClick={() => engineDispatch({ type: ENGINE_ACTION_TYPE.STOP })}
-            >
-              Title Screen
-            </button>
-          </div>
+          {!engine.isEditor && (
+            <div className="event-choice">
+              <button
+                onClick={() =>
+                  engineDispatch({ type: ENGINE_ACTION_TYPE.STOP })
+                }
+              >
+                Title Screen
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>
