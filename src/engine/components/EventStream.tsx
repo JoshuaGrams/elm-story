@@ -66,7 +66,10 @@ const EventStream: React.FC = React.memo(() => {
     <>
       <div
         id="event-stream"
-        style={{ overflowY: settings.open ? 'hidden' : 'auto' }}
+        style={{
+          overflowY: settings.open ? 'hidden' : 'auto',
+          top: engine.isEditor ? '0' : 'unset'
+        }}
       >
         <div id="events" ref={eventsRef}>
           {eventStreamTransitions((styles, event) => (
