@@ -68,7 +68,7 @@ const EventStream: React.FC = React.memo(() => {
         id="event-stream"
         style={{
           overflowY: settings.open ? 'hidden' : 'auto',
-          top: engine.isEditor ? '0' : 'unset'
+          top: engine.isEditor ? '0' : ''
         }}
       >
         <div id="events" ref={eventsRef}>
