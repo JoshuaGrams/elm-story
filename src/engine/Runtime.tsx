@@ -58,8 +58,6 @@ const Runtime: React.FC<{
 
                   <Renderer />
                 </Theme>
-
-                <Renderer />
               </SettingsProvider>
             </Installer>
           </StartingDestinationGate>

@@ -22,27 +22,30 @@ const EventStream: React.FC = React.memo(() => {
   const { studioId, id: gameId } = engine.gameInfo
 
   useQuery(
-    [`recentEvents-${gameId}`, studioId, gameId, engine.currentEvent],
+    [`recentEvents-${gameId}`, studioId, gameId],
     async () => {
       try {
-        engine.currentEvent &&
+        if (engine.currentEvent) {
+          const recentEvents = await getRecentEvents(
+            studioId,
+            gameId,
+            engine.currentEvent,
+            3
+          )
+
           engineDispatch({
             type: ENGINE_ACTION_TYPE.APPEND_EVENTS_TO_STREAM,
-            events: await getRecentEvents(
-              studioId,
-              gameId,
-              engine.currentEvent,
-              3
-            ),
+            events: recentEvents,
             reset: true
           })
+        }
       } catch (error) {
         throw error
       }
 
       return true
     },
-    { enabled: engine.currentEvent ? true : false }
+    { enabled: engine.currentEvent ? true : false, refetchOnMount: 'always' }
   )
 
   const eventStreamTransitions = useTransition(engine.eventsInStream, {
@@ -60,18 +63,20 @@ const EventStream: React.FC = React.memo(() => {
   )
 
   return (
-    <div
-      id="event-stream"
-      style={{ overflowY: settings.open ? 'hidden' : 'auto' }}
-    >
-      <div id="events" ref={eventsRef}>
-        {eventStreamTransitions((styles, event) => (
-          <animated.div style={styles}>
-            <Event key={event.id} data={event} />
-          </animated.div>
-        ))}
+    <>
+      <div
+        id="event-stream"
+        style={{ overflowY: settings.open ? 'hidden' : 'auto' }}
+      >
+        <div id="events" ref={eventsRef}>
+          {eventStreamTransitions((styles, event) => (
+            <animated.div style={styles}>
+              <Event key={event.id} data={event} />
+            </animated.div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   )
 })
 

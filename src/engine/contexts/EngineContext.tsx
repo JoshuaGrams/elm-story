@@ -29,7 +29,7 @@ export enum ENGINE_ACTION_TYPE {
   APPEND_EVENTS_TO_STREAM = 'APPEND_EVENTS_TO_STREAM',
   UPDATE_EVENT_IN_STREAM = 'UPDATE_EVENT_IN_STREAM',
   SET_GAME_INFO = 'SET_GAME_INFO',
-  PLAY = 'PLAY',
+  PLAY = 'PLAY', // sets currentEvent
   STOP = 'STOP'
 }
 
@@ -38,7 +38,7 @@ type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.SET_IS_EDITOR }
   | {
       type: ENGINE_ACTION_TYPE.SET_CURRENT_EVENT
-      id: ComponentId
+      id?: ComponentId
     }
   | { type: ENGINE_ACTION_TYPE.CLEAR_EVENT_STREAM }
   | {
@@ -164,10 +164,10 @@ const EngineProvider: React.FC = ({ children }) => {
 
   return (
     <EngineContext.Provider
-      value={useMemo(
-        () => ({ engine, engineDispatch }),
-        [engine, engineDispatch]
-      )}
+      value={useMemo(() => ({ engine, engineDispatch }), [
+        engine,
+        engineDispatch
+      ])}
     >
       {children}
     </EngineContext.Provider>

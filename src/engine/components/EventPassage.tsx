@@ -15,7 +15,7 @@ import {
 } from '../types/0.5.0'
 import { NextEventProcessor } from './Event'
 
-import { EngineContext } from '../contexts/EngineContext'
+import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
 import EventPassageContent from './EventPassageContent'
 import EventPassageChoices from './EventPassageChoices'
@@ -42,7 +42,7 @@ export const EventPassage: React.FC<{
   event: EngineEventData
   onRouteFound: NextEventProcessor
 }> = React.memo(({ passageId, event, onRouteFound }) => {
-  const { engine } = useContext(EngineContext)
+  const { engine, engineDispatch } = useContext(EngineContext)
 
   if (!engine.gameInfo) return null
 
@@ -116,8 +116,7 @@ export const EventPassage: React.FC<{
   }))
 
   useResizeObserver(passageRef, () => {
-    passage &&
-      passageRef.current &&
+    passageRef.current &&
       api.start({ height: passageRef.current.getBoundingClientRect().height })
   })
 
@@ -147,6 +146,23 @@ export const EventPassage: React.FC<{
               />
             )}
           </>
+        )}
+
+        {!passage && (
+          <div>
+            Passage missing.{' '}
+            <a
+              onClick={async () => {
+                engineDispatch({
+                  type: ENGINE_ACTION_TYPE.SET_INSTALLED,
+                  installed: false
+                })
+              }}
+            >
+              Reset
+            </a>{' '}
+            game engine data.
+          </div>
         )}
       </div>
     </animated.div>

@@ -4,6 +4,7 @@ import { pick } from 'lodash'
 
 import {
   getGameInfo,
+  resetGame,
   saveEngineCollectionData,
   saveEngineDefaultGameCollectionData
 } from '../lib/api'
@@ -21,7 +22,7 @@ const Installer: React.FC<{
   const { engine, engineDispatch } = useContext(EngineContext)
 
   const { data: installed } = useQuery(
-    ['installed', engine.installed],
+    ['installed', engine],
     async () => {
       try {
         if (!isEditor && data) {
@@ -29,8 +30,12 @@ const Installer: React.FC<{
         }
 
         if (isEditor) {
+          await resetGame(studioId, gameId, true)
           await saveEngineDefaultGameCollectionData(studioId, gameId)
         }
+
+        // TODO: troubleshoot stack; line necessary here, otherwise recent events won't load
+        isEditor && engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_EDITOR })
 
         return true
       } catch (error) {
@@ -42,8 +47,6 @@ const Installer: React.FC<{
 
   useEffect(() => {
     if (installed) {
-      studioId && engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_EDITOR })
-
       engineDispatch({
         type: ENGINE_ACTION_TYPE.SET_INSTALLED,
         installed: true

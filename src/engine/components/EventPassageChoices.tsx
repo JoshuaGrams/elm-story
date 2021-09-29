@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useRef } from 'react'
-import { useQuery } from 'react-query'
 
 import { getChoicesFromPassageWithOpenRoute } from '../lib/api'
 
 import {
   ENGINE_LOOPBACK_RESULT_VALUE,
-  ENGINE_GAME_OVER_RESULT_VALUE
+  ENGINE_GAME_OVER_RESULT_VALUE,
+  INITIAL_ENGINE_EVENT_ORIGIN_KEY
 } from '../lib'
 import {
   ComponentId,
@@ -71,7 +71,7 @@ const EventPassageChoices: React.FC<{
 
   if (!engine.gameInfo) return null
 
-  const { studioId } = engine.gameInfo
+  const { studioId, id: gameId } = engine.gameInfo
 
   const choices = useLiveQuery(async () => {
     const foundChoices = await new LibraryDatabase(studioId).choices
@@ -101,32 +101,12 @@ const EventPassageChoices: React.FC<{
             }
           })
       }
+
+      return []
     } catch (error) {
       throw error
     }
-  })
-
-  // const { data: choices } = useQuery(`choices-${event.id}`, async () => {
-  //   const { filteredChoices, openRoutes } =
-  //     await getChoicesFromPassageWithOpenRoute(
-  //       studioId,
-  //       passage.id,
-  //       event.state
-  //     )
-
-  //   return filteredChoices
-  //     .sort(
-  //       (a, b) =>
-  //         passage.choices.findIndex((choiceId) => a.id === choiceId) -
-  //         passage.choices.findIndex((choiceId) => b.id === choiceId)
-  //     )
-  //     .map((filteredChoice) => {
-  //       return {
-  //         data: filteredChoice,
-  //         openRoute: openRoutes[filteredChoice.id]
-  //       }
-  //     })
-  // })
+  }, [passage, event])
 
   const loopback = useCallback(async () => {
     if (event.prev && event.origin) {
@@ -163,10 +143,20 @@ const EventPassageChoices: React.FC<{
 
           {choices.length === 0 && (
             <div className="event-choice">
-              <EventLoopbackButton
-                onClick={loopback}
-                eventResult={event.result}
-              />
+              <>
+                {engine.currentEvent !==
+                  `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}` && (
+                  <EventLoopbackButton
+                    onClick={loopback}
+                    eventResult={event.result}
+                  />
+                )}
+
+                {engine.currentEvent ===
+                  `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}` && (
+                  <button disabled={true}>Route Required</button>
+                )}
+              </>
             </div>
           )}
 

@@ -30,7 +30,8 @@ import {
   EngineInputData,
   StudioId,
   EngineVariableCollection,
-  EngineGameData
+  EngineGameData,
+  EnginePassageData
 } from '../types/0.5.0'
 
 export const getGameInfo = async (
@@ -217,7 +218,11 @@ export const unpackEngineData = (
 ): ESGEngineCollectionData => lzwCompress.unpack(packedEngineData)
 
 // #30
-export const resetGame = async (studioId: StudioId, gameId: GameId) => {
+export const resetGame = async (
+  studioId: StudioId,
+  gameId: GameId,
+  skipInstall?: boolean
+) => {
   try {
     const libraryDatabase = new LibraryDatabase(studioId)
 
@@ -228,7 +233,8 @@ export const resetGame = async (studioId: StudioId, gameId: GameId) => {
         libraryDatabase.settings.where({ gameId }).delete()
       ])
 
-      await saveEngineDefaultGameCollectionData(studioId, gameId)
+      !skipInstall &&
+        (await saveEngineDefaultGameCollectionData(studioId, gameId))
     } catch (error) {
       throw error
     }
@@ -261,7 +267,7 @@ export const findStartingDestinationPassage = async (
 
             if (!foundScene) return undefined
 
-            if (foundScene.children[0][1]) {
+            if (foundScene.children.length > 0 && foundScene.children[0][1]) {
               return foundScene.children[0][1]
             }
           }
@@ -276,7 +282,7 @@ export const findStartingDestinationPassage = async (
 
         if (!foundScene) return undefined
 
-        if (foundScene.children[0][1]) {
+        if (foundScene.children.length > 0 && foundScene.children[0][1]) {
           // TODO: scenes may eventually have nested folders
           return foundScene.children[0][1]
         }
@@ -576,7 +582,7 @@ export const getRecentEvents = async (
   gameId: GameId,
   fromEventId: ComponentId,
   history?: number
-) => {
+): Promise<EngineEventData[]> => {
   const libraryDatabase = new LibraryDatabase(studioId)
 
   try {
@@ -609,6 +615,28 @@ export const getRecentEvents = async (
   } catch (error) {
     throw error
   }
+}
+
+export const checkEventDestinations = async (
+  studioId: StudioId,
+  gameId: GameId,
+  passages: EnginePassageData[]
+) => {
+  const passageIds = passages.map((passage) => passage.id),
+    eventDestinationIds = await (
+      await new LibraryDatabase(studioId).events.where({ gameId }).toArray()
+    ).map((event) => event.destination)
+
+  let destinationsValid = true
+
+  eventDestinationIds.map((eventDestinationId) => {
+    if (passageIds.indexOf(eventDestinationId) === -1) {
+      destinationsValid = false
+      return
+    }
+  })
+
+  return destinationsValid
 }
 
 export const getEventInitial = async (studioId: StudioId, gameId: GameId) => {
