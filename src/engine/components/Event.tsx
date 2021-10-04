@@ -1,12 +1,23 @@
 import { v4 as uuid } from 'uuid'
 
 import React, { useContext } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
 
 import {
   AUTO_ENGINE_BOOKMARK_KEY,
   ENGINE_GAME_OVER_RESULT_VALUE,
   ENGINE_LOOPBACK_RESULT_VALUE
 } from '../lib'
+import {
+  ComponentId,
+  PASSAGE_TYPE,
+  EngineEventData,
+  EngineEventStateCollection,
+  ENGINE_EVENT_TYPE
+} from '../types/0.5.0'
+
+import { LibraryDatabase } from '../../db'
+
 import {
   getEvent,
   getEventInitial,
@@ -17,14 +28,6 @@ import {
   saveEventNext,
   saveEventResult
 } from '../lib/api'
-
-import {
-  ComponentId,
-  PASSAGE_TYPE,
-  EngineEventData,
-  EngineEventStateCollection,
-  ENGINE_EVENT_TYPE
-} from '../types/0.5.0'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
@@ -52,6 +55,11 @@ const Event: React.FC<{ data: EngineEventData }> = ({ data }) => {
   if (!engine.gameInfo) return null
 
   const { studioId, id: gameId } = engine.gameInfo
+
+  const event = useLiveQuery(
+    () => new LibraryDatabase(studioId).events.get(data.id),
+    []
+  )
 
   const gotoNextEvent: NextEventProcessor = async ({
     destinationId,
@@ -85,7 +93,7 @@ const Event: React.FC<{ data: EngineEventData }> = ({ data }) => {
           break
       }
 
-      const initialEvent =
+      const initialEventFromRestart =
         eventType === ENGINE_EVENT_TYPE.RESTART
           ? await getEventInitial(studioId, gameId)
           : undefined
@@ -99,13 +107,14 @@ const Event: React.FC<{ data: EngineEventData }> = ({ data }) => {
             destination: destinationId,
             origin: originId,
             state:
-              initialEvent?.state ||
+              initialEventFromRestart?.state ||
               (routeId &&
                 (await processEffectsByRoute(
                   studioId,
                   routeId,
-                  state || data.state
+                  state || event?.state || data.state
                 ))) ||
+              event?.state ||
               data.state,
             prev: data.id,
             type: eventType,
@@ -154,11 +163,13 @@ const Event: React.FC<{ data: EngineEventData }> = ({ data }) => {
     <div
       className={`event ${engine.currentEvent !== data.id ? 'event-past' : ''}`}
     >
-      <EventPassage
-        passageId={data.destination}
-        event={data}
-        onRouteFound={gotoNextEvent}
-      />
+      {event && (
+        <EventPassage
+          passageId={data.destination}
+          event={event}
+          onRouteFound={gotoNextEvent}
+        />
+      )}
     </div>
   )
 }

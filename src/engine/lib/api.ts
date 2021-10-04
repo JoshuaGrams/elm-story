@@ -537,6 +537,27 @@ export const saveEventResult = async (
   }
 }
 
+export const saveEventState = async (
+  studioId: StudioId,
+  eventId: ComponentId,
+  state: EngineEventStateCollection
+) => {
+  try {
+    const libraryDatabase = new LibraryDatabase(studioId),
+      foundEvent = await libraryDatabase.events.get(eventId)
+
+    if (foundEvent) {
+      await libraryDatabase.events.update(eventId, {
+        ...foundEvent,
+        state,
+        updated: Date.now()
+      })
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 export const saveEventType = async (
   studioId: StudioId,
   eventId: ComponentId,
