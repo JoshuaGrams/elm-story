@@ -52,13 +52,17 @@ const Runtime: React.FC<{
               data={engineData}
               isEditor={isEditor}
             >
-              <SettingsProvider>
-                <Theme>
-                  <Settings />
+              {!isEditor && (
+                <SettingsProvider>
+                  <Theme>
+                    <Settings />
 
-                  <Renderer />
-                </Theme>
-              </SettingsProvider>
+                    <Renderer />
+                  </Theme>
+                </SettingsProvider>
+              )}
+
+              {isEditor && <Renderer />}
             </Installer>
           </StartingDestinationGate>
         )}

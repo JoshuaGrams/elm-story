@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useQuery } from 'react-query'
 
@@ -18,14 +18,11 @@ const StartingDestinationGate: React.FC<{
   const passageCount: number = useLiveQuery(
     () => new LibraryDatabase(studioId).passages.where({ gameId }).count(),
     [],
-    0
+    -1
   )
 
-  const {
-    data: startingDestinationPassage,
-    isLoading: loadingStartingDestinationPassage
-  } = useQuery(
-    [`startingLocation-${gameId}`, studioId, gameId, engine],
+  const { data: startingDestinationPassage } = useQuery(
+    [`startingDestination-${gameId}`, studioId, gameId, engine, passageCount],
     async () => {
       if (!engine.installed) {
         try {
@@ -34,13 +31,13 @@ const StartingDestinationGate: React.FC<{
             gameId
           )
 
-          return foundStartingDestination
+          return foundStartingDestination ? true : false
         } catch (error) {
           throw error
         }
       }
 
-      return true
+      return false
     },
     {
       enabled: !engine.installed && passageCount > 0 ? true : false
@@ -49,14 +46,11 @@ const StartingDestinationGate: React.FC<{
 
   return (
     <>
-      {!loadingStartingDestinationPassage && (
-        <>
-          {(startingDestinationPassage || engine.installed) && <>{children}</>}
-          {!startingDestinationPassage && (
-            <div>Scene and passage required to render game.</div>
-          )}
-        </>
+      {passageCount === 0 && !engine.installed && (
+        <div>Scene and passage required to render game.</div>
       )}
+
+      {(startingDestinationPassage || engine.installed) && <>{children}</>}
     </>
   )
 })

@@ -21,8 +21,9 @@ const EventStream: React.FC = React.memo(() => {
 
   const { studioId, id: gameId } = engine.gameInfo
 
+  // #344: query cached on installation
   useQuery(
-    [`recentEvents-${gameId}`, studioId, gameId],
+    [`recentEvents-${engine.currentEvent}`, studioId, gameId],
     async () => {
       try {
         if (engine.currentEvent) {
