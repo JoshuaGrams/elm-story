@@ -276,6 +276,7 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
 
         // #305
         if (
+          clonedTabIndex !== -1 &&
           tabs[clonedTabIndex].type === COMPONENT_TYPE.GAME &&
           editor.selectedComponentEditorSceneViewPassage
         )
