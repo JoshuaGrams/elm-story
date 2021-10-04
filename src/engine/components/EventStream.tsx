@@ -23,10 +23,10 @@ const EventStream: React.FC = React.memo(() => {
 
   // #344: query cached on installation
   useQuery(
-    [`recentEvents-${engine.currentEvent}`, studioId, gameId],
+    [`recentEvents-${engine.installId}`, studioId, gameId, engine.installed],
     async () => {
       try {
-        if (engine.currentEvent) {
+        if (engine.installed && engine.currentEvent) {
           const recentEvents = await getRecentEvents(
             studioId,
             gameId,

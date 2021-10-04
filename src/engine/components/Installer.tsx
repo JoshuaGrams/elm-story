@@ -1,6 +1,8 @@
+import { v4 as uuid } from 'uuid'
+import { pick } from 'lodash'
+
 import React, { useContext, useEffect } from 'react'
 import { useQuery } from 'react-query'
-import { pick } from 'lodash'
 
 import {
   getGameInfo,
@@ -12,6 +14,7 @@ import {
 import { GameId, StudioId, ESGEngineCollectionData } from '../types/0.5.0'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
+import { INITIAL_ENGINE_EVENT_ORIGIN_KEY } from '../lib'
 
 const Installer: React.FC<{
   studioId: StudioId
@@ -21,21 +24,38 @@ const Installer: React.FC<{
 }> = React.memo(({ children, studioId, gameId, data, isEditor }) => {
   const { engine, engineDispatch } = useContext(EngineContext)
 
-  const { data: installed } = useQuery(
-    ['installed', engine],
+  useQuery(
+    [`installed-${engine.installId}`, engine.installed],
     async () => {
       try {
-        if (!isEditor && data) {
-          await saveEngineCollectionData(data)
-        }
+        if (!engine.installed) {
+          if (!isEditor && data) {
+            await saveEngineCollectionData(data)
+          }
 
-        if (isEditor) {
-          await resetGame(studioId, gameId, true)
-          await saveEngineDefaultGameCollectionData(studioId, gameId)
-        }
+          if (isEditor) {
+            await resetGame(studioId, gameId, true)
+            await saveEngineDefaultGameCollectionData(studioId, gameId)
 
-        // TODO: troubleshoot stack; line necessary here, otherwise recent events won't load
-        isEditor && engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_EDITOR })
+            engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_EDITOR })
+
+            engine.playing &&
+              engineDispatch({
+                type: ENGINE_ACTION_TYPE.SET_CURRENT_EVENT,
+                id: `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
+              })
+          }
+
+          engineDispatch({
+            type: ENGINE_ACTION_TYPE.SET_INSTALLED,
+            installed: true
+          })
+
+          engineDispatch({
+            type: ENGINE_ACTION_TYPE.SET_INSTALL_ID,
+            id: uuid()
+          })
+        }
 
         return true
       } catch (error) {
@@ -44,15 +64,6 @@ const Installer: React.FC<{
     },
     { enabled: !engine.installed }
   )
-
-  useEffect(() => {
-    if (installed) {
-      engineDispatch({
-        type: ENGINE_ACTION_TYPE.SET_INSTALLED,
-        installed: true
-      })
-    }
-  }, [installed])
 
   useEffect(() => {
     async function setGameData() {

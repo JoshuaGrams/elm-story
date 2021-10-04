@@ -22,7 +22,7 @@ const StartingDestinationGate: React.FC<{
   )
 
   const { data: startingDestinationPassage } = useQuery(
-    [`startingDestination-${gameId}`, studioId, gameId, engine, passageCount],
+    [`startingDestination-${gameId}`, studioId, gameId, passageCount],
     async () => {
       if (!engine.installed) {
         try {

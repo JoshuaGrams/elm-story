@@ -8,6 +8,7 @@ interface EngineState {
   currentEvent: ComponentId | undefined
   eventsInStream: EngineEventData[]
   installed: boolean
+  installId: string | undefined
   isEditor: boolean
   gameInfo?: {
     designer: string
@@ -23,6 +24,7 @@ interface EngineState {
 
 export enum ENGINE_ACTION_TYPE {
   SET_INSTALLED = 'SET_INSTALLED',
+  SET_INSTALL_ID = 'SET_INSTALL_ID',
   SET_IS_EDITOR = 'SET_EDITOR',
   SET_CURRENT_EVENT = 'SET_CURRENT_EVENT',
   CLEAR_EVENT_STREAM = 'CLEAR_EVENT_STREAM',
@@ -35,6 +37,7 @@ export enum ENGINE_ACTION_TYPE {
 
 type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.SET_INSTALLED; installed: boolean }
+  | { type: ENGINE_ACTION_TYPE.SET_INSTALL_ID; id?: string }
   | { type: ENGINE_ACTION_TYPE.SET_IS_EDITOR }
   | {
       type: ENGINE_ACTION_TYPE.SET_CURRENT_EVENT
@@ -74,6 +77,11 @@ const engineReducer = (
       return {
         ...state,
         installed: action.installed
+      }
+    case ENGINE_ACTION_TYPE.SET_INSTALL_ID:
+      return {
+        ...state,
+        installId: action.id
       }
     case ENGINE_ACTION_TYPE.SET_IS_EDITOR:
       return {
@@ -146,8 +154,9 @@ interface EngineContextType {
 const defaultEngineState: EngineState = {
   currentEvent: undefined,
   eventsInStream: [],
-  isEditor: false,
   installed: false,
+  installId: undefined,
+  isEditor: false,
   gameInfo: undefined,
   playing: false
 }
