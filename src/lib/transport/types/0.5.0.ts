@@ -354,7 +354,7 @@ export interface EngineGameMeta {
 }
 
 export interface EngineGameData {
-  children: [COMPONENT_TYPE.SCENE, ComponentId][]
+  children: GameChildRefs
   designer: string
   engine: string
   id: GameId

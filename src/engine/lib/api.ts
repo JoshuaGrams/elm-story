@@ -276,9 +276,10 @@ export const findStartingDestinationPassage = async (
 
       if (!game.jump) {
         const libraryDatabase = new LibraryDatabase(studioId),
-          foundScene = game.children[0]
-            ? await libraryDatabase.scenes.get(game.children[0][1])
-            : await libraryDatabase.scenes.where({ gameId }).first()
+          foundScene =
+            game.children[0] && game.children[0][0] !== COMPONENT_TYPE.FOLDER
+              ? await libraryDatabase.scenes.get(game.children[0][1])
+              : await libraryDatabase.scenes.where({ gameId }).first()
 
         if (!foundScene) return undefined
 
