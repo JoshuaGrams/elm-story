@@ -1,6 +1,12 @@
 import { cloneDeep } from 'lodash'
 
-import React, { useCallback, useContext, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+  useEffect
+} from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { LibraryDatabase } from '../lib/db'
@@ -29,7 +35,8 @@ const EventPassageInput: React.FC<{
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [inputValue, setInputValue] = useState<string | number | undefined>('')
+  const [inputValue, setInputValue] = useState<string | number | undefined>(''),
+    [routeError, setRouteError] = useState<boolean>(false)
 
   const input = useLiveQuery(() =>
     new LibraryDatabase(studioId).inputs
@@ -72,29 +79,41 @@ const EventPassageInput: React.FC<{
         stateWithInputValue[inputVariable.id].value =
           boolValue || `${inputValue}`
 
-        onSubmitRoute({
-          originId: event.origin,
-          result: {
-            id: input.id,
-            value: boolValue
-              ? boolValue === 'true'
-                ? 'Yes'
-                : 'No'
-              : `${inputValue}`
-          },
-          route: await findOpenRoute(
-            studioId,
-            await getRoutesFromInput(studioId, input.id),
-            stateWithInputValue
-          ),
-          state: stateWithInputValue
-        })
+        const foundOpenRoute = await findOpenRoute(
+          studioId,
+          await getRoutesFromInput(studioId, input.id),
+          stateWithInputValue
+        )
+
+        if (foundOpenRoute) {
+          setRouteError(false)
+
+          onSubmitRoute({
+            originId: event.origin,
+            result: {
+              id: input.id,
+              value: boolValue
+                ? boolValue === 'true'
+                  ? 'Yes'
+                  : 'No'
+                : `${inputValue}`
+            },
+            route: foundOpenRoute,
+            state: stateWithInputValue
+          })
+        } else {
+          setRouteError(true)
+        }
       }
 
       !inputValue && inputRef.current && inputRef.current.focus()
     },
     [event, input, inputVariable, inputValue]
   )
+
+  useEffect(() => {
+    inputValue && setRouteError(false)
+  }, [inputValue])
 
   return (
     <div className={`${!event.result ? 'event-input' : 'event-input-result'}`}>
@@ -159,6 +178,10 @@ const EventPassageInput: React.FC<{
                   </button>
                 </div>
               )}
+
+              {routeError && (
+                <div className="engine-warning-message">Missing route.</div>
+              )}
             </>
           )}
 
@@ -170,7 +193,7 @@ const EventPassageInput: React.FC<{
         </>
       )}
 
-      {event.result && <button disabled={true}>{event.result}</button>}
+      {event.result && <button disabled={true}>{event.result.value}</button>}
     </div>
   )
 })
