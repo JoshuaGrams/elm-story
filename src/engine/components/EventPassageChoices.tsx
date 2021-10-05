@@ -117,6 +117,11 @@ const EventPassageChoices: React.FC<{
         originId: event.origin,
         result: { value: ENGINE_LOOPBACK_RESULT_VALUE }
       })
+    } else {
+      engineDispatch({
+        type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION,
+        message: 'Unable to return. Missing route.'
+      })
     }
   }, [event])
 
@@ -149,10 +154,20 @@ const EventPassageChoices: React.FC<{
               <>
                 {engine.currentEvent !==
                   `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}` && (
-                  <EventLoopbackButton
-                    onClick={loopback}
-                    eventResult={event.result}
-                  />
+                  <>
+                    {(!event.result ||
+                      event.result.value === ENGINE_LOOPBACK_RESULT_VALUE) && (
+                      <EventLoopbackButton
+                        onClick={loopback}
+                        eventResult={event.result}
+                      />
+                    )}
+
+                    {event.result &&
+                      event.result.value !== ENGINE_LOOPBACK_RESULT_VALUE && (
+                        <button disabled={true}>Route Required</button>
+                      )}
+                  </>
                 )}
 
                 {engine.currentEvent ===
@@ -175,7 +190,12 @@ const EventPassageChoices: React.FC<{
       {passage.gameOver && (
         <>
           <div className="event-choice">
-            <button onClick={restartGame}>New Game</button>
+            <button
+              onClick={restartGame}
+              disabled={event.result ? true : false}
+            >
+              New Game
+            </button>
           </div>
 
           {!engine.isEditor && (
