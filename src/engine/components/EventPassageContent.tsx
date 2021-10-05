@@ -82,7 +82,7 @@ const EventPassageContent: React.FC<{
       })}
 
       {!parsedContent[0].children[0].text && parsedContent.length === 1 && (
-        <div>Passage content required.</div>
+        <div className="engine-warning-message">Passage content required.</div>
       )}
     </>
   )

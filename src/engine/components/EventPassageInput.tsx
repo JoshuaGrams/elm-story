@@ -98,63 +98,73 @@ const EventPassageInput: React.FC<{
 
   return (
     <div className={`${!event.result ? 'event-input' : 'event-input-result'}`}>
-      {!event.result && input && inputVariable && (
+      {!event.result && input && (
         <>
-          {inputVariable.type !== VARIABLE_TYPE.BOOLEAN && (
-            <form
-              onSubmit={(event) => {
-                event.preventDefault()
+          {inputVariable && (
+            <>
+              {inputVariable.type !== VARIABLE_TYPE.BOOLEAN && (
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault()
 
-                submitInput()
-              }}
-            >
-              <input
-                ref={inputRef}
-                id={input.id}
-                autoComplete="off"
-                autoFocus
-                type={
-                  inputVariable.type === VARIABLE_TYPE.STRING
-                    ? 'text'
-                    : 'number'
-                }
-                placeholder="Response..."
-                value={inputValue}
-                onChange={(event) => setInputValue(event.target.value)}
-                onFocus={(event) => event.target.select()}
-              />
-
-              <button type="submit">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
+                    submitInput()
+                  }}
                 >
-                  <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z" />
-                  <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                </svg>
-              </button>
-            </form>
+                  <input
+                    ref={inputRef}
+                    id={input.id}
+                    autoComplete="off"
+                    autoFocus
+                    type={
+                      inputVariable.type === VARIABLE_TYPE.STRING
+                        ? 'text'
+                        : 'number'
+                    }
+                    placeholder="Response..."
+                    value={inputValue}
+                    onChange={(event) => setInputValue(event.target.value)}
+                    onFocus={(event) => event.target.select()}
+                  />
+
+                  <button type="submit">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z" />
+                      <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                    </svg>
+                  </button>
+                </form>
+              )}
+
+              {inputVariable.type === VARIABLE_TYPE.BOOLEAN && (
+                <div className="event-choices">
+                  <button
+                    className="event-choice"
+                    key="event-passage-input-yes-btn"
+                    onClick={() => submitInput('true')}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    className="event-choice"
+                    key="event-passage-input-no-btn"
+                    onClick={() => submitInput('false')}
+                  >
+                    No
+                  </button>
+                </div>
+              )}
+            </>
           )}
 
-          {inputVariable.type === VARIABLE_TYPE.BOOLEAN && (
-            <div className="event-choices">
-              <button
-                className="event-choice"
-                key="event-passage-input-yes-btn"
-                onClick={() => submitInput('true')}
-              >
-                Yes
-              </button>
-              <button
-                className="event-choice"
-                key="event-passage-input-no-btn"
-                onClick={() => submitInput('false')}
-              >
-                No
-              </button>
+          {!inputVariable && (
+            <div className="engine-warning-message">
+              Input variable required.
             </div>
           )}
         </>
