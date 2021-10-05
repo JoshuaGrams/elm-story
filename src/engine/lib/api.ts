@@ -497,6 +497,26 @@ export const saveEvent = async (
   }
 }
 
+export const saveEventDestination = async (
+  studioId: StudioId,
+  eventId: ComponentId,
+  destination: ComponentId
+) => {
+  try {
+    const libraryDatabase = new LibraryDatabase(studioId),
+      foundEvent = await libraryDatabase.events.get(eventId)
+
+    if (foundEvent) {
+      await libraryDatabase.events.update(eventId, {
+        ...foundEvent,
+        destination
+      })
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 export const saveEventNext = async (
   studioId: StudioId,
   eventId: ComponentId,

@@ -47,7 +47,9 @@ const StartingDestinationGate: React.FC<{
   return (
     <>
       {passageCount === 0 && !engine.installed && (
-        <div>Scene and passage required to render game.</div>
+        <div className="engine-warning-message" style={{ padding: '1.4rem' }}>
+          Scene and passage required to render game.
+        </div>
       )}
 
       {(startingDestinationPassage || engine.installed) && <>{children}</>}

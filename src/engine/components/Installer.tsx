@@ -34,10 +34,11 @@ const Installer: React.FC<{
           }
 
           if (isEditor) {
+            engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_EDITOR })
+            engineDispatch({ type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION })
+
             await resetGame(studioId, gameId, true)
             await saveEngineDefaultGameCollectionData(studioId, gameId)
-
-            engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_EDITOR })
 
             engine.playing &&
               engineDispatch({

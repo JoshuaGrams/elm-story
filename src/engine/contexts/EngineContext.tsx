@@ -19,7 +19,12 @@ interface EngineState {
     updated: number
     version: string
   }
+
   playing: boolean
+  resetNotification: {
+    message: string | undefined
+    showing: boolean
+  }
 }
 
 export enum ENGINE_ACTION_TYPE {
@@ -32,7 +37,9 @@ export enum ENGINE_ACTION_TYPE {
   UPDATE_EVENT_IN_STREAM = 'UPDATE_EVENT_IN_STREAM',
   SET_GAME_INFO = 'SET_GAME_INFO',
   PLAY = 'PLAY', // sets currentEvent
-  STOP = 'STOP'
+  STOP = 'STOP',
+  HIDE_RESET_NOTIFICATION = 'HIDE_RESET_NOTIFICATION',
+  SHOW_RESET_NOTIFICATION = 'SHOW_RESET_NOTIFICATION'
 }
 
 type EngineActionType =
@@ -67,6 +74,8 @@ type EngineActionType =
     }
   | { type: ENGINE_ACTION_TYPE.PLAY; fromEvent: ComponentId | undefined }
   | { type: ENGINE_ACTION_TYPE.STOP }
+  | { type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION }
+  | { type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION; message: string }
 
 const engineReducer = (
   state: EngineState,
@@ -141,6 +150,16 @@ const engineReducer = (
         eventsInStream: [],
         playing: false
       }
+    case ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION:
+      return {
+        ...state,
+        resetNotification: { message: undefined, showing: false }
+      }
+    case ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION:
+      return {
+        ...state,
+        resetNotification: { message: action.message, showing: true }
+      }
     default:
       return state
   }
@@ -158,7 +177,11 @@ const defaultEngineState: EngineState = {
   installId: undefined,
   isEditor: false,
   gameInfo: undefined,
-  playing: false
+  playing: false,
+  resetNotification: {
+    message: undefined,
+    showing: false
+  }
 }
 
 export const EngineContext = createContext<EngineContextType>({

@@ -1,17 +1,19 @@
 import React, { useCallback, useContext, useEffect } from 'react'
+import { useQuery } from 'react-query'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
-import TitleCard from './TitleCard'
-
-import EventStreamTitleBar from './EventStreamTitleBar'
-import EventStream from './EventStream'
-import { useQuery } from 'react-query'
 import { getBookmarkAuto, saveBookmarkEvent, saveEventDate } from '../lib/api'
+
 import {
   AUTO_ENGINE_BOOKMARK_KEY,
   INITIAL_ENGINE_EVENT_ORIGIN_KEY
 } from '../lib'
+
+import TitleCard from './TitleCard'
+import EventStreamTitleBar from './EventStreamTitleBar'
+import EventStream from './EventStream'
+import ResetNotification from './ResetNotifcation'
 
 const Renderer: React.FC = () => {
   const { engine, engineDispatch } = useContext(EngineContext)
@@ -71,6 +73,8 @@ const Renderer: React.FC = () => {
             <>
               {!engine.isEditor && <EventStreamTitleBar />}
               <EventStream />
+
+              {engine.isEditor && <ResetNotification />}
             </>
           )}
         </>

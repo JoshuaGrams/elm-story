@@ -1,19 +1,23 @@
 import { cloneDeep, pick } from 'lodash'
 
-import React, { useContext, useRef } from 'react'
+import React, { useContext, useRef, useCallback } from 'react'
 import { useTransition, animated } from 'react-spring'
 import { useQuery } from 'react-query'
 import { useLiveQuery } from 'dexie-react-hooks'
 import useResizeObserver from '@react-hook/resize-observer'
 
 import {
+  getRecentEvents as _getRecentEvents,
+  saveEventDestination,
+  saveEventState
+} from '../lib/api'
+import { LibraryDatabase } from '../lib/db'
+
+import {
   EngineEventStateCollection,
   EngineVariableCollection
 } from '../types/0.5.0'
-
 import { INITIAL_ENGINE_EVENT_ORIGIN_KEY, scrollElementToBottom } from '../lib'
-import { getRecentEvents, saveEventState } from '../lib/api'
-import { LibraryDatabase } from '../lib/db'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 import { SettingsContext } from '../contexts/SettingsContext'
@@ -30,25 +34,29 @@ const EventStream: React.FC = React.memo(() => {
 
   const { studioId, id: gameId } = engine.gameInfo
 
+  const getRecentEvents = useCallback(async () => {
+    if (engine.installed && engine.currentEvent) {
+      const recentEvents = await _getRecentEvents(
+        studioId,
+        gameId,
+        engine.currentEvent,
+        3
+      )
+
+      engineDispatch({
+        type: ENGINE_ACTION_TYPE.APPEND_EVENTS_TO_STREAM,
+        events: recentEvents,
+        reset: true
+      })
+    }
+  }, [engine.installed, engine.currentEvent])
+
   // #344: query cached on installation
   useQuery(
     [`recentEvents-${engine.installId}`, studioId, gameId, engine.installed],
     async () => {
       try {
-        if (engine.installed && engine.currentEvent) {
-          const recentEvents = await getRecentEvents(
-            studioId,
-            gameId,
-            engine.currentEvent,
-            3
-          )
-
-          engineDispatch({
-            type: ENGINE_ACTION_TYPE.APPEND_EVENTS_TO_STREAM,
-            events: recentEvents,
-            reset: true
-          })
-        }
+        await getRecentEvents()
       } catch (error) {
         throw error
       }
@@ -68,6 +76,7 @@ const EventStream: React.FC = React.memo(() => {
     []
   )
 
+  // Updates event state on variable change
   useQuery([`variables-${engine.installId}`, variablesArr], async () => {
     if (eventsArr && variablesArr) {
       // TODO: duplicate from API
@@ -145,6 +154,46 @@ const EventStream: React.FC = React.memo(() => {
           }
         })
       ])
+    }
+  })
+
+  const game = useLiveQuery(() =>
+    new LibraryDatabase(studioId).games.get(gameId)
+  )
+
+  // TODO: get specific jump based on type or title
+  const gameJumps = useLiveQuery(
+    () => new LibraryDatabase(studioId).jumps.where({ gameId }).toArray(),
+    []
+  )
+
+  useQuery([`game-jump-${engine.installId}`, gameJumps], async () => {
+    if (gameJumps) {
+      const foundOnGameStartJump = gameJumps.find(
+        (jump) => jump.id === game?.jump
+      )
+
+      if (foundOnGameStartJump && foundOnGameStartJump.route[1]) {
+        const initialEvent = await new LibraryDatabase(studioId).events.get(
+          `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
+        )
+
+        if (
+          initialEvent &&
+          initialEvent.destination !== foundOnGameStartJump.route[1]
+        ) {
+          await saveEventDestination(
+            studioId,
+            initialEvent.id,
+            foundOnGameStartJump.route[1]
+          )
+
+          engineDispatch({
+            type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION,
+            message: 'On game start jump has changed.'
+          })
+        }
+      }
     }
   })
 

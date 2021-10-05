@@ -150,8 +150,8 @@ export const EventPassage: React.FC<{
         )}
 
         {!passage && (
-          <div>
-            Passage missing.{' '}
+          <div className="engine-warning-message">
+            Passage missing or has been removed.{' '}
             <a
               onClick={async () => {
                 engineDispatch({
@@ -160,9 +160,9 @@ export const EventPassage: React.FC<{
                 })
               }}
             >
-              Reset
+              Refresh
             </a>{' '}
-            game engine data.
+            event stream.
           </div>
         )}
       </div>

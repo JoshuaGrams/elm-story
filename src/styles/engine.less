@@ -4,6 +4,7 @@
   --primary-color: hsl(265, 100%, 60%);
   --primary-color-brighter: hsl(265, 100%, 65%);
   --primary-color-darker: hsl(265, 100%, 55%);
+  --warning-color: hsl(50, 100%, 50%);
 
   --white: hsl(0, 0%, 97%);
   --black: hsl(0, 0%, 3%);
@@ -49,7 +50,6 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  
 
   ul {
     list-style: none;
@@ -93,6 +93,10 @@
     background: var(--btn-background-color-hover);
     border-color: var(--btn-border-hover-color);
     cursor: pointer;
+  }
+
+  .engine-warning-message {
+    color: var(--warning-color);
   }
 
   #settings {
