@@ -44,7 +44,6 @@ import v4 from './v4'
 import v5 from './v5'
 import v6 from './v6'
 
-
 export enum DB_NAME {
   APP = 'esg-app',
   LIBRARY = 'esg-library'
@@ -337,61 +336,23 @@ export class LibraryDatabase extends Dexie {
     if (!gameId) throw new Error('Unable to remove game. Missing ID.')
 
     try {
-      const folders = await this.folders.where({ gameId }).toArray(),
-        jumps = await this.jumps.where({ gameId }).toArray(),
-        scenes = await this.scenes.where({ gameId }).toArray(),
-        passages = await this.passages.where({ gameId }).toArray(),
-        routes = await this.routes.where({ gameId }).toArray(),
-        conditions = await this.conditions.where({ gameId }).toArray(),
-        effects = await this.effects.where({ gameId }).toArray(),
-        choices = await this.choices.where({ gameId }).toArray(),
-        inputs = await this.inputs.where({ gameId }).toArray(),
-        variables = await this.variables.where({ gameId }).toArray()
-
       logger.info(`Removing game with ID: ${gameId}`)
-      logger.info(`FOLDERS: Removing ${folders.length}...`)
-      logger.info(`JUMPS: Removing ${jumps.length}...`)
-      logger.info(`SCENES: Removing ${scenes.length}...`)
-      logger.info(`PASSAGES: Removing ${passages.length}...`)
-      logger.info(`ROUTES: Remove ${routes.length}...`)
-      logger.info(`ROUTE CONDITIONS: Remove ${conditions.length}...`)
-      logger.info(`ROUTE EFFECTS: Remove ${effects.length}...`)
-      logger.info(`CHOICES: Removing ${choices.length}...`)
-      logger.info(`INPUTS: Removing ${inputs.length}...`)
-      logger.info(`VARIABLES: Removing ${variables.length}...`)
 
       // TODO: replace 'delete' method with methods that handle children
       await Promise.all([
-        folders.map(async (folder) => {
-          if (folder.id) await this.folders.delete(folder.id)
-        }),
-        jumps.map(async (jump) => {
-          if (jump.id) await this.jumps.delete(jump.id)
-        }),
-        scenes.map(async (scene) => {
-          if (scene.id) await this.scenes.delete(scene.id)
-        }),
-        passages.map(async (passage) => {
-          if (passage.id) await this.passages.delete(passage.id)
-        }),
-        routes.map(async (route) => {
-          if (route.id) await this.routes.delete(route.id)
-        }),
-        conditions.map(async (condition) => {
-          if (condition.id) await this.conditions.delete(condition.id)
-        }),
-        effects.map(async (effect) => {
-          if (effect.id) await this.effects.delete(effect.id)
-        }),
-        choices.map(async (passage) => {
-          if (passage.id) await this.choices.delete(passage.id)
-        }),
-        inputs.map(async (passage) => {
-          if (passage.id) await this.inputs.delete(passage.id)
-        }),
-        variables.map(async (passage) => {
-          if (passage.id) await this.variables.delete(passage.id)
-        })
+        this.bookmarks.where({ gameId }).delete(),
+        this.choices.where({ gameId }).delete(),
+        this.conditions.where({ gameId }).delete(),
+        this.effects.where({ gameId }).delete(),
+        this.events.where({ gameId }).delete(),
+        this.folders.where({ gameId }).delete(),
+        this.inputs.where({ gameId }).delete(),
+        this.jumps.where({ gameId }).delete(),
+        this.passages.where({ gameId }).delete(),
+        this.routes.where({ gameId }).delete(),
+        this.settings.where({ gameId }).delete(),
+        this.scenes.where({ gameId }).delete(),
+        this.variables.where({ gameId }).delete()
       ])
 
       await this.transaction('rw', this.games, async () => {
