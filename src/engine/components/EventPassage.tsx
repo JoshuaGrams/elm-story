@@ -3,7 +3,6 @@ import useResizeObserver from '@react-hook/resize-observer'
 
 import { findDestinationPassage, getEventInitial, getPassage } from '../lib/api'
 
-import { ENGINE_GAME_OVER_RESULT_VALUE } from '../lib'
 import {
   ComponentId,
   COMPONENT_TYPE,
@@ -11,8 +10,10 @@ import {
   EngineEventData,
   EngineEventStateCollection,
   EnginePassageData,
-  EngineRouteData
+  EngineRouteData,
+  EngineEventResult
 } from '../types/0.5.0'
+import { ENGINE_GAME_OVER_RESULT_VALUE } from '../lib'
 import { NextEventProcessor } from './Event'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
@@ -32,7 +33,7 @@ export type RouteProcessor = ({
   state
 }: {
   originId?: ComponentId
-  result: string
+  result: EngineEventResult
   route?: EngineRouteData
   state?: EngineEventStateCollection
 }) => Promise<void>
@@ -72,11 +73,11 @@ export const EventPassage: React.FC<{
         }
 
         if (!route) {
-          if (result !== ENGINE_GAME_OVER_RESULT_VALUE && originId) {
+          if (result.value !== ENGINE_GAME_OVER_RESULT_VALUE && originId) {
             foundPassage = await getPassage(studioId, originId)
           }
 
-          if (result === ENGINE_GAME_OVER_RESULT_VALUE) {
+          if (result.value === ENGINE_GAME_OVER_RESULT_VALUE) {
             const initialEvent = await getEventInitial(studioId, gameId)
 
             if (initialEvent) {

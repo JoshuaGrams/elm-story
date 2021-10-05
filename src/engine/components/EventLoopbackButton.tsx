@@ -1,15 +1,16 @@
 import React from 'react'
 
+import { EngineEventResult } from '../types/0.5.0'
 import { ENGINE_LOOPBACK_RESULT_VALUE } from '../lib'
 
 const EventLoopbackButton: React.FC<{
   onClick?: () => void
-  eventResult?: string
+  eventResult?: EngineEventResult
 }> = React.memo(({ onClick, eventResult }) => {
   return (
     <div
       className={`event-loopback-btn ${
-        eventResult === ENGINE_LOOPBACK_RESULT_VALUE
+        eventResult?.value === ENGINE_LOOPBACK_RESULT_VALUE
           ? 'event-choice-result'
           : ''
       }`}
@@ -17,7 +18,9 @@ const EventLoopbackButton: React.FC<{
       <button
         onClick={onClick}
         type={!onClick ? 'submit' : undefined}
-        disabled={eventResult === ENGINE_LOOPBACK_RESULT_VALUE ? true : false}
+        disabled={
+          eventResult?.value === ENGINE_LOOPBACK_RESULT_VALUE ? true : false
+        }
       >
         <svg
           width="16"

@@ -325,6 +325,11 @@ export enum ENGINE_EVENT_TYPE {
   RESTART = 'RESTART'
 }
 
+export type EngineEventResult = {
+  id?: ComponentId
+  value: string
+}
+
 export interface EngineEventData {
   gameId: GameId
   // TODO: may need to change to tuple with id and type
@@ -333,7 +338,7 @@ export interface EngineEventData {
   next?: ComponentId // event ID
   origin?: ComponentId // passage ID or INITIAL_ENGINE_EVENT_ORIGIN_KEY
   prev?: ComponentId // event ID
-  result?: string // choice result for event (choice title/input value)
+  result?: EngineEventResult
   state: EngineEventStateCollection
   type: ENGINE_EVENT_TYPE
   updated: number

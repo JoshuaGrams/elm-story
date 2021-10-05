@@ -4,17 +4,18 @@ import React, { useContext } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import {
-  AUTO_ENGINE_BOOKMARK_KEY,
-  ENGINE_GAME_OVER_RESULT_VALUE,
-  ENGINE_LOOPBACK_RESULT_VALUE
-} from '../lib'
-import {
   ComponentId,
   PASSAGE_TYPE,
   EngineEventData,
   EngineEventStateCollection,
-  ENGINE_EVENT_TYPE
+  ENGINE_EVENT_TYPE,
+  EngineEventResult
 } from '../types/0.5.0'
+import {
+  AUTO_ENGINE_BOOKMARK_KEY,
+  ENGINE_GAME_OVER_RESULT_VALUE,
+  ENGINE_LOOPBACK_RESULT_VALUE
+} from '../lib'
 
 import { LibraryDatabase } from '../../db'
 
@@ -35,14 +36,14 @@ import EventPassage from './EventPassage'
 
 export type NextEventProcessor = ({
   destinationId,
-  eventResult: choiceResult,
+  eventResult,
   originId,
   passageType,
   routeId,
   state
 }: {
   destinationId: ComponentId
-  eventResult: string
+  eventResult: EngineEventResult
   originId?: ComponentId
   passageType: PASSAGE_TYPE
   routeId?: ComponentId
@@ -76,7 +77,7 @@ const Event: React.FC<{ data: EngineEventData }> = ({ data }) => {
 
       let eventType: ENGINE_EVENT_TYPE | undefined
 
-      switch (eventResult) {
+      switch (eventResult.value) {
         case ENGINE_GAME_OVER_RESULT_VALUE:
           eventType = ENGINE_EVENT_TYPE.RESTART
           break

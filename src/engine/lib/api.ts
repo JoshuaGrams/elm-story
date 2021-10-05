@@ -6,12 +6,6 @@ import lzwCompress from 'lzwcompress'
 import { DB_NAME, LibraryDatabase } from './db'
 
 import {
-  AUTO_ENGINE_BOOKMARK_KEY,
-  DEFAULT_ENGINE_SETTINGS_KEY,
-  INITIAL_ENGINE_EVENT_ORIGIN_KEY
-} from '../lib'
-
-import {
   COMPARE_OPERATOR_TYPE,
   ComponentId,
   COMPONENT_TYPE,
@@ -31,8 +25,14 @@ import {
   StudioId,
   EngineVariableCollection,
   EngineGameData,
-  EnginePassageData
+  EnginePassageData,
+  EngineEventResult
 } from '../types/0.5.0'
+import {
+  AUTO_ENGINE_BOOKMARK_KEY,
+  DEFAULT_ENGINE_SETTINGS_KEY,
+  INITIAL_ENGINE_EVENT_ORIGIN_KEY
+} from '../lib'
 
 export const getGameInfo = async (
   studioId: StudioId,
@@ -519,7 +519,7 @@ export const saveEventNext = async (
 export const saveEventResult = async (
   studioId: StudioId,
   eventId: ComponentId,
-  result: string
+  result: EngineEventResult
 ) => {
   try {
     const libraryDatabase = new LibraryDatabase(studioId),

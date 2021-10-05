@@ -1,20 +1,20 @@
 import { cloneDeep } from 'lodash'
 
 import React, { useCallback, useContext, useRef, useState } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
+
+import { LibraryDatabase } from '../lib/db'
+import { findOpenRoute, getRoutesFromInput } from '../lib/api'
 
 import {
   VARIABLE_TYPE,
   EngineEventData,
-  EnginePassageData
+  EnginePassageData,
+  EngineVariableData
 } from '../types/0.5.0'
+import { RouteProcessor } from './EventPassage'
 
 import { EngineContext } from '../contexts/EngineContext'
-
-import { findOpenRoute, getRoutesFromInput } from '../lib/api'
-
-import { RouteProcessor } from './EventPassage'
-import { useLiveQuery } from 'dexie-react-hooks'
-import { LibraryDatabase } from '../lib/db'
 
 const EventPassageInput: React.FC<{
   passage: EnginePassageData
@@ -38,8 +38,10 @@ const EventPassageInput: React.FC<{
   )
 
   const inputVariable = useLiveQuery(async () => {
+    let variable: EngineVariableData | undefined
+
     if (input?.variableId) {
-      const variable = await new LibraryDatabase(studioId).variables.get(
+      variable = await new LibraryDatabase(studioId).variables.get(
         input.variableId
       )
 
@@ -57,9 +59,9 @@ const EventPassageInput: React.FC<{
 
         setInputValue(value || variable?.initialValue)
       }
-
-      return variable
     }
+
+    return variable
   }, [input])
 
   const submitInput = useCallback(
@@ -72,11 +74,14 @@ const EventPassageInput: React.FC<{
 
         onSubmitRoute({
           originId: event.origin,
-          result: boolValue
-            ? boolValue === 'true'
-              ? 'Yes'
-              : 'No'
-            : `${inputValue}`,
+          result: {
+            id: input.id,
+            value: boolValue
+              ? boolValue === 'true'
+                ? 'Yes'
+                : 'No'
+              : `${inputValue}`
+          },
           route: await findOpenRoute(
             studioId,
             await getRoutesFromInput(studioId, input.id),

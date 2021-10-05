@@ -1,5 +1,7 @@
 import React, { useCallback, useContext, useRef } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
 
+import { LibraryDatabase } from '../lib/db'
 import { getChoicesFromPassageWithOpenRoute } from '../lib/api'
 
 import {
@@ -12,20 +14,18 @@ import {
   EngineChoiceData,
   EngineEventData,
   EnginePassageData,
-  EngineRouteData
+  EngineRouteData,
+  EngineEventResult
 } from '../types/0.5.0'
-
 import { RouteProcessor } from './EventPassage'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
 import EventLoopbackButton from './EventLoopbackButton'
-import { useLiveQuery } from 'dexie-react-hooks'
-import { LibraryDatabase } from '../lib/db'
 
 const EventPassageChoice: React.FC<{
   data: EngineChoiceData
-  eventResult?: string
+  eventResult?: EngineEventResult
   onSubmitRoute: RouteProcessor
   openRoute: EngineRouteData
   originId?: ComponentId
@@ -36,7 +36,10 @@ const EventPassageChoice: React.FC<{
       (await onSubmitRoute({
         originId,
         route: openRoute,
-        result: data.title
+        result: {
+          id: data.id,
+          value: data.title
+        }
       })),
     [openRoute]
   )
@@ -46,7 +49,7 @@ const EventPassageChoice: React.FC<{
       {openRoute && (
         <div
           className={`event-choice ${
-            eventResult === data.title ? 'event-choice-result' : ''
+            eventResult?.id === data.id ? 'event-choice-result' : ''
           }`}
         >
           <button onClick={submitChoice} disabled={eventResult ? true : false}>
@@ -112,14 +115,14 @@ const EventPassageChoices: React.FC<{
     if (event.prev && event.origin) {
       await onSubmitRoute({
         originId: event.origin,
-        result: ENGINE_LOOPBACK_RESULT_VALUE
+        result: { value: ENGINE_LOOPBACK_RESULT_VALUE }
       })
     }
   }, [event])
 
   const restartGame = useCallback(async () => {
     onSubmitRoute({
-      result: ENGINE_GAME_OVER_RESULT_VALUE
+      result: { value: ENGINE_GAME_OVER_RESULT_VALUE }
     })
   }, [event])
 
