@@ -262,6 +262,11 @@ export enum ENGINE_DEVTOOLS_EVENT_TYPE {
   TOGGLE_XRAY = 'TOGGLE_XRAY'
 }
 
+export enum ENGINE_DEVTOOLS_EVENTS {
+  EDITOR_TO_ENGINE = 'editor:engine:devtools:event',
+  ENGINE_TO_EDITOR = 'engine:editor:devtools:event'
+}
+
 export interface EngineDevToolsEvent {
   eventType: ENGINE_DEVTOOLS_EVENT_TYPE
 }

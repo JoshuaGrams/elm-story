@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { GameId, StudioId } from '../../../data/types'
 import {
   EngineDevToolsEvent,
+  ENGINE_DEVTOOLS_EVENTS,
   ENGINE_DEVTOOLS_EVENT_TYPE
 } from '../../../lib/transport/types/0.5.0'
 
@@ -26,9 +27,12 @@ export const GameViewTools: React.FC<{
     eventType: ENGINE_DEVTOOLS_EVENT_TYPE
   ) => {
     window.dispatchEvent(
-      new CustomEvent<EngineDevToolsEvent>('engine:devtools:event', {
-        detail: { eventType }
-      })
+      new CustomEvent<EngineDevToolsEvent>(
+        ENGINE_DEVTOOLS_EVENTS.EDITOR_TO_ENGINE,
+        {
+          detail: { eventType }
+        }
+      )
     )
   }
 

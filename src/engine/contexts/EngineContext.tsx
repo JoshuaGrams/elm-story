@@ -6,6 +6,11 @@ import { ComponentId, EngineEventData, GameId, StudioId } from '../types/0.5.0'
 
 interface EngineState {
   currentEvent: ComponentId | undefined
+  devTools: {
+    highlightExpressions: boolean
+    blockedChoicesVisible: boolean
+    xrayVisible: boolean
+  }
   eventsInStream: EngineEventData[]
   installed: boolean
   installId: string | undefined
@@ -19,7 +24,6 @@ interface EngineState {
     updated: number
     version: string
   }
-
   playing: boolean
   resetNotification: {
     message: string | undefined
@@ -28,18 +32,21 @@ interface EngineState {
 }
 
 export enum ENGINE_ACTION_TYPE {
+  APPEND_EVENTS_TO_STREAM = 'APPEND_EVENTS_TO_STREAM',
+  CLEAR_EVENT_STREAM = 'CLEAR_EVENT_STREAM',
+  SET_GAME_INFO = 'SET_GAME_INFO',
+  HIDE_RESET_NOTIFICATION = 'HIDE_RESET_NOTIFICATION',
+  PLAY = 'PLAY', // sets currentEvent
   SET_INSTALLED = 'SET_INSTALLED',
   SET_INSTALL_ID = 'SET_INSTALL_ID',
   SET_IS_EDITOR = 'SET_EDITOR',
   SET_CURRENT_EVENT = 'SET_CURRENT_EVENT',
-  CLEAR_EVENT_STREAM = 'CLEAR_EVENT_STREAM',
-  APPEND_EVENTS_TO_STREAM = 'APPEND_EVENTS_TO_STREAM',
-  UPDATE_EVENT_IN_STREAM = 'UPDATE_EVENT_IN_STREAM',
-  SET_GAME_INFO = 'SET_GAME_INFO',
-  PLAY = 'PLAY', // sets currentEvent
   STOP = 'STOP',
-  HIDE_RESET_NOTIFICATION = 'HIDE_RESET_NOTIFICATION',
-  SHOW_RESET_NOTIFICATION = 'SHOW_RESET_NOTIFICATION'
+  SHOW_RESET_NOTIFICATION = 'SHOW_RESET_NOTIFICATION',
+  TOGGLE_DEVTOOLS_BLOCKED_CHOICES = 'TOGGLE_DEVTOOLS_BLOCKED_CHOICES',
+  TOGGLE_DEVTOOLS_EXPRESSIONS = 'TOGGLE_DEVTOOLS_EXPRESSIONS',
+  TOGGLE_DEVTOOLS_XRAY = 'TOGGLE_DEVTOOLS_XRAY',
+  UPDATE_EVENT_IN_STREAM = 'UPDATE_EVENT_IN_STREAM'
 }
 
 type EngineActionType =
@@ -76,6 +83,9 @@ type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.STOP }
   | { type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION }
   | { type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION; message: string }
+  | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_BLOCKED_CHOICES }
+  | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_EXPRESSIONS }
+  | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_XRAY }
 
 const engineReducer = (
   state: EngineState,
@@ -160,6 +170,30 @@ const engineReducer = (
         ...state,
         resetNotification: { message: action.message, showing: true }
       }
+    case ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_BLOCKED_CHOICES:
+      return {
+        ...state,
+        devTools: {
+          ...state.devTools,
+          blockedChoicesVisible: !state.devTools.blockedChoicesVisible
+        }
+      }
+    case ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_EXPRESSIONS:
+      return {
+        ...state,
+        devTools: {
+          ...state.devTools,
+          highlightExpressions: !state.devTools.highlightExpressions
+        }
+      }
+    case ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_XRAY:
+      return {
+        ...state,
+        devTools: {
+          ...state.devTools,
+          xrayVisible: !state.devTools.xrayVisible
+        }
+      }
     default:
       return state
   }
@@ -172,6 +206,11 @@ interface EngineContextType {
 
 const defaultEngineState: EngineState = {
   currentEvent: undefined,
+  devTools: {
+    blockedChoicesVisible: false,
+    highlightExpressions: false,
+    xrayVisible: false
+  },
   eventsInStream: [],
   installed: false,
   installId: undefined,
