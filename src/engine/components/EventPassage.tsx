@@ -1,7 +1,11 @@
 import React, { useCallback, useContext, useRef } from 'react'
 import useResizeObserver from '@react-hook/resize-observer'
+import { useSpring } from '@react-spring/core'
+import { animated } from '@react-spring/web'
+import { useLiveQuery } from 'dexie-react-hooks'
 
 import { findDestinationPassage, getEventInitial, getPassage } from '../lib/api'
+import { LibraryDatabase } from '../lib/db'
 
 import {
   ComponentId,
@@ -21,10 +25,7 @@ import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 import EventPassageContent from './EventPassageContent'
 import EventPassageChoices from './EventPassageChoices'
 import EventPassageInput from './EventPassageInput'
-import { useSpring } from '@react-spring/core'
-import { animated } from '@react-spring/web'
-import { useLiveQuery } from 'dexie-react-hooks'
-import { LibraryDatabase } from '../lib/db'
+import EventPassageXRay from './EventPassageXRay'
 
 export type RouteProcessor = ({
   originId: origin,
@@ -164,6 +165,11 @@ export const EventPassage: React.FC<{
             </a>{' '}
             event stream.
           </div>
+        )}
+
+        {/* TODO: non-pro xray only available for current event */}
+        {event?.id === engine.currentEvent && engine.devTools.xrayVisible && (
+          <EventPassageXRay event={event} />
         )}
       </div>
     </animated.div>

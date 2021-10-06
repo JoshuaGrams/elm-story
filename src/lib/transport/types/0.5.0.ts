@@ -256,6 +256,7 @@ export enum ENGINE_THEME {
 }
 
 export enum ENGINE_DEVTOOLS_EVENT_TYPE {
+  OPEN_PASSAGE = 'OPEN_PASSAGE',
   RESET = 'RESET',
   TOGGLE_EXPRESSIONS = 'TOGGLE_EXPRESSIONS',
   TOGGLE_BLOCKED_CHOICES = 'TOGGLE_BLOCKED_CHOICES',
@@ -269,6 +270,7 @@ export enum ENGINE_DEVTOOLS_EVENTS {
 
 export interface EngineDevToolsEvent {
   eventType: ENGINE_DEVTOOLS_EVENT_TYPE
+  passageId?: ComponentId
 }
 
 export interface EngineBookmarkData {

@@ -10,4 +10,45 @@
       display: block;
     }
   }
+
+  #engine-xray {
+    border-top: var(--event-passage-bottom-border);
+
+    table {
+      width: 100%;
+
+      tbody tr:hover {
+        background: hsl(0, 0%, 6%);
+      }
+
+      th,
+      td {
+        padding: 0.4rem 0.4rem 0.2rem 0.4rem;
+      }
+
+      th {
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        font-weight: normal;
+        color: var(--primary-color);
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid var(--primary-color);
+      }
+
+      td {
+        font-size: 1rem;
+        border-bottom: 1px solid var(--renderer-border-color);
+        border-right: 1px solid var(--renderer-border-color);
+      }
+
+      td:last-child {
+        border-right: none;
+      }
+
+      th.xray-row-id,
+      td.xray-row-id {
+        width: 10rem;
+      }
+    }
+  }
 }

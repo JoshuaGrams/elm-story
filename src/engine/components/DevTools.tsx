@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useContext } from 'react'
+import React, { useEffect, useContext } from 'react'
 
 import {
   EngineDevToolsEvent,
@@ -11,7 +11,7 @@ import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 const DevTools: React.FC = () => {
   const { engineDispatch } = useContext(EngineContext)
 
-  const processEvent = useCallback((event: Event) => {
+  const processEvent = (event: Event) => {
     const { detail } = event as CustomEvent<EngineDevToolsEvent>
 
     switch (detail.eventType) {
@@ -39,7 +39,7 @@ const DevTools: React.FC = () => {
       default:
         throw 'Unknown engine event type.'
     }
-  }, [])
+  }
 
   useEffect(() => {
     window.addEventListener(
