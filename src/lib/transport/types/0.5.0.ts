@@ -255,6 +255,17 @@ export enum ENGINE_THEME {
   CONSOLE = 'CONSOLE'
 }
 
+export enum ENGINE_DEVTOOLS_EVENT_TYPE {
+  RESET = 'RESET',
+  TOGGLE_EXPRESSIONS = 'TOGGLE_EXPRESSIONS',
+  TOGGLE_BLOCKED_CHOICES = 'TOGGLE_BLOCKED_CHOICES',
+  TOGGLE_XRAY = 'TOGGLE_XRAY'
+}
+
+export interface EngineDevToolsEvent {
+  eventType: ENGINE_DEVTOOLS_EVENT_TYPE
+}
+
 export interface EngineBookmarkData {
   gameId: GameId
   id: string // or AUTO_ENGINE_BOOKMARK_KEY

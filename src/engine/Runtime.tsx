@@ -15,6 +15,7 @@ import Settings from './components/Settings'
 import Theme from './components/Theme'
 
 import StartingDestinationGate from './components/StartingDestinationGate'
+import DevTools from './components/DevTools'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false } }
@@ -62,7 +63,12 @@ const Runtime: React.FC<{
                 </SettingsProvider>
               )}
 
-              {isEditor && <Renderer />}
+              {isEditor && (
+                <>
+                  <DevTools />
+                  <Renderer />
+                </>
+              )}
             </Installer>
           </StartingDestinationGate>
         )}

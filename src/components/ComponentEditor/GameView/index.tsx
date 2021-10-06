@@ -1,96 +1,89 @@
 import logger from '../../../lib/logger'
 
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { GameId, StudioId } from '../../../data/types'
+import {
+  EngineDevToolsEvent,
+  ENGINE_DEVTOOLS_EVENT_TYPE
+} from '../../../lib/transport/types/0.5.0'
 
 import { useGame } from '../../../hooks'
 
-import {
-  EngineContext,
-  ENGINE_ACTION_TYPE
-} from '../../../contexts/EngineContext'
-
-import { Button, Menu } from 'antd'
+import { Menu } from 'antd'
 
 import GameEngine from '../../GameEngine'
-
-import styles from '../TabContent/styles.module.less'
 
 export const GameViewTools: React.FC<{
   studioId: StudioId
   gameId: GameId
 }> = () => {
-  const { engine, engineDispatch } = useContext(EngineContext)
+  const [highlightExpressions, setHighlightExpressions] = useState(false),
+    [blockedChoicesVisible, setBlockedChoicesVisible] = useState(false),
+    [xrayVisible, setXrayVisible] = useState(false)
 
-  function restartGame() {
-    engineDispatch({ type: ENGINE_ACTION_TYPE.GAME_RESTART })
-    engineDispatch({
-      type: ENGINE_ACTION_TYPE.SCROLL_TO,
-      scrollTo: { top: 0, left: 0 }
-    })
+  const dispatchEngineDevToolsEvent = (
+    eventType: ENGINE_DEVTOOLS_EVENT_TYPE
+  ) => {
+    window.dispatchEvent(
+      new CustomEvent<EngineDevToolsEvent>('engine:devtools:event', {
+        detail: { eventType }
+      })
+    )
   }
 
   return (
     <Menu mode="horizontal">
       <Menu.Item
         onClick={() =>
-          engineDispatch({ type: ENGINE_ACTION_TYPE.TOGGLE_EXPRESSIONS })
+          dispatchEngineDevToolsEvent(ENGINE_DEVTOOLS_EVENT_TYPE.RESET)
         }
-        className={`${
-          engine.highlightExpressions
-            ? 'esg-menu-item-enabled'
-            : 'esg-menu-item-disabled'
-        }`}
       >
-        Highlight Expressions
+        Reset
       </Menu.Item>
-      <Menu.Item onClick={restartGame}>Restart</Menu.Item>
       <Menu.Item
-        onClick={() =>
-          engineDispatch({ type: ENGINE_ACTION_TYPE.TOGGLE_BLOCKED_CHOICES })
-        }
+        onClick={() => {
+          setXrayVisible(!xrayVisible)
+          dispatchEngineDevToolsEvent(ENGINE_DEVTOOLS_EVENT_TYPE.TOGGLE_XRAY)
+        }}
         className={`${
-          engine.showBlockedChoices
+          xrayVisible ? 'esg-menu-item-enabled' : 'esg-menu-item-disabled'
+        }`}
+      >
+        XRAY
+      </Menu.Item>
+      <Menu.Item
+        onClick={() => {
+          setHighlightExpressions(!highlightExpressions)
+          dispatchEngineDevToolsEvent(
+            ENGINE_DEVTOOLS_EVENT_TYPE.TOGGLE_EXPRESSIONS
+          )
+        }}
+        className={`${
+          highlightExpressions
             ? 'esg-menu-item-enabled'
             : 'esg-menu-item-disabled'
         }`}
       >
-        Show Blocked Choices
+        Expressions
+      </Menu.Item>
+
+      <Menu.Item
+        onClick={() => {
+          setBlockedChoicesVisible(!blockedChoicesVisible)
+          dispatchEngineDevToolsEvent(
+            ENGINE_DEVTOOLS_EVENT_TYPE.TOGGLE_BLOCKED_CHOICES
+          )
+        }}
+        className={`${
+          blockedChoicesVisible
+            ? 'esg-menu-item-enabled'
+            : 'esg-menu-item-disabled'
+        }`}
+      >
+        Blocked Choices
       </Menu.Item>
     </Menu>
-  )
-
-  return (
-    <div>
-      <Button
-        onClick={() =>
-          engineDispatch({ type: ENGINE_ACTION_TYPE.TOGGLE_EXPRESSIONS })
-        }
-      >
-        <span
-          className={`${
-            engine.highlightExpressions ? styles.enabled : styles.disabled
-          }`}
-        >
-          Highlight Expressions
-        </span>
-      </Button>
-      <Button onClick={restartGame}>Restart</Button>
-      <Button
-        onClick={() =>
-          engineDispatch({ type: ENGINE_ACTION_TYPE.TOGGLE_BLOCKED_CHOICES })
-        }
-      >
-        <span
-          className={`${
-            engine.showBlockedChoices ? styles.enabled : styles.disabled
-          }`}
-        >
-          Show Blocked Choices
-        </span>
-      </Button>
-    </div>
   )
 }
 
