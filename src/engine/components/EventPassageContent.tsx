@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import reactStringReplace from 'react-string-replace'
 
 import { VARIABLE_TYPE, EngineEventStateCollection } from '../types/0.5.0'
-
 import {
   gameMethods,
   getProcessedTemplate,
@@ -10,10 +9,12 @@ import {
   parseTemplateExpressions
 } from '../lib/templates'
 
+import { EngineContext } from '../contexts/EngineContext'
+
 const processTemplateBlock = (
   template: string,
   state: EngineEventStateCollection
-): string => {
+): [string, string[]] => {
   const expressions = getTemplateExpressions(template),
     variables: {
       [variableId: string]: { value: string; type: VARIABLE_TYPE }
@@ -34,25 +35,45 @@ const processTemplateBlock = (
     gameMethods
   )
 
-  return getProcessedTemplate(
-    template,
-    expressions,
-    parsedExpressions,
-    variables,
-    gameMethods
-  )
+  return [
+    getProcessedTemplate(
+      template,
+      expressions,
+      parsedExpressions,
+      variables,
+      gameMethods
+    ),
+    expressions
+  ]
 }
 
-const decorate = (processedTemplate: string) => {
+const decorate = (
+  template: string,
+  state: EngineEventStateCollection,
+  highlightExpressions?: boolean
+) => {
+  const [processedTemplate, expressions] = processTemplateBlock(template, state)
+
   let matchExpressionCounter = 0
 
   return reactStringReplace(processedTemplate, /{([^}]+)}/g, (match) => {
+    const matchedExpression = expressions[matchExpressionCounter]
+
     matchExpressionCounter++
 
-    return match === 'esg-error' ? (
+    return highlightExpressions ? (
       <span
-        className="es-engine-expression-error"
-        key={`span-${matchExpressionCounter}-error`}
+        className={match === 'esg-error' ? `expression-error` : `expression`}
+        key={`expression-${matchExpressionCounter}`}
+        title={matchedExpression}
+      >
+        {match === 'esg-error' ? 'ERROR' : match}
+      </span>
+    ) : match === 'esg-error' ? (
+      <span
+        className="expression-error"
+        key={`expression-${matchExpressionCounter}`}
+        title={matchedExpression}
       >
         ERROR
       </span>
@@ -66,6 +87,8 @@ const EventPassageContent: React.FC<{
   content: string
   state: EngineEventStateCollection
 }> = React.memo(({ content, state }) => {
+  const { engine } = useContext(EngineContext)
+
   const parsedContent: {
     type: 'paragraph'
     children: { text: string }[]
@@ -76,7 +99,11 @@ const EventPassageContent: React.FC<{
       {parsedContent.map((descendant, index) => {
         return (
           <p key={`content-p-text-${index}`}>
-            {decorate(processTemplateBlock(descendant.children[0].text, state))}
+            {decorate(
+              descendant.children[0].text,
+              state,
+              engine.devTools.highlightExpressions
+            )}
           </p>
         )
       })}
