@@ -46,18 +46,21 @@ const EventPassageChoice: React.FC<{
 
   return (
     <>
-      <div
-        className={`event-choice ${
-          eventResult?.id === data.id ? 'event-choice-result' : ''
-        }`}
-      >
-        <button
-          onClick={submitChoice}
-          disabled={eventResult || !openRoute ? true : false}
+      {(!eventResult || openRoute) && (
+        <div
+          className={`event-choice ${
+            eventResult?.id === data.id ? 'event-choice-result' : ''
+          }`}
         >
-          {data.title}
-        </button>
-      </div>
+          <button
+            onClick={submitChoice}
+            disabled={eventResult || !openRoute ? true : false}
+            className={!openRoute ? 'closed-route' : ''}
+          >
+            {data.title}
+          </button>
+        </div>
+      )}
     </>
   )
 })
