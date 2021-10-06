@@ -734,7 +734,8 @@ export const getChoicesFromPassage = async (
 export const getChoicesFromPassageWithOpenRoute = async (
   studioId: StudioId,
   choices: EngineChoiceData[],
-  state: EngineEventStateCollection
+  state: EngineEventStateCollection,
+  includeAll?: boolean // editor can show choices with closed routes
 ): Promise<{
   filteredChoices: EngineChoiceData[]
   openRoutes: { [choiceId: ComponentId]: EngineRouteData }
@@ -756,7 +757,7 @@ export const getChoicesFromPassageWithOpenRoute = async (
         }
       }
 
-      return undefined
+      return includeAll ? choice : undefined
     })
   )
 

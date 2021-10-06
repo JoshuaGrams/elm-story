@@ -46,17 +46,18 @@ const EventPassageChoice: React.FC<{
 
   return (
     <>
-      {openRoute && (
-        <div
-          className={`event-choice ${
-            eventResult?.id === data.id ? 'event-choice-result' : ''
-          }`}
+      <div
+        className={`event-choice ${
+          eventResult?.id === data.id ? 'event-choice-result' : ''
+        }`}
+      >
+        <button
+          onClick={submitChoice}
+          disabled={eventResult || !openRoute ? true : false}
         >
-          <button onClick={submitChoice} disabled={eventResult ? true : false}>
-            {data.title}
-          </button>
-        </div>
-      )}
+          {data.title}
+        </button>
+      </div>
     </>
   )
 })
@@ -87,7 +88,8 @@ const EventPassageChoices: React.FC<{
           getChoicesFromPassageWithOpenRoute(
             studioId,
             foundChoices,
-            event.state
+            event.state,
+            engine.devTools.blockedChoicesVisible ? true : false
           )
         )
 
@@ -109,7 +111,7 @@ const EventPassageChoices: React.FC<{
     } catch (error) {
       throw error
     }
-  }, [passage, event])
+  }, [passage, event, engine.devTools.blockedChoicesVisible])
 
   const loopback = useCallback(async () => {
     if (event.prev && event.origin) {
@@ -135,19 +137,16 @@ const EventPassageChoices: React.FC<{
     <div className="event-choices" ref={eventChoicesRef}>
       {!passage.gameOver && choices && (
         <>
-          {choices.map(
-            ({ data, openRoute }) =>
-              openRoute && (
-                <EventPassageChoice
-                  key={data.id}
-                  data={data}
-                  eventResult={event.result}
-                  onSubmitRoute={onSubmitRoute}
-                  openRoute={openRoute}
-                  originId={event.origin}
-                />
-              )
-          )}
+          {choices.map(({ data, openRoute }) => (
+            <EventPassageChoice
+              key={data.id}
+              data={data}
+              eventResult={event.result}
+              onSubmitRoute={onSubmitRoute}
+              openRoute={openRoute}
+              originId={event.origin}
+            />
+          ))}
 
           {choices.length === 0 && (
             <div className="event-choice">
