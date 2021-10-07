@@ -46,7 +46,7 @@ import ReactFlow, {
   useStoreState
 } from 'react-flow-renderer'
 
-import { Button, Menu } from 'antd'
+import { Menu } from 'antd'
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 
 import ContextMenu from './ContextMenu'
@@ -1161,6 +1161,23 @@ const SceneView: React.FC<{
           className={styles.SceneView}
           ref={flowWrapperRef}
           style={{ width: '100%', height: '100%' }}
+          // #356
+          onClick={() => {
+            if (
+              scene?.id &&
+              scene.id !== editor.selectedGameOutlineComponent.id
+            ) {
+              editorDispatch({
+                type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+                selectedGameOutlineComponent: {
+                  id: scene.id,
+                  title: scene.title,
+                  type: COMPONENT_TYPE.SCENE,
+                  expanded: true
+                }
+              })
+            }
+          }}
         >
           {scene && editorTab.passageForEditing.id && (
             <PassageView
