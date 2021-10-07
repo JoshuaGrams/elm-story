@@ -124,10 +124,16 @@ export const VariableRow: React.FC<{
                 : ''
             ))
         ),
-        relatedEffects.map(
-          async (relatedEffect) =>
-            relatedEffect.id &&
-            (await api().effects.saveEffectValue(
+        relatedEffects.map(async (relatedEffect) => {
+          if (relatedEffect.id) {
+            // #355
+            await api().effects.saveEffectSetOperatorType(
+              studioId,
+              relatedEffect.id,
+              SET_OPERATOR_TYPE.ASSIGN
+            )
+
+            await api().effects.saveEffectValue(
               studioId,
               relatedEffect.id,
               selectedVariableType === VARIABLE_TYPE.BOOLEAN
@@ -135,8 +141,9 @@ export const VariableRow: React.FC<{
                 : selectedVariableType === VARIABLE_TYPE.NUMBER
                 ? '0'
                 : ''
-            ))
-        )
+            )
+          }
+        })
       ])
 
       // #314: set type second
