@@ -191,17 +191,35 @@ const ComponentEditor: React.FC<{ studioId: StudioId; game: Game }> = ({
 
       // Set active panel ID
       if (oldLayoutParentPanel?.id) {
-        if (newLayoutParentPanel) {
-          logger.info(
-            `setting active panel to existing parent '${newLayoutParentPanel.id}'`
-          )
-          setActivePanelId(newLayoutParentPanel.id)
-        } else {
-          logger.info(
-            `setting active panel to root panel '${newLayout.dockbox.children[0].id}'`
-          )
-          setActivePanelId(newLayout.dockbox.children[0].id)
+        const newActivePanelId = newLayoutParentPanel
+          ? newLayoutParentPanel.id
+          : newLayout.dockbox.children[0].id
+
+        // #58
+        const oldActiveTab = document.querySelector(
+          `.dock-panel[data-dockid="${activePanelId}"] .dock-tab-active ~ .dock-ink-bar`
+        ) as HTMLDivElement | null
+
+        let newActiveTab: HTMLDivElement | null
+
+        if (activePanelId !== newActivePanelId && oldActiveTab) {
+          oldActiveTab.style.background = 'var(--highlight-color-dark)'
         }
+
+        logger.info(`setting active panel to '${newActivePanelId}'`)
+
+        // #TODO: stack hack
+        setTimeout(() => {
+          newActiveTab = document.querySelector(
+            `.dock-panel[data-dockid="${newActivePanelId}"] .dock-tab-active ~ .dock-ink-bar`
+          ) as HTMLDivElement | null
+
+          if (newActiveTab) {
+            newActiveTab.style.background = 'var(--highlight-color)'
+          }
+        }, 100)
+
+        setActivePanelId(newActivePanelId)
       }
 
       const clonedTabs = cloneDeep(tabs),

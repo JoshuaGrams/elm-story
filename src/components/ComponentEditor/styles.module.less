@@ -1,5 +1,7 @@
 :global .dock {
   .dock-tab {
+    border-bottom: none;
+
     &:hover {
       color: white;
     }
@@ -18,7 +20,7 @@
   }
 
   .dock-ink-bar {
-    background: var(--highlight-color);
+    background: var(--highlight-color-dark);
   }
 }
 
@@ -53,9 +55,6 @@
 }
 
 .tabTitle {
-  .gameTabIcon {
-  }
-
   .tabIcon {
     color: var(--highlight-color);
     padding-right: 6px;
@@ -69,7 +68,4 @@
     padding-left: 6px;
     color: white;
   }
-}
-
-.tabContent {
 }
