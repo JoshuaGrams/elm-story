@@ -146,7 +146,16 @@ export async function switchPassageFromChoiceToInputType(
 ) {
   if (passage && passage.id) {
     try {
+      const foundPassthroughRoutes = await new LibraryDatabase(studioId).routes
+        .where({ originId: passage.id })
+        .toArray()
+
       await Promise.all([
+        foundPassthroughRoutes.map(async (foundRoute) => {
+          foundRoute.id &&
+            foundRoute.choiceId === undefined &&
+            api().routes.removeRoute(studioId, foundRoute.id)
+        }),
         passage.choices.map(
           async (choiceId) =>
             await api().choices.removeChoice(studioId, choiceId)
