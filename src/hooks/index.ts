@@ -10,7 +10,8 @@ import useRoutes, {
   useRoutesBySceneRef,
   useRoutesByPassageRef,
   useRoutesByChoiceRef,
-  useRoutesByInputRef
+  useRoutesByInputRef,
+  useRoutePassthroughsByPassageRef
 } from './useRoutes'
 import useRouteConditions, {
   useRouteCondition,
@@ -57,6 +58,7 @@ export {
   useRoutesByPassageRef,
   useRoutesByChoiceRef,
   useRoutesByInputRef,
+  useRoutePassthroughsByPassageRef,
   usePassages,
   usePassage,
   usePassagesBySceneRef,

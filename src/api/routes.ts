@@ -7,7 +7,7 @@ export async function getRoute(studioId: StudioId, routeId: ComponentId) {
   try {
     return await new LibraryDatabase(studioId).getRoute(routeId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -18,7 +18,22 @@ export async function getRoutesByGameRef(
   try {
     return await new LibraryDatabase(studioId).getRoutesByGameRef(gameId)
   } catch (error) {
-    throw new Error(error)
+    throw error
+  }
+}
+
+export async function getPassthroughRoutesByPassageRef(
+  studioId: StudioId,
+  passageId: ComponentId
+) {
+  try {
+    const foundRoutes = await new LibraryDatabase(studioId).routes
+      .where({ originId: passageId })
+      .toArray()
+
+    return foundRoutes.filter((foundRoute) => foundRoute.choiceId === undefined)
+  } catch (error) {
+    throw error
   }
 }
 
@@ -31,7 +46,7 @@ export async function saveRoute(
   try {
     return await new LibraryDatabase(studioId).saveRoute(route)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -39,7 +54,7 @@ export async function removeRoute(studioId: StudioId, routeId: ComponentId) {
   try {
     await new LibraryDatabase(studioId).removeRoute(routeId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -50,7 +65,7 @@ export async function removeRoutesByPassageRef(
   try {
     await new LibraryDatabase(studioId).removeRoutesByPassageRef(passageId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -61,6 +76,6 @@ export async function removeRoutesByChoiceRef(
   try {
     await new LibraryDatabase(studioId).removeRoutesByChoiceRef(choiceId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

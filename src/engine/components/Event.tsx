@@ -13,8 +13,8 @@ import {
 } from '../types/0.5.0'
 import {
   AUTO_ENGINE_BOOKMARK_KEY,
-  ENGINE_GAME_OVER_RESULT_VALUE,
-  ENGINE_LOOPBACK_RESULT_VALUE
+  ENGINE_EVENT_GAME_OVER_RESULT_VALUE,
+  ENGINE_EVENT_LOOPBACK_RESULT_VALUE
 } from '../lib'
 
 import { LibraryDatabase } from '../../db'
@@ -78,10 +78,10 @@ const Event: React.FC<{ data: EngineEventData }> = ({ data }) => {
       let eventType: ENGINE_EVENT_TYPE | undefined
 
       switch (eventResult.value) {
-        case ENGINE_GAME_OVER_RESULT_VALUE:
+        case ENGINE_EVENT_GAME_OVER_RESULT_VALUE:
           eventType = ENGINE_EVENT_TYPE.RESTART
           break
-        case ENGINE_LOOPBACK_RESULT_VALUE:
+        case ENGINE_EVENT_LOOPBACK_RESULT_VALUE:
           eventType =
             ENGINE_EVENT_TYPE[
               passageType === PASSAGE_TYPE.CHOICE

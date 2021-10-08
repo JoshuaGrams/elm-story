@@ -7,7 +7,11 @@ import {
   StudioId
 } from '../../../data/types'
 
-import { useChoicesByPassageRef, usePassage } from '../../../hooks'
+import {
+  useChoicesByPassageRef,
+  usePassage,
+  useRoutePassthroughsByPassageRef
+} from '../../../hooks'
 
 import {
   EditorContext,
@@ -95,7 +99,10 @@ const PassageEndToggle: React.FC<{
 }> = React.memo(({ studioId, passage }) => {
   const { editor } = useContext(EditorContext)
 
-  const choices = useChoicesByPassageRef(studioId, passage.id, [passage])
+  const choices = useChoicesByPassageRef(studioId, passage.id, [passage]),
+    routePassthroughs = useRoutePassthroughsByPassageRef(studioId, passage.id, [
+      passage
+    ])
 
   const toggleGameEnd = async (event: CheckboxChangeEvent) => {
     passage.id &&
@@ -114,13 +121,14 @@ const PassageEndToggle: React.FC<{
 
     if (
       ((choices && choices.length > 0) ||
+        (routePassthroughs && routePassthroughs.length > 0) ||
         passage.type === PASSAGE_TYPE.INPUT) &&
       passage.gameOver &&
       editor.selectedComponentEditorSceneViewPassage === passage.id
     ) {
       disableGameEnd()
     }
-  }, [choices, passage.type])
+  }, [choices, routePassthroughs, passage.type])
 
   return (
     <div className={styles.PassageEndToggle}>
@@ -128,7 +136,9 @@ const PassageEndToggle: React.FC<{
         onChange={toggleGameEnd}
         checked={passage.gameOver}
         disabled={
-          (choices && choices.length > 0) || passage.type === PASSAGE_TYPE.INPUT
+          (choices && choices.length > 0) ||
+          (routePassthroughs && routePassthroughs.length > 0) ||
+          passage.type === PASSAGE_TYPE.INPUT
         }
       >
         Entering Passage Ends Game

@@ -1,12 +1,14 @@
 import React, { useCallback, useContext, useRef } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { useQuery } from 'react-query'
 
 import { LibraryDatabase } from '../lib/db'
-import { getChoicesFromPassageWithOpenRoute } from '../lib/api'
+import { findOpenRoute, getChoicesFromPassageWithOpenRoute } from '../lib/api'
 
 import {
-  ENGINE_LOOPBACK_RESULT_VALUE,
-  ENGINE_GAME_OVER_RESULT_VALUE,
+  ENGINE_EVENT_LOOPBACK_RESULT_VALUE,
+  ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE,
+  ENGINE_EVENT_GAME_OVER_RESULT_VALUE,
   INITIAL_ENGINE_EVENT_ORIGIN_KEY
 } from '../lib'
 import {
@@ -21,7 +23,87 @@ import { RouteProcessor } from './EventPassage'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
-import EventLoopbackButton from './EventLoopbackButton'
+import EventLoopbackButton, {
+  EventLoopbackButtonContent
+} from './EventLoopbackButton'
+
+const EventPassagePassthroughChoice: React.FC<{
+  routes: EngineRouteData[]
+  event: EngineEventData
+  onSubmitRoute: RouteProcessor
+  originId?: ComponentId
+}> = React.memo(({ routes, event, onSubmitRoute, originId }) => {
+  const { engine } = useContext(EngineContext)
+
+  if (!engine.gameInfo) return null
+
+  const { studioId, id: gameId } = engine.gameInfo
+
+  const conditions = useLiveQuery(
+    () => new LibraryDatabase(studioId).conditions.where({ gameId }).toArray(),
+    []
+  )
+
+  const variables = useLiveQuery(
+    () => new LibraryDatabase(studioId).variables.where({ gameId }).toArray(),
+    []
+  )
+
+  const { data: openRoute, isLoading: openRouteIsLoading } = useQuery(
+    [`passthrough-${event.id}`, routes, conditions, variables],
+    async () => {
+      return await findOpenRoute(studioId, routes, event.state)
+    }
+  )
+
+  const submitChoice = useCallback(
+    async () =>
+      openRoute &&
+      !openRouteIsLoading &&
+      (await onSubmitRoute({
+        originId,
+        route: openRoute,
+        result: {
+          value: ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE
+        }
+      })),
+    [openRoute]
+  )
+
+  return (
+    <div
+      className={`event-choice ${
+        event.result?.value === ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE
+          ? 'event-choice-result'
+          : ''
+      }`}
+    >
+      <>
+        <button
+          onClick={submitChoice}
+          disabled={
+            event.result || (!openRoute && !openRouteIsLoading) ? true : false
+          }
+          className={
+            !event.result && !openRoute && !openRouteIsLoading
+              ? 'closed-route'
+              : ''
+          }
+        >
+          {event.result?.value === ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE
+            ? 'Continue'
+            : engine.currentEvent === event.id &&
+              !openRoute &&
+              !openRouteIsLoading
+            ? 'Route Required'
+            : 'Continue'}
+        </button>
+      </>
+    </div>
+  )
+})
+
+EventPassagePassthroughChoice.displayName = 'EventPassagePassthroughChoice'
 
 const EventPassageChoice: React.FC<{
   data: EngineChoiceData
@@ -66,6 +148,19 @@ const EventPassageChoice: React.FC<{
 })
 
 EventPassageChoice.displayName = 'EventPassageChoice'
+
+function translateValue(value: string) {
+  switch (value) {
+    case ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE:
+      return <>Continue</>
+    case ENGINE_EVENT_LOOPBACK_RESULT_VALUE:
+      return <>{EventLoopbackButtonContent}</>
+    case ENGINE_EVENT_GAME_OVER_RESULT_VALUE:
+      return <>New Game</>
+    default:
+      return <>{value}</>
+  }
+}
 
 const EventPassageChoices: React.FC<{
   passage: EnginePassageData
@@ -116,11 +211,19 @@ const EventPassageChoices: React.FC<{
     }
   }, [passage, event, engine.devTools.blockedChoicesVisible])
 
+  const routePassthroughs = useLiveQuery(async () => {
+    const foundRoutes = await new LibraryDatabase(studioId).routes
+      .where({ originId: passage.id })
+      .toArray()
+
+    return foundRoutes.filter((foundRoute) => foundRoute.choiceId === undefined)
+  }, [passage, event, engine.devTools.blockedChoicesVisible])
+
   const loopback = useCallback(async () => {
     if (event.prev && event.origin) {
       await onSubmitRoute({
         originId: event.origin,
-        result: { value: ENGINE_LOOPBACK_RESULT_VALUE }
+        result: { value: ENGINE_EVENT_LOOPBACK_RESULT_VALUE }
       })
     } else {
       engineDispatch({
@@ -132,49 +235,72 @@ const EventPassageChoices: React.FC<{
 
   const restartGame = useCallback(async () => {
     onSubmitRoute({
-      result: { value: ENGINE_GAME_OVER_RESULT_VALUE }
+      result: { value: ENGINE_EVENT_GAME_OVER_RESULT_VALUE }
     })
   }, [event])
 
   return (
     <div className="event-choices" ref={eventChoicesRef}>
-      {!passage.gameOver && choices && (
+      {!passage.gameOver && choices && routePassthroughs && (
         <>
-          {choices.map(({ data, openRoute }) => (
-            <EventPassageChoice
-              key={data.id}
-              data={data}
-              eventResult={event.result}
-              onSubmitRoute={onSubmitRoute}
-              openRoute={openRoute}
-              originId={event.origin}
-            />
-          ))}
+          {routePassthroughs.length > 0 && (
+            <>
+              <EventPassagePassthroughChoice
+                routes={routePassthroughs}
+                event={event}
+                onSubmitRoute={onSubmitRoute}
+                originId={event.origin}
+              />
+            </>
+          )}
 
-          {choices.length === 0 && (
+          {routePassthroughs.length === 0 && (
+            <>
+              {choices.map(({ data, openRoute }) => (
+                <EventPassageChoice
+                  key={data.id}
+                  data={data}
+                  eventResult={event.result}
+                  onSubmitRoute={onSubmitRoute}
+                  openRoute={openRoute}
+                  originId={event.origin}
+                />
+              ))}
+            </>
+          )}
+
+          {choices.length === 0 && routePassthroughs.length === 0 && (
             <div className="event-choice">
               <>
                 {engine.currentEvent !==
                   `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}` && (
                   <>
                     {(!event.result ||
-                      event.result.value === ENGINE_LOOPBACK_RESULT_VALUE) && (
+                      event.result.value ===
+                        ENGINE_EVENT_LOOPBACK_RESULT_VALUE) && (
                       <EventLoopbackButton
                         onClick={loopback}
                         eventResult={event.result}
                       />
                     )}
 
-                    {event.result &&
-                      event.result.value !== ENGINE_LOOPBACK_RESULT_VALUE && (
-                        <button disabled={true}>Route Required</button>
-                      )}
+                    {event.result?.value ===
+                      ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE && (
+                      <EventPassagePassthroughChoice
+                        routes={routePassthroughs}
+                        event={event}
+                        onSubmitRoute={onSubmitRoute}
+                        originId={event.origin}
+                      />
+                    )}
                   </>
                 )}
 
                 {engine.currentEvent ===
                   `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}` && (
-                  <button disabled={true}>Route Required</button>
+                  <button disabled={true} className="closed-route">
+                    Route Required
+                  </button>
                 )}
               </>
             </div>
@@ -196,7 +322,7 @@ const EventPassageChoices: React.FC<{
               onClick={restartGame}
               disabled={event.result ? true : false}
             >
-              New Game
+              {translateValue(event.result?.value || 'New Game')}
             </button>
           </div>
 

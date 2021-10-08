@@ -59,6 +59,28 @@ const useRoutesByPassageRef = (
   return routes
 }
 
+const useRoutePassthroughsByPassageRef = (
+  studioId: StudioId,
+  passageId?: ComponentId,
+  deps?: any[]
+): Route[] | undefined => {
+  const routes = useLiveQuery(
+    async () => {
+      const foundRoutes = await new LibraryDatabase(studioId).routes
+        .where({ originId: passageId })
+        .toArray()
+
+      return foundRoutes.filter(
+        (foundRoute) => foundRoute.choiceId === undefined
+      )
+    },
+    deps || [],
+    undefined
+  )
+
+  return routes
+}
+
 const useRoutesByChoiceRef = (
   studioId: StudioId,
   choiceId: ComponentId,
@@ -88,6 +110,7 @@ const useRoutesByInputRef = (
 }
 
 export {
+  useRoutePassthroughsByPassageRef,
   useRoute,
   useRoutesBySceneRef,
   useRoutesByPassageRef,

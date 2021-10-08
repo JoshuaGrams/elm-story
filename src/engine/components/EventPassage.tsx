@@ -17,7 +17,7 @@ import {
   EngineRouteData,
   EngineEventResult
 } from '../types/0.5.0'
-import { ENGINE_GAME_OVER_RESULT_VALUE } from '../lib'
+import { ENGINE_EVENT_GAME_OVER_RESULT_VALUE } from '../lib'
 import { NextEventProcessor } from './Event'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
@@ -74,11 +74,14 @@ export const EventPassage: React.FC<{
         }
 
         if (!route) {
-          if (result.value !== ENGINE_GAME_OVER_RESULT_VALUE && originId) {
+          if (
+            result.value !== ENGINE_EVENT_GAME_OVER_RESULT_VALUE &&
+            originId
+          ) {
             foundPassage = await getPassage(studioId, originId)
           }
 
-          if (result.value === ENGINE_GAME_OVER_RESULT_VALUE) {
+          if (result.value === ENGINE_EVENT_GAME_OVER_RESULT_VALUE) {
             const initialEvent = await getEventInitial(studioId, gameId)
 
             if (initialEvent) {

@@ -80,6 +80,7 @@ interface NodeData {
     choiceId: ComponentId | null
   ) => void
   inputId?: ComponentId
+  totalChoices: number
   type: COMPONENT_TYPE
 }
 
@@ -532,9 +533,7 @@ const SceneView: React.FC<{
       connection.sourceHandle &&
       connection.targetHandle
     ) {
-      const foundSourceNode:
-          | FlowElement<{ passageType: PASSAGE_TYPE }>
-          | undefined = elements.find(
+      const foundSourceNode: FlowElement<NodeData> | undefined = elements.find(
           (element) => element.id === connection.source
         ),
         foundDestinationNode:
@@ -547,13 +546,14 @@ const SceneView: React.FC<{
         foundSourceNode?.data?.passageType &&
         foundDestinationNode?.data?.type
       ) {
-        api().routes.saveRoute(studioId, {
+        await api().routes.saveRoute(studioId, {
           title: 'Untitled Route',
           gameId: scene.gameId,
           sceneId,
           originId: connection.source,
           choiceId:
-            foundSourceNode?.data.passageType === PASSAGE_TYPE.CHOICE
+            foundSourceNode?.data.passageType === PASSAGE_TYPE.CHOICE &&
+            foundSourceNode?.data.totalChoices > 0
               ? connection.sourceHandle
               : undefined,
           inputId:
@@ -902,7 +902,7 @@ const SceneView: React.FC<{
               }),
             passageId: passage.id,
             passageType: passage.type,
-
+            totalChoices: passage.choices.length,
             type: COMPONENT_TYPE.PASSAGE
           }
 

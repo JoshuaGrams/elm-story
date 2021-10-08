@@ -51,7 +51,7 @@ interface MenuInfo {
   domEvent: React.MouseEvent<HTMLElement>
 }
 
-const ChoiceHandle: React.FC<{
+const ChoiceSourceHandle: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
   choiceId: ComponentId
@@ -195,7 +195,7 @@ const ChoiceRow: React.FC<{
   )
 }
 
-const InputHandle: React.FC<{
+const InputSoureHandle: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
   inputId: ComponentId
@@ -252,7 +252,7 @@ const InputRow: React.FC<{
   )
 }
 
-const PassageHandle: React.FC<{
+const PassageTargetHandle: React.FC<{
   studioId: StudioId
   sceneId: ComponentId
   passageId: ComponentId
@@ -264,7 +264,7 @@ const PassageHandle: React.FC<{
     <Handle
       type="target"
       id={passageId}
-      className={styles.passageHandle}
+      className={styles.passageTargetHandle}
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Left}
       isValidConnection={(connection: Connection): boolean => {
@@ -280,6 +280,45 @@ const PassageHandle: React.FC<{
         ) {
           logger.info(
             `Route possible from choice: ${connection.sourceHandle} to passage: ${connection.target}`
+          )
+          return true
+        } else {
+          logger.info('Duplicate route not possible.')
+          return false
+        }
+      }}
+    />
+  )
+}
+
+const PassageSoureHandle: React.FC<{
+  studioId: StudioId
+  sceneId: ComponentId
+  passageId: ComponentId
+}> = ({ studioId, sceneId, passageId }) => {
+  const routes = useRoutesBySceneRef(studioId, sceneId)
+
+  return (
+    <Handle
+      key={passageId}
+      type="source"
+      className={styles.passageSourceHandle}
+      style={{ top: '50%', bottom: '50%' }}
+      position={Position.Right}
+      id={passageId}
+      isValidConnection={(connection: Connection): boolean => {
+        logger.info('isValidConnection')
+
+        if (
+          routes &&
+          !routes.find(
+            (route) =>
+              route.originId === connection.sourceHandle &&
+              route.destinationId === connection.target
+          )
+        ) {
+          logger.info(
+            `Route possible from input: ${connection.sourceHandle} to passage: ${connection.target}`
           )
           return true
         } else {
@@ -339,7 +378,7 @@ const PassageNode: React.FC<NodeProps<{
               id: choice.id,
               title: choice.title,
               handle: (
-                <ChoiceHandle
+                <ChoiceSourceHandle
                   studioId={data.studioId}
                   sceneId={data.sceneId}
                   choiceId={choice.id}
@@ -352,12 +391,31 @@ const PassageNode: React.FC<NodeProps<{
   }, [choicesByPassageRef, passage?.choices])
 
   useEffect(() => {
-    updateNodeInternals(data.passageId)
+    async function removePassthroughNode() {
+      if (passage?.id && choices.length > 0) {
+        const foundRoutes = await api().routes.getPassthroughRoutesByPassageRef(
+          data.studioId,
+          data.passageId
+        )
+
+        await Promise.all([
+          foundRoutes.map(async (foundRoute) => {
+            foundRoute?.id &&
+              (await api().routes.removeRoute(data.studioId, foundRoute.id))
+          })
+        ])
+      }
+
+      updateNodeInternals(data.passageId)
+    }
+
+    removePassthroughNode()
   }, [choices])
 
   useEffect(() => {
-    logger.info(`PassageNode->editor.selectedComponentEditorSceneViewChoice->
-                 useEffect->${editor.selectedComponentEditorSceneViewChoice}`)
+    logger.info(
+      `PassageNode->editor.selectedComponentEditorSceneViewChoice->useEffect->${editor.selectedComponentEditorSceneViewChoice}`
+    )
   }, [editor.selectedComponentEditorSceneViewChoice])
 
   useEffect(() => {
@@ -375,7 +433,7 @@ const PassageNode: React.FC<NodeProps<{
       {passage?.id && (
         <>
           <div>
-            <PassageHandle
+            <PassageTargetHandle
               studioId={data.studioId}
               sceneId={data.sceneId}
               passageId={passage.id}
@@ -408,6 +466,14 @@ const PassageNode: React.FC<NodeProps<{
               <AlignLeftOutlined className={styles.headerIcon} />
               {passage.title}
             </h1>
+
+            {choices.length === 0 && passage.type !== PASSAGE_TYPE.INPUT && (
+              <PassageSoureHandle
+                studioId={data.studioId}
+                sceneId={data.sceneId}
+                passageId={passage.id}
+              />
+            )}
           </div>
 
           {passage.type === PASSAGE_TYPE.CHOICE && (
@@ -627,7 +693,7 @@ const PassageNode: React.FC<NodeProps<{
                 gameId={passage.gameId}
                 inputId={passage.input}
                 handle={
-                  <InputHandle
+                  <InputSoureHandle
                     studioId={data.studioId}
                     sceneId={data.sceneId}
                     inputId={passage.input}

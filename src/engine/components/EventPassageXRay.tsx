@@ -58,10 +58,6 @@ const EventPassageXRay: React.FC<{ event: EngineEventData }> = ({ event }) => {
             <td>{event.type}</td>
           </tr>
           <tr>
-            <td>Loopback</td>
-            <td>{event.origin ? 'YES' : 'NO'}</td>
-          </tr>
-          <tr>
             <td>Passage</td>
             <td>
               <a title="Goto Passage" onClick={gotoPassage}>
