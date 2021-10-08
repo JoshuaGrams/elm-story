@@ -101,58 +101,63 @@ const EventStream: React.FC = React.memo(() => {
 
       await Promise.all([
         eventsArr.map(async (event) => {
-          if (event.id === initialEventId) {
-            await saveEventState(studioId, initialEventId, initialEventState)
-          } else {
-            let updatedEventState: EngineEventStateCollection = cloneDeep(
-              event.state
+          let updatedEventState: EngineEventStateCollection = cloneDeep(
+            event.state
+          )
+
+          Object.keys(event.state).map((variableId) => {
+            const foundVariable = variablesArr.find(
+              (variable) => variable.id === variableId
             )
 
-            Object.keys(event.state).map((variableId) => {
-              const foundVariable = variablesArr.find(
-                (variable) => variable.id === variableId
-              )
+            if (!foundVariable) {
+              delete updatedEventState[variableId]
+            }
+
+            if (foundVariable) {
+              updatedEventState[variableId] = {
+                ...updatedEventState[variableId],
+                title: foundVariable.title,
+                type: foundVariable.type,
+                value:
+                  updatedEventState[variableId].type !== foundVariable.type
+                    ? foundVariable.initialValue
+                    : updatedEventState[variableId].value
+              }
+            }
+          })
+
+          await Promise.all([
+            variablesArr.map(async (variable) => {
+              const foundVariable = event.state[variable.id]
 
               if (!foundVariable) {
-                delete updatedEventState[variableId]
-              }
+                const { title, type, initialValue } = pick(variable, [
+                  'title',
+                  'type',
+                  'initialValue'
+                ])
 
-              if (foundVariable) {
-                updatedEventState[variableId] = {
-                  ...updatedEventState[variableId],
-                  title: foundVariable.title,
-                  type: foundVariable.type,
-                  value:
-                    updatedEventState[variableId].type !== foundVariable.type
-                      ? foundVariable.initialValue
-                      : updatedEventState[variableId].value
+                updatedEventState[variable.id] = {
+                  gameId,
+                  title,
+                  type,
+                  value: initialValue
                 }
               }
             })
+          ])
 
-            await Promise.all([
-              variablesArr.map(async (variable) => {
-                const foundVariable = event.state[variable.id]
+          // #362
+          engineDispatch({
+            type: ENGINE_ACTION_TYPE.UPDATE_EVENT_IN_STREAM,
+            event: {
+              ...event,
+              state: updatedEventState
+            }
+          })
 
-                if (!foundVariable) {
-                  const { title, type, initialValue } = pick(variable, [
-                    'title',
-                    'type',
-                    'initialValue'
-                  ])
-
-                  updatedEventState[variable.id] = {
-                    gameId,
-                    title,
-                    type,
-                    value: initialValue
-                  }
-                }
-              })
-            ])
-
-            await saveEventState(studioId, event.id, updatedEventState)
-          }
+          await saveEventState(studioId, event.id, updatedEventState)
         })
       ])
     }

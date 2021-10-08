@@ -85,7 +85,8 @@ const EventPassageXRay: React.FC<{
           </thead>
 
           <tbody>
-            {variables.length > 0 &&
+            {event &&
+              variables.length > 0 &&
               variables.map((variable) => {
                 const { id, title, type, initialValue } = variable
 
