@@ -12,8 +12,6 @@
   }
 
   #engine-xray {
-    border-top: var(--event-passage-bottom-border);
-
     table {
       width: 100%;
 
@@ -49,6 +47,13 @@
       td.xray-row-id {
         width: 10rem;
       }
+    }
+
+    table.event-data {
+      position: sticky;
+      top: 0;
+      border-top: 1px solid var(--border-color-20);
+      background: black;
     }
   }
 }

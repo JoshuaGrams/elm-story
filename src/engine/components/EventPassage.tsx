@@ -25,7 +25,6 @@ import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 import EventPassageContent from './EventPassageContent'
 import EventPassageChoices from './EventPassageChoices'
 import EventPassageInput from './EventPassageInput'
-import EventPassageXRay from './EventPassageXRay'
 
 export type RouteProcessor = ({
   originId: origin,
@@ -122,12 +121,23 @@ export const EventPassage: React.FC<{
 
   useResizeObserver(passageRef, () => {
     passageRef.current &&
-      api.start({ height: passageRef.current.getBoundingClientRect().height })
+      api.start({
+        height: passageRef.current.getBoundingClientRect().height + 1 // handles border bottom change
+      })
   })
 
   return (
     <animated.div style={styles}>
-      <div className="event-passage" ref={passageRef}>
+      <div
+        className="event-passage"
+        style={{
+          borderBottom:
+            event.id === engine.currentEvent
+              ? 'none'
+              : 'var(--event-passage-bottom-border)'
+        }}
+        ref={passageRef}
+      >
         {passage && (
           <>
             <EventPassageContent
@@ -168,11 +178,6 @@ export const EventPassage: React.FC<{
             </a>{' '}
             event stream.
           </div>
-        )}
-
-        {/* TODO: non-pro xray only available for current event */}
-        {event?.id === engine.currentEvent && engine.devTools.xrayVisible && (
-          <EventPassageXRay event={event} />
         )}
       </div>
     </animated.div>

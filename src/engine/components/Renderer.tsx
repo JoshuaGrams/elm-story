@@ -13,6 +13,10 @@ import {
 import TitleCard from './TitleCard'
 import EventStreamTitleBar from './EventStreamTitleBar'
 import EventStream from './EventStream'
+
+import EventPassageXRay, {
+  ENGINE_XRAY_CONTAINER_HEIGHT
+} from './EventPassageXRay'
 import ResetNotification from './ResetNotifcation'
 
 const Renderer: React.FC = () => {
@@ -74,7 +78,28 @@ const Renderer: React.FC = () => {
               {!engine.isEditor && <EventStreamTitleBar />}
               <EventStream />
 
-              {engine.isEditor && <ResetNotification />}
+              {engine.isEditor && (
+                <>
+                  {engine.gameInfo && engine.devTools.xrayVisible && (
+                    <div
+                      style={{
+                        height: ENGINE_XRAY_CONTAINER_HEIGHT,
+                        width: '100%',
+                        bottom: 0,
+                        position: 'absolute',
+                        background: 'black',
+                        overflowY: 'auto'
+                      }}
+                    >
+                      {engine.eventsInStream.length > 0 && (
+                        <EventPassageXRay event={engine.eventsInStream[0]} />
+                      )}
+                    </div>
+                  )}
+
+                  <ResetNotification />
+                </>
+              )}
             </>
           )}
         </>

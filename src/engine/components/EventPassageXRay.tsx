@@ -12,7 +12,11 @@ import {
 
 import { EngineContext } from '../contexts/EngineContext'
 
-const EventPassageXRay: React.FC<{ event: EngineEventData }> = ({ event }) => {
+export const ENGINE_XRAY_CONTAINER_HEIGHT = 250
+
+const EventPassageXRay: React.FC<{
+  event: EngineEventData
+}> = React.memo(({ event }) => {
   const { engine } = useContext(EngineContext)
 
   if (!engine.gameInfo) return null
@@ -41,7 +45,7 @@ const EventPassageXRay: React.FC<{ event: EngineEventData }> = ({ event }) => {
 
   return (
     <div id="engine-xray">
-      <table>
+      <table className="event-data">
         <thead>
           <tr>
             <th colSpan={2}>Current Event | XRAY</th>
@@ -68,39 +72,41 @@ const EventPassageXRay: React.FC<{ event: EngineEventData }> = ({ event }) => {
         </tbody>
       </table>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Variable Title</th>
-            <th>ID</th>
-            <th>Type</th>
-            <th>Initial Value</th>
-            <th>Current Value</th>
-          </tr>
-        </thead>
+      {variables.length > 0 && (
+        <table id="engine-xray-variables">
+          <thead>
+            <tr>
+              <th>Variable Title</th>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Initial Value</th>
+              <th>Current Value</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {Object.keys(event.state).map((variableId) => {
-            const { title, type, value } = event.state[variableId],
-              foundVariable = variables.find(
-                (variable) => variable.id === variableId
-              )
+          <tbody>
+            {variables.length > 0 &&
+              variables.map((variable) => {
+                const { id, title, type, initialValue } = variable
 
-            return (
-              <tr key={`event-state-${variableId}`}>
-                <td>{title}</td>
-                <td>{variableId}</td>
-                <td>{type}</td>
-                <td>{foundVariable?.initialValue || 'undefined'}</td>
-                <td>{value || 'undefined'}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+                return (
+                  <>
+                    <tr key={`event-state-variable-${id}`}>
+                      <td>{title}</td>
+                      <td>{id}</td>
+                      <td>{type}</td>
+                      <td>{initialValue || 'undefined'}</td>
+                      <td>{event.state[id]?.value || 'undefined'}</td>
+                    </tr>
+                  </>
+                )
+              })}
+          </tbody>
+        </table>
+      )}
     </div>
   )
-}
+})
 
 EventPassageXRay.displayName = 'EventPassageXRay'
 

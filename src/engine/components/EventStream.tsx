@@ -1,6 +1,6 @@
 import { cloneDeep, pick } from 'lodash'
 
-import React, { useContext, useRef, useCallback } from 'react'
+import React, { useContext, useRef, useCallback, useEffect } from 'react'
 import { useTransition, animated } from 'react-spring'
 import { useQuery } from 'react-query'
 import { useLiveQuery } from 'dexie-react-hooks'
@@ -22,6 +22,7 @@ import { INITIAL_ENGINE_EVENT_ORIGIN_KEY, scrollElementToBottom } from '../lib'
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 import { SettingsContext } from '../contexts/SettingsContext'
 
+import { ENGINE_XRAY_CONTAINER_HEIGHT } from './EventPassageXRay'
 import Event from './Event'
 
 const EventStream: React.FC = React.memo(() => {
@@ -211,13 +212,21 @@ const EventStream: React.FC = React.memo(() => {
     () => eventsRef.current && scrollElementToBottom(eventsRef.current)
   )
 
+  useEffect(() => {
+    eventsRef.current && scrollElementToBottom(eventsRef.current)
+  }, [engine.devTools.xrayVisible])
+
   return (
     <>
       <div
         id="event-stream"
         style={{
           overflowY: settings.open ? 'hidden' : 'auto',
-          top: engine.isEditor ? '0' : ''
+          top: engine.isEditor ? '0' : '',
+          marginBottom:
+            engine.isEditor && engine.devTools.xrayVisible
+              ? ENGINE_XRAY_CONTAINER_HEIGHT
+              : 0
         }}
       >
         <div id="events" ref={eventsRef}>
