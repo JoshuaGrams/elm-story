@@ -6,6 +6,8 @@ import {
   uniqueNamesGenerator
 } from 'unique-names-generator'
 
+import api from '../../api'
+
 import { GameId, StudioId, VARIABLE_TYPE } from '../../data/types'
 
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
@@ -13,12 +15,12 @@ import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 import { PlusOutlined } from '@ant-design/icons'
 
 import ComponentProperties from '../ComponentProperties'
+import GameStyles from '../GameStyles'
+
 import GameVariables from '../GameVariables'
 import GameProblems from '../GameProblems'
 
 import styles from './styles.module.less'
-
-import api from '../../api'
 
 const GameInspector: React.FC<{
   studioId: StudioId
@@ -47,6 +49,13 @@ const GameInspector: React.FC<{
                       )}
                     </>
                   ),
+                  group: 'default'
+                },
+                {
+                  id: 'stylesTab',
+                  title: 'Styles',
+                  minHeight: 32,
+                  content: <GameStyles />,
                   group: 'default'
                 }
               ]
