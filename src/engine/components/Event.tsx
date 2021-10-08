@@ -161,15 +161,15 @@ const Event: React.FC<{ data: EngineEventData }> = ({ data }) => {
   }
 
   return (
-    <div
-      className={`event ${engine.currentEvent !== data.id ? 'event-past' : ''}`}
-    >
+    <div className={`event ${event?.result ? 'event-past' : ''}`}>
       {event && (
-        <EventPassage
-          passageId={data.destination}
-          event={event}
-          onRouteFound={gotoNextEvent}
-        />
+        <>
+          <EventPassage
+            passageId={data.destination}
+            event={event}
+            onRouteFound={gotoNextEvent}
+          />
+        </>
       )}
     </div>
   )
