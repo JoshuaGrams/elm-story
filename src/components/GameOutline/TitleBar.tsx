@@ -1,4 +1,3 @@
-import logger from '../../lib/logger'
 import getGameDataJSON from '../../lib/getGameDataJSON'
 
 import React, { useContext, useState } from 'react'
@@ -11,14 +10,9 @@ import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { Button, Tooltip } from 'antd'
-import {
-  EditOutlined,
-  ExportOutlined,
-  LeftOutlined,
-  PlusOutlined
-} from '@ant-design/icons'
+import { ExportOutlined, LeftOutlined, PlusOutlined } from '@ant-design/icons'
 
-import { ExportJSONModal, SaveGameModal } from '../Modal'
+import { ExportJSONModal } from '../Modal'
 
 import styles from './styles.module.less'
 import AddComponentMenu from './AddComponentMenu'
@@ -33,8 +27,7 @@ const TitleBar: React.FC<{
   const { app } = useContext(AppContext),
     { editor, editorDispatch } = useContext(EditorContext)
 
-  const [editGameModalVisible, setEditGameModalVisible] = useState(false),
-    [exportJSONModalVisible, setExportJSONModalVisible] = useState(false)
+  const [exportJSONModalVisible, setExportJSONModalVisible] = useState(false)
 
   async function onExportGameDataAsJSON() {
     if (game.id) {
@@ -57,29 +50,6 @@ const TitleBar: React.FC<{
 
   return (
     <>
-      <SaveGameModal
-        visible={editGameModalVisible}
-        onSave={({ id, title }) => {
-          if (id && title) {
-            logger.info('EDITOR_ACTION_TYPE.COMPONENT_RENAME dispatch')
-
-            editorDispatch({
-              type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
-              renamedComponent: {
-                id,
-                newTitle: title,
-                type: COMPONENT_TYPE.GAME
-              }
-            })
-          }
-        }}
-        onCancel={() => setEditGameModalVisible(false)}
-        afterClose={() => setEditGameModalVisible(false)}
-        studioId={studioId}
-        game={game}
-        edit
-      />
-
       <ExportJSONModal visible={exportJSONModalVisible} />
 
       <div className={styles.TitleBar}>
@@ -144,17 +114,6 @@ const TitleBar: React.FC<{
           >
             <Button onClick={onExportGameDataAsJSON} type="link">
               <ExportOutlined />
-            </Button>
-          </Tooltip>
-
-          <Tooltip
-            title="Edit Game Details..."
-            placement="right"
-            align={{ offset: [-6, 0] }}
-            mouseEnterDelay={1}
-          >
-            <Button onClick={() => setEditGameModalVisible(true)} type="link">
-              <EditOutlined />
             </Button>
           </Tooltip>
 
