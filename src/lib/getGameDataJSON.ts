@@ -1,5 +1,16 @@
-import { ComponentId, GameId, StudioId } from '../data/types'
-import { GameDataJSON } from './transport/types/0.5.0'
+import {
+  ComponentId,
+  GameId,
+  StudioId,
+  GameDataJSON,
+  GameChildRefs,
+  FolderChildRefs,
+  FolderParentRef,
+  COMPONENT_TYPE,
+  PASSAGE_TYPE,
+  SceneChildRefs,
+  SceneParentRef
+} from './transport/types/0.5.0'
 
 import api from '../api'
 
@@ -28,10 +39,12 @@ export default async (
 
     let gameData: GameDataJSON = {
       _: {
-        children: game.children,
+        children: game.children as GameChildRefs,
+        copyright: game.copyright,
+        description: game.description,
         designer: game.designer,
-        id: game.id as ComponentId,
         engine: schemaVersion,
+        id: game.id as ComponentId,
         jump: game.jump,
         schema: `https://elmstory.com/schema/elm-story-${schemaVersion}.json`,
         studioId: studioId,
@@ -39,7 +52,8 @@ export default async (
         tags: game.tags,
         title: game.title,
         updated: game.updated as number,
-        version: game.version
+        version: game.version,
+        website: game.website
       },
       choices: {},
       conditions: {},
@@ -93,9 +107,9 @@ export default async (
     folders.map(
       ({ children, id, parent, tags, title, updated }) =>
         (gameData.folders[id as string] = {
-          children,
+          children: children as FolderChildRefs,
           id: id as string,
-          parent,
+          parent: parent as FolderParentRef,
           tags,
           title,
           updated: updated as number
@@ -173,11 +187,11 @@ export default async (
         (gameData.routes[id as string] = {
           choiceId,
           destinationId,
-          destinationType,
+          destinationType: destinationType as COMPONENT_TYPE,
           id: id as string,
           inputId,
           originId,
-          originType,
+          originType: originType as COMPONENT_TYPE | PASSAGE_TYPE,
           sceneId,
           tags,
           title,
@@ -188,11 +202,11 @@ export default async (
     scenes.map(
       ({ children, editor, id, jumps, parent, tags, title, updated }) =>
         (gameData.scenes[id as string] = {
-          children,
+          children: children as SceneChildRefs,
           editor,
           id: id as string,
           jumps,
-          parent,
+          parent: parent as SceneParentRef,
           tags,
           title,
           updated: updated as number

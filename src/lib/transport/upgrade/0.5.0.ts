@@ -3,8 +3,13 @@ import { cloneDeep } from 'lodash-es'
 
 import { GameDataJSON as GameDataJSON_040 } from '../types/0.4.0'
 import {
+  FolderCollection,
+  GameChildRefs,
   GameDataJSON as GameDataJSON_050,
-  PassageCollection
+  PassageCollection,
+  RootData,
+  RouteCollection,
+  SceneCollection
 } from '../types/0.5.0'
 
 export default ({
@@ -30,20 +35,23 @@ export default ({
     }
   })
 
+  const upgradedRootData: RootData = {
+    ..._,
+    children: _.children as GameChildRefs,
+    engine: '0.5.0'
+  }
+
   return {
-    _: {
-      ..._,
-      engine: '0.5.0'
-    },
+    _: upgradedRootData,
     choices,
     conditions,
     effects,
-    folders,
+    folders: folders as FolderCollection,
     inputs,
     jumps,
     passages: upgradedPassages,
-    routes,
-    scenes,
+    routes: routes as RouteCollection,
+    scenes: scenes as SceneCollection,
     variables
   }
 }

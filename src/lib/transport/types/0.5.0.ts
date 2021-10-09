@@ -69,9 +69,11 @@ export type SceneChildRefs = Array<[COMPONENT_TYPE.PASSAGE, ComponentId]>
 
 export interface RootData {
   children: GameChildRefs
+  copyright?: string
+  description?: string
   designer: string
-  id: string
   engine: string
+  id: string
   jump: string | null
   schema: string
   studioId: StudioId
@@ -80,6 +82,7 @@ export interface RootData {
   title: string
   updated: number
   version: string
+  website?: string
 }
 
 export interface ChoiceData {
@@ -373,6 +376,8 @@ export interface EngineGameMeta {
 
 export interface EngineGameData {
   children: GameChildRefs
+  copyright?: string
+  description?: string
   designer: string
   engine: string
   id: GameId
@@ -384,6 +389,7 @@ export interface EngineGameData {
   title: string
   updated: number
   version: string
+  website?: string
 }
 
 export interface EngineGameCollection {
@@ -481,7 +487,7 @@ export interface ESGEngineCollectionData {
   choices: EngineChoiceCollection
   conditions: EngineConditionCollection
   effects: EngineEffectCollection
-  games: EngineGameData
+  games: EngineGameCollection
   inputs: EngineInputCollection
   jumps: EngineJumpCollection
   passages: EnginePassageCollection

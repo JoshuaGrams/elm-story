@@ -101,12 +101,15 @@ export type GameChildRefs = Array<
 
 export interface Game extends Component {
   children: GameChildRefs
-  id?: GameId
-  template: GAME_TEMPLATE
+  copyright?: string
+  description?: string
   designer: string
-  version: string
   engine: string
+  id?: GameId
   jump: ComponentId | null // Jump
+  template: GAME_TEMPLATE
+  version: string
+  website?: string
 }
 
 // To reduce dupe, set null when parent is of type GAME

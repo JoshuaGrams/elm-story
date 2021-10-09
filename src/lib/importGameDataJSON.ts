@@ -300,14 +300,17 @@ export default (
           // Save game data
           await api().games.saveGame(_.studioId, {
             children: _.children,
-            id: _.id,
+            copyright: _.copyright,
+            description: _.description,
             designer: _.designer,
             engine: _.engine,
+            id: _.id,
             jump: _.jump,
             tags: _.tags,
-            title: `${_.title} (Imported)`,
             template: GAME_TEMPLATE.ADVENTURE,
-            version: _.version
+            title: `${_.title} (Imported)`,
+            version: _.version,
+            website: _.website
           })
         } catch (error) {
           return [`${error}`]
