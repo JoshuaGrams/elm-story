@@ -12,7 +12,7 @@ import {
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
-import Runtime from '../../engine/Runtime'
+import Runtime from './embeded/Runtime'
 
 const GameEngine: React.FC<{ studioId: StudioId; gameId: GameId }> = React.memo(
   ({ studioId, gameId }) => {

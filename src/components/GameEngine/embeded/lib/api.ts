@@ -32,7 +32,7 @@ import {
   AUTO_ENGINE_BOOKMARK_KEY,
   DEFAULT_ENGINE_SETTINGS_KEY,
   INITIAL_ENGINE_EVENT_ORIGIN_KEY
-} from '../lib'
+} from '.'
 
 export const getGameInfo = async (
   studioId: StudioId,
