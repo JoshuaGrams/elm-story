@@ -9,6 +9,6 @@ export default defineConfig({
   build: {
     manifest: true,
     minify: false,
-    outDir: 'dist-build'
+    outDir: '../assets/engine-dist'
   }
 })

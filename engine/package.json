@@ -12,7 +12,7 @@
   },
   "license": "UNLICENSED",
   "scripts": {
-    "build": "rimraf ./tsc-build && tsc && rimraf ./dist-build && vite build",
+    "build": "rimraf ./tsc-build && tsc && rimraf ../assets/engine-dist && vite build",
     "serve": "vite preview",
     "dev": "vite",
     "dev-embed": "vite --mode embed"
