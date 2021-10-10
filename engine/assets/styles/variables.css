@@ -1,0 +1,76 @@
+:root {
+  --text-size: 62.5%;
+
+  --primary-color: hsl(265, 100%, 60%);
+  --primary-color-brighter: hsl(265, 100%, 65%);
+  --primary-color-darker: hsl(265, 100%, 55%);
+
+  --white: hsl(0, 0%, 97%);
+  --black: hsl(0, 0%, 3%);
+
+  --min-interaction-height: 4.4rem;
+  --runtime-width: 680px;
+
+  --btn-text-color: var(--white);
+
+  --link-color: var(--primary-color);
+  --link-hover-color: var(--primary-color);
+
+  --settings-z-index: 100;
+
+  --title-bar-height: var(--min-interaction-height);
+  --title-bar-z-index: 10;
+}
+
+html[data-theme='BOOK'] {
+  --background-color: var(--white);
+  --text-color: var(--black);
+  --font-family: 'Literata';
+
+  --btn-background-color: var(--primary-color);
+  --btn-background-color-hover: var(--primary-color-brighter);
+  --btn-border: none;
+  --btn-border-hover-color: transparent;
+
+  --renderer-border-color: hsl(0, 0%, 92%);
+
+  --title-bar-background-color: var(--white);
+
+  --event-top-border: 0.1rem solid hsl(0, 0%, 94%);
+  --event-passage-bottom-border: 0.1rem solid hsl(0, 0%, 88%);
+  --event-past-text-color: hsl(0, 0%, 70%);
+  --event-past-choice-background-color: hsl(0, 0%, 90%);
+  --event-past-choice-border: none;
+  --event-past-choice-text-color: hsl(0, 0%, 80%);
+  --event-past-choice-result-background-color: var(
+    --event-past-choice-background-color
+  );
+  --event-past-choice-result-text-color: hsl(0, 0%, 40%);
+}
+
+html[data-theme='CONSOLE'] {
+  --background-color: var(--black);
+  --text-color: var(--white);
+  --font-family: 'Fira Code';
+
+  --btn-background-color: transparent;
+  --btn-background-color-hover: var(--primary-color-darker);
+  --btn-border: 0.1rem solid var(--primary-color);
+  --btn-border-hover-color: var(--primary-color-brighter);
+
+  --renderer-border-color: hsl(0, 0%, 8%);
+
+  --title-bar-background-color: var(--black);
+
+  --event-top-border: 0.1rem solid hsl(0, 0%, 6%);
+  --event-passage-bottom-border: 0.1rem solid hsl(0, 0%, 12%);
+  --event-past-text-color: hsl(0, 0%, 30%);
+  --event-past-choice-background-color: none;
+  --event-past-choice-border: 1px solid hsl(0, 0%, 10%);
+  --event-past-text-hover-color: hsl(0, 0%, 70%);
+  --event-past-choice-text-color: hsl(0, 0%, 10%);
+  --event-past-choice-result-background-color: var(
+    --event-past-choice-background-color
+  );
+  --event-past-choice-result-text-color: hsl(0, 0%, 60%);
+}

@@ -1,0 +1,892 @@
+{
+  "_": {
+    "children": [
+      [
+        "SCENE",
+        "8d38a413-fdf2-4a49-8d76-b533647c2885"
+      ],
+      [
+        "SCENE",
+        "7f7900d0-19a9-4669-b1d3-34855714f7b9"
+      ]
+    ],
+    "designer": "ritsuke",
+    "id": "4dd3a18a-307d-4796-9f73-48045de9e8a3",
+    "engine": "0.5.0",
+    "jump": "4cce5959-115f-4237-bfbf-caee17795218",
+    "schema": "https://elmstory.com/schema/elm-story-0.5.0.json",
+    "studioId": "131415d0-0684-40f6-a474-9797968cd850",
+    "studioTitle": "Elm Story Games",
+    "tags": [],
+    "title": "loopback",
+    "updated": 1632278863564,
+    "version": "0.0.1"
+  },
+  "choices": {
+    "26aa18ff-844e-4324-9b00-59ea2ef19690": {
+      "id": "26aa18ff-844e-4324-9b00-59ea2ef19690",
+      "passageId": "1b740e70-5bdf-4847-82a7-54e83d3eb1e9",
+      "tags": [],
+      "title": "Branch fork",
+      "updated": 1632160376038
+    },
+    "416b62b8-b1e1-4f17-89a1-94fcd9f895bb": {
+      "id": "416b62b8-b1e1-4f17-89a1-94fcd9f895bb",
+      "passageId": "a7c416d7-3a2c-4161-9232-87300a79dc10",
+      "tags": [],
+      "title": "Sub branch 2",
+      "updated": 1632161593495
+    },
+    "4d9497f7-2adc-4509-a9d6-63be32baef2c": {
+      "id": "4d9497f7-2adc-4509-a9d6-63be32baef2c",
+      "passageId": "cb915624-a324-4e09-8a86-f0909bd013a0",
+      "tags": [],
+      "title": "Sub branch 3 end",
+      "updated": 1632161425250
+    },
+    "5b5a0445-5679-4b26-9652-ca0789a59eb3": {
+      "id": "5b5a0445-5679-4b26-9652-ca0789a59eb3",
+      "passageId": "2479ceb8-ac36-4d8a-b088-158ad972bdce",
+      "tags": [],
+      "title": "Branch sub 1",
+      "updated": 1632261242616
+    },
+    "80fccb55-859c-4ab4-ae43-d9fae23eb1fd": {
+      "id": "80fccb55-859c-4ab4-ae43-d9fae23eb1fd",
+      "passageId": "a9096764-a358-4a77-9676-cb0e1c875187",
+      "tags": [],
+      "title": "Sub branch 1",
+      "updated": 1632161571344
+    },
+    "8b3410d9-ebb5-48c4-a168-144986c7b93a": {
+      "id": "8b3410d9-ebb5-48c4-a168-144986c7b93a",
+      "passageId": "ef16f649-f10b-4f29-a868-487722b7c6b8",
+      "tags": [],
+      "title": "Root branch",
+      "updated": 1632160244261
+    },
+    "8e3fd920-baf2-47b4-8d71-5bf169cab5b4": {
+      "id": "8e3fd920-baf2-47b4-8d71-5bf169cab5b4",
+      "passageId": "1bbcbe71-a5ad-4cd6-846e-c2bc009968c5",
+      "tags": [],
+      "title": "Manual loopback",
+      "updated": 1632161490609
+    },
+    "90275447-5956-4d14-94a0-da0711263900": {
+      "id": "90275447-5956-4d14-94a0-da0711263900",
+      "passageId": "36ad0369-eb3e-4a15-975a-78421f203c59",
+      "tags": [],
+      "title": "Scene 2",
+      "updated": 1632161656448
+    },
+    "9dd65e80-efc7-4067-9c71-b810db350007": {
+      "id": "9dd65e80-efc7-4067-9c71-b810db350007",
+      "passageId": "75647b22-fc8a-4071-b357-101aad4dcb04",
+      "tags": [],
+      "title": "Sub branch 1",
+      "updated": 1632160141097
+    },
+    "ab8e8c3b-e096-489a-a784-fa1041a6b01b": {
+      "id": "ab8e8c3b-e096-489a-a784-fa1041a6b01b",
+      "passageId": "64bbad9b-c64d-4044-8a81-b001ae492807",
+      "tags": [],
+      "title": "Sub branch 1 end",
+      "updated": 1632160491770
+    },
+    "c05e36b5-a3eb-4248-8c1a-6c2584bb6fab": {
+      "id": "c05e36b5-a3eb-4248-8c1a-6c2584bb6fab",
+      "passageId": "eb8bbb11-5f98-4fc0-8c42-8c6b643564b3",
+      "tags": [],
+      "title": "Sub branch 3",
+      "updated": 1632160874494
+    },
+    "d6e6f2e6-a7e0-4790-893e-f11d0952dcb1": {
+      "id": "d6e6f2e6-a7e0-4790-893e-f11d0952dcb1",
+      "passageId": "1bbcbe71-a5ad-4cd6-846e-c2bc009968c5",
+      "tags": [],
+      "title": "Sub branch 3 end",
+      "updated": 1632161375842
+    },
+    "d89de7eb-bdf4-4ce5-9722-a1fabb58ba61": {
+      "id": "d89de7eb-bdf4-4ce5-9722-a1fabb58ba61",
+      "passageId": "a9096764-a358-4a77-9676-cb0e1c875187",
+      "tags": [],
+      "title": "Sub branch 2",
+      "updated": 1632161576275
+    },
+    "e0353b5b-467b-4163-943a-5886cb7efaaa": {
+      "id": "e0353b5b-467b-4163-943a-5886cb7efaaa",
+      "passageId": "75647b22-fc8a-4071-b357-101aad4dcb04",
+      "tags": [],
+      "title": "Jump root branch 2",
+      "updated": 1632160782270
+    },
+    "ef824f72-32bd-4c6b-b521-de8737c6e69d": {
+      "id": "ef824f72-32bd-4c6b-b521-de8737c6e69d",
+      "passageId": "ed0b509b-7c0f-4ff1-8a25-e0bd9e69ff6e",
+      "tags": [],
+      "title": "Branch sub 1 end",
+      "updated": 1632261273897
+    },
+    "f5b0daad-ff9b-4a93-ba42-e3bd34c1e3e3": {
+      "id": "f5b0daad-ff9b-4a93-ba42-e3bd34c1e3e3",
+      "passageId": "75647b22-fc8a-4071-b357-101aad4dcb04",
+      "tags": [],
+      "title": "Sub branch 2",
+      "updated": 1632160145915
+    },
+    "fddfc0bf-f56e-4045-8a6f-86d3ec1c7614": {
+      "id": "fddfc0bf-f56e-4045-8a6f-86d3ec1c7614",
+      "passageId": "cb915624-a324-4e09-8a86-f0909bd013a0",
+      "tags": [],
+      "title": "input",
+      "updated": 1632163804859
+    }
+  },
+  "conditions": {
+    "1a6a3816-a0f5-4978-bbdc-c7cf5b51f14c": {
+      "compare": [
+        "9221fa19-9455-4061-ae8e-f6a28a11f852",
+        "<",
+        "1"
+      ],
+      "id": "1a6a3816-a0f5-4978-bbdc-c7cf5b51f14c",
+      "routeId": "7fa64895-055a-4a38-ba70-4c81a56b6f4c",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1632263807954,
+      "variableId": "9221fa19-9455-4061-ae8e-f6a28a11f852"
+    }
+  },
+  "effects": {
+    "b35e7cf8-a8b3-44c9-b927-e00fe5eb84dc": {
+      "id": "b35e7cf8-a8b3-44c9-b927-e00fe5eb84dc",
+      "routeId": "7fa64895-055a-4a38-ba70-4c81a56b6f4c",
+      "set": [
+        "9221fa19-9455-4061-ae8e-f6a28a11f852",
+        "+",
+        "1"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1632262560563,
+      "variableId": "9221fa19-9455-4061-ae8e-f6a28a11f852"
+    }
+  },
+  "folders": {},
+  "inputs": {
+    "0ae05fa2-face-4728-824b-d2c725ea1fad": {
+      "id": "0ae05fa2-face-4728-824b-d2c725ea1fad",
+      "passageId": "1a4524b5-86f4-4f1a-a3d2-10d928f7f5a7",
+      "tags": [],
+      "title": "Untitled Input",
+      "updated": 1632163827090,
+      "variableId": "083cbede-fdd7-4416-995d-67d76903c91d"
+    }
+  },
+  "jumps": {
+    "0aa5fb32-8ddd-4811-adbe-da42fc488c5e": {
+      "editor": {
+        "componentEditorPosX": 1760,
+        "componentEditorPosY": 372
+      },
+      "id": "0aa5fb32-8ddd-4811-adbe-da42fc488c5e",
+      "route": [
+        "7f7900d0-19a9-4669-b1d3-34855714f7b9"
+      ],
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Jump to scene 2",
+      "updated": 1632161679247
+    },
+    "0e3853d1-1938-460e-b797-8aeb9da502c1": {
+      "editor": {
+        "componentEditorPosX": 1296,
+        "componentEditorPosY": 24
+      },
+      "id": "0e3853d1-1938-460e-b797-8aeb9da502c1",
+      "route": [
+        "8d38a413-fdf2-4a49-8d76-b533647c2885",
+        "1bbcbe71-a5ad-4cd6-846e-c2bc009968c5"
+      ],
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Jump to sub branch 3",
+      "updated": 1632161464376
+    },
+    "219d0842-b0b3-44f1-be93-83fc3b37845d": {
+      "editor": {
+        "componentEditorPosX": 812,
+        "componentEditorPosY": 628
+      },
+      "id": "219d0842-b0b3-44f1-be93-83fc3b37845d",
+      "route": [
+        "8d38a413-fdf2-4a49-8d76-b533647c2885",
+        "eb8bbb11-5f98-4fc0-8c42-8c6b643564b3"
+      ],
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Jump to root branch 2",
+      "updated": 1632160828688
+    },
+    "4cce5959-115f-4237-bfbf-caee17795218": {
+      "id": "4cce5959-115f-4237-bfbf-caee17795218",
+      "route": [
+        "8d38a413-fdf2-4a49-8d76-b533647c2885",
+        "ef16f649-f10b-4f29-a868-487722b7c6b8"
+      ],
+      "tags": [],
+      "title": "On Game Start Jump",
+      "updated": 1632279128191
+    },
+    "60c4f314-6732-482c-b904-20a74b803b89": {
+      "editor": {
+        "componentEditorPosX": 529.7018970189705,
+        "componentEditorPosY": 243.1193495934957
+      },
+      "id": "60c4f314-6732-482c-b904-20a74b803b89",
+      "route": [
+        "8d38a413-fdf2-4a49-8d76-b533647c2885",
+        "1b740e70-5bdf-4847-82a7-54e83d3eb1e9"
+      ],
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Jump to root branch",
+      "updated": 1632160318935
+    }
+  },
+  "passages": {
+    "1a4524b5-86f4-4f1a-a3d2-10d928f7f5a7": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Input\"}]}]",
+      "editor": {
+        "componentEditorPosX": 1524,
+        "componentEditorPosY": 228
+      },
+      "gameOver": false,
+      "id": "1a4524b5-86f4-4f1a-a3d2-10d928f7f5a7",
+      "input": "0ae05fa2-face-4728-824b-d2c725ea1fad",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Input",
+      "type": "INPUT",
+      "updated": 1632163834014
+    },
+    "1b740e70-5bdf-4847-82a7-54e83d3eb1e9": {
+      "choices": [
+        "26aa18ff-844e-4324-9b00-59ea2ef19690"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Root branch\"}]}]",
+      "editor": {
+        "componentEditorPosX": 296,
+        "componentEditorPosY": 464
+      },
+      "gameOver": false,
+      "id": "1b740e70-5bdf-4847-82a7-54e83d3eb1e9",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Root branch",
+      "type": "CHOICE",
+      "updated": 1632160373938
+    },
+    "1bbcbe71-a5ad-4cd6-846e-c2bc009968c5": {
+      "choices": [
+        "8e3fd920-baf2-47b4-8d71-5bf169cab5b4",
+        "d6e6f2e6-a7e0-4790-893e-f11d0952dcb1"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Sub branch 3\"}]}]",
+      "editor": {
+        "componentEditorPosX": 1064,
+        "componentEditorPosY": 200
+      },
+      "gameOver": false,
+      "id": "1bbcbe71-a5ad-4cd6-846e-c2bc009968c5",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Sub branch 3",
+      "type": "CHOICE",
+      "updated": 1632161333738
+    },
+    "2479ceb8-ac36-4d8a-b088-158ad972bdce": {
+      "choices": [
+        "5b5a0445-5679-4b26-9652-ca0789a59eb3"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Branch root\"}]}]",
+      "editor": {
+        "componentEditorPosX": 336,
+        "componentEditorPosY": -120
+      },
+      "gameOver": false,
+      "id": "2479ceb8-ac36-4d8a-b088-158ad972bdce",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Branch root",
+      "type": "CHOICE",
+      "updated": 1632261225842
+    },
+    "36ad0369-eb3e-4a15-975a-78421f203c59": {
+      "choices": [
+        "90275447-5956-4d14-94a0-da0711263900"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Sub branch 3 end\"}]}]",
+      "editor": {
+        "componentEditorPosX": 1520,
+        "componentEditorPosY": 340
+      },
+      "gameOver": false,
+      "id": "36ad0369-eb3e-4a15-975a-78421f203c59",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Sub branch 3 end",
+      "type": "CHOICE",
+      "updated": 1632161782033
+    },
+    "64bbad9b-c64d-4044-8a81-b001ae492807": {
+      "choices": [
+        "ab8e8c3b-e096-489a-a784-fa1041a6b01b"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Sub branch 1\"}]}]",
+      "editor": {
+        "componentEditorPosX": 808,
+        "componentEditorPosY": 472
+      },
+      "gameOver": false,
+      "id": "64bbad9b-c64d-4044-8a81-b001ae492807",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Sub branch 1",
+      "type": "CHOICE",
+      "updated": 1632160192051
+    },
+    "75647b22-fc8a-4071-b357-101aad4dcb04": {
+      "choices": [
+        "9dd65e80-efc7-4067-9c71-b810db350007",
+        "f5b0daad-ff9b-4a93-ba42-e3bd34c1e3e3",
+        "e0353b5b-467b-4163-943a-5886cb7efaaa"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Branch fork\"}]}]",
+      "editor": {
+        "componentEditorPosX": 528,
+        "componentEditorPosY": 496
+      },
+      "gameOver": false,
+      "id": "75647b22-fc8a-4071-b357-101aad4dcb04",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Branch fork",
+      "type": "CHOICE",
+      "updated": 1632160762751
+    },
+    "84e10bb9-c18c-4daa-be16-ba8b6747f1de": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Sub branch 1 end\"}]}]",
+      "editor": {
+        "componentEditorPosX": 1016,
+        "componentEditorPosY": 503.99999999999994
+      },
+      "gameOver": false,
+      "id": "84e10bb9-c18c-4daa-be16-ba8b6747f1de",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Sub branch 1 end",
+      "type": "CHOICE",
+      "updated": 1632161026489
+    },
+    "950f9de5-258b-4ab2-9f75-98ca459dede5": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Branch sub 1 end\"}]}]",
+      "editor": {
+        "componentEditorPosX": 790,
+        "componentEditorPosY": -150
+      },
+      "gameOver": false,
+      "id": "950f9de5-258b-4ab2-9f75-98ca459dede5",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Branch sub 1 end",
+      "type": "CHOICE",
+      "updated": 1632278889978
+    },
+    "a7c416d7-3a2c-4161-9232-87300a79dc10": {
+      "choices": [
+        "416b62b8-b1e1-4f17-89a1-94fcd9f895bb"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Sub branch 1\"}]}]",
+      "editor": {
+        "componentEditorPosX": 296,
+        "componentEditorPosY": 224
+      },
+      "gameOver": false,
+      "id": "a7c416d7-3a2c-4161-9232-87300a79dc10",
+      "sceneId": "7f7900d0-19a9-4669-b1d3-34855714f7b9",
+      "tags": [],
+      "title": "Sub branch 1",
+      "type": "CHOICE",
+      "updated": 1632161621925
+    },
+    "a9096764-a358-4a77-9676-cb0e1c875187": {
+      "choices": [
+        "80fccb55-859c-4ab4-ae43-d9fae23eb1fd",
+        "d89de7eb-bdf4-4ce5-9722-a1fabb58ba61"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Next branch\"}]}]",
+      "editor": {
+        "componentEditorPosX": 84,
+        "componentEditorPosY": 252
+      },
+      "gameOver": false,
+      "id": "a9096764-a358-4a77-9676-cb0e1c875187",
+      "sceneId": "7f7900d0-19a9-4669-b1d3-34855714f7b9",
+      "tags": [],
+      "title": "Next branch",
+      "type": "CHOICE",
+      "updated": 1632161615055
+    },
+    "cb915624-a324-4e09-8a86-f0909bd013a0": {
+      "choices": [
+        "fddfc0bf-f56e-4045-8a6f-86d3ec1c7614",
+        "4d9497f7-2adc-4509-a9d6-63be32baef2c"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Nope\"}]}]",
+      "editor": {
+        "componentEditorPosX": 1296,
+        "componentEditorPosY": 232
+      },
+      "gameOver": false,
+      "id": "cb915624-a324-4e09-8a86-f0909bd013a0",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Nope",
+      "type": "CHOICE",
+      "updated": 1632163802262
+    },
+    "e525dd30-3267-4e21-9749-599977ccea59": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Sub branch 2 - the end of the game!\"}]}]",
+      "editor": {
+        "componentEditorPosX": 516,
+        "componentEditorPosY": 312
+      },
+      "gameOver": true,
+      "id": "e525dd30-3267-4e21-9749-599977ccea59",
+      "sceneId": "7f7900d0-19a9-4669-b1d3-34855714f7b9",
+      "tags": [],
+      "title": "Sub branch 2",
+      "type": "CHOICE",
+      "updated": 1632162007813
+    },
+    "eb8bbb11-5f98-4fc0-8c42-8c6b643564b3": {
+      "choices": [
+        "c05e36b5-a3eb-4248-8c1a-6c2584bb6fab"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Root branch 2\"}]}]",
+      "editor": {
+        "componentEditorPosX": 852,
+        "componentEditorPosY": 168
+      },
+      "gameOver": false,
+      "id": "eb8bbb11-5f98-4fc0-8c42-8c6b643564b3",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Root branch 2",
+      "type": "CHOICE",
+      "updated": 1632160858057
+    },
+    "ed0b509b-7c0f-4ff1-8a25-e0bd9e69ff6e": {
+      "choices": [
+        "ef824f72-32bd-4c6b-b521-de8737c6e69d"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Branch sub 1\"}]}]",
+      "editor": {
+        "componentEditorPosX": 566,
+        "componentEditorPosY": -146
+      },
+      "gameOver": false,
+      "id": "ed0b509b-7c0f-4ff1-8a25-e0bd9e69ff6e",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Branch sub 1",
+      "type": "CHOICE",
+      "updated": 1632278887532
+    },
+    "ef16f649-f10b-4f29-a868-487722b7c6b8": {
+      "choices": [
+        "8b3410d9-ebb5-48c4-a168-144986c7b93a"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Starting branch\"}]}]",
+      "editor": {
+        "componentEditorPosX": 293.70189701897,
+        "componentEditorPosY": 215.11934959349588
+      },
+      "gameOver": false,
+      "id": "ef16f649-f10b-4f29-a868-487722b7c6b8",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Starting branch",
+      "type": "CHOICE",
+      "updated": 1632160357736
+    },
+    "f9cc35bb-b58a-4c26-bc0e-7b41b4f1d084": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Sub branch 2\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]",
+      "editor": {
+        "componentEditorPosX": 812,
+        "componentEditorPosY": 556
+      },
+      "gameOver": false,
+      "id": "f9cc35bb-b58a-4c26-bc0e-7b41b4f1d084",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Sub branch 2",
+      "type": "CHOICE",
+      "updated": 1632160819493
+    }
+  },
+  "routes": {
+    "03557188-9853-4adc-8275-99789ee0146a": {
+      "choiceId": "ab8e8c3b-e096-489a-a784-fa1041a6b01b",
+      "destinationId": "84e10bb9-c18c-4daa-be16-ba8b6747f1de",
+      "destinationType": "PASSAGE",
+      "id": "03557188-9853-4adc-8275-99789ee0146a",
+      "originId": "64bbad9b-c64d-4044-8a81-b001ae492807",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632159887645
+    },
+    "0fd722f1-50dd-45cd-8e62-f0a9de9e3d0e": {
+      "choiceId": "9dd65e80-efc7-4067-9c71-b810db350007",
+      "destinationId": "64bbad9b-c64d-4044-8a81-b001ae492807",
+      "destinationType": "PASSAGE",
+      "id": "0fd722f1-50dd-45cd-8e62-f0a9de9e3d0e",
+      "originId": "75647b22-fc8a-4071-b357-101aad4dcb04",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632159878256
+    },
+    "29cba947-5bd6-49a0-aa1c-6d781c74e120": {
+      "choiceId": "f5b0daad-ff9b-4a93-ba42-e3bd34c1e3e3",
+      "destinationId": "f9cc35bb-b58a-4c26-bc0e-7b41b4f1d084",
+      "destinationType": "PASSAGE",
+      "id": "29cba947-5bd6-49a0-aa1c-6d781c74e120",
+      "originId": "75647b22-fc8a-4071-b357-101aad4dcb04",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632159891412
+    },
+    "3b73c798-6253-47fb-9b1b-0c5ef0ea2f35": {
+      "choiceId": "4d9497f7-2adc-4509-a9d6-63be32baef2c",
+      "destinationId": "36ad0369-eb3e-4a15-975a-78421f203c59",
+      "destinationType": "PASSAGE",
+      "id": "3b73c798-6253-47fb-9b1b-0c5ef0ea2f35",
+      "originId": "cb915624-a324-4e09-8a86-f0909bd013a0",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632161397119
+    },
+    "3c420967-3957-4e5f-b10d-47ba152d48b8": {
+      "choiceId": "8b3410d9-ebb5-48c4-a168-144986c7b93a",
+      "destinationId": "60c4f314-6732-482c-b904-20a74b803b89",
+      "destinationType": "JUMP",
+      "id": "3c420967-3957-4e5f-b10d-47ba152d48b8",
+      "originId": "ef16f649-f10b-4f29-a868-487722b7c6b8",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632160256111
+    },
+    "4dca581e-fdf7-42ac-a2ca-3b727f025e3f": {
+      "choiceId": "80fccb55-859c-4ab4-ae43-d9fae23eb1fd",
+      "destinationId": "a7c416d7-3a2c-4161-9232-87300a79dc10",
+      "destinationType": "PASSAGE",
+      "id": "4dca581e-fdf7-42ac-a2ca-3b727f025e3f",
+      "originId": "a9096764-a358-4a77-9676-cb0e1c875187",
+      "originType": "CHOICE",
+      "sceneId": "7f7900d0-19a9-4669-b1d3-34855714f7b9",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632161563186
+    },
+    "56be88ca-a39c-456d-b18b-44d31025eb8d": {
+      "choiceId": "8e3fd920-baf2-47b4-8d71-5bf169cab5b4",
+      "destinationId": "cb915624-a324-4e09-8a86-f0909bd013a0",
+      "destinationType": "PASSAGE",
+      "id": "56be88ca-a39c-456d-b18b-44d31025eb8d",
+      "originId": "1bbcbe71-a5ad-4cd6-846e-c2bc009968c5",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632161007761
+    },
+    "5704cf85-4102-48a9-85ff-805d5cc07f65": {
+      "choiceId": "8e3fd920-baf2-47b4-8d71-5bf169cab5b4",
+      "destinationId": "0e3853d1-1938-460e-b797-8aeb9da502c1",
+      "destinationType": "JUMP",
+      "id": "5704cf85-4102-48a9-85ff-805d5cc07f65",
+      "originId": "1bbcbe71-a5ad-4cd6-846e-c2bc009968c5",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632160990175
+    },
+    "627caf8f-c32c-4e4a-82b0-819cc0fe9adf": {
+      "choiceId": "c05e36b5-a3eb-4248-8c1a-6c2584bb6fab",
+      "destinationId": "1bbcbe71-a5ad-4cd6-846e-c2bc009968c5",
+      "destinationType": "PASSAGE",
+      "id": "627caf8f-c32c-4e4a-82b0-819cc0fe9adf",
+      "originId": "eb8bbb11-5f98-4fc0-8c42-8c6b643564b3",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632160865075
+    },
+    "7412db1c-ea3a-4bd3-8d62-7e8e20c1609c": {
+      "choiceId": "fddfc0bf-f56e-4045-8a6f-86d3ec1c7614",
+      "destinationId": "1a4524b5-86f4-4f1a-a3d2-10d928f7f5a7",
+      "destinationType": "PASSAGE",
+      "id": "7412db1c-ea3a-4bd3-8d62-7e8e20c1609c",
+      "originId": "cb915624-a324-4e09-8a86-f0909bd013a0",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632163808690
+    },
+    "7fa64895-055a-4a38-ba70-4c81a56b6f4c": {
+      "choiceId": "ef824f72-32bd-4c6b-b521-de8737c6e69d",
+      "destinationId": "950f9de5-258b-4ab2-9f75-98ca459dede5",
+      "destinationType": "PASSAGE",
+      "id": "7fa64895-055a-4a38-ba70-4c81a56b6f4c",
+      "originId": "ed0b509b-7c0f-4ff1-8a25-e0bd9e69ff6e",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632261215118
+    },
+    "80b6ac07-ab7c-4378-a3ac-a01c3aa4c071": {
+      "choiceId": "d89de7eb-bdf4-4ce5-9722-a1fabb58ba61",
+      "destinationId": "e525dd30-3267-4e21-9749-599977ccea59",
+      "destinationType": "PASSAGE",
+      "id": "80b6ac07-ab7c-4378-a3ac-a01c3aa4c071",
+      "originId": "a9096764-a358-4a77-9676-cb0e1c875187",
+      "originType": "CHOICE",
+      "sceneId": "7f7900d0-19a9-4669-b1d3-34855714f7b9",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632161602783
+    },
+    "8baeee3c-1cab-4ab4-8251-0161cf21e423": {
+      "choiceId": "e0353b5b-467b-4163-943a-5886cb7efaaa",
+      "destinationId": "219d0842-b0b3-44f1-be93-83fc3b37845d",
+      "destinationType": "JUMP",
+      "id": "8baeee3c-1cab-4ab4-8251-0161cf21e423",
+      "originId": "75647b22-fc8a-4071-b357-101aad4dcb04",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632160817285
+    },
+    "abe09833-5900-4136-86e0-74fff59858f4": {
+      "choiceId": "416b62b8-b1e1-4f17-89a1-94fcd9f895bb",
+      "destinationId": "e525dd30-3267-4e21-9749-599977ccea59",
+      "destinationType": "PASSAGE",
+      "id": "abe09833-5900-4136-86e0-74fff59858f4",
+      "originId": "a7c416d7-3a2c-4161-9232-87300a79dc10",
+      "originType": "CHOICE",
+      "sceneId": "7f7900d0-19a9-4669-b1d3-34855714f7b9",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632161596695
+    },
+    "d1a2a4c4-7533-4a66-b4d2-353a3f0a2849": {
+      "choiceId": "5b5a0445-5679-4b26-9652-ca0789a59eb3",
+      "destinationId": "ed0b509b-7c0f-4ff1-8a25-e0bd9e69ff6e",
+      "destinationType": "PASSAGE",
+      "id": "d1a2a4c4-7533-4a66-b4d2-353a3f0a2849",
+      "originId": "2479ceb8-ac36-4d8a-b088-158ad972bdce",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632261209579
+    },
+    "d4b55fc9-4e2a-4094-ad19-d6a3f2d2622e": {
+      "choiceId": "d6e6f2e6-a7e0-4790-893e-f11d0952dcb1",
+      "destinationId": "36ad0369-eb3e-4a15-975a-78421f203c59",
+      "destinationType": "PASSAGE",
+      "id": "d4b55fc9-4e2a-4094-ad19-d6a3f2d2622e",
+      "originId": "1bbcbe71-a5ad-4cd6-846e-c2bc009968c5",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632161360324
+    },
+    "fb4667e0-1b61-4c9c-ba46-880c3ddf700a": {
+      "choiceId": "26aa18ff-844e-4324-9b00-59ea2ef19690",
+      "destinationId": "75647b22-fc8a-4071-b357-101aad4dcb04",
+      "destinationType": "PASSAGE",
+      "id": "fb4667e0-1b61-4c9c-ba46-880c3ddf700a",
+      "originId": "1b740e70-5bdf-4847-82a7-54e83d3eb1e9",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632159864136
+    },
+    "fdce2728-bf01-44c8-84f2-9952dad4ae0a": {
+      "choiceId": "90275447-5956-4d14-94a0-da0711263900",
+      "destinationId": "0aa5fb32-8ddd-4811-adbe-da42fc488c5e",
+      "destinationType": "JUMP",
+      "id": "fdce2728-bf01-44c8-84f2-9952dad4ae0a",
+      "originId": "36ad0369-eb3e-4a15-975a-78421f203c59",
+      "originType": "CHOICE",
+      "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632161659690
+    }
+  },
+  "scenes": {
+    "7f7900d0-19a9-4669-b1d3-34855714f7b9": {
+      "children": [
+        [
+          "PASSAGE",
+          "a9096764-a358-4a77-9676-cb0e1c875187"
+        ],
+        [
+          "PASSAGE",
+          "a7c416d7-3a2c-4161-9232-87300a79dc10"
+        ],
+        [
+          "PASSAGE",
+          "e525dd30-3267-4e21-9749-599977ccea59"
+        ]
+      ],
+      "editor": {
+        "componentEditorTransformX": -78,
+        "componentEditorTransformY": -301.5,
+        "componentEditorTransformZoom": 2
+      },
+      "id": "7f7900d0-19a9-4669-b1d3-34855714f7b9",
+      "jumps": [],
+      "parent": [
+        "GAME",
+        null
+      ],
+      "tags": [],
+      "title": "scene 2",
+      "updated": 1632161695378
+    },
+    "8d38a413-fdf2-4a49-8d76-b533647c2885": {
+      "children": [
+        [
+          "PASSAGE",
+          "ef16f649-f10b-4f29-a868-487722b7c6b8"
+        ],
+        [
+          "PASSAGE",
+          "1b740e70-5bdf-4847-82a7-54e83d3eb1e9"
+        ],
+        [
+          "PASSAGE",
+          "75647b22-fc8a-4071-b357-101aad4dcb04"
+        ],
+        [
+          "PASSAGE",
+          "64bbad9b-c64d-4044-8a81-b001ae492807"
+        ],
+        [
+          "PASSAGE",
+          "84e10bb9-c18c-4daa-be16-ba8b6747f1de"
+        ],
+        [
+          "PASSAGE",
+          "f9cc35bb-b58a-4c26-bc0e-7b41b4f1d084"
+        ],
+        [
+          "PASSAGE",
+          "eb8bbb11-5f98-4fc0-8c42-8c6b643564b3"
+        ],
+        [
+          "PASSAGE",
+          "1bbcbe71-a5ad-4cd6-846e-c2bc009968c5"
+        ],
+        [
+          "PASSAGE",
+          "cb915624-a324-4e09-8a86-f0909bd013a0"
+        ],
+        [
+          "PASSAGE",
+          "36ad0369-eb3e-4a15-975a-78421f203c59"
+        ],
+        [
+          "PASSAGE",
+          "1a4524b5-86f4-4f1a-a3d2-10d928f7f5a7"
+        ],
+        [
+          "PASSAGE",
+          "2479ceb8-ac36-4d8a-b088-158ad972bdce"
+        ],
+        [
+          "PASSAGE",
+          "ed0b509b-7c0f-4ff1-8a25-e0bd9e69ff6e"
+        ],
+        [
+          "PASSAGE",
+          "950f9de5-258b-4ab2-9f75-98ca459dede5"
+        ]
+      ],
+      "editor": {
+        "componentEditorTransformX": -40.36913099222545,
+        "componentEditorTransformY": 513.1394298763645,
+        "componentEditorTransformZoom": 0.7578582832551989
+      },
+      "id": "8d38a413-fdf2-4a49-8d76-b533647c2885",
+      "jumps": [
+        "60c4f314-6732-482c-b904-20a74b803b89",
+        "219d0842-b0b3-44f1-be93-83fc3b37845d",
+        "0e3853d1-1938-460e-b797-8aeb9da502c1",
+        "0aa5fb32-8ddd-4811-adbe-da42fc488c5e"
+      ],
+      "parent": [
+        "GAME",
+        null
+      ],
+      "tags": [],
+      "title": "scene 1",
+      "updated": 1632279120063
+    }
+  },
+  "variables": {
+    "083cbede-fdd7-4416-995d-67d76903c91d": {
+      "id": "083cbede-fdd7-4416-995d-67d76903c91d",
+      "initialValue": "",
+      "tags": [],
+      "title": "testInput",
+      "type": "STRING",
+      "updated": 1632163829924
+    },
+    "9221fa19-9455-4061-ae8e-f6a28a11f852": {
+      "id": "9221fa19-9455-4061-ae8e-f6a28a11f852",
+      "initialValue": "0",
+      "tags": [],
+      "title": "counter",
+      "type": "NUMBER",
+      "updated": 1632262545914
+    }
+  }
+}

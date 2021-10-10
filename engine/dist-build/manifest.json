@@ -1,0 +1,20 @@
+{
+  "index.html": {
+    "file": "assets/index.36ed3782.js",
+    "src": "index.html",
+    "isEntry": true,
+    "imports": [
+      "_vendor.4f67a139.js"
+    ],
+    "css": [
+      "assets/index.7f1ba252.css"
+    ],
+    "assets": [
+      "assets/literata.85873a2b.ttf",
+      "assets/fira-code.16865a4d.ttf"
+    ]
+  },
+  "_vendor.4f67a139.js": {
+    "file": "assets/vendor.4f67a139.js"
+  }
+}

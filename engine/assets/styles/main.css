@@ -1,0 +1,374 @@
+@import './variables.css';
+
+@font-face {
+  font-family: Literata;
+  src: url(../fonts/literata.ttf);
+}
+
+@font-face {
+  font-family: 'Fira Code';
+  src: url(../fonts/fira-code.ttf);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 44px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--primary-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-color-brighter);
+}
+
+::-webkit-scrollbar-track {
+  border-left: 0.1rem solid var(--renderer-border-color);
+}
+
+html {
+  font-size: var(--text-size);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  font-family: var(--font-family);
+  border: none;
+}
+
+*:focus {
+  outline: none;
+}
+
+body {
+  background: var(--background-color);
+  color: var(--text-color);
+  font-size: 1.6rem;
+  overflow: hidden;
+}
+
+#runtime {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+@media only screen and (min-width: 680px) {
+  #runtime {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    width: var(--runtime-width);
+    border-left: 1px solid var(--renderer-border-color);
+    border-right: 1px solid var(--renderer-border-color);
+    height: 100%;
+  }
+}
+
+ul {
+  list-style: none;
+}
+
+li {
+  margin-bottom: 1.4rem;
+}
+
+li:last-child {
+  margin-bottom: 0;
+}
+
+a {
+  color: var(--link-color);
+  cursor: pointer;
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+input {
+  border: none;
+}
+
+button {
+  background: var(--btn-background-color);
+  border: var(--btn-border);
+  color: var(--btn-text-color);
+  min-height: var(--min-interaction-height);
+  min-width: var(--min-interaction-height);
+  text-transform: uppercase;
+  padding: 0 1.2rem;
+  border-radius: 0;
+  border-radius: 0.4rem;
+}
+
+button:hover {
+  background: var(--btn-background-color-hover);
+  border-color: var(--btn-border-hover-color);
+  cursor: pointer;
+}
+
+.engine-warning-message {
+  color: var(--warning-color);
+}
+
+#settings {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--background-color);
+  z-index: var(--settings-z-index);
+}
+
+#settings-content {
+  padding: 1.4rem;
+}
+
+#settings-content a.settings-active-theme {
+  text-decoration: underline;
+}
+
+#renderer {
+  width: 100%;
+  height: 100%;
+}
+
+#title-card {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: calc(100% - 2.4rem);
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+}
+
+#title-card-studio-title {
+  font-size: 1.2rem;
+  margin-bottom: 2.4rem;
+}
+
+#title-card-game-title {
+  font-size: 3.2rem;
+  margin-bottom: 1rem;
+}
+
+#title-card-game-version {
+  font-size: 1.2rem;
+  margin-bottom: 2.4rem;
+}
+
+#title-card-game-designer {
+  margin-bottom: 4rem;
+}
+
+#title-card-btns button {
+  display: block;
+  width: fit-content;
+  margin: 0 auto;
+  margin-bottom: 0.6rem;
+}
+
+#title-card-btns button:last-child {
+  margin-bottom: 0;
+}
+
+#title-card-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  height: 2.4rem;
+  line-height: 2.4rem;
+  background: var(--background-color);
+}
+
+.title-bar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: var(--title-bar-height);
+  border-bottom: 0.1rem solid var(--renderer-border-color);
+  background: var(--title-bar-background-color);
+  z-index: var(--title-bar-z-index);
+  display: inline-grid;
+}
+
+.title-bar-title {
+  display: block;
+  text-align: center;
+  line-height: var(--title-bar-height);
+  font-size: 1.2rem;
+}
+
+.title-bar button {
+  background: transparent;
+  border: none;
+}
+
+.title-bar button path {
+  fill: var(--primary-color);
+}
+
+.title-bar button:hover path {
+  fill: var(--primary-color-brighter);
+}
+
+#settings-title-bar {
+  display: block;
+}
+
+#settings-title-bar button {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#event-stream-title-bar {
+  grid-template-columns: var(--title-bar-height) 1fr var(--title-bar-height);
+}
+
+#event-stream {
+  position: absolute;
+  top: var(--title-bar-height);
+  bottom: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0 auto;
+}
+
+#events {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  min-height: 100%;
+}
+
+.event {
+  overflow: hidden;
+}
+
+.event-past {
+  color: var(--event-past-text-color);
+}
+
+.event-passage {
+  padding: 1.4rem 1rem;
+  border-bottom: var(--event-passage-bottom-border);
+  height: auto;
+}
+
+.event-passage .expression {
+  border-bottom: 1px dashed var(--primary-color);
+}
+
+.event-passage .expression-error {
+  border-bottom: 1px dashed red;
+}
+
+.event-passage p {
+  margin-bottom: 1.4rem;
+  line-height: 2.8rem;
+}
+
+.event-passage p:last-child {
+  margin-bottom: 0;
+}
+
+.event-choices,
+.event-input-result {
+  display: grid;
+  justify-items: right;
+  padding: 1.4rem;
+}
+
+.event-choice {
+  margin-bottom: 0.6rem;
+}
+
+.event-choice:last-child {
+  margin-bottom: 0;
+}
+
+.event-loopback-btn-content {
+  display: inline-block;
+  vertical-align: middle;
+  padding-right: 0.6rem;
+}
+
+.event-choice button:disabled,
+.event-loopback-btn button:disabled {
+  cursor: not-allowed;
+  color: var(--event-past-choice-text-color);
+  background: var(--event-past-choice-background-color);
+  border: var(--event-past-choice-border);
+}
+
+.event-choice-result button:disabled,
+.event-input-result button:disabled {
+  color: var(--event-past-choice-result-text-color);
+  background: var(--event-past-choice-result-background-color);
+}
+
+.event-choice .closed-route {
+  border: 1px dashed var(--warning-color) !important;
+  color: var(--warning-color) !important;
+}
+
+.event-input-result button:disabled {
+  cursor: not-allowed;
+  border: var(--event-past-choice-border);
+}
+
+.event-input {
+  width: 100%;
+}
+
+.event-input form {
+  width: 100%;
+  display: inline-grid;
+  grid-template-columns: 1fr var(--min-interaction-height);
+}
+
+.event-input form input {
+  height: var(--min-interaction-height);
+  background: transparent;
+  color: var(--text-color);
+}
+
+.event-input form button {
+  width: var(--min-interaction-height);
+  border-radius: 0;
+  border: none;
+  background: transparent;
+}
+
+.event-input form button path {
+  fill: var(--primary-color);
+}
+
+.event-input form button:hover {
+  background: transparent;
+}
+
+.event-input form button:hover path {
+  fill: var(--primary-color-brighter);
+}
+
+.event-result {
+  width: 100%;
+  text-align: right;
+  color: var(--primary-color);
+  font-size: 1.2rem;
+}
+
+.event-result-date {
+  font-size: 1rem;
+  color: var(--event-past-text-color);
+}
