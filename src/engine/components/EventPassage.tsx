@@ -17,7 +17,11 @@ import {
   EngineRouteData,
   EngineEventResult
 } from '../types/0.5.0'
-import { ENGINE_EVENT_GAME_OVER_RESULT_VALUE } from '../lib'
+import {
+  ENGINE_EVENT_GAME_OVER_RESULT_VALUE,
+  ENGINE_EVENT_LOOPBACK_RESULT_VALUE,
+  ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE
+} from '../lib'
 import { NextEventProcessor } from './Event'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
@@ -25,6 +29,7 @@ import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 import EventPassageContent from './EventPassageContent'
 import EventPassageChoices from './EventPassageChoices'
 import EventPassageInput from './EventPassageInput'
+import { EventLoopbackButtonContent } from './EventLoopbackButton'
 
 export type RouteProcessor = ({
   originId: origin,
@@ -37,6 +42,20 @@ export type RouteProcessor = ({
   route?: EngineRouteData
   state?: EngineEventStateCollection
 }) => Promise<void>
+
+// TODO: move to event
+export function translateEventResultValue(value: string) {
+  switch (value) {
+    case ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE:
+      return <>Continue</>
+    case ENGINE_EVENT_LOOPBACK_RESULT_VALUE:
+      return <>{EventLoopbackButtonContent}</>
+    case ENGINE_EVENT_GAME_OVER_RESULT_VALUE:
+      return <>New Game</>
+    default:
+      return <>{value}</>
+  }
+}
 
 export const EventPassage: React.FC<{
   passageId: ComponentId

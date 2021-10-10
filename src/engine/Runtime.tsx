@@ -31,7 +31,7 @@ const Runtime: React.FC<{
 }> = React.memo(({ studioId, game: { id, data, packed } }) => {
   const isEditor = studioId ? true : false
 
-  const gameMeta = !isEditor ? localStorage.getItem(id) : null
+  const gameMeta = !isEditor || data ? localStorage.getItem(id) : null
 
   const engineData: ESGEngineCollectionData | undefined =
     !gameMeta && data
@@ -40,7 +40,10 @@ const Runtime: React.FC<{
         : JSON.parse(data)
       : undefined
 
-  const _studioId = studioId || engineData?._.studioId
+  const _studioId =
+    studioId || // if editor
+    engineData?._.studioId || // if engineData before install
+    (gameMeta && JSON.parse(gameMeta).studioId) // if gameMeta post-install
 
   return (
     <QueryClientProvider client={queryClient}>

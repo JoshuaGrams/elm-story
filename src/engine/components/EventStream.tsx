@@ -79,10 +79,9 @@ const EventStream: React.FC = React.memo(() => {
 
   // Updates event state on variable change
   useQuery([`variables-${engine.installId}`, variablesArr], async () => {
-    if (eventsArr && variablesArr) {
+    if (engine.isEditor && eventsArr && variablesArr) {
       // TODO: duplicate from API
-      const initialEventId = `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`,
-        variables: EngineVariableCollection = {},
+      const variables: EngineVariableCollection = {},
         initialEventState: EngineEventStateCollection = {}
 
       variablesArr.map(
@@ -174,7 +173,7 @@ const EventStream: React.FC = React.memo(() => {
   )
 
   useQuery([`game-jump-${engine.installId}`, gameJumps], async () => {
-    if (gameJumps) {
+    if (engine.isEditor && gameJumps) {
       const foundOnGameStartJump = gameJumps.find(
         (jump) => jump.id === game?.jump
       )

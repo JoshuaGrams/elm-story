@@ -17,7 +17,7 @@ import {
   ENGINE_EVENT_LOOPBACK_RESULT_VALUE
 } from '../lib'
 
-import { LibraryDatabase } from '../../db'
+import { LibraryDatabase } from '../lib/db'
 
 import {
   getEvent,
@@ -115,6 +115,7 @@ const Event: React.FC<{ data: EngineEventData }> = ({ data }) => {
                   routeId,
                   state || event?.state || data.state
                 ))) ||
+              state || // TODO: handles input loopback
               event?.state ||
               data.state,
             prev: data.id,

@@ -19,13 +19,11 @@ import {
   EngineRouteData,
   EngineEventResult
 } from '../types/0.5.0'
-import { RouteProcessor } from './EventPassage'
+import { RouteProcessor, translateEventResultValue } from './EventPassage'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
-import EventLoopbackButton, {
-  EventLoopbackButtonContent
-} from './EventLoopbackButton'
+import EventLoopbackButton from './EventLoopbackButton'
 
 const EventPassagePassthroughChoice: React.FC<{
   routes: EngineRouteData[]
@@ -148,19 +146,6 @@ const EventPassageChoice: React.FC<{
 })
 
 EventPassageChoice.displayName = 'EventPassageChoice'
-
-function translateValue(value: string) {
-  switch (value) {
-    case ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE:
-      return <>Continue</>
-    case ENGINE_EVENT_LOOPBACK_RESULT_VALUE:
-      return <>{EventLoopbackButtonContent}</>
-    case ENGINE_EVENT_GAME_OVER_RESULT_VALUE:
-      return <>New Game</>
-    default:
-      return <>{value}</>
-  }
-}
 
 const EventPassageChoices: React.FC<{
   passage: EnginePassageData
@@ -322,7 +307,7 @@ const EventPassageChoices: React.FC<{
               onClick={restartGame}
               disabled={event.result ? true : false}
             >
-              {translateValue(event.result?.value || 'New Game')}
+              {translateEventResultValue(event.result?.value || 'New Game')}
             </button>
           </div>
 

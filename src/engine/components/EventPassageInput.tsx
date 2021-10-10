@@ -9,8 +9,8 @@ import React, {
 } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import { LibraryDatabase } from '../lib/db'
 import { findOpenRoute, getRoutesFromInput } from '../lib/api'
+import { LibraryDatabase } from '../lib/db'
 
 import {
   VARIABLE_TYPE,
@@ -18,7 +18,7 @@ import {
   EnginePassageData,
   EngineVariableData
 } from '../types/0.5.0'
-import { RouteProcessor } from './EventPassage'
+import { RouteProcessor, translateEventResultValue } from './EventPassage'
 
 import { EngineContext } from '../contexts/EngineContext'
 
@@ -85,7 +85,8 @@ const EventPassageInput: React.FC<{
           stateWithInputValue
         )
 
-        if (foundOpenRoute) {
+        // if event.origin, loopback
+        if (foundOpenRoute || event.origin) {
           setRouteError(false)
 
           onSubmitRoute({
@@ -101,7 +102,9 @@ const EventPassageInput: React.FC<{
             route: foundOpenRoute,
             state: stateWithInputValue
           })
-        } else {
+        }
+
+        if (!foundOpenRoute && !event.origin) {
           setRouteError(true)
         }
       }
@@ -193,7 +196,11 @@ const EventPassageInput: React.FC<{
         </>
       )}
 
-      {event.result && <button disabled={true}>{event.result.value}</button>}
+      {event.result && (
+        <button disabled={true}>
+          {translateEventResultValue(event.result.value)}
+        </button>
+      )}
     </div>
   )
 })

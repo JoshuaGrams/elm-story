@@ -46,6 +46,17 @@ const Settings: React.FC = () => {
               THEME:{' '}
               <a
                 className={
+                  settings.theme === ENGINE_THEME.CONSOLE
+                    ? 'settings-active-theme'
+                    : ''
+                }
+                onClick={() => setTheme(ENGINE_THEME.CONSOLE)}
+              >
+                Console
+              </a>{' '}
+              |{' '}
+              <a
+                className={
                   settings.theme === ENGINE_THEME.BOOK
                     ? 'settings-active-theme'
                     : ''
@@ -54,17 +65,6 @@ const Settings: React.FC = () => {
               >
                 Book
               </a>{' '}
-              |{' '}
-              <a
-                className={
-                  settings.theme === ENGINE_THEME.CONSOLE
-                    ? 'settings-active-theme'
-                    : ''
-                }
-                onClick={() => setTheme(ENGINE_THEME.CONSOLE)}
-              >
-                Console
-              </a>
             </li>
 
             <li>

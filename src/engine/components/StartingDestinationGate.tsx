@@ -2,10 +2,10 @@ import React, { useContext } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useQuery } from 'react-query'
 
-import { LibraryDatabase } from '../../db'
+import { LibraryDatabase } from '../lib/db'
 import { findStartingDestinationPassage } from '../lib/api'
 
-import { GameId, StudioId } from '../../data/types'
+import { GameId, StudioId } from '../types/0.5.0'
 
 import { EngineContext } from '../contexts/EngineContext'
 
@@ -52,7 +52,9 @@ const StartingDestinationGate: React.FC<{
         </div>
       )}
 
-      {(startingDestinationPassage || engine.installed) && <>{children}</>}
+      {(startingDestinationPassage || engine.installed || !engine.isEditor) && (
+        <>{children}</>
+      )}
     </>
   )
 })
