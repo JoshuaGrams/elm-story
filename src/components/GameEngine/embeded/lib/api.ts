@@ -79,8 +79,13 @@ export const saveEngineCollectionData = async (
   } = engineData._
 
   const databaseExists = await Dexie.exists(`${DB_NAME}-${studioId}`)
+  let gameExists: EngineGameData | undefined
 
-  if (!databaseExists) {
+  if (databaseExists) {
+    gameExists = await new LibraryDatabase(studioId).games.get(gameId)
+  }
+
+  if (!databaseExists || (databaseExists && !gameExists)) {
     saveGameMeta(studioId, gameId)
 
     const libraryDatabase = new LibraryDatabase(studioId)

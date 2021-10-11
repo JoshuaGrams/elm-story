@@ -17,9 +17,11 @@ import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import MenuBuilder from './menu'
 import contextMenu from 'electron-context-menu'
-import fs from 'fs/promises'
+import fs from 'fs-extra'
+import format from './lib/compiler/format'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
+import { GameDataJSON } from './lib/transport/types/0.5.0'
 
 import logger from './lib/logger'
 
@@ -161,26 +163,61 @@ const createWindow = async () => {
             })
 
             if (!result.canceled) {
-              console.log(gameData)
-
               mainWindow.webContents.send(
                 WINDOW_EVENT_TYPE.EXPORT_GAME_PROCESSING
               )
 
-              const manifestPath =
+              const parsedGameData: GameDataJSON = JSON.parse(gameData)
+
+              const gameFolderName = `${parsedGameData._.title
+                .replace(/[^A-Z0-9]+/gi, '-')
+                .toLocaleLowerCase()}_${parsedGameData._.version}_${Date.now()}`
+
+              const savePathBase = result.filePaths[0],
+                savePathFull = `${savePathBase}/${gameFolderName}`
+
+              const enginePath =
                 process.env.NODE_ENV === 'development'
-                  ? path.join(__dirname, '../assets/engine-dist/manifest.json')
-                  : path.join(
-                      process.resourcesPath,
-                      'assets/engine-dist/manifest.json'
-                    )
+                  ? path.join(__dirname, '../assets/engine-dist')
+                  : path.join(process.resourcesPath, 'assets/engine-dist')
 
-              const manifest = await fs.readFile(manifestPath, 'utf8')
+              try {
+                await fs.copy(enginePath, savePathFull)
 
-              console.log(manifest)
+                const manifest: { 'index.html': { file: string } } = JSON.parse(
+                  await fs.readFile(`${savePathFull}/manifest.json`, 'utf8')
+                )
+
+                let [html, js] = await Promise.all([
+                  fs.readFile(`${savePathFull}/index.html`, 'utf8'),
+                  fs.readFile(
+                    `${savePathFull}/${manifest['index.html'].file}`,
+                    'utf8'
+                  )
+                ])
+
+                html = html.replace('___gameTitle___', parsedGameData._.title)
+                js = js
+                  .replace('___gameId___', parsedGameData._.id)
+                  .replace(
+                    '"___engineData___"',
+                    JSON.stringify(format(parsedGameData))
+                  )
+
+                await Promise.all([
+                  fs.writeFile(`${savePathFull}/index.html`, html),
+                  fs.writeFile(
+                    `${savePathFull}/${manifest['index.html'].file}`,
+                    js
+                  ),
+                  fs.remove(`${savePathFull}/manifest.json`)
+                ])
+              } catch (error) {
+                throw error
+              }
 
               setTimeout(() => {
-                shell.openPath(result.filePaths[0])
+                shell.openPath(savePathFull)
 
                 mainWindow?.webContents.send(
                   WINDOW_EVENT_TYPE.EXPORT_GAME_COMPLETE

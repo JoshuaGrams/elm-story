@@ -14,7 +14,7 @@ function main() {
 
   const rendererContainer = document.getElementById('runtime') || document.body
 
-  if (import.meta.env.PROD) {
+  if (!import.meta.env.DEV) {
     render(
       <Runtime
         game={{ id: ___gameId, data: ___packedESGEngineData, packed: true }}

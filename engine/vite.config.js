@@ -24,7 +24,7 @@ export default defineConfig({
           ]
         }),
         license({
-          banner: `@license <%= pkg.name %> <%= pkg.version %> :: <%= moment().format('YYYY-MM-DD') %>\nCopyright (c) Elm Story Games LLC. All rights reserved.\nSee vendor.*.js for additional 3rd party copyright notices.`
+          banner: `@license <%= pkg.name %> <%= pkg.version %> :: <%= moment().format('YYYY-MM-DD') %> ${Date.now()}\nCopyright (c) Elm Story Games LLC. All rights reserved.\nSee vendor.*.js for additional 3rd party copyright notices.`
         })
       ]
     },

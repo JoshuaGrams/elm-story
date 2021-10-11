@@ -1,5 +1,5 @@
 /**
- * @license @elmstorygames/engine 0.5.0 :: 2021-10-11
+ * @license @elmstorygames/engine 0.5.0 :: 2021-10-11 1633991026675
  * Copyright (c) Elm Story Games LLC. All rights reserved.
  * See vendor.*.js for additional 3rd party copyright notices.
  */
