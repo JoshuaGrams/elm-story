@@ -17,6 +17,7 @@ import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import MenuBuilder from './menu'
 import contextMenu from 'electron-context-menu'
+import fs from 'fs'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
 
@@ -39,6 +40,16 @@ contextMenu({
   showInspectElement: false,
   showServices: false,
   showSearchWithGoogle: false
+})
+
+const manifestPath =
+  process.env.NODE_ENV === 'development'
+    ? path.join(__dirname, '../assets/engine-dist/manifest.json')
+    : path.join(process.resourcesPath, 'assets/engine-dist/manifest.json')
+
+fs.readFile(manifestPath, 'utf8', (error, data) => {
+  if (error) throw error
+  console.log(data)
 })
 
 let mainWindow: BrowserWindow | null = null
