@@ -3,8 +3,8 @@ import { render } from 'react-dom'
 import Runtime from './Runtime'
 
 function main() {
-  let ___gameId: string = '___generated___',
-    ___packedESGEngineData: string = '___generated___'
+  let ___gameId: string = '___gameId___',
+    ___packedESGEngineData: string = '___engineData___'
 
   console.info(
     `powered by Elm Story ${String.fromCodePoint(
