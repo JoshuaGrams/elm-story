@@ -1,26 +1,23 @@
 {
   "_": {
     "children": [
-      [
-        "SCENE",
-        "8d38a413-fdf2-4a49-8d76-b533647c2885"
-      ],
-      [
-        "SCENE",
-        "7f7900d0-19a9-4669-b1d3-34855714f7b9"
-      ]
+      ["SCENE", "8d38a413-fdf2-4a49-8d76-b533647c2885"],
+      ["SCENE", "7f7900d0-19a9-4669-b1d3-34855714f7b9"]
     ],
+    "copyright": "(c) Elm Story Games LLC",
+    "description": "Example game used to troubleshoot complex loopback scenarios.",
     "designer": "ritsuke",
-    "id": "4dd3a18a-307d-4796-9f73-48045de9e8a3",
     "engine": "0.5.0",
+    "id": "4dd3a18a-307d-4796-9f73-48045de9e8a3",
     "jump": "4cce5959-115f-4237-bfbf-caee17795218",
     "schema": "https://elmstory.com/schema/elm-story-0.5.0.json",
     "studioId": "131415d0-0684-40f6-a474-9797968cd850",
     "studioTitle": "Elm Story Games",
     "tags": [],
     "title": "loopback",
-    "updated": 1632278863564,
-    "version": "0.0.1"
+    "updated": 1633925896832,
+    "version": "0.0.3",
+    "website": "https://elmstory.com"
   },
   "choices": {
     "26aa18ff-844e-4324-9b00-59ea2ef19690": {
@@ -145,11 +142,7 @@
   },
   "conditions": {
     "1a6a3816-a0f5-4978-bbdc-c7cf5b51f14c": {
-      "compare": [
-        "9221fa19-9455-4061-ae8e-f6a28a11f852",
-        "<",
-        "1"
-      ],
+      "compare": ["9221fa19-9455-4061-ae8e-f6a28a11f852", "<", "1"],
       "id": "1a6a3816-a0f5-4978-bbdc-c7cf5b51f14c",
       "routeId": "7fa64895-055a-4a38-ba70-4c81a56b6f4c",
       "tags": [],
@@ -162,11 +155,7 @@
     "b35e7cf8-a8b3-44c9-b927-e00fe5eb84dc": {
       "id": "b35e7cf8-a8b3-44c9-b927-e00fe5eb84dc",
       "routeId": "7fa64895-055a-4a38-ba70-4c81a56b6f4c",
-      "set": [
-        "9221fa19-9455-4061-ae8e-f6a28a11f852",
-        "+",
-        "1"
-      ],
+      "set": ["9221fa19-9455-4061-ae8e-f6a28a11f852", "+", "1"],
       "tags": [],
       "title": "Untitled Effect",
       "updated": 1632262560563,
@@ -191,9 +180,7 @@
         "componentEditorPosY": 372
       },
       "id": "0aa5fb32-8ddd-4811-adbe-da42fc488c5e",
-      "route": [
-        "7f7900d0-19a9-4669-b1d3-34855714f7b9"
-      ],
+      "route": ["7f7900d0-19a9-4669-b1d3-34855714f7b9"],
       "sceneId": "8d38a413-fdf2-4a49-8d76-b533647c2885",
       "tags": [],
       "title": "Jump to scene 2",
@@ -237,7 +224,7 @@
       ],
       "tags": [],
       "title": "On Game Start Jump",
-      "updated": 1632279128191
+      "updated": 1633899219762
     },
     "60c4f314-6732-482c-b904-20a74b803b89": {
       "editor": {
@@ -273,9 +260,7 @@
       "updated": 1632163834014
     },
     "1b740e70-5bdf-4847-82a7-54e83d3eb1e9": {
-      "choices": [
-        "26aa18ff-844e-4324-9b00-59ea2ef19690"
-      ],
+      "choices": ["26aa18ff-844e-4324-9b00-59ea2ef19690"],
       "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Root branch\"}]}]",
       "editor": {
         "componentEditorPosX": 296,
@@ -294,7 +279,7 @@
         "8e3fd920-baf2-47b4-8d71-5bf169cab5b4",
         "d6e6f2e6-a7e0-4790-893e-f11d0952dcb1"
       ],
-      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Sub branch 3\"}]}]",
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Sub branch 3 { testInput }\"}]}]",
       "editor": {
         "componentEditorPosX": 1064,
         "componentEditorPosY": 200
@@ -305,12 +290,10 @@
       "tags": [],
       "title": "Sub branch 3",
       "type": "CHOICE",
-      "updated": 1632161333738
+      "updated": 1633893021784
     },
     "2479ceb8-ac36-4d8a-b088-158ad972bdce": {
-      "choices": [
-        "5b5a0445-5679-4b26-9652-ca0789a59eb3"
-      ],
+      "choices": ["5b5a0445-5679-4b26-9652-ca0789a59eb3"],
       "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Branch root\"}]}]",
       "editor": {
         "componentEditorPosX": 336,
@@ -325,9 +308,7 @@
       "updated": 1632261225842
     },
     "36ad0369-eb3e-4a15-975a-78421f203c59": {
-      "choices": [
-        "90275447-5956-4d14-94a0-da0711263900"
-      ],
+      "choices": ["90275447-5956-4d14-94a0-da0711263900"],
       "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Sub branch 3 end\"}]}]",
       "editor": {
         "componentEditorPosX": 1520,
@@ -342,9 +323,7 @@
       "updated": 1632161782033
     },
     "64bbad9b-c64d-4044-8a81-b001ae492807": {
-      "choices": [
-        "ab8e8c3b-e096-489a-a784-fa1041a6b01b"
-      ],
+      "choices": ["ab8e8c3b-e096-489a-a784-fa1041a6b01b"],
       "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Sub branch 1\"}]}]",
       "editor": {
         "componentEditorPosX": 808,
@@ -408,9 +387,7 @@
       "updated": 1632278889978
     },
     "a7c416d7-3a2c-4161-9232-87300a79dc10": {
-      "choices": [
-        "416b62b8-b1e1-4f17-89a1-94fcd9f895bb"
-      ],
+      "choices": ["416b62b8-b1e1-4f17-89a1-94fcd9f895bb"],
       "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Sub branch 1\"}]}]",
       "editor": {
         "componentEditorPosX": 296,
@@ -476,9 +453,7 @@
       "updated": 1632162007813
     },
     "eb8bbb11-5f98-4fc0-8c42-8c6b643564b3": {
-      "choices": [
-        "c05e36b5-a3eb-4248-8c1a-6c2584bb6fab"
-      ],
+      "choices": ["c05e36b5-a3eb-4248-8c1a-6c2584bb6fab"],
       "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Root branch 2\"}]}]",
       "editor": {
         "componentEditorPosX": 852,
@@ -493,9 +468,7 @@
       "updated": 1632160858057
     },
     "ed0b509b-7c0f-4ff1-8a25-e0bd9e69ff6e": {
-      "choices": [
-        "ef824f72-32bd-4c6b-b521-de8737c6e69d"
-      ],
+      "choices": ["ef824f72-32bd-4c6b-b521-de8737c6e69d"],
       "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Branch sub 1\"}]}]",
       "editor": {
         "componentEditorPosX": 566,
@@ -510,9 +483,7 @@
       "updated": 1632278887532
     },
     "ef16f649-f10b-4f29-a868-487722b7c6b8": {
-      "choices": [
-        "8b3410d9-ebb5-48c4-a168-144986c7b93a"
-      ],
+      "choices": ["8b3410d9-ebb5-48c4-a168-144986c7b93a"],
       "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Starting branch\"}]}]",
       "editor": {
         "componentEditorPosX": 293.70189701897,
@@ -763,18 +734,9 @@
   "scenes": {
     "7f7900d0-19a9-4669-b1d3-34855714f7b9": {
       "children": [
-        [
-          "PASSAGE",
-          "a9096764-a358-4a77-9676-cb0e1c875187"
-        ],
-        [
-          "PASSAGE",
-          "a7c416d7-3a2c-4161-9232-87300a79dc10"
-        ],
-        [
-          "PASSAGE",
-          "e525dd30-3267-4e21-9749-599977ccea59"
-        ]
+        ["PASSAGE", "a9096764-a358-4a77-9676-cb0e1c875187"],
+        ["PASSAGE", "a7c416d7-3a2c-4161-9232-87300a79dc10"],
+        ["PASSAGE", "e525dd30-3267-4e21-9749-599977ccea59"]
       ],
       "editor": {
         "componentEditorTransformX": -78,
@@ -783,76 +745,31 @@
       },
       "id": "7f7900d0-19a9-4669-b1d3-34855714f7b9",
       "jumps": [],
-      "parent": [
-        "GAME",
-        null
-      ],
+      "parent": ["GAME", null],
       "tags": [],
       "title": "scene 2",
       "updated": 1632161695378
     },
     "8d38a413-fdf2-4a49-8d76-b533647c2885": {
       "children": [
-        [
-          "PASSAGE",
-          "ef16f649-f10b-4f29-a868-487722b7c6b8"
-        ],
-        [
-          "PASSAGE",
-          "1b740e70-5bdf-4847-82a7-54e83d3eb1e9"
-        ],
-        [
-          "PASSAGE",
-          "75647b22-fc8a-4071-b357-101aad4dcb04"
-        ],
-        [
-          "PASSAGE",
-          "64bbad9b-c64d-4044-8a81-b001ae492807"
-        ],
-        [
-          "PASSAGE",
-          "84e10bb9-c18c-4daa-be16-ba8b6747f1de"
-        ],
-        [
-          "PASSAGE",
-          "f9cc35bb-b58a-4c26-bc0e-7b41b4f1d084"
-        ],
-        [
-          "PASSAGE",
-          "eb8bbb11-5f98-4fc0-8c42-8c6b643564b3"
-        ],
-        [
-          "PASSAGE",
-          "1bbcbe71-a5ad-4cd6-846e-c2bc009968c5"
-        ],
-        [
-          "PASSAGE",
-          "cb915624-a324-4e09-8a86-f0909bd013a0"
-        ],
-        [
-          "PASSAGE",
-          "36ad0369-eb3e-4a15-975a-78421f203c59"
-        ],
-        [
-          "PASSAGE",
-          "1a4524b5-86f4-4f1a-a3d2-10d928f7f5a7"
-        ],
-        [
-          "PASSAGE",
-          "2479ceb8-ac36-4d8a-b088-158ad972bdce"
-        ],
-        [
-          "PASSAGE",
-          "ed0b509b-7c0f-4ff1-8a25-e0bd9e69ff6e"
-        ],
-        [
-          "PASSAGE",
-          "950f9de5-258b-4ab2-9f75-98ca459dede5"
-        ]
+        ["PASSAGE", "ef16f649-f10b-4f29-a868-487722b7c6b8"],
+        ["PASSAGE", "1b740e70-5bdf-4847-82a7-54e83d3eb1e9"],
+        ["PASSAGE", "75647b22-fc8a-4071-b357-101aad4dcb04"],
+        ["PASSAGE", "64bbad9b-c64d-4044-8a81-b001ae492807"],
+        ["PASSAGE", "84e10bb9-c18c-4daa-be16-ba8b6747f1de"],
+        ["PASSAGE", "f9cc35bb-b58a-4c26-bc0e-7b41b4f1d084"],
+        ["PASSAGE", "eb8bbb11-5f98-4fc0-8c42-8c6b643564b3"],
+        ["PASSAGE", "1bbcbe71-a5ad-4cd6-846e-c2bc009968c5"],
+        ["PASSAGE", "cb915624-a324-4e09-8a86-f0909bd013a0"],
+        ["PASSAGE", "36ad0369-eb3e-4a15-975a-78421f203c59"],
+        ["PASSAGE", "1a4524b5-86f4-4f1a-a3d2-10d928f7f5a7"],
+        ["PASSAGE", "2479ceb8-ac36-4d8a-b088-158ad972bdce"],
+        ["PASSAGE", "ed0b509b-7c0f-4ff1-8a25-e0bd9e69ff6e"],
+        ["PASSAGE", "950f9de5-258b-4ab2-9f75-98ca459dede5"]
       ],
       "editor": {
-        "componentEditorTransformX": -40.36913099222545,
-        "componentEditorTransformY": 513.1394298763645,
+        "componentEditorTransformX": -361.36913099222556,
+        "componentEditorTransformY": 280.1394298763646,
         "componentEditorTransformZoom": 0.7578582832551989
       },
       "id": "8d38a413-fdf2-4a49-8d76-b533647c2885",
@@ -862,13 +779,10 @@
         "0e3853d1-1938-460e-b797-8aeb9da502c1",
         "0aa5fb32-8ddd-4811-adbe-da42fc488c5e"
       ],
-      "parent": [
-        "GAME",
-        null
-      ],
+      "parent": ["GAME", null],
       "tags": [],
       "title": "scene 1",
-      "updated": 1632279120063
+      "updated": 1633893014886
     }
   },
   "variables": {

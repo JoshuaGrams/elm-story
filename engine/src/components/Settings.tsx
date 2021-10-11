@@ -18,7 +18,17 @@ const Settings: React.FC = () => {
 
   if (!engine.gameInfo) return null
 
-  const { studioId, id: gameId } = engine.gameInfo
+  const {
+    studioId,
+    id: gameId,
+    copyright,
+    description,
+    designer,
+    studioTitle,
+    title,
+    version,
+    website
+  } = engine.gameInfo
 
   const setTheme = useCallback(
     async (theme: ENGINE_THEME) => {
@@ -41,9 +51,9 @@ const Settings: React.FC = () => {
         <SettingsTitleBar />
 
         <div id="settings-content">
-          <ul>
-            <li>
-              THEME:{' '}
+          <div>
+            <h2>Theme</h2>
+            <p>
               <a
                 className={
                   settings.theme === ENGINE_THEME.CONSOLE
@@ -64,10 +74,61 @@ const Settings: React.FC = () => {
                 onClick={() => setTheme(ENGINE_THEME.BOOK)}
               >
                 Book
-              </a>{' '}
-            </li>
+              </a>
+            </p>
+          </div>
 
-            <li>
+          <div>
+            <h2>Title</h2>
+            <p>{title}</p>
+          </div>
+
+          {description && (
+            <div>
+              <h2>Description</h2>
+              <p>{description}</p>
+            </div>
+          )}
+
+          <div>
+            <h2>Studio</h2>
+            <p>{studioTitle}</p>
+          </div>
+
+          <div>
+            <h2>Designer</h2>
+            <p>{designer}</p>
+          </div>
+
+          <div>
+            <h2>Version</h2>
+            <p>{version}</p>
+          </div>
+
+          {copyright && (
+            <div>
+              <h2>Copyright</h2>
+              <p>{copyright}</p>
+            </div>
+          )}
+
+          {website && (
+            <div>
+              <h2>Website</h2>
+              <p>
+                <a href={website}>{website}</a>
+              </p>
+            </div>
+          )}
+
+          <div>
+            <h2>Engine Mode</h2>
+            <p>{import.meta.env.MODE}</p>
+          </div>
+
+          <div>
+            <h2>Tools</h2>
+            <p>
               <a
                 onClick={async () => {
                   if (engine.gameInfo?.id) {
@@ -79,9 +140,8 @@ const Settings: React.FC = () => {
               >
                 Reset Game Data
               </a>
-            </li>
-            <li>MODE: {import.meta.env.MODE}</li>
-          </ul>
+            </p>
+          </div>
         </div>
       </div>
     </>

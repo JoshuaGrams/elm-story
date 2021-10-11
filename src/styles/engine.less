@@ -57,14 +57,26 @@
     height: 100%;
     background: var(--background-color);
     z-index: var(--settings-z-index);
-  }
+    overflow-y: auto;
 
-  #settings-content {
-    padding: 1.4rem;
-  }
+    #settings-content {
+      padding: 1.4rem;
 
-  #settings-content a.settings-active-theme {
-    text-decoration: underline;
+      a.settings-active-theme {
+        text-decoration: underline;
+      }
+
+      div {
+        margin-bottom: 1.8rem;
+
+        h2 {
+          font-size: 1.2rem;
+          text-transform: uppercase;
+          margin-bottom: 0.4rem;
+          border-bottom: 1px solid var(--renderer-border-color);
+        }
+      }
+    }
   }
 
   #renderer {

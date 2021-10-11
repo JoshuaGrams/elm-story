@@ -49,14 +49,28 @@ const Runtime: React.FC<{
     <QueryClientProvider client={queryClient}>
       <EngineProvider>
         {_studioId && (
-          <StartingDestinationGate studioId={_studioId} gameId={id}>
-            <Installer
-              studioId={_studioId}
-              gameId={id}
-              data={engineData}
-              isEditor={isEditor}
-            >
-              {!isEditor && (
+          <>
+            {isEditor && (
+              <StartingDestinationGate studioId={_studioId} gameId={id}>
+                <Installer
+                  studioId={_studioId}
+                  gameId={id}
+                  data={engineData}
+                  isEditor={isEditor}
+                >
+                  <DevTools />
+                  <Renderer />
+                </Installer>
+              </StartingDestinationGate>
+            )}
+
+            {!isEditor && (
+              <Installer
+                studioId={_studioId}
+                gameId={id}
+                data={engineData}
+                isEditor={isEditor}
+              >
                 <SettingsProvider>
                   <Theme>
                     <Settings />
@@ -64,16 +78,9 @@ const Runtime: React.FC<{
                     <Renderer />
                   </Theme>
                 </SettingsProvider>
-              )}
-
-              {isEditor && (
-                <>
-                  <DevTools />
-                  <Renderer />
-                </>
-              )}
-            </Installer>
-          </StartingDestinationGate>
+              </Installer>
+            )}
+          </>
         )}
       </EngineProvider>
     </QueryClientProvider>

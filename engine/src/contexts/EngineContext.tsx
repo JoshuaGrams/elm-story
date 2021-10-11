@@ -16,6 +16,8 @@ interface EngineState {
   installId: string | undefined
   isEditor: boolean
   gameInfo?: {
+    copyright?: string
+    description?: string
     designer: string
     id: GameId
     studioId: StudioId
@@ -23,6 +25,7 @@ interface EngineState {
     title: string
     updated: number
     version: string
+    website?: string
   }
   playing: boolean
   resetNotification: {
@@ -70,6 +73,8 @@ type EngineActionType =
   | {
       type: ENGINE_ACTION_TYPE.SET_GAME_INFO
       gameInfo?: {
+        copyright?: string
+        description?: string
         designer: string
         id: GameId
         studioId: StudioId
@@ -77,6 +82,7 @@ type EngineActionType =
         title: string
         updated: number
         version: string
+        website?: string
       }
     }
   | { type: ENGINE_ACTION_TYPE.PLAY; fromEvent: ComponentId | undefined }

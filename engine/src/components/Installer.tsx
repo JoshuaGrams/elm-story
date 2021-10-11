@@ -78,22 +78,28 @@ const Installer: React.FC<{
               ? {
                   studioId, // games in editor database does not have studioId
                   ...pick(gameInfo, [
+                    'copyright',
+                    'description',
                     'designer',
                     'id',
                     'studioTitle',
                     'title',
                     'updated',
-                    'version'
+                    'version',
+                    'website'
                   ])
                 }
               : pick(gameInfo, [
+                  'copyright',
+                  'description',
                   'designer',
                   'id',
                   'studioId',
                   'studioTitle',
                   'title',
                   'updated',
-                  'version'
+                  'version',
+                  'website'
                 ])
           })
       }

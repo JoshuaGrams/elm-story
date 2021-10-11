@@ -52,9 +52,7 @@ const StartingDestinationGate: React.FC<{
         </div>
       )}
 
-      {(startingDestinationPassage || engine.installed || !engine.isEditor) && (
-        <>{children}</>
-      )}
+      {(startingDestinationPassage || engine.installed) && <>{children}</>}
     </>
   )
 })

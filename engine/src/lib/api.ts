@@ -62,6 +62,8 @@ export const saveEngineCollectionData = async (
 ) => {
   const {
     children,
+    copyright,
+    description,
     designer,
     engine,
     id: gameId,
@@ -72,7 +74,8 @@ export const saveEngineCollectionData = async (
     tags,
     title,
     updated,
-    version
+    version,
+    website
   } = engineData._
 
   const databaseExists = await Dexie.exists(`${DB_NAME}-${studioId}`)
@@ -92,6 +95,8 @@ export const saveEngineCollectionData = async (
         libraryDatabase.saveEffectCollectionData(gameId, engineData.effects),
         libraryDatabase.saveGameData({
           children,
+          copyright,
+          description,
           designer,
           engine,
           id: gameId,
@@ -102,7 +107,8 @@ export const saveEngineCollectionData = async (
           tags,
           title,
           updated,
-          version
+          version,
+          website
         }),
         libraryDatabase.saveInputCollectionData(gameId, engineData.inputs),
         libraryDatabase.saveJumpCollectionData(gameId, engineData.jumps),
@@ -158,7 +164,7 @@ export const saveEngineDefaultGameCollectionData = async (
           DEFAULT_ENGINE_SETTINGS: {
             gameId,
             id: `${DEFAULT_ENGINE_SETTINGS_KEY}${gameId}`,
-            theme: ENGINE_THEME.BOOK
+            theme: ENGINE_THEME.CONSOLE
           }
         })
       )
