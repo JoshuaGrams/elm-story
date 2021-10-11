@@ -1,21 +1,19 @@
-import getGameDataJSON from '../../lib/getGameDataJSON'
-
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { useHistory } from 'react-router'
 
 import { COMPONENT_TYPE, Game, GameId, StudioId } from '../../data/types'
 import { OnAddComponent } from '.'
 
-import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
+import { APP_LOCATION } from '../../contexts/AppContext'
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { Button, Tooltip } from 'antd'
 import { ExportOutlined, LeftOutlined, PlusOutlined } from '@ant-design/icons'
 
-import { ExportJSONModal } from '../Modal'
+import ExportGameMenu from './ExportGameMenu'
+import AddComponentMenu from './AddComponentMenu'
 
 import styles from './styles.module.less'
-import AddComponentMenu from './AddComponentMenu'
 
 const TitleBar: React.FC<{
   studioId: StudioId
@@ -24,34 +22,10 @@ const TitleBar: React.FC<{
 }> = ({ studioId, game, onAdd }) => {
   const history = useHistory()
 
-  const { app } = useContext(AppContext),
-    { editor, editorDispatch } = useContext(EditorContext)
-
-  const [exportJSONModalVisible, setExportJSONModalVisible] = useState(false)
-
-  async function onExportGameDataAsJSON() {
-    if (game.id) {
-      setExportJSONModalVisible(true)
-
-      const json = await getGameDataJSON(studioId, game.id, app.version),
-        element = document.createElement('a'),
-        file = new Blob([json], { type: 'text/json' })
-
-      element.href = URL.createObjectURL(file)
-      element.download = `${game.title.trim()}.json`
-
-      setTimeout(() => {
-        element.click()
-
-        setExportJSONModalVisible(false)
-      }, 1000)
-    }
-  }
+  const { editor, editorDispatch } = useContext(EditorContext)
 
   return (
     <>
-      <ExportJSONModal visible={exportJSONModalVisible} />
-
       <div className={styles.TitleBar}>
         <Tooltip
           title="Back to Dashboard"
@@ -106,16 +80,18 @@ const TitleBar: React.FC<{
         </span>
 
         <div className={styles.gameButtons}>
-          <Tooltip
-            title="Export game as JSON..."
-            placement="right"
-            align={{ offset: [-6, 0] }}
-            mouseEnterDelay={1}
-          >
-            <Button onClick={onExportGameDataAsJSON} type="link">
-              <ExportOutlined />
-            </Button>
-          </Tooltip>
+          <ExportGameMenu studioId={studioId} game={game}>
+            <Tooltip
+              title="Export Game..."
+              placement="right"
+              align={{ offset: [-6, 0] }}
+              mouseEnterDelay={1}
+            >
+              <Button type="link">
+                <ExportOutlined />
+              </Button>
+            </Tooltip>
+          </ExportGameMenu>
 
           <AddComponentMenu
             gameId={game.id as GameId}

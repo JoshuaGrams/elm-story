@@ -3,7 +3,7 @@ import SaveStudioModal from './SaveStudioModal'
 import RemoveStudioModal from './RemoveStudioModal'
 import SaveGameModal from './SaveGameModal'
 import RemoveGameModal from './RemoveGameModal'
-import ExportJSONModal from './ExportJSONModal'
+import ExportGameModal from './ExportGameModal'
 import ImportJSONModal from './ImportJSONModal'
 
 export {
@@ -12,6 +12,6 @@ export {
   RemoveStudioModal,
   SaveGameModal,
   RemoveGameModal,
-  ExportJSONModal,
+  ExportGameModal,
   ImportJSONModal
 }

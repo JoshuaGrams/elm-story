@@ -12,12 +12,12 @@ import os from 'os'
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import path from 'path'
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import MenuBuilder from './menu'
 import contextMenu from 'electron-context-menu'
-import fs from 'fs'
+import fs from 'fs/promises'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
 
@@ -40,16 +40,6 @@ contextMenu({
   showInspectElement: false,
   showServices: false,
   showSearchWithGoogle: false
-})
-
-const manifestPath =
-  process.env.NODE_ENV === 'development'
-    ? path.join(__dirname, '../assets/engine-dist/manifest.json')
-    : path.join(process.resourcesPath, 'assets/engine-dist/manifest.json')
-
-fs.readFile(manifestPath, 'utf8', (error, data) => {
-  if (error) throw error
-  console.log(data)
 })
 
 let mainWindow: BrowserWindow | null = null
@@ -114,6 +104,8 @@ const createWindow = async () => {
 
   mainWindow.loadURL(`file://${__dirname}/index.html`)
 
+  let eventsReady = false
+
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined')
@@ -134,27 +126,71 @@ const createWindow = async () => {
 
     mainWindow.webContents.send(WINDOW_EVENT_TYPE.PLATFORM, [os.platform()])
 
-    mainWindow.on('enter-full-screen', () =>
-      mainWindow?.webContents.send(WINDOW_EVENT_TYPE.FULLSCREEN)
-    )
-    mainWindow.on('leave-full-screen', () =>
-      mainWindow?.webContents.send(WINDOW_EVENT_TYPE.FLOAT)
-    )
+    if (!eventsReady) {
+      eventsReady = true
 
-    ipcMain.on(WINDOW_EVENT_TYPE.QUIT, () => app.quit())
-    ipcMain.on(WINDOW_EVENT_TYPE.MINIMIZE, () => mainWindow?.minimize())
-    ipcMain.on(WINDOW_EVENT_TYPE.TOGGLE_FULLSCREEN, (_, isFullscreen) => {
-      if (mainWindow) {
-        if (isFullscreen && !mainWindow.fullScreen)
-          mainWindow.setFullScreen(true)
-        if (!isFullscreen && mainWindow.fullScreen)
-          mainWindow.setFullScreen(false)
-      }
-    })
+      mainWindow.on('enter-full-screen', () =>
+        mainWindow?.webContents.send(WINDOW_EVENT_TYPE.FULLSCREEN)
+      )
+      mainWindow.on('leave-full-screen', () =>
+        mainWindow?.webContents.send(WINDOW_EVENT_TYPE.FLOAT)
+      )
 
-    ipcMain.on(WINDOW_EVENT_TYPE.OPEN_EXTERNAL_LINK, (_, [address]) =>
-      shell.openExternal(address)
-    )
+      ipcMain.on(WINDOW_EVENT_TYPE.QUIT, () => app.quit())
+      ipcMain.on(WINDOW_EVENT_TYPE.MINIMIZE, () => mainWindow?.minimize())
+      ipcMain.on(WINDOW_EVENT_TYPE.TOGGLE_FULLSCREEN, (_, isFullscreen) => {
+        if (mainWindow) {
+          if (isFullscreen && !mainWindow.fullScreen)
+            mainWindow.setFullScreen(true)
+          if (!isFullscreen && mainWindow.fullScreen)
+            mainWindow.setFullScreen(false)
+        }
+      })
+
+      ipcMain.on(WINDOW_EVENT_TYPE.OPEN_EXTERNAL_LINK, (_, [address]) =>
+        shell.openExternal(address)
+      )
+
+      ipcMain.on(
+        WINDOW_EVENT_TYPE.EXPORT_GAME_START,
+        async (_, gameData: string) => {
+          if (mainWindow) {
+            const result = await dialog.showOpenDialog(mainWindow, {
+              title: 'Select folder to export game as Web App',
+              properties: ['openDirectory']
+            })
+
+            if (!result.canceled) {
+              console.log(gameData)
+
+              mainWindow.webContents.send(
+                WINDOW_EVENT_TYPE.EXPORT_GAME_PROCESSING
+              )
+
+              const manifestPath =
+                process.env.NODE_ENV === 'development'
+                  ? path.join(__dirname, '../assets/engine-dist/manifest.json')
+                  : path.join(
+                      process.resourcesPath,
+                      'assets/engine-dist/manifest.json'
+                    )
+
+              const manifest = await fs.readFile(manifestPath, 'utf8')
+
+              console.log(manifest)
+
+              setTimeout(() => {
+                shell.openPath(result.filePaths[0])
+
+                mainWindow?.webContents.send(
+                  WINDOW_EVENT_TYPE.EXPORT_GAME_COMPLETE
+                )
+              }, 5000)
+            }
+          }
+        }
+      )
+    }
   })
 
   mainWindow.on('closed', () => {

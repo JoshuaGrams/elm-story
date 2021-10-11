@@ -3,8 +3,9 @@ import React from 'react'
 import { Modal } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 
-const ExportJSONModal: React.FC<{ visible: boolean }> = ({
-  visible = false
+const ExportGameModal: React.FC<{ title: string, visible?: boolean }> = ({
+  title,
+  visible
 }) => {
   return (
     <Modal
@@ -15,11 +16,13 @@ const ExportJSONModal: React.FC<{ visible: boolean }> = ({
       footer={null}
     >
       <div style={{ textAlign: 'center' }}>
-        <div style={{ marginBottom: 20 }}>Preparing Game Data</div>
+        <div style={{ marginBottom: 20 }}>{title}</div>
         <LoadingOutlined style={{ fontSize: 24 }} spin />
       </div>
     </Modal>
   )
 }
 
-export default ExportJSONModal
+ExportGameModal.displayName = 'ExportGameModal'
+
+export default ExportGameModal

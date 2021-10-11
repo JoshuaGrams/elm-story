@@ -1,6 +1,6 @@
 var e=Object.defineProperty,t=Object.defineProperties,a=Object.getOwnPropertyDescriptors,i=Object.getOwnPropertySymbols,n=Object.prototype.hasOwnProperty,s=Object.prototype.propertyIsEnumerable,r=(t,a,i)=>a in t?e(t,a,{enumerable:!0,configurable:!0,writable:!0,value:i}):t[a]=i,o=(e,t)=>{for(var a in t||(t={}))n.call(t,a)&&r(e,a,t[a]);if(i)for(var a of i(t))s.call(t,a)&&r(e,a,t[a]);return e},l=(e,i)=>t(e,a(i)),c=(e,t,a)=>(r(e,"symbol"!=typeof t?t+"":t,a),a);
 /**
- * @license @elmstorygames/engine 0.5.0 :: 2021-10-10
+ * @license @elmstorygames/engine 0.5.0 :: 2021-10-11
  * Copyright (c) Elm Story Games LLC. All rights reserved.
  * See vendor.*.js for additional 3rd party copyright notices.
  */
