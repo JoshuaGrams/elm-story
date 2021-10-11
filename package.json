@@ -24,7 +24,7 @@
     "engine-install": "yarn --cwd ./engine",
     "engine-build": "yarn --cwd ./engine build",
     "engine-copy-styles": "rimraf ./src/styles/engine.less && rimraf ./src/styles/engine-editor.less && copyfiles -f ./engine/assets/styles/engine.less ./src/styles && copyfiles -f ./engine/assets/styles/engine-editor.less ./src/styles",
-    "engine-copy": "yarn engine-build && rimraf ./src/components/GameEngine/embeded && yarn engine-copy-styles && copyfiles -u 2 ./engine/src/**/* ./src/components/GameEngine/embeded && rimraf ./src/components/GameEngine/embeded/main.tsx",
+    "engine-copy": "yarn engine-build && rimraf ./src/components/GameEngine/embeded && yarn engine-copy-styles && copyfiles -u 2 \"./engine/src/**/*\" ./src/components/GameEngine/embeded && rimraf ./src/components/GameEngine/embeded/main.tsx",
     "engine-run": "yarn --cwd ./engine dev"
   },
   "lint-staged": {
