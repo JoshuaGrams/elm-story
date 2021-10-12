@@ -2,6 +2,7 @@
 design
 engine/tsc-build
 src/components/GameEngine/embeded
+assets/engine-dist
 
 # Logs
 logs
