@@ -244,8 +244,10 @@ export const resetGame = async (
         libraryDatabase.settings.where({ gameId }).delete()
       ])
 
-      !skipInstall &&
-        (await saveEngineDefaultGameCollectionData(studioId, gameId))
+      if (!skipInstall) {
+        localStorage.removeItem(gameId)
+        await libraryDatabase.delete()
+      }
     } catch (error) {
       throw error
     }

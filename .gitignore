@@ -1,6 +1,7 @@
 # ESG
 design
 engine/tsc-build
+src/components/GameEngine/embeded
 
 # Logs
 logs

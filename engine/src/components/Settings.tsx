@@ -121,10 +121,12 @@ const Settings: React.FC = () => {
             </div>
           )}
 
-          <div>
-            <h2>Engine Mode</h2>
-            <p>{import.meta.env.MODE}</p>
-          </div>
+          {import.meta.env.MODE === 'development' && (
+            <div>
+              <h2>Engine Mode</h2>
+              <p>{import.meta.env.MODE}</p>
+            </div>
+          )}
 
           <div>
             <h2>Tools</h2>
@@ -133,12 +135,11 @@ const Settings: React.FC = () => {
                 onClick={async () => {
                   if (engine.gameInfo?.id) {
                     await resetGame(studioId, gameId)
-
                     location.reload()
                   }
                 }}
               >
-                Reset Game Data
+                Reset Game
               </a>
             </p>
           </div>
