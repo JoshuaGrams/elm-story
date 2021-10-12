@@ -42,8 +42,10 @@ function format(gameData: GameDataJSON): string {
         .filter((child) => child[0] === COMPONENT_TYPE.SCENE)
         .map((child) => child),
       ...pick(_, [
-        'engine',
+        'copyright',
+        'description',
         'designer',
+        'engine',
         'id',
         'jump',
         'schema',
@@ -52,7 +54,8 @@ function format(gameData: GameDataJSON): string {
         'tags',
         'title',
         'updated',
-        'version'
+        'version',
+        'website'
       ])
     },
     choices: filterCollectionChildProps(choices, ['id', 'passageId', 'title']),
