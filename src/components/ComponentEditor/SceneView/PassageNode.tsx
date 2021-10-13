@@ -31,7 +31,7 @@ import {
 
 import { Handle, Position, NodeProps, Connection } from 'react-flow-renderer'
 
-import { Dropdown, Menu } from 'antd'
+import { Dropdown, Menu, Typography } from 'antd'
 import {
   AlignLeftOutlined,
   BranchesOutlined,
@@ -125,6 +125,8 @@ const ChoiceRow: React.FC<{
 
   const { editor } = useContext(EditorContext)
 
+  const [renamingChoice, setRenamingChoice] = useState(false)
+
   function _onReorder(event: MenuInfo, newPosition: number) {
     event.domEvent.stopPropagation()
 
@@ -132,6 +134,10 @@ const ChoiceRow: React.FC<{
       choice?.id &&
       onReorder(choice?.passageId, choice.id, newPosition)
   }
+
+  useEffect(() => {
+    setRenamingChoice(false)
+  }, [title])
 
   return (
     <div
@@ -145,8 +151,14 @@ const ChoiceRow: React.FC<{
       style={{
         borderBottom: showDivider ? '1px solid hsl(0, 0%, 15%)' : 'none'
       }}
-      onClick={() => {
-        choice?.passageId && choice?.id && onSelect(choice.passageId, choice.id)
+      onMouseDown={() =>
+        !renamingChoice &&
+        choice?.passageId &&
+        choice?.id &&
+        onSelect(choice.passageId, choice.id)
+      }
+      onDoubleClick={() => {
+        !renamingChoice && setRenamingChoice(true)
       }}
     >
       <Dropdown
@@ -187,7 +199,29 @@ const ChoiceRow: React.FC<{
         }
       >
         <div>
-          <BranchesOutlined className={styles.choiceRowIcon} /> {title}
+          <BranchesOutlined className={styles.choiceRowIcon} />{' '}
+          <Typography.Text
+            editable={{
+              editing: renamingChoice,
+              onChange: async (newTitle) => {
+                if (title === newTitle) {
+                  setRenamingChoice(false)
+                } else {
+                  try {
+                    choice &&
+                      (await api().choices.saveChoice(studioId, {
+                        ...choice,
+                        title: newTitle
+                      }))
+                  } catch (error) {
+                    throw error
+                  }
+                }
+              }
+            }}
+          >
+            {title}
+          </Typography.Text>
         </div>
       </Dropdown>
       {handle}
@@ -531,13 +565,7 @@ const PassageNode: React.FC<NodeProps<{
 
                             editor.selectedComponentEditorSceneViewPassage ===
                               passageId &&
-                              data.onChoiceSelect(
-                                passageId,
-                                editor.selectedComponentEditorSceneViewChoice !==
-                                  choice.id
-                                  ? choiceId
-                                  : null
-                              )
+                              data.onChoiceSelect(passageId, choiceId)
                           }}
                           onReorder={async (
                             passageId,

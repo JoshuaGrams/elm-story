@@ -239,8 +239,8 @@
 
     .ChoiceRow {
       cursor: default;
-      font-size: 12px;
       padding: 4px 10px;
+      font-size: 12px;
       cursor: pointer;
       transition: background-color 0.25s;
 
@@ -253,7 +253,49 @@
       }
 
       .choiceRowIcon {
-        color: var(--passage-node-row-icon-color);
+        grid-column: 1;
+        align-self: center;
+        color: hsl(0, 0%, 40%);
+      }
+
+      :global .ant-dropdown-trigger {
+        display: grid;
+        grid-template-columns: auto 1fr;
+
+        :global .ant-typography {
+          grid-column: 2;
+          margin-left: 6px;
+          overflow-wrap: break-word;
+          word-break: break-word;
+
+          textarea {
+            padding: 0px;
+            margin-top: 5px;
+            color: white !important;
+            box-shadow: none !important;
+            overflow: hidden;
+            border: none !important;
+
+            &:focus::selection {
+              background: black !important;
+            }
+          }
+
+          .ant-typography-edit-content {
+            left: unset !important;
+            margin-bottom: 0px !important;
+          }
+
+          .ant-typography-edit,
+          .ant-typography-edit-content-confirm {
+            display: none !important;
+          }
+
+          .ant-input {
+            font-size: unset !important;
+            min-height: unset !important;
+          }
+        }
       }
     }
   }
