@@ -1,33 +1,64 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 import { minifyHtml } from 'vite-plugin-html'
-import license from 'rollup-plugin-license'
-import copy from 'rollup-plugin-copy'
+import banner from 'vite-plugin-banner'
+
+import pkg from './package.json'
+
+const license = `
+/*
+  @license ${pkg.name} ${pkg.version}
+  Copyright (c) Elm Story Games LLC. All rights reserved.
+  Generated: ${Date.now()} | https://elmstory.com
+*/
+`
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: './',
-  plugins: [react(), minifyHtml()],
+  plugins: [
+    react(),
+    VitePWA({
+      includeAssets: [
+        'favicon.svg',
+        'favicon.ico',
+        'robots.txt',
+        'apple-touch-icon.png',
+        'fonts/*.ttf'
+      ],
+      manifest: {
+        name: '___gameTitle___',
+        short_name: '___gameTitle___',
+        description: '___gameDescription___',
+        theme_color: '#8833ff',
+        background_color: '#080808',
+        icons: [
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          }
+        ]
+      }
+    }),
+    banner(license),
+    minifyHtml({
+      removeAttributeQuotes: false
+    })
+  ],
   build: {
-    rollupOptions: {
-      plugins: [
-        copy({
-          targets: [
-            {
-              src: './assets/fonts/fira-code-ofl.txt',
-              dest: '../assets/engine-dist/assets'
-            },
-            {
-              src: './assets/fonts/literata-ofl.txt',
-              dest: '../assets/engine-dist/assets'
-            }
-          ]
-        }),
-        license({
-          banner: `@license <%= pkg.name %> <%= pkg.version %> :: <%= moment().format('YYYY-MM-DD') %> ${Date.now()}\nCopyright (c) Elm Story Games LLC. All rights reserved.\nSee vendor.*.js for additional 3rd party copyright notices.`
-        })
-      ]
-    },
     manifest: true,
     minify: true,
     outDir: '../assets/engine-dist'

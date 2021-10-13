@@ -158,7 +158,7 @@ const createWindow = async () => {
         async (_, gameData: string) => {
           if (mainWindow) {
             const result = await dialog.showOpenDialog(mainWindow, {
-              title: 'Select folder to export game as Web App',
+              title: 'Select folder to export PWA',
               properties: ['openDirectory']
             })
 
@@ -188,27 +188,41 @@ const createWindow = async () => {
                   await fs.readFile(`${savePathFull}/manifest.json`, 'utf8')
                 )
 
-                let [html, js] = await Promise.all([
+                let [html, js, webmanifest] = await Promise.all([
                   fs.readFile(`${savePathFull}/index.html`, 'utf8'),
                   fs.readFile(
                     `${savePathFull}/${manifest['index.html'].file}`,
                     'utf8'
-                  )
+                  ),
+                  fs.readFile(`${savePathFull}/manifest.webmanifest`, 'utf8')
                 ])
 
-                html = html.replace('___gameTitle___', parsedGameData._.title)
+                const gameDescription =
+                  parsedGameData._.description ||
+                  `${parsedGameData._.title} is a game made with Elm Story.`
+
+                html = html
+                  .replace('___gameTitle___', parsedGameData._.title)
+                  .replace('___gameDescription___', gameDescription)
                 js = js
                   .replace('___gameId___', parsedGameData._.id)
                   .replace(
                     '"___engineData___"',
                     JSON.stringify(format(parsedGameData))
                   )
+                webmanifest = webmanifest
+                  .replace(/___gameTitle___/g, parsedGameData._.title)
+                  .replace('___gameDescription___', gameDescription)
 
                 await Promise.all([
                   fs.writeFile(`${savePathFull}/index.html`, html),
                   fs.writeFile(
                     `${savePathFull}/${manifest['index.html'].file}`,
                     js
+                  ),
+                  fs.writeFile(
+                    `${savePathFull}/manifest.webmanifest`,
+                    webmanifest
                   ),
                   fs.remove(`${savePathFull}/manifest.json`)
                 ])

@@ -75,8 +75,8 @@ const ExportGameMenu: React.FC<{ studioId: StudioId; game: Game }> = ({
       <Dropdown
         overlay={
           <Menu onClick={(event) => event.domEvent.stopPropagation()}>
-            <Menu.Item onClick={() => exportGame(true)}>JSON</Menu.Item>
-            <Menu.Item onClick={() => exportGame()}>Web App</Menu.Item>
+            <Menu.Item onClick={() => exportGame(true)}>Export JSON</Menu.Item>
+            <Menu.Item onClick={() => exportGame()}>Export PWA</Menu.Item>
           </Menu>
         }
         trigger={['click']}

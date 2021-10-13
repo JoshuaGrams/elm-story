@@ -2,6 +2,8 @@ import { render } from 'react-dom'
 
 import Runtime from './Runtime'
 
+import { registerSW } from 'virtual:pwa-register'
+
 function main() {
   let ___gameId: string = '___gameId___',
     ___packedESGEngineData: string = '___engineData___'
@@ -11,6 +13,10 @@ function main() {
       0x1f4da
     )} 0.5.0 | https://elmstory.com`
   )
+
+  registerSW({
+    onOfflineReady: () => console.info('Offline ready...')
+  })
 
   const rendererContainer = document.getElementById('runtime') || document.body
 
