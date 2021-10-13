@@ -60,7 +60,7 @@ const TitleCard: React.FC<{
           </div>
 
           <div id="title-card-footer">
-            powered by <a href="http://elmstory.com">Elm Story</a>
+            made with <a href="http://elmstory.com">Elm Story</a>
           </div>
         </div>
       )}
