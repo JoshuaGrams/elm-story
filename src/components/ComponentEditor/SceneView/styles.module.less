@@ -224,28 +224,6 @@
     border-top-left-radius: 5px;
   }
 
-  .PassageSnippet {
-    p {
-      border-top: 1px solid hsl(0, 0%, 8%);
-      margin-bottom: 0;
-      padding: 6px 10px;
-      background: hsla(0, 0%, 5%, 80%);
-      font-size: 10px;
-
-      .expression {
-        border-bottom: 1px dashed var(--highlight-color);
-      }
-
-      .expressionError {
-        border-bottom: 1px dashed red;
-      }
-
-      .moreContent {
-        color: hsl(0, 0%, 40%);
-      }
-    }
-  }
-
   .divider {
     margin: 4px 0px;
   }
@@ -287,13 +265,14 @@
         :global .ant-typography {
           grid-column: 2;
           margin-left: 6px;
+          margin-bottom: 0px !important;
           overflow-wrap: break-word;
           word-break: break-word;
 
           textarea {
             padding: 0px;
+            margin-top: 5px;
             margin-left: 12px;
-            min-height: 20px;
             color: white !important;
             box-shadow: none !important;
             overflow: hidden;
@@ -306,6 +285,7 @@
 
           .ant-typography-edit-content {
             left: unset !important;
+            margin-top: 0px !important;
             margin-bottom: 0px !important;
           }
 

@@ -482,7 +482,8 @@ const PassageNode: React.FC<NodeProps<{
                     passage.id &&
                     editor.selectedGameOutlineComponent.id ===
                       passage.sceneId) ||
-                  passage.choices.length > 0
+                  passage.choices.length > 0 ||
+                  passage.type === PASSAGE_TYPE.INPUT
                     ? '0px'
                     : '5px',
                 borderBottomRightRadius:
@@ -490,7 +491,8 @@ const PassageNode: React.FC<NodeProps<{
                     passage.id &&
                     editor.selectedGameOutlineComponent.id ===
                       passage.sceneId) ||
-                  passage.choices.length > 0
+                  passage.choices.length > 0 ||
+                  passage.type === PASSAGE_TYPE.INPUT
                     ? '0px'
                     : '5px'
               }}
