@@ -15,7 +15,8 @@
     "build": "rimraf ./tsc-build && tsc && rimraf ../assets/engine-dist && cross-env DEBUG=vite-plugin-pwa:* vite build",
     "serve": "vite preview",
     "dev": "vite",
-    "dev-embed": "vite --mode embed"
+    "dev-embed": "vite --mode embed",
+    "https": "yarn build && serve ../assets/engine-dist"
   },
   "bugs": {
     "url": "https://gitlab.com/elmstorygames/engine/issues"
@@ -29,6 +30,7 @@
     "@types/uuid": "^8.3.1",
     "@vitejs/plugin-react": "^1.0.0",
     "cross-env": "^7.0.3",
+    "https-localhost": "^4.7.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.4.2",
     "vite": "^2.5.4",

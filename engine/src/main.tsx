@@ -9,7 +9,7 @@ function main() {
     ___packedESGEngineData: string = '___engineData___'
 
   console.info(
-    `powered by Elm Story ${String.fromCodePoint(
+    `made with Elm Story ${String.fromCodePoint(
       0x1f4da
     )} 0.5.0 | https://elmstory.com`
   )
