@@ -24,6 +24,44 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
 }) => {
   const [saveStudioForm] = Form.useForm()
 
+  let footerButtons = []
+
+  if (edit) {
+    footerButtons.push(
+      <Button
+        key="remove"
+        danger
+        style={{ position: 'absolute', left: '16px' }}
+        onClick={async () => {
+          studio?.id && (await api().studios.removeStudio(studio.id))
+
+          onRemove && onRemove()
+        }}
+      >
+        Remove
+      </Button>
+    )
+  }
+
+  footerButtons = [
+    ...footerButtons,
+    <Button key="cancel" onClick={onCancel}>
+      Cancel
+    </Button>,
+    <Button
+      key="submit"
+      type="primary"
+      form="save-studio-form"
+      htmlType="submit"
+      onClick={(event) => {
+        event.preventDefault()
+        saveStudioForm.submit()
+      }}
+    >
+      Save
+    </Button>
+  ]
+
   useEffect(() => {
     if (edit && studio) {
       saveStudioForm.setFieldsValue({
@@ -39,35 +77,7 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
       destroyOnClose
       onCancel={onCancel}
       centered
-      footer={[
-        <Button
-          key="remove"
-          danger
-          style={{ position: 'absolute', left: '16px' }}
-          onClick={async () => {
-            studio?.id && (await api().studios.removeStudio(studio.id))
-
-            onRemove && onRemove()
-          }}
-        >
-          Remove
-        </Button>,
-        <Button key="cancel" onClick={onCancel}>
-          Cancel
-        </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          form="save-studio-form"
-          htmlType="submit"
-          onClick={(event) => {
-            event.preventDefault()
-            saveStudioForm.submit()
-          }}
-        >
-          Save
-        </Button>
-      ]}
+      footer={footerButtons}
     >
       <Form
         id="save-studio-form"
@@ -84,7 +94,7 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
             onSave && onSave(studioId)
             afterClose && afterClose()
           } catch (error) {
-            throw new Error(error)
+            throw error
           }
         }}
       >
