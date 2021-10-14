@@ -106,7 +106,7 @@ function getTabContent(
 function getTabIcon(type: COMPONENT_TYPE | undefined): JSX.Element {
   switch (type) {
     case COMPONENT_TYPE.GAME:
-      return <PlayCircleFilled className={styles.gameTabIcon} />
+      return <PlayCircleFilled className={styles.tabIcon} />
     case COMPONENT_TYPE.SCENE:
       return <PartitionOutlined className={styles.tabIcon} />
     default:
@@ -126,6 +126,10 @@ function getTabTitle(
   return (
     <div className={styles.tabTitle}>
       {getTabIcon(component.type)}
+      {component.type === COMPONENT_TYPE.GAME && (
+        <span className={styles.title}>Game</span>
+      )}
+
       {component.type !== COMPONENT_TYPE.GAME && (
         <span className={styles.title}>
           {component.title || 'Unknown Title'}
