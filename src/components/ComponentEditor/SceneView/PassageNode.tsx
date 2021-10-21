@@ -35,7 +35,8 @@ import { Dropdown, Menu, Typography } from 'antd'
 import {
   AlignLeftOutlined,
   BranchesOutlined,
-  PlusOutlined
+  PlusOutlined,
+  StopOutlined
 } from '@ant-design/icons'
 
 import styles from './styles.module.less'
@@ -499,7 +500,15 @@ const PassageNode: React.FC<NodeProps<{
               data-component-id={passage.id}
               onDoubleClick={() => passage.id && data.onEditPassage(passage.id)}
             >
-              <AlignLeftOutlined className={styles.headerIcon} />
+              {/* #395 */}
+              {passage.gameOver ? (
+                <StopOutlined
+                  className={styles.headerIcon}
+                  style={{ color: 'red' }}
+                />
+              ) : (
+                <AlignLeftOutlined className={styles.headerIcon} />
+              )}
               {passage.title}
             </h1>
 
