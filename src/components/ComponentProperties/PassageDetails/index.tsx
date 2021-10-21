@@ -119,33 +119,16 @@ const PassageEndToggle: React.FC<{
         (await api().passages.setPassageGameEnd(studioId, passage.id, false))
     }
 
-    // #397: as effect may fire before routePassthroughs is updated,
-    // need to do a check on originId as may be referencing previously
-    // selected passage node
-    // TODO: it might be necessary to check choices in the future
-    let hasRoutePassthroughs = false
-
-    if (routePassthroughs && routePassthroughs.length > 0) {
-      hasRoutePassthroughs = true
-
-      routePassthroughs?.map((route) => {
-        if (route.originId !== passage.id) {
-          hasRoutePassthroughs = false
-          return
-        }
-      })
-    }
-
+    // TODO: it might be necessary to check choices in the future #397
     if (
       ((choices && choices.length > 0) ||
-        hasRoutePassthroughs ||
         passage.type === PASSAGE_TYPE.INPUT) &&
       passage.gameOver &&
       editor.selectedComponentEditorSceneViewPassage === passage.id
     ) {
       disableGameEnd()
     }
-  }, [choices, routePassthroughs, passage.type])
+  }, [choices, passage.type])
 
   return (
     <div className={styles.PassageEndToggle}>

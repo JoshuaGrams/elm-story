@@ -546,6 +546,23 @@ const SceneView: React.FC<{
         foundSourceNode?.data?.passageType &&
         foundDestinationNode?.data?.type
       ) {
+        // #398, #397: as effect may fire before routePassthroughs is updated,
+        // need to do a check on originId as may be referencing previously
+        // selected passage node
+        if (passages) {
+          const foundPassage = passages.find(
+            (passage) => passage.id === connection.source
+          )
+
+          if (foundPassage?.id && foundPassage.gameOver) {
+            await api().passages.setPassageGameEnd(
+              studioId,
+              foundPassage.id,
+              false
+            )
+          }
+        }
+
         await api().routes.saveRoute(studioId, {
           title: 'Untitled Route',
           gameId: scene.gameId,
