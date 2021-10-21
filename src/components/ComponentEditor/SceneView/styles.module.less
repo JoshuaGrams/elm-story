@@ -86,6 +86,10 @@
     &.passage .react-flow__edge-path {
       stroke: var(--highlight-color);
     }
+
+    &.gameOver .react-flow__edge-path {
+      stroke: var(--warning-color);
+    }
   }
 
   &.selected .react-flow__edge-path {
@@ -213,6 +217,10 @@
     .headerIcon {
       color: var(--highlight-color);
       margin-right: 6px;
+
+      &.warning {
+        color: var(--warning-color);
+      }
     }
 
     margin: 0px;

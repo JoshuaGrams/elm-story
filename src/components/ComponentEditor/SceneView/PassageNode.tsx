@@ -36,7 +36,7 @@ import {
   AlignLeftOutlined,
   BranchesOutlined,
   PlusOutlined,
-  StopOutlined
+  VerticalLeftOutlined
 } from '@ant-design/icons'
 
 import styles from './styles.module.less'
@@ -502,9 +502,8 @@ const PassageNode: React.FC<NodeProps<{
             >
               {/* #395 */}
               {passage.gameOver ? (
-                <StopOutlined
-                  className={styles.headerIcon}
-                  style={{ color: 'red' }}
+                <VerticalLeftOutlined
+                  className={`${styles.headerIcon} ${styles.warning}`}
                 />
               ) : (
                 <AlignLeftOutlined className={styles.headerIcon} />

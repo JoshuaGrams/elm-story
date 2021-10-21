@@ -1,5 +1,3 @@
-import logger from '../../../lib/logger'
-
 import React, { memo, useContext } from 'react'
 
 import { ComponentId, COMPONENT_TYPE } from '../../../data/types'
@@ -20,13 +18,12 @@ import {
   useStoreState
 } from 'react-flow-renderer'
 
-import { DeleteOutlined, ForwardOutlined } from '@ant-design/icons'
+import { FastForwardOutlined } from '@ant-design/icons'
 
 import JumpTo from '../../JumpTo'
 
 import styles from './styles.module.less'
 
-import api from '../../../api'
 import { cloneDeep } from 'lodash'
 
 const JumpHandle: React.FC<{ jumpId: ComponentId }> = ({ jumpId }) => {
@@ -64,7 +61,7 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
             <JumpHandle jumpId={jump.id} />
 
             <h1 className="nodeJumpHeader" data-component-id={jump.id}>
-              <ForwardOutlined className={styles.headerIcon} />
+              <FastForwardOutlined className={styles.headerIcon} />
               {jump.title}
             </h1>
           </div>

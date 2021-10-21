@@ -448,7 +448,16 @@ const SceneView: React.FC<{
                   edge.source === selectedPassage.id ||
                   edge.target === selectedPassage.id
                 ) {
-                  edge.className = 'selected passage'
+                  if (passages) {
+                    const foundPassage = passages.find(
+                      (passage) => selectedPassage.id === passage.id
+                    )
+
+                    edge.className =
+                      foundPassage && foundPassage.gameOver
+                        ? 'selected gameOver'
+                        : 'selected passage'
+                  }
                 }
               })
 
