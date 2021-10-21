@@ -1488,6 +1488,16 @@ const SceneView: React.FC<{
               nodeColor={(node) => {
                 switch (node.type) {
                   case 'passageNode':
+                    if (passages) {
+                      const foundPassage = passages.find(
+                        (passage) => node.id === passage.id
+                      )
+
+                      if (foundPassage && foundPassage.gameOver) {
+                        return `hsl(350, 100%, 65%)`
+                      }
+                    }
+
                     return 'hsl(265, 100%, 60%)'
                   case 'jumpNode':
                     return 'hsl(160, 100%, 60%)'
