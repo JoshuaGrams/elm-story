@@ -30,7 +30,7 @@ function main() {
   }
 
   if (import.meta.env.DEV) {
-    import('../data/loopback.json').then((data) =>
+    import('../data/terminal-access.json').then((data) =>
       render(
         <Runtime
           game={{ id: data._.id, data: JSON.stringify(data), packed: false }}

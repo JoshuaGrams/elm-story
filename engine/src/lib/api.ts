@@ -888,6 +888,7 @@ export const isRouteOpen = async (
   const variableIdsFromConditions = conditions.map(
     (condition) => condition.variableId
   )
+
   let variablesFromConditions: EngineVariableData[]
 
   try {
@@ -901,36 +902,58 @@ export const isRouteOpen = async (
 
   conditions.length > 0 &&
     conditions.map((condition) => {
+      // #400
       const foundVariable = variablesFromConditions.find(
-        (variable) => variable.id === condition.compare[1]
+        (variable) => variable.id === condition.compare[0]
       )
 
-      const currentValue =
-        foundVariable && foundVariable.type === VARIABLE_TYPE.NUMBER
-          ? Number(eventState[condition.compare[0]].value)
-          : eventState[condition.compare[0]].value
+      if (foundVariable) {
+        const eventValue =
+          foundVariable.type === VARIABLE_TYPE.NUMBER
+            ? Number(eventState[condition.compare[0]].value)
+            : eventState[condition.compare[0]].value.toLowerCase()
 
-      switch (condition.compare[1]) {
-        case COMPARE_OPERATOR_TYPE.EQ:
-          isOpen = currentValue === `${condition.compare[2]}`
-          break
-        case COMPARE_OPERATOR_TYPE.GT:
-          isOpen = currentValue > condition.compare[2]
-          break
-        case COMPARE_OPERATOR_TYPE.GTE:
-          isOpen = currentValue >= condition.compare[2]
-          break
-        case COMPARE_OPERATOR_TYPE.LT:
-          isOpen = currentValue < condition.compare[2]
-          break
-        case COMPARE_OPERATOR_TYPE.LTE:
-          isOpen = currentValue <= condition.compare[2]
-          break
-        case COMPARE_OPERATOR_TYPE.NE:
-          isOpen = currentValue !== condition.compare[2]
-          break
-        default:
-          break
+        if (foundVariable.type !== VARIABLE_TYPE.NUMBER) {
+          const conditionValueAsString = condition.compare[2].toLowerCase()
+
+          switch (condition.compare[1]) {
+            case COMPARE_OPERATOR_TYPE.EQ:
+              isOpen = eventValue === conditionValueAsString
+              break
+            case COMPARE_OPERATOR_TYPE.NE:
+              isOpen = eventValue !== conditionValueAsString
+              break
+            default:
+              break
+          }
+        }
+
+        if (foundVariable.type === VARIABLE_TYPE.NUMBER) {
+          const conditionValueAsNumber = Number(condition.compare[2])
+
+          switch (condition.compare[1]) {
+            case COMPARE_OPERATOR_TYPE.EQ:
+              isOpen = eventValue === conditionValueAsNumber
+              break
+            case COMPARE_OPERATOR_TYPE.GT:
+              isOpen = eventValue > conditionValueAsNumber
+              break
+            case COMPARE_OPERATOR_TYPE.GTE:
+              isOpen = eventValue >= conditionValueAsNumber
+              break
+            case COMPARE_OPERATOR_TYPE.LT:
+              isOpen = eventValue < conditionValueAsNumber
+              break
+            case COMPARE_OPERATOR_TYPE.LTE:
+              isOpen = eventValue <= conditionValueAsNumber
+              break
+            case COMPARE_OPERATOR_TYPE.NE:
+              isOpen = eventValue !== conditionValueAsNumber
+              break
+            default:
+              break
+          }
+        }
       }
     })
 

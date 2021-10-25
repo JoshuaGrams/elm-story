@@ -77,7 +77,9 @@ const EventPassageInput: React.FC<{
         const stateWithInputValue = cloneDeep(event.state)
 
         stateWithInputValue[inputVariable.id].value =
-          boolValue || `${inputValue}`
+          boolValue ||
+          // #400
+          `${typeof inputValue === 'string' ? inputValue.trim() : inputValue}`
 
         const foundOpenRoute = await findOpenRoute(
           studioId,
@@ -136,6 +138,8 @@ const EventPassageInput: React.FC<{
                     ref={inputRef}
                     id={input.id}
                     autoComplete="off"
+                    // #400
+                    spellCheck="false"
                     autoFocus
                     type={
                       inputVariable.type === VARIABLE_TYPE.STRING
