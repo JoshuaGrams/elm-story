@@ -32,7 +32,7 @@ export default defineConfig({
         name: '___gameTitle___',
         short_name: '___gameTitle___',
         description: '___gameDescription___',
-        theme_color: '#8833ff',
+        theme_color: '#080808',
         background_color: '#080808',
         icons: [
           {

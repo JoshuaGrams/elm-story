@@ -237,10 +237,10 @@
 
   .event-choice {
     margin-bottom: 0.6rem;
-  }
 
-  .event-choice:last-child {
-    margin-bottom: 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 
   .event-loopback-btn-content {
@@ -275,37 +275,38 @@
 
   .event-input {
     width: 100%;
-  }
 
-  .event-input form {
-    width: 100%;
-    display: inline-grid;
-    grid-template-columns: 1fr var(--min-interaction-height);
-  }
+    form {
+      width: 100%;
+      display: inline-grid;
+      grid-template-columns: 1fr var(--min-interaction-height);
 
-  .event-input form input {
-    height: var(--min-interaction-height);
-    background: transparent;
-    color: var(--text-color);
-  }
+      input {
+        height: var(--min-interaction-height);
+        background: transparent;
+        color: var(--text-color);
+        font-size: 1.6rem;
+      }
 
-  .event-input form button {
-    width: var(--min-interaction-height);
-    border-radius: 0;
-    border: none;
-    background: transparent;
-  }
+      button {
+        width: var(--min-interaction-height);
+        border-radius: 0;
+        border: none;
+        background: transparent;
 
-  .event-input form button path {
-    fill: var(--primary-color);
-  }
+        path {
+          fill: var(--primary-color);
+        }
 
-  .event-input form button:hover {
-    background: transparent;
-  }
+        &:hover {
+          background: transparent;
+        }
 
-  .event-input form button:hover path {
-    fill: var(--primary-color-brighter);
+        &:hover path {
+          fill: var(--primary-color-brighter);
+        }
+      }
+    }
   }
 
   .event-result {
