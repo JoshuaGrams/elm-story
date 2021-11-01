@@ -205,18 +205,19 @@ const ChoiceRow: React.FC<{
             editable={{
               editing: renamingChoice,
               onChange: async (newTitle) => {
-                if (title === newTitle) {
+                if (!newTitle || title === newTitle) {
                   setRenamingChoice(false)
-                } else {
-                  try {
-                    choice &&
-                      (await api().choices.saveChoice(studioId, {
-                        ...choice,
-                        title: newTitle
-                      }))
-                  } catch (error) {
-                    throw error
-                  }
+                  return
+                }
+
+                try {
+                  choice &&
+                    (await api().choices.saveChoice(studioId, {
+                      ...choice,
+                      title: newTitle
+                    }))
+                } catch (error) {
+                  throw error
                 }
               }
             }}
