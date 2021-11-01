@@ -232,7 +232,8 @@ export const unpackEngineData = (
 export const resetGame = async (
   studioId: StudioId,
   gameId: GameId,
-  skipInstall?: boolean
+  skipInstall?: boolean,
+  isEditor?: boolean
 ) => {
   try {
     const libraryDatabase = new LibraryDatabase(studioId)
@@ -240,21 +241,27 @@ export const resetGame = async (
     try {
       await Promise.all([
         libraryDatabase.bookmarks.where({ gameId }).delete(),
-        libraryDatabase.choices.where({ gameId }).delete(),
-        libraryDatabase.conditions.where({ gameId }).delete(),
-        libraryDatabase.effects.where({ gameId }).delete(),
         libraryDatabase.events.where({ gameId }).delete(),
-        libraryDatabase.games.where({ id: gameId }).delete(),
-        libraryDatabase.inputs.where({ gameId }).delete(),
-        libraryDatabase.jumps.where({ gameId }).delete(),
-        libraryDatabase.passages.where({ gameId }).delete(),
-        libraryDatabase.routes.where({ gameId }).delete(),
-        libraryDatabase.scenes.where({ gameId }).delete(),
-        libraryDatabase.settings.where({ gameId }).delete(),
-        libraryDatabase.variables.where({ gameId }).delete()
+        libraryDatabase.settings.where({ gameId }).delete()
       ])
 
-      !skipInstall && localStorage.removeItem(gameId)
+      // #412
+      if (!isEditor) {
+        await Promise.all([
+          libraryDatabase.choices.where({ gameId }).delete(),
+          libraryDatabase.conditions.where({ gameId }).delete(),
+          libraryDatabase.effects.where({ gameId }).delete(),
+          libraryDatabase.games.where({ id: gameId }).delete(),
+          libraryDatabase.inputs.where({ gameId }).delete(),
+          libraryDatabase.jumps.where({ gameId }).delete(),
+          libraryDatabase.passages.where({ gameId }).delete(),
+          libraryDatabase.routes.where({ gameId }).delete(),
+          libraryDatabase.scenes.where({ gameId }).delete(),
+          libraryDatabase.variables.where({ gameId }).delete()
+        ])
+
+        !skipInstall && localStorage.removeItem(gameId)
+      }
     } catch (error) {
       throw error
     }

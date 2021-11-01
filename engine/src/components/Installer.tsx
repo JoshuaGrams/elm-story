@@ -37,7 +37,7 @@ const Installer: React.FC<{
             engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_EDITOR })
             engineDispatch({ type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION })
 
-            await resetGame(studioId, gameId, true)
+            await resetGame(studioId, gameId, true, true)
             await saveEngineDefaultGameCollectionData(studioId, gameId)
 
             engine.playing &&
