@@ -8,7 +8,7 @@ import {
   EngineDevToolsEvent,
   ENGINE_DEVTOOLS_EVENTS,
   ENGINE_DEVTOOLS_EVENT_TYPE
-} from '../../lib/transport/types/0.5.0'
+} from '../../lib/transport/types/0.5.1'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 

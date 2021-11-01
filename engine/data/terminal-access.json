@@ -1,18 +1,13 @@
 {
   "_": {
-    "children": [
-      [
-        "SCENE",
-        "f17f7f18-1570-4b61-a390-2696a56d9512"
-      ]
-    ],
+    "children": [["SCENE", "f17f7f18-1570-4b61-a390-2696a56d9512"]],
     "copyright": "(c) 2021 Elm Story Games LLC",
     "description": "Sample game used in the Elm Story Early Access tutorial.",
     "designer": "ritsuke",
-    "engine": "0.5.0",
+    "engine": "0.5.1",
     "id": "4ede6629-c99c-48e5-aa3a-1b47f172b9cc",
     "jump": null,
-    "schema": "https://elmstory.com/schema/elm-story-0.5.0.json",
+    "schema": "https://elmstory.com/schema/elm-story-0.5.1.json",
     "studioId": "131415d0-0684-40f6-a474-9797968cd850",
     "studioTitle": "Elm Story Games",
     "tags": [],
@@ -39,11 +34,7 @@
   },
   "conditions": {
     "298e56ae-521c-4366-985d-750d2fbbc31f": {
-      "compare": [
-        "4575d84f-5c6b-4f6d-b216-f1d4410dc679",
-        "!=",
-        "gabriel"
-      ],
+      "compare": ["4575d84f-5c6b-4f6d-b216-f1d4410dc679", "!=", "gabriel"],
       "id": "298e56ae-521c-4366-985d-750d2fbbc31f",
       "routeId": "b27d3d22-1d74-436f-a72d-2f9c0d4a3184",
       "tags": [],
@@ -52,11 +43,7 @@
       "variableId": "4575d84f-5c6b-4f6d-b216-f1d4410dc679"
     },
     "3947be05-7464-4f16-9f6d-ad74fe2b7c27": {
-      "compare": [
-        "c6608a42-9685-434f-93ac-2b980ffad02e",
-        "=",
-        "0"
-      ],
+      "compare": ["c6608a42-9685-434f-93ac-2b980ffad02e", "=", "0"],
       "id": "3947be05-7464-4f16-9f6d-ad74fe2b7c27",
       "routeId": "d47df830-5ce3-4a4c-9881-8e8348bc2dc9",
       "tags": [],
@@ -65,11 +52,7 @@
       "variableId": "c6608a42-9685-434f-93ac-2b980ffad02e"
     },
     "e14a87aa-92cd-4bd1-80f2-0e2e7c8cdd73": {
-      "compare": [
-        "c6608a42-9685-434f-93ac-2b980ffad02e",
-        ">",
-        "0"
-      ],
+      "compare": ["c6608a42-9685-434f-93ac-2b980ffad02e", ">", "0"],
       "id": "e14a87aa-92cd-4bd1-80f2-0e2e7c8cdd73",
       "routeId": "adbae83e-bddc-401c-80b4-8a8948600b17",
       "tags": [],
@@ -78,11 +61,7 @@
       "variableId": "c6608a42-9685-434f-93ac-2b980ffad02e"
     },
     "f16e3f5d-8f02-4304-964a-f37bd2e1482a": {
-      "compare": [
-        "4575d84f-5c6b-4f6d-b216-f1d4410dc679",
-        "=",
-        "gabriel"
-      ],
+      "compare": ["4575d84f-5c6b-4f6d-b216-f1d4410dc679", "=", "gabriel"],
       "id": "f16e3f5d-8f02-4304-964a-f37bd2e1482a",
       "routeId": "e836e389-66ec-4563-8e03-e2e3c3e6a62f",
       "tags": [],
@@ -95,11 +74,7 @@
     "3a0c5b18-f57c-4449-8c5f-fc340fdef85a": {
       "id": "3a0c5b18-f57c-4449-8c5f-fc340fdef85a",
       "routeId": "b27d3d22-1d74-436f-a72d-2f9c0d4a3184",
-      "set": [
-        "c6608a42-9685-434f-93ac-2b980ffad02e",
-        "-",
-        "1"
-      ],
+      "set": ["c6608a42-9685-434f-93ac-2b980ffad02e", "-", "1"],
       "tags": [],
       "title": "Untitled Effect",
       "updated": 1634841490377,
@@ -353,34 +328,13 @@
   "scenes": {
     "f17f7f18-1570-4b61-a390-2696a56d9512": {
       "children": [
-        [
-          "PASSAGE",
-          "c94d31a7-f67b-4aa1-86fa-df63665f513a"
-        ],
-        [
-          "PASSAGE",
-          "968a9717-7bc1-40b9-a1fb-3bb709cfb02a"
-        ],
-        [
-          "PASSAGE",
-          "a2f2082c-10d5-4f4f-ae1f-64bd7635fcd1"
-        ],
-        [
-          "PASSAGE",
-          "844ff364-96e6-439a-b3e3-e4c67db11e88"
-        ],
-        [
-          "PASSAGE",
-          "8bd1ad56-c3e9-42c3-90c1-660aa9d72573"
-        ],
-        [
-          "PASSAGE",
-          "0512ee6b-aabe-4d35-adac-b3455004c343"
-        ],
-        [
-          "PASSAGE",
-          "33f7fd74-4ab3-4cd1-8a4c-c15dd6438b53"
-        ]
+        ["PASSAGE", "c94d31a7-f67b-4aa1-86fa-df63665f513a"],
+        ["PASSAGE", "968a9717-7bc1-40b9-a1fb-3bb709cfb02a"],
+        ["PASSAGE", "a2f2082c-10d5-4f4f-ae1f-64bd7635fcd1"],
+        ["PASSAGE", "844ff364-96e6-439a-b3e3-e4c67db11e88"],
+        ["PASSAGE", "8bd1ad56-c3e9-42c3-90c1-660aa9d72573"],
+        ["PASSAGE", "0512ee6b-aabe-4d35-adac-b3455004c343"],
+        ["PASSAGE", "33f7fd74-4ab3-4cd1-8a4c-c15dd6438b53"]
       ],
       "editor": {
         "componentEditorTransformX": -89.08754612067577,
@@ -388,13 +342,8 @@
         "componentEditorTransformZoom": 0.6974643078209725
       },
       "id": "f17f7f18-1570-4b61-a390-2696a56d9512",
-      "jumps": [
-        "869827f7-1bdd-44bf-96ed-acf6f3200fd0"
-      ],
-      "parent": [
-        "GAME",
-        null
-      ],
+      "jumps": ["869827f7-1bdd-44bf-96ed-acf6f3200fd0"],
+      "parent": ["GAME", null],
       "tags": [],
       "title": "The Terminal",
       "updated": 1635113435033

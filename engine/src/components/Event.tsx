@@ -10,7 +10,7 @@ import {
   EngineEventStateCollection,
   ENGINE_EVENT_TYPE,
   EngineEventResult
-} from '../types/0.5.0'
+} from '../types/0.5.1'
 import {
   AUTO_ENGINE_BOOKMARK_KEY,
   ENGINE_EVENT_GAME_OVER_RESULT_VALUE,

@@ -9,6 +9,7 @@ import { GameDataJSON as GameDataJSON_030 } from './transport/types/0.3.0'
 import { GameDataJSON as GameDataJSON_031 } from './transport/types/0.3.1'
 import { GameDataJSON as GameDataJSON_040 } from './transport/types/0.4.0'
 import { GameDataJSON as GameDataJSON_050 } from './transport/types/0.5.0'
+import { GameDataJSON as GameDataJSON_051 } from './transport/types/0.5.1'
 
 import api from '../api'
 
@@ -22,7 +23,8 @@ export default (
   gameData: GameDataJSON_013 &
     GameDataJSON_020 &
     GameDataJSON_040 &
-    GameDataJSON_050,
+    GameDataJSON_050 &
+    GameDataJSON_051,
   skipValidation?: boolean
 ): {
   errors: string[]
@@ -79,10 +81,14 @@ export default (
           upgradedGameData = v050Upgrade(cloneDeep(upgradedGameData))
         }
 
-        if (engineVersion === '0.5.0') upgradedGameData = gameData
+        // #411
+        if (semver.gte(engineVersion, '0.5.0')) upgradedGameData = gameData
 
         if (!upgradedGameData)
           throw new Error('Unable to import game data. Version conflict.')
+
+        // #411: always set to most recent version of app
+        upgradedGameData._.engine = '0.5.1'
 
         const {
           _,
@@ -96,7 +102,7 @@ export default (
           routes,
           scenes,
           variables
-        } = upgradedGameData as GameDataJSON_050
+        } = upgradedGameData as GameDataJSON_051
 
         try {
           // Save choices

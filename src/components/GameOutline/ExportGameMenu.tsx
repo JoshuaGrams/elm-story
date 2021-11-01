@@ -5,7 +5,7 @@ import React, { useContext, useState, useEffect } from 'react'
 import getGameDataJSON from '../../lib/getGameDataJSON'
 
 import { Game } from '../../data/types'
-import { StudioId } from '../../lib/transport/types/0.5.0'
+import { StudioId } from '../../lib/transport/types/0.5.1'
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
 import { AppContext } from '../../contexts/AppContext'

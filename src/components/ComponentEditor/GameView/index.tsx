@@ -7,7 +7,7 @@ import {
   EngineDevToolsEvent,
   ENGINE_DEVTOOLS_EVENTS,
   ENGINE_DEVTOOLS_EVENT_TYPE
-} from '../../../lib/transport/types/0.5.0'
+} from '../../../lib/transport/types/0.5.1'
 
 import { useGame } from '../../../hooks'
 

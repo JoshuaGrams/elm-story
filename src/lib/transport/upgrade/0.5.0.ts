@@ -37,8 +37,7 @@ export default ({
 
   const upgradedRootData: RootData = {
     ..._,
-    children: _.children as GameChildRefs,
-    engine: '0.5.0'
+    children: _.children as GameChildRefs
   }
 
   return {

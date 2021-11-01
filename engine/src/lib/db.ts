@@ -28,7 +28,7 @@ import {
   EngineVariableData,
   GameId,
   StudioId
-} from '../types/0.5.0'
+} from '../types/0.5.1'
 
 export enum LIBRARY_TABLE {
   BOOKMARKS = 'bookmarks',

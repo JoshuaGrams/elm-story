@@ -12,7 +12,7 @@ import {
   GameId,
   StudioId,
   VARIABLE_TYPE
-} from '../../../../engine/src/types/0.5.0'
+} from '../../../../engine/src/types/0.5.1'
 
 import { useVariables } from '../../../hooks'
 

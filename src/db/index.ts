@@ -34,7 +34,7 @@ import {
   EngineBookmarkData,
   EngineEventData,
   EngineSettingsData
-} from '../lib/transport/types/0.5.0'
+} from '../lib/transport/types/0.5.1'
 
 // DATABASE VERSIONS / UPGRADES
 import v1 from './v1'

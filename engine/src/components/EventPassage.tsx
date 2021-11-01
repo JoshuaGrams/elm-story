@@ -16,7 +16,7 @@ import {
   EnginePassageData,
   EngineRouteData,
   EngineEventResult
-} from '../types/0.5.0'
+} from '../types/0.5.1'
 import {
   ENGINE_EVENT_GAME_OVER_RESULT_VALUE,
   ENGINE_EVENT_LOOPBACK_RESULT_VALUE,

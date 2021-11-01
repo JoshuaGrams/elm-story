@@ -21,7 +21,7 @@ import fs from 'fs-extra'
 import format from './lib/compiler/format'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
-import { GameDataJSON } from './lib/transport/types/0.5.0'
+import { GameDataJSON } from './lib/transport/types/0.5.1'
 
 import logger from './lib/logger'
 

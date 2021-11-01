@@ -4,7 +4,7 @@ import {
   EngineDevToolsEvent,
   ENGINE_DEVTOOLS_EVENTS,
   ENGINE_DEVTOOLS_EVENT_TYPE
-} from '../types/0.5.0'
+} from '../types/0.5.1'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 

@@ -10,7 +10,7 @@ import {
   PASSAGE_TYPE,
   SceneChildRefs,
   SceneParentRef
-} from './transport/types/0.5.0'
+} from './transport/types/0.5.1'
 
 import api from '../api'
 

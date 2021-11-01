@@ -1,7 +1,7 @@
 // TODO: move to own package
 import * as acorn from 'acorn'
 
-import { VARIABLE_TYPE } from '../types/0.5.0'
+import { VARIABLE_TYPE } from '../types/0.5.1'
 
 interface AcornNode extends acorn.Node {
   body?: AcornNode[]

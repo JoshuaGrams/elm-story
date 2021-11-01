@@ -27,7 +27,7 @@ import {
   EngineGameData,
   EnginePassageData,
   EngineEventResult
-} from '../types/0.5.0'
+} from '../types/0.5.1'
 import {
   AUTO_ENGINE_BOOKMARK_KEY,
   DEFAULT_ENGINE_SETTINGS_KEY,

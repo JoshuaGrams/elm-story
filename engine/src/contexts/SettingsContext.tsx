@@ -1,6 +1,6 @@
 import React, { createContext, useMemo, useReducer } from 'react'
 
-import { ENGINE_THEME } from '../types/0.5.0'
+import { ENGINE_THEME } from '../types/0.5.1'
 
 interface SettingsContext {
   open: boolean
@@ -73,10 +73,10 @@ const SettingsProvider: React.FC = ({ children }) => {
 
   return (
     <SettingsContext.Provider
-      value={useMemo(
-        () => ({ settings, settingsDispatch }),
-        [settings, settingsDispatch]
-      )}
+      value={useMemo(() => ({ settings, settingsDispatch }), [
+        settings,
+        settingsDispatch
+      ])}
     >
       {children}
     </SettingsContext.Provider>

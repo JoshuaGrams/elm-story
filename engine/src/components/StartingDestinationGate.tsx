@@ -5,7 +5,7 @@ import { useQuery } from 'react-query'
 import { LibraryDatabase } from '../lib/db'
 import { findStartingDestinationPassage } from '../lib/api'
 
-import { GameId, StudioId } from '../types/0.5.0'
+import { GameId, StudioId } from '../types/0.5.1'
 
 import { EngineContext } from '../contexts/EngineContext'
 

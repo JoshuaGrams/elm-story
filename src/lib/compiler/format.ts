@@ -6,7 +6,7 @@ import {
   COMPONENT_TYPE,
   GameDataJSON,
   ESGEngineCollectionData
-} from '../transport/types/0.5.0'
+} from '../transport/types/0.5.1'
 
 function filterCollectionChildProps<T extends object, U extends keyof T>(
   collectionToFilter: { [ComponentId: string]: T },

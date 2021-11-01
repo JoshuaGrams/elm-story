@@ -6,6 +6,7 @@ import { GameDataJSON as GameDataJSON_030 } from '../types/0.3.0'
 import { GameDataJSON as GameDataJSON_031 } from '../types/0.3.1'
 import { GameDataJSON as GameDataJSON_040 } from '../types/0.4.0'
 import { GameDataJSON as GameDataJSON_050 } from '../types/0.5.0'
+import { GameDataJSON as GameDataJSON_051 } from '../types/0.5.1'
 
 function isValidData(data: any, schema: Schema): [boolean, ValidationError[]] {
   const { errors } = new Validator().validate(data, schema)
@@ -20,7 +21,8 @@ export default (
     | GameDataJSON_030
     | GameDataJSON_031
     | GameDataJSON_040
-    | GameDataJSON_050,
+    | GameDataJSON_050
+    | GameDataJSON_051,
   version: string
 ): [boolean, ValidationError[] | { path?: string; message: string }[]] => {
   try {

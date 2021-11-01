@@ -11,7 +11,7 @@ function main() {
   console.info(
     `made with Elm Story ${String.fromCodePoint(
       0x1f4da
-    )} 0.5.0 | https://elmstory.com`
+    )} 0.5.1 | https://elmstory.com`
   )
 
   registerSW({
