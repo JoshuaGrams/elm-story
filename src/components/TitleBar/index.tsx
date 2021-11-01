@@ -17,7 +17,8 @@ import {
   CloseOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
-  MinusOutlined
+  MinusOutlined,
+  QuestionCircleFilled
 } from '@ant-design/icons'
 
 import { ESGModal } from '../Modal'
@@ -28,6 +29,7 @@ import styles from './styles.module.less'
 enum TITLE_BAR_BUTTON_TYPE {
   FLOATING = 'FLOATING',
   FULLSCREEN = 'FULLSCREEN',
+  HELP = 'HELP',
   MENU = 'MENU',
   MINIMIZE = 'MINIMIZE',
   QUIT = 'QUIT'
@@ -58,6 +60,10 @@ const TitleBarButton: React.FC<TitleBarButtonProps> = ({ onClick, type }) => {
       buttonIcon = <FullscreenExitOutlined />
       buttonTitle = 'Exit Fullscreen'
       break
+    case TITLE_BAR_BUTTON_TYPE.HELP:
+      buttonIcon = <QuestionCircleFilled />
+      buttonTitle = 'Help'
+      break
     case TITLE_BAR_BUTTON_TYPE.MENU:
       buttonTitle = 'Menu'
       break
@@ -85,7 +91,10 @@ const TitleBar: React.FC = () => {
    */
   const isFirstRun = useRef(true)
 
-  const [esgModalVisible, setESGModalVisible] = useState(false)
+  const [esgModalVisible, setESGModalVisible] = useState(false),
+    [appLocationTitle, setAppLocationTitle] = useState<'DASHBOARD' | 'EDITOR'>(
+      'DASHBOARD'
+    )
 
   const titleBarButtonData = [
     {
@@ -106,6 +115,28 @@ const TitleBar: React.FC = () => {
             ? APP_ACTION_TYPE.FLOATING
             : APP_ACTION_TYPE.FULLSCREEN
         })
+    },
+    {
+      type: TITLE_BAR_BUTTON_TYPE.HELP,
+      onClick: () => {
+        let helpUrl
+
+        switch (app.location) {
+          case APP_LOCATION.DASHBOARD:
+            helpUrl =
+              'https://docs.elmstory.com/guides/production/dashboard/dashboard-overview'
+            break
+          case APP_LOCATION.EDITOR:
+            helpUrl =
+              'https://docs.elmstory.com/guides/production/editor/editor-overview'
+            break
+          default:
+            break
+        }
+
+        helpUrl &&
+          ipcRenderer.send(WINDOW_EVENT_TYPE.OPEN_EXTERNAL_LINK, [helpUrl])
+      }
     }
   ]
 
@@ -129,10 +160,20 @@ const TitleBar: React.FC = () => {
   useEffect(() => {
     switch (pathname) {
       case APP_LOCATION.DASHBOARD:
-        appDispatch({ type: APP_ACTION_TYPE.HEADER, header: 'DASHBOARD' })
+        appDispatch({
+          type: APP_ACTION_TYPE.SET_LOCATION,
+          location: APP_LOCATION.DASHBOARD
+        })
+
+        setAppLocationTitle('DASHBOARD')
         break
       case APP_LOCATION.EDITOR:
-        appDispatch({ type: APP_ACTION_TYPE.HEADER, header: 'EDITOR' })
+        appDispatch({
+          type: APP_ACTION_TYPE.SET_LOCATION,
+          location: APP_LOCATION.EDITOR
+        })
+
+        setAppLocationTitle('EDITOR')
         break
       default:
         break
@@ -151,8 +192,8 @@ const TitleBar: React.FC = () => {
           <div
             className={styles.dragBar}
             style={{
-              left: app.platform === PLATFORM_TYPE.MACOS ? '79px' : '34px',
-              right: app.platform !== PLATFORM_TYPE.MACOS ? '79px' : '34px'
+              left: app.platform === PLATFORM_TYPE.MACOS ? '103px' : '34px',
+              right: app.platform !== PLATFORM_TYPE.MACOS ? '103px' : '34px'
             }}
           />
         )}
@@ -181,7 +222,7 @@ const TitleBar: React.FC = () => {
               .reverse()
               .map(
                 (data, index) =>
-                  (index !== 1 || (index === 1 && !app.fullscreen)) && (
+                  (index !== 2 || (index === 2 && !app.fullscreen)) && (
                     <TitleBarButton
                       key={data.type}
                       type={data.type}
@@ -203,7 +244,7 @@ const TitleBar: React.FC = () => {
         /> */}
         </div>
 
-        <header>{app.header}</header>
+        <header>ELM STORY : {appLocationTitle}</header>
 
         <div
           className={styles.titleBarIcon}
