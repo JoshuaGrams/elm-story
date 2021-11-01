@@ -26,6 +26,11 @@
 
   input {
     border: none;
+
+    &::selection {
+      color: var(--input-selection-text-color);
+      background: var(--primary-color-darkest);
+    }
   }
 
   button {
