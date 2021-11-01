@@ -13,17 +13,24 @@ import {
   APP_LOCATION
 } from '../../contexts/AppContext'
 
+import {
+  CloseOutlined,
+  FullscreenExitOutlined,
+  FullscreenOutlined,
+  MinusOutlined
+} from '@ant-design/icons'
+
 import { ESGModal } from '../Modal'
 import ESGIcon from './ESGIcon'
 
 import styles from './styles.module.less'
 
 enum TITLE_BAR_BUTTON_TYPE {
-  QUIT = 'QUIT',
-  MINIMIZE = 'MINIMIZE',
-  FULLSCREEN = 'FULLSCREEN',
   FLOATING = 'FLOATING',
-  MENU = 'MENU'
+  FULLSCREEN = 'FULLSCREEN',
+  MENU = 'MENU',
+  MINIMIZE = 'MINIMIZE',
+  QUIT = 'QUIT'
 }
 
 interface TitleBarButtonProps extends React.HTMLProps<HTMLDivElement> {
@@ -31,27 +38,27 @@ interface TitleBarButtonProps extends React.HTMLProps<HTMLDivElement> {
 }
 
 const TitleBarButton: React.FC<TitleBarButtonProps> = ({ onClick, type }) => {
-  let buttonStyle, buttonTitle
+  let buttonTitle,
+    buttonIcon: JSX.Element = <></>
 
   switch (type) {
     case TITLE_BAR_BUTTON_TYPE.QUIT:
-      buttonStyle = styles.quitButton
+      buttonIcon = <CloseOutlined />
       buttonTitle = 'Quit'
       break
     case TITLE_BAR_BUTTON_TYPE.MINIMIZE:
-      buttonStyle = styles.minimizeButton
+      buttonIcon = <MinusOutlined />
       buttonTitle = 'Minimize'
       break
     case TITLE_BAR_BUTTON_TYPE.FULLSCREEN:
-      buttonStyle = styles.fullscreenButton
+      buttonIcon = <FullscreenOutlined />
       buttonTitle = 'Enter Fullscreen'
       break
     case TITLE_BAR_BUTTON_TYPE.FLOATING:
-      buttonStyle = styles.floatingButton
+      buttonIcon = <FullscreenExitOutlined />
       buttonTitle = 'Exit Fullscreen'
       break
     case TITLE_BAR_BUTTON_TYPE.MENU:
-      buttonStyle = styles.menuButton
       buttonTitle = 'Menu'
       break
     default:
@@ -60,10 +67,12 @@ const TitleBarButton: React.FC<TitleBarButtonProps> = ({ onClick, type }) => {
 
   return (
     <div
-      className={`${styles.titleBarButton} ${buttonStyle}`}
+      className={`${styles.titleBarButton}`}
       title={buttonTitle}
       onClick={onClick}
-    />
+    >
+      {buttonIcon}
+    </div>
   )
 }
 
