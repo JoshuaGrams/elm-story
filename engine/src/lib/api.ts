@@ -240,14 +240,21 @@ export const resetGame = async (
     try {
       await Promise.all([
         libraryDatabase.bookmarks.where({ gameId }).delete(),
+        libraryDatabase.choices.where({ gameId }).delete(),
+        libraryDatabase.conditions.where({ gameId }).delete(),
+        libraryDatabase.effects.where({ gameId }).delete(),
         libraryDatabase.events.where({ gameId }).delete(),
-        libraryDatabase.settings.where({ gameId }).delete()
+        libraryDatabase.games.where({ id: gameId }).delete(),
+        libraryDatabase.inputs.where({ gameId }).delete(),
+        libraryDatabase.jumps.where({ gameId }).delete(),
+        libraryDatabase.passages.where({ gameId }).delete(),
+        libraryDatabase.routes.where({ gameId }).delete(),
+        libraryDatabase.scenes.where({ gameId }).delete(),
+        libraryDatabase.settings.where({ gameId }).delete(),
+        libraryDatabase.variables.where({ gameId }).delete()
       ])
 
-      if (!skipInstall) {
-        localStorage.removeItem(gameId)
-        await libraryDatabase.delete()
-      }
+      !skipInstall && localStorage.removeItem(gameId)
     } catch (error) {
       throw error
     }
