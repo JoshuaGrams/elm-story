@@ -19,6 +19,7 @@ import MenuBuilder from './menu'
 import contextMenu from 'electron-context-menu'
 import fs from 'fs-extra'
 import format from './lib/compiler/format'
+import md5 from 'md5'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
 import { GameDataJSON } from './lib/transport/types/0.5.1'
@@ -196,13 +197,14 @@ const createWindow = async () => {
                   await fs.readFile(`${savePathFull}/manifest.json`, 'utf8')
                 )
 
-                let [html, js, webmanifest] = await Promise.all([
+                let [html, js, webmanifest, sw] = await Promise.all([
                   fs.readFile(`${savePathFull}/index.html`, 'utf8'),
                   fs.readFile(
                     `${savePathFull}/${manifest['index.html'].file}`,
                     'utf8'
                   ),
-                  fs.readFile(`${savePathFull}/manifest.webmanifest`, 'utf8')
+                  fs.readFile(`${savePathFull}/manifest.webmanifest`, 'utf8'),
+                  fs.readFile(`${savePathFull}/sw.js`, 'utf8')
                 ])
 
                 const gameDescription =
@@ -222,6 +224,35 @@ const createWindow = async () => {
                   .replace(/___gameTitle___/g, parsedGameData._.title)
                   .replace('___gameDescription___', gameDescription)
 
+                // #379, #373
+                const swIndexRevSearchString = `index.html",revision:"`,
+                  startingIndexRevReplacePosition =
+                    sw.indexOf(swIndexRevSearchString) +
+                    swIndexRevSearchString.length,
+                  newIndexHash = md5(html)
+
+                // update index revision
+                sw = `${sw.substr(
+                  0,
+                  startingIndexRevReplacePosition
+                )}${newIndexHash}${sw.substr(
+                  startingIndexRevReplacePosition + newIndexHash.length
+                )}`
+
+                const swJSRevSearchString = `${manifest['index.html'].file}",revision:"`,
+                  startingJSRevReplacePosition =
+                    sw.indexOf(swJSRevSearchString) +
+                    swJSRevSearchString.length,
+                  newJSHash = md5(js)
+
+                // update js revision
+                sw = `${sw.substr(
+                  0,
+                  startingJSRevReplacePosition
+                )}${newJSHash}${sw.substr(
+                  startingJSRevReplacePosition + newJSHash.length
+                )}`
+
                 await Promise.all([
                   fs.writeFile(`${savePathFull}/index.html`, html),
                   fs.writeFile(
@@ -232,6 +263,7 @@ const createWindow = async () => {
                     `${savePathFull}/manifest.webmanifest`,
                     webmanifest
                   ),
+                  fs.writeFile(`${savePathFull}/sw.js`, sw),
                   fs.remove(`${savePathFull}/manifest.json`)
                 ])
               } catch (error) {

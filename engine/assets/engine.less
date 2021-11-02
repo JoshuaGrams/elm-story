@@ -56,6 +56,34 @@
     color: var(--warning-color);
   }
 
+  #game-update-toast {
+    position: absolute;
+    bottom: 0;
+    background: red;
+    height: auto;
+    left: 0;
+    right: 0;
+    box-sizing: content-box;
+    z-index: 1000;
+    background: var(--background-color);
+    display: grid;
+    grid-template-columns: auto 8rem;
+    padding: 1.4rem;
+    border-top: 0.1rem solid var(--renderer-border-color);
+    align-items: center;
+
+    span {
+      font-size: 1.4rem;
+    }
+
+    button {
+      &:disabled {
+        pointer-events: none;
+        opacity: 0;
+      }
+    }
+  }
+
   #settings {
     position: absolute;
     top: 0;
