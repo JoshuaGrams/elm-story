@@ -10,6 +10,7 @@ import {
   DEFAULT_PASSAGE_CONTENT,
   Game,
   PASSAGE_TYPE,
+  SceneChildRefs,
   StudioId
 } from '../../data/types'
 import { DEFAULT_NODE_SIZE } from '../ComponentEditor/SceneView'
@@ -403,7 +404,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           }
         } catch (error) {
           // TODO: Move the item back to original position?
-          throw new Error(error)
+          throw error
         }
       }
     } else if (movingComponent) {
@@ -559,7 +560,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 ])
               )
             } catch (error) {
-              throw new Error(error)
+              throw error
             }
 
             setTreeData(newTreeData)
@@ -611,7 +612,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               })
             }
           } catch (error) {
-            throw new Error(error)
+            throw error
           }
 
           parentItem.hasChildren = true
@@ -646,7 +647,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 ])
               )
             } catch (error) {
-              throw new Error(error)
+              throw error
             }
 
             setTreeData(newTreeData)
@@ -687,53 +688,41 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               tags: []
             })
           } catch (error) {
-            throw new Error(error)
+            throw error
           }
 
           parentItem.hasChildren = true
 
           if (passage.id) {
-            newTreeData = addItemToTree(
-              treeData,
-              parentItem.id as ComponentId,
-              {
-                id: passage.id,
-                children: [],
-                isExpanded: false,
-                hasChildren: false,
-                isChildrenLoading: false,
-                data: {
-                  title: 'Untitled Passage',
-                  type: COMPONENT_TYPE.PASSAGE,
-                  selected: false,
-                  parentId: parentItem.id,
-                  renaming: true
-                }
-              }
-            )
-
             try {
+              // #414
+              const sceneChildren: SceneChildRefs = treeData.items[
+                parentItem.id
+              ].children.map((childId) => [
+                COMPONENT_TYPE.PASSAGE,
+                childId as ComponentId
+              ])
+
               await api().scenes.saveChildRefsToScene(
                 studioId,
                 parentItem.id as ComponentId,
-                newTreeData.items[parentItem.id].children.map((childId) => [
-                  COMPONENT_TYPE.PASSAGE,
-                  childId as ComponentId
-                ])
+                [...sceneChildren, [COMPONENT_TYPE.PASSAGE, passage.id]]
               )
             } catch (error) {
-              throw new Error(error)
+              throw error
             }
 
-            setTreeData(newTreeData)
+            editorDispatch({
+              type:
+                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
+              selectedComponentEditorSceneViewPassage: passage.id
+            })
 
             editorDispatch({
-              type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-              selectedGameOutlineComponent: {
+              type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
+              savedComponent: {
                 id: passage.id,
-                expanded: true,
-                type: COMPONENT_TYPE.PASSAGE,
-                title: 'Untitled Passage'
+                type: COMPONENT_TYPE.PASSAGE
               }
             })
           }
@@ -843,7 +832,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             break
         }
       } catch (error) {
-        throw new Error(error)
+        throw error
       }
     }
   }
@@ -880,7 +869,7 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               break
           }
         } catch (error) {
-          throw new Error(error)
+          throw error
         }
 
         // TODO: updating DB could fail; cache name if need revert on error
@@ -970,22 +959,40 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             const passage = await api().passages.getPassage(studioId, id)
 
             if (passage.id) {
-              setTreeData(
-                addItemToTree(treeData, passage.sceneId, {
-                  id,
-                  children: [],
-                  isExpanded: false,
-                  hasChildren: false,
-                  isChildrenLoading: false,
-                  data: {
-                    title: 'Untitled Passage',
-                    type: COMPONENT_TYPE.PASSAGE,
-                    selected: false,
-                    parentId: passage.sceneId,
-                    renaming: true
+              // #414
+              const newTreeData = addItemToTree(treeData, passage.sceneId, {
+                id,
+                children: [],
+                isExpanded: false,
+                hasChildren: false,
+                isChildrenLoading: false,
+                data: {
+                  title: 'Untitled Passage',
+                  type: COMPONENT_TYPE.PASSAGE,
+                  selected: false,
+                  parentId: passage.sceneId,
+                  renaming: true
+                }
+              })
+
+              newTreeData.items[passage.sceneId].data.selected = true
+
+              setTreeData(newTreeData)
+
+              if (editor.selectedGameOutlineComponent.id !== passage.sceneId) {
+                const parentScene = treeData.items[passage.sceneId]
+
+                // TODO: sets tree data twice
+                editorDispatch({
+                  type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
+                  selectedGameOutlineComponent: {
+                    id: parentScene.id as ComponentId,
+                    expanded: true,
+                    type: COMPONENT_TYPE.SCENE,
+                    title: parentScene.data.title
                   }
                 })
-              )
+              }
             }
             break
           default:
