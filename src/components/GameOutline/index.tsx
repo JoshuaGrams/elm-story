@@ -747,17 +747,25 @@ const GameOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
         parent = newTreeData.items[item.data.parentId]
 
       if (
-        data.type === COMPONENT_TYPE.PASSAGE ||
+        (data.type === COMPONENT_TYPE.PASSAGE &&
+          item.id === editor.selectedComponentEditorSceneViewPassage) ||
         (data.type === COMPONENT_TYPE.SCENE &&
           editor.selectedComponentEditorSceneViewPassage &&
           item.children.includes(
             editor.selectedComponentEditorSceneViewPassage
           ))
-      )
+      ) {
         editorDispatch({
           type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
           selectedComponentEditorSceneViewPassage: null
         })
+
+        editorDispatch({
+          type:
+            EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_PASSAGES,
+          totalComponentEditorSceneViewSelectedPassages: 0
+        })
+      }
 
       editorDispatch({
         type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
