@@ -73,7 +73,9 @@ const TitleBarButton: React.FC<TitleBarButtonProps> = ({ onClick, type }) => {
 
   return (
     <div
-      className={`${styles.titleBarButton}`}
+      className={`${styles.titleBarButton} ${
+        type === TITLE_BAR_BUTTON_TYPE.HELP ? styles.helpButton : ''
+      }`}
       title={buttonTitle}
       onClick={onClick}
     >
@@ -131,11 +133,11 @@ const TitleBar: React.FC = () => {
               'https://docs.elmstory.com/guides/production/editor/editor-overview'
             break
           default:
+            helpUrl = 'https://docs.elmstory.com'
             break
         }
 
-        helpUrl &&
-          ipcRenderer.send(WINDOW_EVENT_TYPE.OPEN_EXTERNAL_LINK, [helpUrl])
+        ipcRenderer.send(WINDOW_EVENT_TYPE.OPEN_EXTERNAL_LINK, [helpUrl])
       }
     }
   ]

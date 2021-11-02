@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { ComponentId, StudioId } from '../../../data/types'
+import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
 
 import { useScene } from '../../../hooks'
 
@@ -22,6 +22,7 @@ import JumpDetails from '../JumpDetails'
 import PassageDetails from '../PassageDetails'
 import RouteDetails from '../RouteDetails'
 import ChoiceDetails from '../ChoiceDetails'
+import ComponentHelpButton from '../ComponentHelpButton'
 
 import styles from '../styles.module.less'
 
@@ -79,20 +80,23 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
                   {editor.totalComponentEditorSceneViewSelectedJumps}
                 </div>
               )}
-            {!editor.selectedComponentEditorSceneViewPassage &&
-              editor.totalComponentEditorSceneViewSelectedPassages > 0 && (
-                <div>
-                  Selected Passages:{' '}
-                  {editor.totalComponentEditorSceneViewSelectedPassages}
-                </div>
-              )}
-            {!editor.selectedComponentEditorSceneViewRoute &&
-              editor.totalComponentEditorSceneViewSelectedRoutes > 0 && (
-                <div>
-                  Selected Routes:{' '}
-                  {editor.totalComponentEditorSceneViewSelectedRoutes}
-                </div>
-              )}
+
+            <div className={styles.content}>
+              {!editor.selectedComponentEditorSceneViewPassage &&
+                editor.totalComponentEditorSceneViewSelectedPassages > 0 && (
+                  <div>
+                    Selected Passages:{' '}
+                    {editor.totalComponentEditorSceneViewSelectedPassages}
+                  </div>
+                )}
+              {!editor.selectedComponentEditorSceneViewRoute &&
+                editor.totalComponentEditorSceneViewSelectedRoutes > 0 && (
+                  <div>
+                    Selected Routes:{' '}
+                    {editor.totalComponentEditorSceneViewSelectedRoutes}
+                  </div>
+                )}
+            </div>
 
             {/* Jump Panel */}
             {editor.selectedComponentEditorSceneViewJump && (
@@ -100,8 +104,9 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
                 <Collapse.Panel
                   header={
                     <>
-                      <ForwardOutlined className={styles.headerIcon} /> Selected
-                      Jump
+                      <ForwardOutlined className={styles.headerIcon} />
+                      Selected Jump
+                      <ComponentHelpButton type={COMPONENT_TYPE.JUMP} />
                     </>
                   }
                   key="jump-details-panel"
@@ -122,6 +127,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
                     <>
                       <NodeIndexOutlined className={styles.headerIcon} />{' '}
                       Selected Route
+                      <ComponentHelpButton type={COMPONENT_TYPE.ROUTE} />
                     </>
                   }
                   key="route-details-panel"
@@ -149,6 +155,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
                       <>
                         <AlignLeftOutlined className={styles.headerIcon} />{' '}
                         Selected Passage
+                        <ComponentHelpButton type={COMPONENT_TYPE.PASSAGE} />
                       </>
                     }
                     key="passage-details-panel"
@@ -167,6 +174,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
                       <>
                         <BranchesOutlined className={styles.headerIcon} />{' '}
                         Selected Choice
+                        <ComponentHelpButton type={COMPONENT_TYPE.CHOICE} />
                       </>
                     }
                     key="choice-details-panel"
