@@ -1,6 +1,12 @@
 import { cloneDeep, pick } from 'lodash'
 
-import React, { useContext, useRef, useCallback, useEffect } from 'react'
+import React, {
+  useContext,
+  useRef,
+  useCallback,
+  useEffect,
+  useState
+} from 'react'
 import { useTransition, animated } from 'react-spring'
 import { useQuery } from 'react-query'
 import { useLiveQuery } from 'dexie-react-hooks'
@@ -34,6 +40,8 @@ const EventStream: React.FC = React.memo(() => {
   if (!engine.gameInfo) return null
 
   const { studioId, id: gameId } = engine.gameInfo
+
+  const [checkedJumpsOnQuery, setCheckedJumpsOnQuery] = useState(false)
 
   const getRecentEvents = useCallback(async () => {
     if (engine.installed && engine.currentEvent) {
@@ -174,31 +182,67 @@ const EventStream: React.FC = React.memo(() => {
 
   useQuery([`game-jump-${engine.installId}`, gameJumps], async () => {
     if (engine.isEditor && gameJumps) {
-      const foundOnGameStartJump = gameJumps.find(
-        (jump) => jump.id === game?.jump
-      )
-
-      if (foundOnGameStartJump && foundOnGameStartJump.route[1]) {
-        const initialEvent = await new LibraryDatabase(studioId).events.get(
-          `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
+      if (gameJumps.length > 0) {
+        const foundOnGameStartJump = gameJumps.find(
+          (jump) => jump.id === game?.jump
         )
 
-        if (
-          initialEvent &&
-          initialEvent.destination !== foundOnGameStartJump.route[1]
-        ) {
-          await saveEventDestination(
-            studioId,
-            initialEvent.id,
-            foundOnGameStartJump.route[1]
+        if (foundOnGameStartJump) {
+          const initialEvent = await new LibraryDatabase(studioId).events.get(
+            `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
           )
 
-          engineDispatch({
-            type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION,
-            message: 'On game start jump has changed.'
-          })
+          if (initialEvent) {
+            // jump has a scene, but scene doesn't match initial event destination
+            if (
+              foundOnGameStartJump.route[1] &&
+              initialEvent.destination !== foundOnGameStartJump.route[1]
+            ) {
+              foundOnGameStartJump.route[1] &&
+                (await saveEventDestination(
+                  studioId,
+                  initialEvent.id,
+                  foundOnGameStartJump.route[1]
+                ))
+
+              engineDispatch({
+                type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION,
+                message: 'On game start jump has changed.'
+              })
+            }
+
+            // jump doesn't have passage part
+            // check scene for first passage matching initial event destination
+            if (
+              !foundOnGameStartJump.route[1] &&
+              foundOnGameStartJump.route[0]
+            ) {
+              const foundScene = await new LibraryDatabase(studioId).scenes.get(
+                foundOnGameStartJump.route[0]
+              )
+
+              if (
+                foundScene &&
+                initialEvent.destination !== foundScene.children[0][1]
+              ) {
+                engineDispatch({
+                  type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION,
+                  message: 'On game start jump has changed.'
+                })
+              }
+            }
+          }
         }
       }
+
+      if (gameJumps.length === 0 && checkedJumpsOnQuery) {
+        engineDispatch({
+          type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION,
+          message: 'On game start jump has changed.'
+        })
+      }
+
+      setCheckedJumpsOnQuery(true)
     }
   })
 
