@@ -93,7 +93,7 @@ export const saveEngineCollectionData = async (
 
     if (semver.lt(version, installedGame.version)) {
       console.error(
-        `Unable to save game data to database. Incoming: ${version}, Installed: ${installedGame.version}\nMore info: https://docs.elmstory.com/guides/data/pwa`
+        `[ESRE]: Unable to save game data to database. Incoming: ${version}, Installed: ${installedGame.version}\nMore info: https://docs.elmstory.com/guides/data/pwa`
       )
     }
   }
