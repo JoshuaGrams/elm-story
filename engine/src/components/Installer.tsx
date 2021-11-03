@@ -16,6 +16,8 @@ import { GameId, StudioId, ESGEngineCollectionData } from '../types/0.5.1'
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 import { INITIAL_ENGINE_EVENT_ORIGIN_KEY } from '../lib'
 
+import GameUpdate from './GameUpdate'
+
 const Installer: React.FC<{
   studioId: StudioId
   gameId: GameId
@@ -30,15 +32,34 @@ const Installer: React.FC<{
       try {
         if (!engine.installed) {
           if (!isEditor && data) {
-            await saveEngineCollectionData(data)
+            const updateGame = await saveEngineCollectionData(data)
+
+            if (updateGame) {
+              // TODO: 373
+              // empty old game data, but not bookmarks, events and settings
+              // install game data
+              // maybe save game version to each event?
+              // take the most recent event, confirm destination exists
+              // if destination no longer exists, go back until event does
+              // copy first event with existing destination and patch game state
+              // create new event and update auto bookmark
+              // after this happens, it shouldn't be possible to go back to these old events
+              // if we can't find any events with existing destinations, have to create a new initial
+
+              engineDispatch({ type: ENGINE_ACTION_TYPE.UPDATE_GAME })
+            }
           }
 
-          if (isEditor) {
+          if (isEditor && engine.gameInfo) {
             engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_EDITOR })
             engineDispatch({ type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION })
 
             await resetGame(studioId, gameId, true, true)
-            await saveEngineDefaultGameCollectionData(studioId, gameId)
+            await saveEngineDefaultGameCollectionData(
+              studioId,
+              gameId,
+              engine.gameInfo.version
+            )
 
             engine.playing &&
               engineDispatch({
@@ -108,7 +129,13 @@ const Installer: React.FC<{
     setGameData()
   }, [engine.installed])
 
-  return <>{engine.installed && children}</>
+  return (
+    <>
+      {engine.updating && <GameUpdate />}
+
+      {engine.installed && children}
+    </>
+  )
 })
 
 Installer.displayName = 'Installer'

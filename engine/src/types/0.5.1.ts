@@ -363,6 +363,7 @@ export interface EngineEventData {
   state: EngineEventStateCollection
   type: ENGINE_EVENT_TYPE
   updated: number
+  version: string
 }
 
 export interface EngineEventCollection {

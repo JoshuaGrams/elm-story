@@ -50,6 +50,7 @@
     "react-query": "^3.24.4",
     "react-spring": "^9.2.4",
     "react-string-replace": "^0.4.4",
+    "semver": "^7.3.5",
     "uuid": "^8.3.2"
   }
 }

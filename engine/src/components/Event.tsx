@@ -99,7 +99,7 @@ const Event: React.FC<{ data: EngineEventData }> = ({ data }) => {
           ? await getEventInitial(studioId, gameId)
           : undefined
 
-      if (eventType) {
+      if (eventType && engine.gameInfo) {
         await Promise.all([
           saveEventNext(studioId, data.id, nextEventId),
           saveEvent(studioId, {
@@ -120,7 +120,8 @@ const Event: React.FC<{ data: EngineEventData }> = ({ data }) => {
               data.state,
             prev: data.id,
             type: eventType,
-            updated: Date.now()
+            updated: Date.now(),
+            version: engine.gameInfo?.version
           })
         ])
 

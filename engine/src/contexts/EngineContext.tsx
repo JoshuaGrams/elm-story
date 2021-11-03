@@ -32,6 +32,7 @@ interface EngineState {
     message: string | undefined
     showing: boolean
   }
+  updating: boolean
 }
 
 export enum ENGINE_ACTION_TYPE {
@@ -49,6 +50,7 @@ export enum ENGINE_ACTION_TYPE {
   TOGGLE_DEVTOOLS_BLOCKED_CHOICES = 'TOGGLE_DEVTOOLS_BLOCKED_CHOICES',
   TOGGLE_DEVTOOLS_EXPRESSIONS = 'TOGGLE_DEVTOOLS_EXPRESSIONS',
   TOGGLE_DEVTOOLS_XRAY = 'TOGGLE_DEVTOOLS_XRAY',
+  UPDATE_GAME = 'UPDATE_GAME',
   UPDATE_EVENT_IN_STREAM = 'UPDATE_EVENT_IN_STREAM'
 }
 
@@ -92,6 +94,7 @@ type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_BLOCKED_CHOICES }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_EXPRESSIONS }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_XRAY }
+  | { type: ENGINE_ACTION_TYPE.UPDATE_GAME }
 
 const engineReducer = (
   state: EngineState,
@@ -200,6 +203,11 @@ const engineReducer = (
           xrayVisible: !state.devTools.xrayVisible
         }
       }
+    case ENGINE_ACTION_TYPE.UPDATE_GAME:
+      return {
+        ...state,
+        updating: true
+      }
     default:
       return state
   }
@@ -226,7 +234,8 @@ const defaultEngineState: EngineState = {
   resetNotification: {
     message: undefined,
     showing: false
-  }
+  },
+  updating: false
 }
 
 export const EngineContext = createContext<EngineContextType>({

@@ -28,7 +28,7 @@ function main() {
   }
 
   if (import.meta.env.DEV) {
-    import('../data/terminal-access.json').then((data) =>
+    import('../data/terminal-access_0.0.1.json').then((data) =>
       render(
         <>
           <ServiceWorker />

@@ -1,5 +1,6 @@
 import Dexie from 'dexie'
 import { cloneDeep, pick } from 'lodash'
+import semver from 'semver'
 // @ts-ignore
 import lzwCompress from 'lzwcompress'
 
@@ -59,7 +60,7 @@ export const saveGameMeta = (studioId: StudioId, gameId: GameId) => {
 
 export const saveEngineCollectionData = async (
   engineData: ESGEngineCollectionData
-) => {
+): Promise<boolean> => {
   const {
     children,
     copyright,
@@ -79,13 +80,25 @@ export const saveEngineCollectionData = async (
   } = engineData._
 
   const databaseExists = await Dexie.exists(`${DB_NAME}-${studioId}`)
-  let gameExists: EngineGameData | undefined
+  let installedGame: EngineGameData | undefined
 
   if (databaseExists) {
-    gameExists = await new LibraryDatabase(studioId).games.get(gameId)
+    installedGame = await new LibraryDatabase(studioId).games.get(gameId)
   }
 
-  if (!databaseExists || (databaseExists && !gameExists)) {
+  if (databaseExists && installedGame) {
+    if (semver.gt(version, installedGame.version)) {
+      return true
+    }
+
+    if (semver.lt(version, installedGame.version)) {
+      console.error(
+        `Unable to save game data to database. Incoming: ${version}, Installed: ${installedGame.version}\nMore info: https://docs.elmstory.com/guides/data/pwa`
+      )
+    }
+  }
+
+  if (!databaseExists || (databaseExists && !installedGame)) {
     saveGameMeta(studioId, gameId)
 
     const libraryDatabase = new LibraryDatabase(studioId)
@@ -123,16 +136,19 @@ export const saveEngineCollectionData = async (
         libraryDatabase.saveVariableCollectionData(gameId, engineData.variables)
       ])
 
-      await saveEngineDefaultGameCollectionData(studioId, gameId)
+      await saveEngineDefaultGameCollectionData(studioId, gameId, version)
     } catch (error) {
       throw error
     }
   }
+
+  return false
 }
 
 export const saveEngineDefaultGameCollectionData = async (
   studioId: StudioId,
-  gameId: GameId
+  gameId: GameId,
+  gameVersion: string
 ) => {
   const libraryDatabase = new LibraryDatabase(studioId)
 
@@ -214,7 +230,8 @@ export const saveEngineDefaultGameCollectionData = async (
             destination: startingDestination,
             state: initialGameState,
             type: ENGINE_EVENT_TYPE.INITIAL,
-            updated: Date.now()
+            updated: Date.now(),
+            version: gameVersion
           }
         })
       }
