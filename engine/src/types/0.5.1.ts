@@ -282,6 +282,7 @@ export interface EngineBookmarkData {
   title: string
   event: ComponentId | undefined // event
   updated: number
+  version: string
 }
 
 export interface EngineBookmarkCollection {

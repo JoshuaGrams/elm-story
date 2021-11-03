@@ -173,7 +173,8 @@ export const saveEngineDefaultGameCollectionData = async (
             id: `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`,
             title: AUTO_ENGINE_BOOKMARK_KEY,
             event: undefined,
-            updated: Date.now()
+            updated: Date.now(),
+            version: gameVersion
           }
         })
       )
