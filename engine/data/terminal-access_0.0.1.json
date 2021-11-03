@@ -4,7 +4,7 @@
     "copyright": "(c) 2021 Elm Story Games LLC",
     "description": "Sample game used in the Elm Story Early Access tutorial.",
     "designer": "ritsuke",
-    "engine": "0.5.1",
+    "engine": "0.5.0",
     "id": "4ede6629-c99c-48e5-aa3a-1b47f172b9cc",
     "jump": null,
     "schema": "https://elmstory.com/schema/elm-story-0.5.1.json",

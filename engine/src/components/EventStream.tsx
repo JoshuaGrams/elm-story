@@ -44,11 +44,12 @@ const EventStream: React.FC = React.memo(() => {
   const [checkedJumpsOnQuery, setCheckedJumpsOnQuery] = useState(false)
 
   const getRecentEvents = useCallback(async () => {
-    if (engine.installed && engine.currentEvent) {
+    if (engine.installed && engine.currentEvent && engine.gameInfo) {
       const recentEvents = await _getRecentEvents(
         studioId,
         gameId,
         engine.currentEvent,
+        engine.gameInfo.version,
         3
       )
 

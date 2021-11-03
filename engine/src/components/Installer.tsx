@@ -6,6 +6,7 @@ import { useQuery } from 'react-query'
 
 import {
   getGameInfo,
+  removeGameData,
   resetGame,
   saveEngineCollectionData,
   saveEngineDefaultGameCollectionData
@@ -32,13 +33,13 @@ const Installer: React.FC<{
       try {
         if (!engine.installed) {
           if (!isEditor && data) {
-            const updateGame = await saveEngineCollectionData(data)
+            const updateGame = await saveEngineCollectionData(data, false)
 
             if (updateGame) {
-              // TODO: 373
-              // empty old game data, but not bookmarks, events and settings
-              // install game data
-              // maybe save game version to each event?
+              // TODO: #373, #420
+              // empty old game data, but not bookmarks, events and settings (done)
+              // install game data (done)
+              // maybe save game version to each event? (done)
               // take the most recent event, confirm destination exists
               // if destination no longer exists, go back until event does
               // copy first event with existing destination and patch game state
@@ -47,6 +48,9 @@ const Installer: React.FC<{
               // if we can't find any events with existing destinations, have to create a new initial
 
               engineDispatch({ type: ENGINE_ACTION_TYPE.UPDATE_GAME })
+
+              await removeGameData(studioId, gameId)
+              await saveEngineCollectionData(data, true)
             }
           }
 
@@ -54,6 +58,7 @@ const Installer: React.FC<{
             engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_EDITOR })
             engineDispatch({ type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION })
 
+            // #421
             const foundGame = await getGameInfo(studioId, gameId)
 
             if (foundGame) {
