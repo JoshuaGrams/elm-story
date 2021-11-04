@@ -64,11 +64,20 @@ const Installer: React.FC<{
                 foundGame.version
               )
 
-              engine.playing &&
+              if (engine.playing) {
+                // #422: set this before install completes to prevent
+                // event stream from using old version
+                // TODO: this is set again after install
+                engineDispatch({
+                  type: ENGINE_ACTION_TYPE.SET_GAME_INFO,
+                  gameInfo: foundGame
+                })
+
                 engineDispatch({
                   type: ENGINE_ACTION_TYPE.SET_CURRENT_EVENT,
                   id: `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
                 })
+              }
             } else {
               throw 'Unable to find game during install.'
             }

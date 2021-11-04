@@ -59,7 +59,7 @@ const EventStream: React.FC = React.memo(() => {
         reset: true
       })
     }
-  }, [engine.installed, engine.currentEvent])
+  }, [engine.installed, engine.currentEvent, engine.gameInfo])
 
   // #344: query cached on installation
   useQuery(
