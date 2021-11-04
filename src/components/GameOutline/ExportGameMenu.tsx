@@ -11,7 +11,37 @@ import { WINDOW_EVENT_TYPE } from '../../lib/events'
 import { AppContext } from '../../contexts/AppContext'
 
 import { Dropdown, Menu } from 'antd'
+import { QuestionCircleFilled } from '@ant-design/icons'
 import { ExportGameModal } from '../Modal'
+
+import styles from './styles.module.less'
+
+const HelpButton: React.FC<{ type: 'JSON' | 'PWA' }> = ({ type }) => {
+  const openHelp = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.stopPropagation()
+
+    let helpUrl
+
+    switch (type) {
+      case 'JSON':
+        helpUrl = 'https://docs.elmstory.com/guides/data/json/overview/'
+        break
+      case 'PWA':
+        helpUrl = 'https://docs.elmstory.com/guides/data/pwa/overview/'
+        break
+      default:
+        helpUrl = 'https://docs.elmstory.com'
+    }
+
+    ipcRenderer.send(WINDOW_EVENT_TYPE.OPEN_EXTERNAL_LINK, [helpUrl])
+  }
+
+  return (
+    <div className={styles.HelpButton} onClick={openHelp}>
+      <QuestionCircleFilled />
+    </div>
+  )
+}
 
 const ExportGameMenu: React.FC<{ studioId: StudioId; game: Game }> = ({
   children,
@@ -75,8 +105,12 @@ const ExportGameMenu: React.FC<{ studioId: StudioId; game: Game }> = ({
       <Dropdown
         overlay={
           <Menu onClick={(event) => event.domEvent.stopPropagation()}>
-            <Menu.Item onClick={() => exportGame(true)}>Export JSON</Menu.Item>
-            <Menu.Item onClick={() => exportGame()}>Export PWA</Menu.Item>
+            <Menu.Item onClick={() => exportGame(true)}>
+              Export JSON <HelpButton type="JSON" />
+            </Menu.Item>
+            <Menu.Item onClick={() => exportGame()}>
+              Export PWA <HelpButton type="PWA" />
+            </Menu.Item>
           </Menu>
         }
         trigger={['click']}
