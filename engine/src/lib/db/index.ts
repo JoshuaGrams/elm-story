@@ -28,7 +28,7 @@ import {
   EngineVariableData,
   GameId,
   StudioId
-} from '../types/0.5.1'
+} from '../../types/0.5.1'
 
 export enum LIBRARY_TABLE {
   BOOKMARKS = 'bookmarks',
@@ -45,6 +45,9 @@ export enum LIBRARY_TABLE {
   SETTINGS = 'settings',
   VARIABLES = 'variables'
 }
+
+import v6 from './v6'
+import v7 from './v7'
 
 export const DB_NAME = 'esg-library'
 
@@ -66,24 +69,8 @@ export class LibraryDatabase extends Dexie {
   public constructor(studioId: StudioId) {
     super(`${DB_NAME}-${studioId}`)
 
-    // Must match editor version
-    this.version(6).stores({
-      bookmarks: '&id,gameId,event,updated',
-      choices: '&id,gameId,passageId',
-      conditions: '&id,gameId,routeId,variableId',
-      effects: '&id,gameId,routeId,variableId',
-      events:
-        '&id,gameId,destination,origin,prev,next,type,updated,[gameId+updated]',
-      games: '&id,title,*tags,updated,template,designer,version,engine',
-      inputs: '&id,gameId,passageId,variableId',
-      jumps: '&id,gameId,sceneId',
-      passages: '&id,gameId,gameOver,sceneId',
-      routes:
-        '&id,gameId,sceneId,originId,choiceId,inputId,originType,destinationId,destinationType',
-      scenes: '&id,gameId,children',
-      settings: '&id,gameId',
-      variables: '&id,gameId,type'
-    })
+    v6(this)
+    v7(this)
 
     this.bookmarks = this.table(LIBRARY_TABLE.BOOKMARKS)
     this.choices = this.table(LIBRARY_TABLE.CHOICES)

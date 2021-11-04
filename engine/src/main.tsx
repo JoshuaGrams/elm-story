@@ -8,7 +8,7 @@ function main() {
     ___packedESGEngineData: string = '___engineData___'
 
   console.info(
-    `made with Elm Story ${String.fromCodePoint(
+    `[ESRE] made with Elm Story ${String.fromCodePoint(
       0x1f4da
     )} 0.5.1 | https://elmstory.com`
   )
@@ -28,7 +28,7 @@ function main() {
   }
 
   if (import.meta.env.DEV) {
-    import('../data/terminal-access.json').then((data) =>
+    import('../data/terminal-access_0.0.1.json').then((data) =>
       render(
         <>
           <ServiceWorker />

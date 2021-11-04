@@ -33,12 +33,11 @@ const Runtime: React.FC<{
 
   const gameMeta = !isEditor || data ? localStorage.getItem(id) : null
 
-  const engineData: ESGEngineCollectionData | undefined =
-    !gameMeta && data
-      ? packed
-        ? unpackEngineData(data)
-        : JSON.parse(data)
-      : undefined
+  const engineData: ESGEngineCollectionData | undefined = data
+    ? packed
+      ? unpackEngineData(data)
+      : JSON.parse(data)
+    : undefined
 
   const _studioId =
     studioId || // if editor

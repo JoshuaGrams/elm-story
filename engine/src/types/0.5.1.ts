@@ -282,6 +282,7 @@ export interface EngineBookmarkData {
   title: string
   event: ComponentId | undefined // event
   updated: number
+  version: string
 }
 
 export interface EngineBookmarkCollection {
@@ -363,6 +364,7 @@ export interface EngineEventData {
   state: EngineEventStateCollection
   type: ENGINE_EVENT_TYPE
   updated: number
+  version: string
 }
 
 export interface EngineEventCollection {

@@ -6,6 +6,7 @@ import { useQuery } from 'react-query'
 
 import {
   getGameInfo,
+  removeGameData,
   resetGame,
   saveEngineCollectionData,
   saveEngineDefaultGameCollectionData
@@ -30,21 +31,56 @@ const Installer: React.FC<{
       try {
         if (!engine.installed) {
           if (!isEditor && data) {
-            await saveEngineCollectionData(data)
+            const updateGame = await saveEngineCollectionData(data, false)
+
+            if (updateGame) {
+              engineDispatch({
+                type: ENGINE_ACTION_TYPE.SET_UPDATE_GAME,
+                updating: true
+              })
+
+              await removeGameData(studioId, gameId)
+              await saveEngineCollectionData(data, true)
+
+              engineDispatch({
+                type: ENGINE_ACTION_TYPE.SET_UPDATE_GAME,
+                updating: false
+              })
+            }
           }
 
           if (isEditor) {
             engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_EDITOR })
             engineDispatch({ type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION })
 
-            await resetGame(studioId, gameId, true, true)
-            await saveEngineDefaultGameCollectionData(studioId, gameId)
+            // #421
+            const foundGame = await getGameInfo(studioId, gameId)
 
-            engine.playing &&
-              engineDispatch({
-                type: ENGINE_ACTION_TYPE.SET_CURRENT_EVENT,
-                id: `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
-              })
+            if (foundGame) {
+              await resetGame(studioId, gameId, true, true)
+              await saveEngineDefaultGameCollectionData(
+                studioId,
+                gameId,
+                foundGame.version
+              )
+
+              if (engine.playing) {
+                // #422: set this before install completes to prevent
+                // event stream from using old version
+                // TODO: this is set again after install
+                engineDispatch({
+                  type: ENGINE_ACTION_TYPE.SET_GAME_INFO,
+                  gameInfo: foundGame
+                })
+
+                engineDispatch({
+                  type: ENGINE_ACTION_TYPE.SET_CURRENT_EVENT,
+                  id: `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
+                })
+              }
+            } else {
+              throw 'Unable to find game during install.'
+            }
           }
 
           engineDispatch({

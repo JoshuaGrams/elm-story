@@ -1,3 +1,5 @@
+import semver from 'semver'
+
 import React, { useEffect, useState } from 'react'
 
 import { GameId, StudioId } from '../../../data/types'
@@ -179,7 +181,19 @@ const GameDetails: React.FC<{
                       label="Version"
                       name="version"
                       rules={[
-                        { required: true, message: 'Version is required.' }
+                        {
+                          required: true,
+                          message: 'Version is required.'
+                        },
+                        {
+                          message: 'Semantic version required.',
+                          validator: (rule, value) =>
+                            new Promise((resolve, reject) =>
+                              semver.valid(value)
+                                ? resolve('Valid version.')
+                                : reject('Semantic version required.')
+                            )
+                        }
                       ]}
                       labelCol={{ span: 10 }}
                     >

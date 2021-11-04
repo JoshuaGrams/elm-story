@@ -32,6 +32,7 @@ interface EngineState {
     message: string | undefined
     showing: boolean
   }
+  updating: boolean
 }
 
 export enum ENGINE_ACTION_TYPE {
@@ -44,6 +45,7 @@ export enum ENGINE_ACTION_TYPE {
   SET_INSTALL_ID = 'SET_INSTALL_ID',
   SET_IS_EDITOR = 'SET_EDITOR',
   SET_CURRENT_EVENT = 'SET_CURRENT_EVENT',
+  SET_UPDATE_GAME = 'UPDATE_GAME',
   STOP = 'STOP',
   SHOW_RESET_NOTIFICATION = 'SHOW_RESET_NOTIFICATION',
   TOGGLE_DEVTOOLS_BLOCKED_CHOICES = 'TOGGLE_DEVTOOLS_BLOCKED_CHOICES',
@@ -85,6 +87,7 @@ type EngineActionType =
         website?: string
       }
     }
+  | { type: ENGINE_ACTION_TYPE.SET_UPDATE_GAME; updating: boolean }
   | { type: ENGINE_ACTION_TYPE.PLAY; fromEvent: ComponentId | undefined }
   | { type: ENGINE_ACTION_TYPE.STOP }
   | { type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION }
@@ -176,6 +179,11 @@ const engineReducer = (
         ...state,
         resetNotification: { message: action.message, showing: true }
       }
+    case ENGINE_ACTION_TYPE.SET_UPDATE_GAME:
+      return {
+        ...state,
+        updating: action.updating
+      }
     case ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_BLOCKED_CHOICES:
       return {
         ...state,
@@ -226,7 +234,8 @@ const defaultEngineState: EngineState = {
   resetNotification: {
     message: undefined,
     showing: false
-  }
+  },
+  updating: false
 }
 
 export const EngineContext = createContext<EngineContextType>({

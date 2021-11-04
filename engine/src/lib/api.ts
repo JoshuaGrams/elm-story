@@ -1,5 +1,7 @@
 import Dexie from 'dexie'
+import { v4 as uuid } from 'uuid'
 import { cloneDeep, pick } from 'lodash'
+import semver from 'semver'
 // @ts-ignore
 import lzwCompress from 'lzwcompress'
 
@@ -58,8 +60,9 @@ export const saveGameMeta = (studioId: StudioId, gameId: GameId) => {
 }
 
 export const saveEngineCollectionData = async (
-  engineData: ESGEngineCollectionData
-) => {
+  engineData: ESGEngineCollectionData,
+  update: boolean // #373: when the game requires update, update engine defaults
+): Promise<boolean> => {
   const {
     children,
     copyright,
@@ -79,13 +82,25 @@ export const saveEngineCollectionData = async (
   } = engineData._
 
   const databaseExists = await Dexie.exists(`${DB_NAME}-${studioId}`)
-  let gameExists: EngineGameData | undefined
+  let installedGame: EngineGameData | undefined
 
   if (databaseExists) {
-    gameExists = await new LibraryDatabase(studioId).games.get(gameId)
+    installedGame = await new LibraryDatabase(studioId).games.get(gameId)
   }
 
-  if (!databaseExists || (databaseExists && !gameExists)) {
+  if (databaseExists && installedGame && !update) {
+    if (semver.gt(version, installedGame.version)) {
+      return true
+    }
+
+    if (semver.lt(version, installedGame.version)) {
+      console.error(
+        `[ESRE] unable to save game data to database.\n[ESRE] incoming: ${version}, installed: ${installedGame.version}\n[ESRE] more info: https://docs.elmstory.com/guides/data/pwa`
+      )
+    }
+  }
+
+  if (!databaseExists || (databaseExists && !installedGame)) {
     saveGameMeta(studioId, gameId)
 
     const libraryDatabase = new LibraryDatabase(studioId)
@@ -123,16 +138,22 @@ export const saveEngineCollectionData = async (
         libraryDatabase.saveVariableCollectionData(gameId, engineData.variables)
       ])
 
-      await saveEngineDefaultGameCollectionData(studioId, gameId)
+      update && (await updateEngineDefaultGameCollectionData(studioId, gameId))
+
+      !update &&
+        (await saveEngineDefaultGameCollectionData(studioId, gameId, version))
     } catch (error) {
       throw error
     }
   }
+
+  return false
 }
 
 export const saveEngineDefaultGameCollectionData = async (
   studioId: StudioId,
-  gameId: GameId
+  gameId: GameId,
+  gameVersion: string
 ) => {
   const libraryDatabase = new LibraryDatabase(studioId)
 
@@ -157,7 +178,8 @@ export const saveEngineDefaultGameCollectionData = async (
             id: `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`,
             title: AUTO_ENGINE_BOOKMARK_KEY,
             event: undefined,
-            updated: Date.now()
+            updated: Date.now(),
+            version: gameVersion
           }
         })
       )
@@ -214,7 +236,8 @@ export const saveEngineDefaultGameCollectionData = async (
             destination: startingDestination,
             state: initialGameState,
             type: ENGINE_EVENT_TYPE.INITIAL,
-            updated: Date.now()
+            updated: Date.now(),
+            version: gameVersion
           }
         })
       }
@@ -224,9 +247,165 @@ export const saveEngineDefaultGameCollectionData = async (
   }
 }
 
+// #373: recursive
+const findEventFromBookmarkWithExistingDestination = async (
+  studioId: StudioId,
+  eventId: ComponentId
+): Promise<EngineEventData | undefined> => {
+  const libraryDatabase = new LibraryDatabase(studioId)
+
+  try {
+    const foundEvent = await libraryDatabase.events.get(eventId)
+
+    if (foundEvent) {
+      const foundDestination = await libraryDatabase.passages.get(
+        foundEvent.destination
+      )
+
+      if (foundDestination) {
+        return foundEvent
+      } else {
+        if (foundEvent.prev) {
+          return findEventFromBookmarkWithExistingDestination(
+            studioId,
+            foundEvent.prev
+          )
+        } else {
+          return undefined
+        }
+      }
+    } else {
+      return undefined
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+// #373
+export const updateEngineDefaultGameCollectionData = async (
+  studioId: StudioId,
+  gameId: GameId
+) => {
+  const libraryDatabase = new LibraryDatabase(studioId)
+
+  try {
+    const foundBookmark = await libraryDatabase.bookmarks.get(
+      `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`
+    )
+
+    const [foundGame, foundEvent] = await Promise.all([
+      libraryDatabase.games.get(gameId),
+      foundBookmark?.event
+        ? findEventFromBookmarkWithExistingDestination(
+            studioId,
+            foundBookmark.event
+          )
+        : undefined
+    ])
+
+    if (foundGame) {
+      if (foundEvent) {
+        // create new event with patched game state and version
+        // update bookmark version and event
+        const newEventId = uuid()
+
+        const variables = await libraryDatabase.variables.toArray()
+
+        let newEventState: EngineEventStateCollection = {}
+
+        variables.map(({ id, title, type, initialValue }) => {
+          // for each variable, add to new event state
+          newEventState[id] = {
+            gameId,
+            title,
+            type,
+            value: initialValue
+          }
+
+          // if the variable exists in the found game state, use original event state value
+          if (foundEvent.state[id]) {
+            newEventState[id] = {
+              ...newEventState[id],
+              value: foundEvent.state[id].value
+            }
+          }
+        })
+
+        await Promise.all([
+          libraryDatabase.events.add(
+            {
+              ...foundEvent,
+              id: newEventId,
+              state: newEventState,
+              updated: Date.now(),
+              version: foundGame.version
+            },
+            newEventId
+          ),
+          libraryDatabase.bookmarks.update(
+            `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`,
+            {
+              ...foundBookmark,
+              event: newEventId,
+              updated: Date.now(),
+              version: foundGame.version
+            }
+          )
+        ])
+      }
+
+      if (!foundEvent) {
+        // dump default bookmark and event and recreate
+        await Promise.all([
+          libraryDatabase.bookmarks.delete(
+            `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`
+          ),
+          libraryDatabase.events.delete(
+            `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
+          )
+        ])
+
+        await saveEngineDefaultGameCollectionData(
+          studioId,
+          gameId,
+          foundGame.version
+        )
+      }
+
+      console.info(`[ESRE] successfully updated game to ${foundGame.version}`)
+    } else {
+      throw '[ESRE] unable to update game.\n[ESRE] missing game data.'
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 export const unpackEngineData = (
   packedEngineData: string
 ): ESGEngineCollectionData => lzwCompress.unpack(packedEngineData)
+
+export const removeGameData = async (studioId: StudioId, gameId: GameId) => {
+  const libraryDatabase = new LibraryDatabase(studioId)
+
+  try {
+    await Promise.all([
+      libraryDatabase.choices.where({ gameId }).delete(),
+      libraryDatabase.conditions.where({ gameId }).delete(),
+      libraryDatabase.effects.where({ gameId }).delete(),
+      libraryDatabase.games.where({ id: gameId }).delete(),
+      libraryDatabase.inputs.where({ gameId }).delete(),
+      libraryDatabase.jumps.where({ gameId }).delete(),
+      libraryDatabase.passages.where({ gameId }).delete(),
+      libraryDatabase.routes.where({ gameId }).delete(),
+      libraryDatabase.scenes.where({ gameId }).delete(),
+      libraryDatabase.variables.where({ gameId }).delete()
+    ])
+  } catch (error) {
+    throw error
+  }
+}
 
 // #30
 export const resetGame = async (
@@ -247,18 +426,7 @@ export const resetGame = async (
 
       // #412
       if (!isEditor) {
-        await Promise.all([
-          libraryDatabase.choices.where({ gameId }).delete(),
-          libraryDatabase.conditions.where({ gameId }).delete(),
-          libraryDatabase.effects.where({ gameId }).delete(),
-          libraryDatabase.games.where({ id: gameId }).delete(),
-          libraryDatabase.inputs.where({ gameId }).delete(),
-          libraryDatabase.jumps.where({ gameId }).delete(),
-          libraryDatabase.passages.where({ gameId }).delete(),
-          libraryDatabase.routes.where({ gameId }).delete(),
-          libraryDatabase.scenes.where({ gameId }).delete(),
-          libraryDatabase.variables.where({ gameId }).delete()
-        ])
+        await removeGameData(studioId, gameId)
 
         !skipInstall && localStorage.removeItem(gameId)
       }
@@ -650,6 +818,7 @@ export const getRecentEvents = async (
   studioId: StudioId,
   gameId: GameId,
   fromEventId: ComponentId,
+  gameVersion: string,
   history?: number
 ): Promise<EngineEventData[]> => {
   const libraryDatabase = new LibraryDatabase(studioId)
@@ -661,6 +830,7 @@ export const getRecentEvents = async (
     const orderedEvents = await libraryDatabase.events
         .where('[gameId+updated]')
         .between([gameId, Dexie.minKey], [gameId, Dexie.maxKey])
+        .filter((event) => event.version === gameVersion)
         .limit(history || 10)
         .reverse()
         .toArray(),

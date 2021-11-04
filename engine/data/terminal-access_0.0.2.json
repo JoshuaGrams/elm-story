@@ -13,7 +13,7 @@
     "tags": [],
     "title": "Terminal Access",
     "updated": 1635113439938,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "website": "https://elmstory.com"
   },
   "choices": {
@@ -172,7 +172,7 @@
     },
     "968a9717-7bc1-40b9-a1fb-3bb709cfb02a": {
       "choices": [],
-      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"The terminal illuminates your face in a feint green.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"On the screen is a password prompt. The prompt reads:\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"\\\"Alarm sounds after 3 failed attempts. { passwordAttempts } attempts remain.\\\"\"}]}]",
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"0.2.0 The terminal illuminates your face in a feint green.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"On the screen is a password prompt. The prompt reads:\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"\\\"Alarm sounds after 3 failed attempts. { passwordAttempts } attempts remain.\\\"\"}]}]",
       "editor": {
         "componentEditorPosX": 420.92425828970363,
         "componentEditorPosY": 375.5378708551482
