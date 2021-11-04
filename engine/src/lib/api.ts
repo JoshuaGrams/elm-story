@@ -95,7 +95,7 @@ export const saveEngineCollectionData = async (
 
     if (semver.lt(version, installedGame.version)) {
       console.error(
-        `[ESRE]: Unable to save game data to database. Incoming: ${version}, Installed: ${installedGame.version}\n[ESRE]: More info: https://docs.elmstory.com/guides/data/pwa`
+        `[ESRE] unable to save game data to database.\n[ESRE] incoming: ${version}, installed: ${installedGame.version}\n[ESRE] more info: https://docs.elmstory.com/guides/data/pwa`
       )
     }
   }
@@ -306,16 +306,38 @@ export const updateEngineDefaultGameCollectionData = async (
 
     if (foundGame) {
       if (foundEvent) {
-        // TODO
         // create new event with patched game state and version
         // update bookmark version and event
         const newEventId = uuid()
+
+        const variables = await libraryDatabase.variables.toArray()
+
+        let newEventState: EngineEventStateCollection = {}
+
+        variables.map(({ id, title, type, initialValue }) => {
+          // for each variable, add to new event state
+          newEventState[id] = {
+            gameId,
+            title,
+            type,
+            value: initialValue
+          }
+
+          // if the variable exists in the found game state, use original event state value
+          if (foundEvent.state[id]) {
+            newEventState[id] = {
+              ...newEventState[id],
+              value: foundEvent.state[id].value
+            }
+          }
+        })
 
         await Promise.all([
           libraryDatabase.events.add(
             {
               ...foundEvent,
               id: newEventId,
+              state: newEventState,
               updated: Date.now(),
               version: foundGame.version
             },
@@ -334,21 +356,26 @@ export const updateEngineDefaultGameCollectionData = async (
       }
 
       if (!foundEvent) {
-        // update bookmark to default with new version
-        await libraryDatabase.bookmarks.update(
-          `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`,
-          {
-            ...foundBookmark,
-            event: undefined,
-            updated: Date.now(),
-            version: foundGame.version
-          }
+        // dump default bookmark and event and recreate
+        await Promise.all([
+          libraryDatabase.bookmarks.delete(
+            `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`
+          ),
+          libraryDatabase.events.delete(
+            `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
+          )
+        ])
+
+        await saveEngineDefaultGameCollectionData(
+          studioId,
+          gameId,
+          foundGame.version
         )
       }
 
-      console.info(`[ESRE] Successfully updated game to ${foundGame.version}`)
+      console.info(`[ESRE] successfully updated game to ${foundGame.version}`)
     } else {
-      throw '[ESRE] Unable to update game. Missing game data.'
+      throw '[ESRE] unable to update game.\n[ESRE] missing game data.'
     }
   } catch (error) {
     throw error

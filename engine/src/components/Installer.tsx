@@ -17,8 +17,6 @@ import { GameId, StudioId, ESGEngineCollectionData } from '../types/0.5.1'
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 import { INITIAL_ENGINE_EVENT_ORIGIN_KEY } from '../lib'
 
-import GameUpdate from './GameUpdate'
-
 const Installer: React.FC<{
   studioId: StudioId
   gameId: GameId
@@ -36,21 +34,18 @@ const Installer: React.FC<{
             const updateGame = await saveEngineCollectionData(data, false)
 
             if (updateGame) {
-              // TODO: #373, #420
-              // empty old game data, but not bookmarks, events and settings (done)
-              // install game data (done)
-              // maybe save game version to each event? (done)
-              // take the most recent event, confirm destination exists
-              // if destination no longer exists, go back until event does
-              // copy first event with existing destination and patch game state
-              // create new event and update auto bookmark
-              // after this happens, it shouldn't be possible to go back to these old events
-              // if we can't find any events with existing destinations, have to create a new initial
-
-              engineDispatch({ type: ENGINE_ACTION_TYPE.UPDATE_GAME })
+              engineDispatch({
+                type: ENGINE_ACTION_TYPE.SET_UPDATE_GAME,
+                updating: true
+              })
 
               await removeGameData(studioId, gameId)
               await saveEngineCollectionData(data, true)
+
+              engineDispatch({
+                type: ENGINE_ACTION_TYPE.SET_UPDATE_GAME,
+                updating: false
+              })
             }
           }
 
@@ -140,13 +135,7 @@ const Installer: React.FC<{
     setGameData()
   }, [engine.installed])
 
-  return (
-    <>
-      {engine.updating && <GameUpdate />}
-
-      {engine.installed && children}
-    </>
-  )
+  return <>{engine.installed && children}</>
 })
 
 Installer.displayName = 'Installer'
