@@ -22,7 +22,7 @@ import JumpDetails from '../JumpDetails'
 import PassageDetails from '../PassageDetails'
 import RouteDetails from '../RouteDetails'
 import ChoiceDetails from '../ChoiceDetails'
-import ComponentHelpButton from '../ComponentHelpButton'
+import ComponentHelpButton from '../../ComponentHelpButton'
 
 import styles from '../styles.module.less'
 

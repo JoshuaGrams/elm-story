@@ -13,7 +13,7 @@ import GameDetails from './GameDetails'
 import FolderDetails from './FolderDetails'
 import SceneDetails from './SceneDetails'
 import PassageDetails from './PassageDetails'
-import ComponentHelpButton from './ComponentHelpButton'
+import ComponentHelpButton from '../ComponentHelpButton'
 
 import styles from './styles.module.less'
 

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import {
   COMPARE_OPERATOR_TYPE,
   ComponentId,
+  COMPONENT_TYPE,
   GameId,
   SET_OPERATOR_TYPE,
   StudioId,
@@ -24,6 +25,7 @@ import {
 import { Select } from 'antd'
 
 import ComponentTitle from '../ComponentTitle'
+import ComponentHelpButton from '../../ComponentHelpButton'
 import { VariableRow, VARIABLE_ROW_TYPE } from '../../GameVariables'
 
 import parentStyles from '../styles.module.less'
@@ -277,7 +279,10 @@ const RouteDetails: React.FC<{
 
             {/* ROUTE CONDITIONS */}
             <div className={styles.routeFeature}>
-              <div className={styles.featureHeader}>Conditions</div>
+              <div className={styles.featureHeader}>
+                Conditions{' '}
+                <ComponentHelpButton type={COMPONENT_TYPE.CONDITION} />
+              </div>
 
               <div className={styles.featureList}>
                 <>
@@ -340,7 +345,9 @@ const RouteDetails: React.FC<{
 
             {/* ROUTE EFFECTS */}
             <div className={styles.routeFeature}>
-              <div className={styles.featureHeader}>Effects</div>
+              <div className={styles.featureHeader}>
+                Effects <ComponentHelpButton type={COMPONENT_TYPE.EFFECT} />
+              </div>
 
               <div className={styles.featureList}>
                 <>

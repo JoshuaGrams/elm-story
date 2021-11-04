@@ -32,11 +32,20 @@ const ComponentHelpButton: React.FC<{ type: COMPONENT_TYPE }> = ({ type }) => {
       case COMPONENT_TYPE.CHOICE:
         helpUrl = `${helpUrl}/choice-component`
         break
+      case COMPONENT_TYPE.JUMP:
+        helpUrl = `${helpUrl}/jump-component`
+        break
       case COMPONENT_TYPE.ROUTE:
         helpUrl = `${helpUrl}/route-component`
         break
-      case COMPONENT_TYPE.JUMP:
-        helpUrl = `${helpUrl}/jump-component`
+      case COMPONENT_TYPE.VARIABLE:
+        helpUrl = `${helpUrl}/variable-component`
+        break
+      case COMPONENT_TYPE.CONDITION:
+        helpUrl = `${helpUrl}/condition-component`
+        break
+      case COMPONENT_TYPE.EFFECT:
+        helpUrl = `${helpUrl}/effect-component`
         break
       default:
         helpUrl = 'https://docs.elmstory.com'
@@ -47,7 +56,7 @@ const ComponentHelpButton: React.FC<{ type: COMPONENT_TYPE }> = ({ type }) => {
   }
 
   return (
-    <div className={styles.ComponentHelpButton} onClick={openHelp}>
+    <div className={styles.HelpButton} onClick={openHelp}>
       <QuestionCircleFilled />
     </div>
   )

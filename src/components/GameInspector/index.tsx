@@ -8,7 +8,12 @@ import {
 
 import api from '../../api'
 
-import { GameId, StudioId, VARIABLE_TYPE } from '../../data/types'
+import {
+  COMPONENT_TYPE,
+  GameId,
+  StudioId,
+  VARIABLE_TYPE
+} from '../../data/types'
 
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 
@@ -19,6 +24,7 @@ import GameStyles from '../GameStyles'
 
 import GameVariables from '../GameVariables'
 import GameProblems from '../GameProblems'
+import ComponentHelpButton from '../ComponentHelpButton'
 
 import styles from './styles.module.less'
 
@@ -118,7 +124,15 @@ const GameInspector: React.FC<{
                   content: <GameProblems />,
                   group: 'default'
                 }
-              ]
+              ],
+              panelLock: {
+                // @ts-ignore: poor ts defs
+                panelExtra: (panelData, context) => {
+                  return panelData.activeId === 'variablesTab' ? (
+                    <ComponentHelpButton type={COMPONENT_TYPE.VARIABLE} />
+                  ) : null
+                }
+              }
             }
           ]
         }

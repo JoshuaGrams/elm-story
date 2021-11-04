@@ -126,11 +126,11 @@ const TitleBar: React.FC = () => {
         switch (app.location) {
           case APP_LOCATION.DASHBOARD:
             helpUrl =
-              'https://docs.elmstory.com/guides/production/dashboard/dashboard-overview'
+              'https://docs.elmstory.com/guides/production/dashboard/overview'
             break
           case APP_LOCATION.EDITOR:
             helpUrl =
-              'https://docs.elmstory.com/guides/production/editor/editor-overview'
+              'https://docs.elmstory.com/guides/production/editor/overview'
             break
           default:
             helpUrl = 'https://docs.elmstory.com'
