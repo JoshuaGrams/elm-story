@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import {
   adjectives,
   animals,
@@ -6,32 +5,25 @@ import {
   uniqueNamesGenerator
 } from 'unique-names-generator'
 
-import api from '../../api'
+import React, { useState } from 'react'
 
-import {
-  COMPONENT_TYPE,
-  GameId,
-  StudioId,
-  VARIABLE_TYPE
-} from '../../data/types'
-
-import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
+import { COMPONENT_TYPE, Game, StudioId, VARIABLE_TYPE } from '../../data/types'
 
 import { PlusOutlined } from '@ant-design/icons'
+import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 
-import ComponentProperties from '../ComponentProperties'
-import GameStyles from '../GameStyles'
-
+import GameOutline from '../GameOutline'
 import GameVariables from '../GameVariables'
-import GameProblems from '../GameProblems'
 import ComponentHelpButton from '../ComponentHelpButton'
+
+import api from '../../api'
 
 import styles from './styles.module.less'
 
-const GameInspector: React.FC<{
-  studioId: StudioId
-  gameId: GameId | undefined
-}> = ({ studioId, gameId = undefined }) => {
+const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
+  studioId,
+  game
+}) => {
   const [defaultLayout] = useState<LayoutData>({
     dockbox: {
       mode: 'horizontal',
@@ -42,26 +34,24 @@ const GameInspector: React.FC<{
             {
               tabs: [
                 {
-                  id: 'propertiesTab',
-                  title: 'Properties',
+                  id: 'outlineTab',
+                  title: 'Outline',
                   minHeight: 32,
-                  content: (
-                    <>
-                      {gameId && (
-                        <ComponentProperties
-                          studioId={studioId}
-                          gameId={gameId}
-                        />
-                      )}
-                    </>
-                  ),
+                  content: <GameOutline studioId={studioId} game={game} />,
                   group: 'default'
                 },
                 {
                   id: 'stylesTab',
                   title: 'Styles',
                   minHeight: 32,
-                  content: <GameStyles />,
+                  content: <div>Styles</div>,
+                  group: 'default'
+                },
+                {
+                  id: 'problemsTab',
+                  title: 'Problems',
+                  minHeight: 32,
+                  content: <div>Problems</div>,
                   group: 'default'
                 }
               ]
@@ -69,11 +59,18 @@ const GameInspector: React.FC<{
             {
               tabs: [
                 {
+                  id: 'charactersTab',
+                  title: 'Characters',
+                  minHeight: 32,
+                  content: <div>Characters</div>,
+                  group: 'default'
+                },
+                {
                   id: 'variablesTab',
                   title: (
                     <div>
                       Variables
-                      {gameId && (
+                      {game.id && (
                         <PlusOutlined
                           className={styles.tabAddVariableButton}
                           onClick={async () => {
@@ -83,25 +80,26 @@ const GameInspector: React.FC<{
                               length: 3
                             })
 
-                            await api().variables.saveVariable(studioId, {
-                              gameId,
-                              title: uniqueNames
-                                .split('_')
-                                .map((uniqueName, index) => {
-                                  return index === 0
-                                    ? uniqueName
-                                    : `${uniqueName
-                                        .charAt(0)
-                                        .toUpperCase()}${uniqueName.substr(
-                                        1,
-                                        uniqueName.length - 1
-                                      )}`
-                                })
-                                .join(''),
-                              type: VARIABLE_TYPE.BOOLEAN,
-                              initialValue: 'false',
-                              tags: []
-                            })
+                            game.id &&
+                              (await api().variables.saveVariable(studioId, {
+                                gameId: game.id,
+                                title: uniqueNames
+                                  .split('_')
+                                  .map((uniqueName, index) => {
+                                    return index === 0
+                                      ? uniqueName
+                                      : `${uniqueName
+                                          .charAt(0)
+                                          .toUpperCase()}${uniqueName.substr(
+                                          1,
+                                          uniqueName.length - 1
+                                        )}`
+                                  })
+                                  .join(''),
+                                type: VARIABLE_TYPE.BOOLEAN,
+                                initialValue: 'false',
+                                tags: []
+                              }))
                           }}
                         />
                       )}
@@ -110,18 +108,11 @@ const GameInspector: React.FC<{
                   minHeight: 32,
                   content: (
                     <>
-                      {gameId && (
-                        <GameVariables studioId={studioId} gameId={gameId} />
+                      {game.id && (
+                        <GameVariables studioId={studioId} gameId={game.id} />
                       )}
                     </>
                   ),
-                  group: 'default'
-                },
-                {
-                  id: 'problemsTab',
-                  title: 'Problems',
-                  minHeight: 32,
-                  content: <GameProblems />,
                   group: 'default'
                 }
               ],
@@ -141,14 +132,15 @@ const GameInspector: React.FC<{
   })
 
   return (
-    <DividerBox className={styles.gameInspector} mode="vertical">
+    <DividerBox className={styles.GameInspector} mode="vertical">
       <DockLayout
         defaultLayout={defaultLayout}
         groups={{
           default: {
             floatable: false,
             animated: false,
-            maximizable: false
+            maximizable: false,
+            tabLocked: true
           }
         }}
         dropMode="edge"
@@ -156,5 +148,7 @@ const GameInspector: React.FC<{
     </DividerBox>
   )
 }
+
+GameInspector.displayName = 'GameInspector'
 
 export default GameInspector

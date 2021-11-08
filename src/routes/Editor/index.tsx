@@ -14,9 +14,9 @@ import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { DividerBox } from 'rc-dock'
 
-import GameOutline from '../../components/GameOutline'
-import ComponentEditor from '../../components/ComponentEditor'
 import GameInspector from '../../components/GameInspector'
+import ComponentEditor from '../../components/ComponentEditor'
+import ComponentInspector from '../../components/ComponentInspector'
 
 import styles from './styles.module.less'
 
@@ -85,7 +85,10 @@ const Editor: React.FC = () => {
       {app.selectedStudioId && selectedGame && (
         <DividerBox mode="horizontal" className={styles.editor}>
           <DividerBox mode="vertical" className={styles.gameOutlinePanel}>
-            <GameOutline studioId={app.selectedStudioId} game={selectedGame} />
+            <GameInspector
+              studioId={app.selectedStudioId}
+              game={selectedGame}
+            />
           </DividerBox>
 
           <ComponentEditor
@@ -94,7 +97,7 @@ const Editor: React.FC = () => {
           />
 
           <DividerBox mode="vertical" className={styles.inspectorPanel}>
-            <GameInspector
+            <ComponentInspector
               studioId={app.selectedStudioId}
               gameId={app.selectedGameId}
             />
