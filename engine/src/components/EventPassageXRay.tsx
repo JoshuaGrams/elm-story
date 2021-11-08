@@ -8,7 +8,7 @@ import {
   EngineEventData,
   ENGINE_DEVTOOLS_EVENTS,
   ENGINE_DEVTOOLS_EVENT_TYPE
-} from '../types/0.5.1'
+} from '../types'
 
 import { EngineContext } from '../contexts/EngineContext'
 

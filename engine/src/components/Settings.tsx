@@ -2,7 +2,7 @@ import React, { useCallback, useContext } from 'react'
 
 import { resetGame, saveThemeSetting } from '../lib/api'
 
-import { ENGINE_THEME } from '../types/0.5.1'
+import { ENGINE_THEME } from '../types'
 
 import { EngineContext } from '../contexts/EngineContext'
 import {

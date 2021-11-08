@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { EngineEventResult } from '../types/0.5.1'
+import { EngineEventResult } from '../types'
 import { ENGINE_EVENT_LOOPBACK_RESULT_VALUE } from '../lib'
 
 export const EventLoopbackButtonContent = (

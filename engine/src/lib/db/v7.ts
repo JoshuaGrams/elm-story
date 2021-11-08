@@ -5,7 +5,7 @@ import {
   EngineBookmarkData,
   EngineEventData,
   EngineGameData
-} from '../../types/0.5.1'
+} from '../../types'
 import { LIBRARY_TABLE } from '.'
 
 // Must match editor version

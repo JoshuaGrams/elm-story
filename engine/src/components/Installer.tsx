@@ -12,7 +12,7 @@ import {
   saveEngineDefaultGameCollectionData
 } from '../lib/api'
 
-import { GameId, StudioId, ESGEngineCollectionData } from '../types/0.5.1'
+import { GameId, StudioId, ESGEngineCollectionData } from '../types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 import { INITIAL_ENGINE_EVENT_ORIGIN_KEY } from '../lib'

@@ -3,6 +3,7 @@ import Dexie from 'dexie'
 import {
   EngineBookmarkCollection,
   EngineBookmarkData,
+  EngineCharacterData,
   EngineChoiceCollection,
   EngineChoiceData,
   EngineConditionCollection,
@@ -28,10 +29,11 @@ import {
   EngineVariableData,
   GameId,
   StudioId
-} from '../../types/0.5.1'
+} from '../../types'
 
 export enum LIBRARY_TABLE {
   BOOKMARKS = 'bookmarks',
+  CHARACTERS = 'characters',
   CHOICES = 'choices',
   CONDITIONS = 'conditions',
   EFFECTS = 'effects',
@@ -48,11 +50,13 @@ export enum LIBRARY_TABLE {
 
 import v6 from './v6'
 import v7 from './v7'
+import v8 from './v8'
 
 export const DB_NAME = 'esg-library'
 
 export class LibraryDatabase extends Dexie {
   public bookmarks: Dexie.Table<EngineBookmarkData, string>
+  public characters: Dexie.Table<EngineCharacterData, string>
   public choices: Dexie.Table<EngineChoiceData, string>
   public conditions: Dexie.Table<EngineConditionData, string>
   public effects: Dexie.Table<EngineEffectData, string>
@@ -71,8 +75,10 @@ export class LibraryDatabase extends Dexie {
 
     v6(this)
     v7(this)
+    v8(this)
 
     this.bookmarks = this.table(LIBRARY_TABLE.BOOKMARKS)
+    this.characters = this.table(LIBRARY_TABLE.CHARACTERS)
     this.choices = this.table(LIBRARY_TABLE.CHOICES)
     this.conditions = this.table(LIBRARY_TABLE.CONDITIONS)
     this.effects = this.table(LIBRARY_TABLE.EFFECTS)

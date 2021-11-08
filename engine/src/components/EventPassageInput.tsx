@@ -17,7 +17,7 @@ import {
   EngineEventData,
   EnginePassageData,
   EngineVariableData
-} from '../types/0.5.1'
+} from '../types'
 import { RouteProcessor, translateEventResultValue } from './EventPassage'
 
 import { EngineContext } from '../contexts/EngineContext'

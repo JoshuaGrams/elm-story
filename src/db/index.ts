@@ -28,7 +28,8 @@ import {
   COMPONENT_TYPE,
   FolderParentRef,
   PASSAGE_TYPE,
-  Input
+  Input,
+  Character
 } from '../data/types'
 import {
   EngineBookmarkData,
@@ -44,6 +45,7 @@ import v4 from './v4'
 import v5 from './v5'
 import v6 from './v6'
 import v7 from './v7'
+import v8 from './v8'
 
 export enum DB_NAME {
   APP = 'esg-app',
@@ -57,6 +59,7 @@ export enum APP_TABLE {
 
 export enum LIBRARY_TABLE {
   BOOKMARKS = 'bookmarks',
+  CHARACTERS = 'characters',
   CHOICES = 'choices',
   CONDITIONS = 'conditions',
   EFFECTS = 'effects',
@@ -157,13 +160,14 @@ export class AppDatabase extends Dexie {
 
 export class LibraryDatabase extends Dexie {
   public bookmarks: Dexie.Table<EngineBookmarkData, string>
-  public effects: Dexie.Table<Effect, string>
-  public events: Dexie.Table<EngineEventData, string>
+  public characters: Dexie.Table<Character, string>
   public choices: Dexie.Table<Choice, string>
   public conditions: Dexie.Table<Condition, string>
+  public effects: Dexie.Table<Effect, string>
+  public events: Dexie.Table<EngineEventData, string>
+  public jumps: Dexie.Table<Jump, string>
   public games: Dexie.Table<Game, string>
   public inputs: Dexie.Table<Input, string>
-  public jumps: Dexie.Table<Jump, string>
   public folders: Dexie.Table<Folder, string>
   public passages: Dexie.Table<Passage, string>
   public routes: Dexie.Table<Route, string>
@@ -181,10 +185,12 @@ export class LibraryDatabase extends Dexie {
     v5(this)
     v6(this)
     v7(this)
+    v8(this)
 
     this.tables.map((table) => table.name)
 
     this.bookmarks = this.table(LIBRARY_TABLE.BOOKMARKS)
+    this.characters = this.table(LIBRARY_TABLE.CHARACTERS)
     this.choices = this.table(LIBRARY_TABLE.CHOICES)
     this.conditions = this.table(LIBRARY_TABLE.CONDITIONS)
     this.effects = this.table(LIBRARY_TABLE.EFFECTS)

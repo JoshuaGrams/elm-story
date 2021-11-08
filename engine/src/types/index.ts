@@ -85,6 +85,47 @@ export interface RootData {
   website?: string
 }
 
+export enum CHARACTER_MOOD_TYPE {
+  ANNOYED = 'ANNOYED',
+  BORED = 'BORED',
+  CALM = 'CALM', // default
+  CAREFREE = 'CAREFREE',
+  CHEERFUL = 'CHEERFUL',
+  EXCITED = 'EXCITED',
+  GLOOMY = 'GLOOMY',
+  HAPPY = 'HAPPY',
+  IRRITATED = 'IRRITATED',
+  LIVELY = 'LIVELY',
+  NERVOUS = 'NERVOUS',
+  RELAXED = 'RELAXED',
+  SAD = 'SAD',
+  SERENE = 'SERENE',
+  TENSE = 'TENSE',
+  WEARY = 'WEARY'
+}
+
+export type CharacterRefs = Array<[string, string]> // 0 = uuid, 1 = nick
+
+export interface CharacterPortrait {
+  imageId: string // the location will change, but keep asset ID consistent
+  mood: CHARACTER_MOOD_TYPE
+}
+
+export interface CharacterData {
+  defaultPortrait: CharacterPortrait
+  description: string
+  id: ComponentId
+  portraits: CharacterPortrait[]
+  refs: CharacterRefs
+  tags: string[]
+  title: string
+  updated: number
+}
+
+export interface CharacterCollection {
+  [characterId: string]: CharacterData
+}
+
 export interface ChoiceData {
   id: ComponentId
   passageId: ComponentId
@@ -241,6 +282,7 @@ export interface VariableCollection {
 
 export interface GameDataJSON {
   _: RootData
+  characters: CharacterCollection
   choices: ChoiceCollection
   conditions: ConditionCollection
   effects: EffectCollection
@@ -278,15 +320,28 @@ export interface EngineDevToolsEvent {
 
 export interface EngineBookmarkData {
   gameId: GameId
+  event: ComponentId | undefined // event
   id: string // or AUTO_ENGINE_BOOKMARK_KEY
   title: string
-  event: ComponentId | undefined // event
   updated: number
   version: string
 }
 
 export interface EngineBookmarkCollection {
   [bookmarkId: ComponentId | '___auto___']: EngineBookmarkData
+}
+
+export interface EngineCharacterData {
+  gameId: GameId
+  id: string
+  defaultPortrait: CharacterPortrait
+  portraits: CharacterPortrait[]
+  refs: CharacterRefs
+  title: string
+}
+
+export interface EngineCharacterCollection {
+  [characterId: ComponentId]: EngineCharacterData
 }
 
 export interface EngineChoiceData {
@@ -486,6 +541,7 @@ export interface EngineVariableCollection {
 
 export interface ESGEngineCollectionData {
   _: EngineGameData
+  characters: EngineCharacterCollection
   choices: EngineChoiceCollection
   conditions: EngineConditionCollection
   effects: EngineEffectCollection

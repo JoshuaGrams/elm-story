@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import reactStringReplace from 'react-string-replace'
 
-import { VARIABLE_TYPE, EngineEventStateCollection } from '../types/0.5.1'
+import { VARIABLE_TYPE, EngineEventStateCollection } from '../types'
 import {
   gameMethods,
   getProcessedTemplate,

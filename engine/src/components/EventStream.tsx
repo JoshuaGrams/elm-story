@@ -19,10 +19,7 @@ import {
 } from '../lib/api'
 import { LibraryDatabase } from '../lib/db'
 
-import {
-  EngineEventStateCollection,
-  EngineVariableCollection
-} from '../types/0.5.1'
+import { EngineEventStateCollection, EngineVariableCollection } from '../types'
 import { INITIAL_ENGINE_EVENT_ORIGIN_KEY, scrollElementToBottom } from '../lib'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'

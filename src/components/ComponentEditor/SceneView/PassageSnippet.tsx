@@ -8,11 +8,7 @@ import {
   getTemplateExpressions,
   parseTemplateExpressions
 } from '../../../../engine/src/lib/templates'
-import {
-  GameId,
-  StudioId,
-  VARIABLE_TYPE
-} from '../../../../engine/src/types/0.5.1'
+import { GameId, StudioId, VARIABLE_TYPE } from '../../../../engine/src/types'
 
 import { useVariables } from '../../../hooks'
 

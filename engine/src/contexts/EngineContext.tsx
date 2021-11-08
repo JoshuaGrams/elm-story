@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash'
 
 import React, { createContext, useMemo, useReducer } from 'react'
 
-import { ComponentId, EngineEventData, GameId, StudioId } from '../types/0.5.1'
+import { ComponentId, EngineEventData, GameId, StudioId } from '../types'
 
 interface EngineState {
   currentEvent: ComponentId | undefined

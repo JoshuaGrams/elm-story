@@ -18,7 +18,7 @@ import {
   EnginePassageData,
   EngineRouteData,
   EngineEventResult
-} from '../types/0.5.1'
+} from '../types'
 import { RouteProcessor, translateEventResultValue } from './EventPassage'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'

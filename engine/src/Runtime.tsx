@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { unpackEngineData } from './lib/api'
 
-import { GameId, StudioId, ESGEngineCollectionData } from './types/0.5.1'
+import { GameId, StudioId, ESGEngineCollectionData } from './types'
 
 import EngineProvider from './contexts/EngineContext'
 import SettingsProvider from './contexts/SettingsContext'
