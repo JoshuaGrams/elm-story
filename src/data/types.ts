@@ -95,6 +95,39 @@ export interface Studio extends Component {
 
 export interface Editor extends Component {}
 
+export type CharacterRefs = Array<[string, string]> // 0 = uuid, 1 = nick
+
+export interface Character extends Component {
+  defaultPortrait: ComponentId // CharacterPortrait
+  description: string
+  portraits: ComponentId[]
+  refs: CharacterRefs
+}
+
+export enum CHARACTER_MOOD_TYPE {
+  ANNOYED = 'ANNOYED',
+  BORED = 'BORED',
+  CALM = 'CALM',
+  CAREFREE = 'CAREFREE',
+  CHEERFUL = 'CHEERFUL',
+  EXCITED = 'EXCITED',
+  GLOOMY = 'GLOOMY',
+  HAPPY = 'HAPPY',
+  IRRITATED = 'IRRITATED',
+  LIVELY = 'LIVELY',
+  NERVOUS = 'NERVOUS',
+  RELAXED = 'RELAXED',
+  SAD = 'SAD',
+  SERENE = 'SERENE',
+  TENSE = 'TENSE',
+  WEARY = 'WEARY'
+}
+
+export interface CharacterPortrait extends Component {
+  imageId: string // the location will change, but keep asset ID consistent
+  mood: CHARACTER_MOOD_TYPE
+}
+
 export type GameChildRefs = Array<
   [COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ComponentId]
 >
