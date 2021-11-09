@@ -95,23 +95,30 @@ export interface Studio extends Component {
 
 export interface Editor extends Component {}
 
+// prettier-ignore
+// [desire (x), energy (y)]
 export enum CHARACTER_MOOD_TYPE {
-  ANNOYED = 'ANNOYED',
-  BORED = 'BORED',
-  CALM = 'CALM', // default
-  CAREFREE = 'CAREFREE',
-  CHEERFUL = 'CHEERFUL',
-  EXCITED = 'EXCITED',
-  GLOOMY = 'GLOOMY',
-  HAPPY = 'HAPPY',
-  IRRITATED = 'IRRITATED',
-  LIVELY = 'LIVELY',
-  NERVOUS = 'NERVOUS',
-  RELAXED = 'RELAXED',
-  SAD = 'SAD',
-  SERENE = 'SERENE',
-  TENSE = 'TENSE',
-  WEARY = 'WEARY'
+                           // max(d,e)
+      EXCITED = 'EXCITED', // [+1.00, +1.00]
+          TENSE = 'TENSE', // [-1.00, +1.00]
+        LIVELY = 'LIVELY', // [+0.75, +0.75]
+      NERVOUS = 'NERVOUS', // [-0.75, +0.75]
+    CHEERFUL = 'CHEERFUL', // [+0.50, +0.50]
+  IRRITATED = 'IRRITATED', // [-0.50, +0.50]
+          HAPPY = 'HAPPY', // [+0.25, +0.25]
+      ANNOYED = 'ANNOYED', // [-0.25, +0.25]
+      
+      NEUTRAL = 'NEUTRAL', // [ 0.00,  0.00]
+      
+      RELAXED = 'RELAXED', // [+0.25, -0.25]
+          BORED = 'BORED', // [-0.25, -0.25]
+    CAREFREE = 'CAREFREE', // [+0.50, -0.50]
+          WEARY = 'WEARY', // [-0.50, -0.50]
+            CALM = 'CALM', // [+0.75, -0.75]
+        GLOOMY = 'GLOOMY', // [-0.75, -0.75]
+        SERENE = 'SERENE', // [+1.00, -1.00]
+              SAD = 'SAD'  // [-1.00, -1.00]
+                           // min(d,e)
 }
 
 export type CharacterRefs = Array<[string, string]> // 0 = uuid, 1 = nick
@@ -122,7 +129,7 @@ export interface CharacterMood {
 }
 
 export interface Character extends Component {
-  defaultMood: CharacterMood
+  baseMood: CharacterMood // default is NEUTRAL type
   description: string
   gameId: GameId
   moods: CharacterMood[]
