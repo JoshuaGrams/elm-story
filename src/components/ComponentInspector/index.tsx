@@ -53,7 +53,8 @@ const ComponentInspector: React.FC<{
           default: {
             floatable: false,
             animated: false,
-            maximizable: false
+            maximizable: false,
+            tabLocked: true
           }
         }}
         dropMode="edge"
