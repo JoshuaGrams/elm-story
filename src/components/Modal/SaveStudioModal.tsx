@@ -24,7 +24,7 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
 }) => {
   const [saveStudioForm] = Form.useForm()
 
-  let footerButtons = []
+  let footerButtons: JSX.Element[] = []
 
   if (edit) {
     footerButtons.push(

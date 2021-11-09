@@ -116,15 +116,16 @@ export enum CHARACTER_MOOD_TYPE {
 
 export type CharacterRefs = Array<[string, string]> // 0 = uuid, 1 = nick
 
-export interface CharacterPortrait {
-  imageId: string // the location will change, but keep asset ID consistent
-  mood: CHARACTER_MOOD_TYPE
+export interface CharacterMood {
+  imageId?: string // the location will change, but keep asset ID consistent
+  type: CHARACTER_MOOD_TYPE
 }
 
 export interface Character extends Component {
-  defaultPortrait: CharacterPortrait
+  defaultMood: CharacterMood
   description: string
-  portraits: CharacterPortrait[]
+  gameId: GameId
+  moods: CharacterMood[]
   refs: CharacterRefs
 }
 

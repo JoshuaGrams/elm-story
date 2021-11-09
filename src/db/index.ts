@@ -254,6 +254,77 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async getCharacter(characterId: ComponentId) {
+    try {
+      const character = await this.characters.get(characterId)
+
+      if (character) {
+        return character
+      } else {
+        throw new Error(
+          `Unable to get character with ID: ${characterId}. Does not exist.`
+        )
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public async saveCharacter(character: Character) {
+    if (!character.gameId)
+      throw new Error('Unable to save character to database. Missing game ID.')
+    if (!character.id)
+      throw new Error('Unable to save character to database. Missing ID.')
+
+    try {
+      await this.transaction('rw', this.characters, async () => {
+        if (character.id) {
+          if (await this.getComponent(LIBRARY_TABLE.CHARACTERS, character.id)) {
+            await this.characters.update(character.id, {
+              ...character,
+              updated: Date.now()
+            })
+          } else {
+            await this.characters.add({
+              ...character,
+              updated: character.updated || Date.now()
+            })
+          }
+        } else {
+          throw new Error('Unable to save character to database. Missing ID.')
+        }
+      })
+    } catch (error) {
+      throw error
+    }
+
+    return character.id
+  }
+
+  public async removeCharacter(characterId: ComponentId) {
+    logger.info(`LibraryDatabase->removeCharacter`)
+
+    // TODO: consider dependencies e.g. passages
+
+    try {
+      await this.transaction('rw', this.characters, async () => {
+        if (await this.getComponent(LIBRARY_TABLE.CHARACTERS, characterId)) {
+          logger.info(
+            `LibraryDatabase->removeCharacter->Removing character with ID: ${characterId}`
+          )
+
+          await this.characters.delete(characterId)
+        } else {
+          logger.error(
+            `LibraryDatabase->removeCharacter->Unable to remove character with ID: '${characterId}'. Does not exist.`
+          )
+        }
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+
   public async getGame(gameId: GameId): Promise<Game> {
     try {
       const game = await this.games.get(gameId)
@@ -349,6 +420,7 @@ export class LibraryDatabase extends Dexie {
       // TODO: replace 'delete' method with methods that handle children
       await Promise.all([
         this.bookmarks.where({ gameId }).delete(),
+        this.characters.where({ gameId }).delete(),
         this.choices.where({ gameId }).delete(),
         this.conditions.where({ gameId }).delete(),
         this.effects.where({ gameId }).delete(),
@@ -395,7 +467,7 @@ export class LibraryDatabase extends Dexie {
 
   public async saveFolder(folder: Folder): Promise<ComponentId> {
     if (!folder.gameId)
-      throw new Error('Unable to save folder to databse. Missing game ID.')
+      throw new Error('Unable to save folder to database. Missing game ID.')
     if (!folder.id)
       throw new Error('Unable to save folder to database. Missing ID.')
 

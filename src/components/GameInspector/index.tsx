@@ -16,6 +16,7 @@ import GameOutline from '../GameOutline'
 import GameStyles from '../GameStyles'
 import GameProblems from '../GameProblems'
 import GameCharacters from '../GameCharacters'
+import CharacterModal from '../Modal/CharacterModal'
 import GameVariables from '../GameVariables'
 import ComponentHelpButton from '../ComponentHelpButton'
 
@@ -74,9 +75,12 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
                       {game.id && (
                         <PlusOutlined
                           className={styles.tabAddComponentButton}
-                          onClick={async () => {
-                            console.log('add character')
-                          }}
+                          onClick={async () =>
+                            setCharacterModal({
+                              ...characterModal,
+                              visible: true
+                            })
+                          }
                         />
                       )}
                     </div>
@@ -170,27 +174,45 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   })
 
+  const [characterModal, setCharacterModal] = useState({
+    visible: false
+  })
+
   return (
-    <DividerBox className={styles.GameInspector} mode="vertical">
-      <DockLayout
-        defaultLayout={defaultLayout}
-        groups={{
-          top: {
-            floatable: false,
-            animated: false,
-            maximizable: false,
-            tabLocked: true
-          },
-          bottom: {
-            floatable: false,
-            animated: false,
-            maximizable: false,
-            tabLocked: true
+    <>
+      {game.id && (
+        <CharacterModal
+          studioId={studioId}
+          gameId={game.id}
+          type={'NEW'}
+          visible={characterModal.visible}
+          onCancel={() =>
+            setCharacterModal({ ...characterModal, visible: false })
           }
-        }}
-        dropMode="edge"
-      />
-    </DividerBox>
+        />
+      )}
+
+      <DividerBox className={styles.GameInspector} mode="vertical">
+        <DockLayout
+          defaultLayout={defaultLayout}
+          groups={{
+            top: {
+              floatable: false,
+              animated: false,
+              maximizable: false,
+              tabLocked: true
+            },
+            bottom: {
+              floatable: false,
+              animated: false,
+              maximizable: false,
+              tabLocked: true
+            }
+          }}
+          dropMode="edge"
+        />
+      </DividerBox>
+    </>
   )
 }
 

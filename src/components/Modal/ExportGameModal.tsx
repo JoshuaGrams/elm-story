@@ -3,7 +3,7 @@ import React from 'react'
 import { Modal } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 
-const ExportGameModal: React.FC<{ title: string, visible?: boolean }> = ({
+const ExportGameModal: React.FC<{ title: string; visible?: boolean }> = ({
   title,
   visible
 }) => {
