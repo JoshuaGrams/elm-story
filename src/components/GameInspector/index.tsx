@@ -13,12 +13,20 @@ import { PlusOutlined } from '@ant-design/icons'
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 
 import GameOutline from '../GameOutline'
+import GameStyles from '../GameStyles'
+import GameProblems from '../GameProblems'
+import GameCharacters from '../GameCharacters'
 import GameVariables from '../GameVariables'
 import ComponentHelpButton from '../ComponentHelpButton'
 
 import api from '../../api'
 
 import styles from './styles.module.less'
+
+const TAB_TYPE = {
+  CHARACTERS: 'CHARACTERS',
+  VARIABLES: 'VARIABLES'
+}
 
 const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
   studioId,
@@ -38,41 +46,59 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
                   title: 'Outline',
                   minHeight: 32,
                   content: <GameOutline studioId={studioId} game={game} />,
-                  group: 'default'
+                  group: 'top'
                 },
                 {
                   id: 'stylesTab',
                   title: 'Styles',
                   minHeight: 32,
-                  content: <div>Styles</div>,
-                  group: 'default'
+                  content: <GameStyles />,
+                  group: 'top'
                 },
                 {
                   id: 'problemsTab',
                   title: 'Problems',
                   minHeight: 32,
-                  content: <div>Problems</div>,
-                  group: 'default'
+                  content: <GameProblems />,
+                  group: 'top'
                 }
               ]
             },
             {
               tabs: [
                 {
-                  id: 'charactersTab',
-                  title: 'Characters',
+                  id: TAB_TYPE.CHARACTERS,
+                  title: (
+                    <div>
+                      Characters
+                      {game.id && (
+                        <PlusOutlined
+                          className={styles.tabAddComponentButton}
+                          onClick={async () => {
+                            console.log('add character')
+                          }}
+                        />
+                      )}
+                    </div>
+                  ),
                   minHeight: 32,
-                  content: <div>Characters</div>,
-                  group: 'default'
+                  content: (
+                    <>
+                      {game.id && (
+                        <GameCharacters studioId={studioId} gameId={game.id} />
+                      )}
+                    </>
+                  ),
+                  group: 'bottom'
                 },
                 {
-                  id: 'variablesTab',
+                  id: TAB_TYPE.VARIABLES,
                   title: (
                     <div>
                       Variables
                       {game.id && (
                         <PlusOutlined
-                          className={styles.tabAddVariableButton}
+                          className={styles.tabAddComponentButton}
                           onClick={async () => {
                             // TODO: Fire only when tab is active #92
                             const uniqueNames = uniqueNamesGenerator({
@@ -113,14 +139,27 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
                       )}
                     </>
                   ),
-                  group: 'default'
+                  group: 'bottom'
                 }
               ],
               panelLock: {
                 // @ts-ignore: poor ts defs
                 panelExtra: (panelData, context) => {
-                  return panelData.activeId === 'variablesTab' ? (
-                    <ComponentHelpButton type={COMPONENT_TYPE.VARIABLE} />
+                  let componentType: COMPONENT_TYPE | undefined
+
+                  switch (panelData.activeId) {
+                    case TAB_TYPE.CHARACTERS:
+                      componentType = COMPONENT_TYPE.CHARACTER
+                      break
+                    case TAB_TYPE.VARIABLES:
+                      componentType = COMPONENT_TYPE.VARIABLE
+                      break
+                    default:
+                      break
+                  }
+
+                  return componentType ? (
+                    <ComponentHelpButton type={componentType} />
                   ) : null
                 }
               }
@@ -136,7 +175,13 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
       <DockLayout
         defaultLayout={defaultLayout}
         groups={{
-          default: {
+          top: {
+            floatable: false,
+            animated: false,
+            maximizable: false,
+            tabLocked: true
+          },
+          bottom: {
             floatable: false,
             animated: false,
             maximizable: false,

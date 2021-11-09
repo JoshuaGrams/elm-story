@@ -151,7 +151,7 @@ const GameDetails: React.FC<{
           </div>
 
           <div className={parentStyles.componentDetailViewNestedCollapse}>
-            <Collapse>
+            <Collapse defaultActiveKey={['metadata-panel']}>
               <Collapse.Panel header="Metadata" key="metadata-panel">
                 <div className={parentStyles.content}>
                   <Form

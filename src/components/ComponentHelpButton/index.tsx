@@ -17,38 +17,41 @@ const ComponentHelpButton: React.FC<{ type: COMPONENT_TYPE }> = ({ type }) => {
       'https://docs.elmstory.com/guides/production/editor/components'
 
     switch (type) {
-      case COMPONENT_TYPE.GAME:
-        helpUrl = `${helpUrl}/game-root-component`
-        break
-      case COMPONENT_TYPE.FOLDER:
-        helpUrl = `${helpUrl}/folder-component`
-        break
-      case COMPONENT_TYPE.SCENE:
-        helpUrl = `${helpUrl}/scene-component`
-        break
-      case COMPONENT_TYPE.PASSAGE:
-        helpUrl = `${helpUrl}/passage-component`
+      case COMPONENT_TYPE.CHARACTER:
+        helpUrl = `${helpUrl}/character-component/`
         break
       case COMPONENT_TYPE.CHOICE:
-        helpUrl = `${helpUrl}/choice-component`
-        break
-      case COMPONENT_TYPE.JUMP:
-        helpUrl = `${helpUrl}/jump-component`
-        break
-      case COMPONENT_TYPE.ROUTE:
-        helpUrl = `${helpUrl}/route-component`
-        break
-      case COMPONENT_TYPE.VARIABLE:
-        helpUrl = `${helpUrl}/variable-component`
+        helpUrl = `${helpUrl}/choice-component/`
         break
       case COMPONENT_TYPE.CONDITION:
-        helpUrl = `${helpUrl}/condition-component`
+        helpUrl = `${helpUrl}/condition-component/`
         break
       case COMPONENT_TYPE.EFFECT:
-        helpUrl = `${helpUrl}/effect-component`
+        helpUrl = `${helpUrl}/effect-component/`
+        break
+      case COMPONENT_TYPE.FOLDER:
+        helpUrl = `${helpUrl}/folder-component/`
+        break
+      case COMPONENT_TYPE.GAME:
+        helpUrl = `${helpUrl}/game-root-component/`
+        break
+      case COMPONENT_TYPE.JUMP:
+        helpUrl = `${helpUrl}/jump-component/`
+        break
+      case COMPONENT_TYPE.PASSAGE:
+        helpUrl = `${helpUrl}/passage-component/`
+        break
+      case COMPONENT_TYPE.ROUTE:
+        helpUrl = `${helpUrl}/route-component/`
+        break
+      case COMPONENT_TYPE.SCENE:
+        helpUrl = `${helpUrl}/scene-component/`
+        break
+      case COMPONENT_TYPE.VARIABLE:
+        helpUrl = `${helpUrl}/variable-component/`
         break
       default:
-        helpUrl = 'https://docs.elmstory.com'
+        helpUrl = 'https://docs.elmstory.com/'
         break
     }
 

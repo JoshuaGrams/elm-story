@@ -7,18 +7,18 @@ export enum PLATFORM_TYPE {
 }
 
 export enum COMPONENT_TYPE {
-  STUDIO = 'STUDIO',
-  GAME = 'GAME',
-  JUMP = 'JUMP',
-  FOLDER = 'FOLDER',
-  CHAPTER = 'CHAPTER',
-  SCENE = 'SCENE',
-  ROUTE = 'ROUTE',
-  PASSAGE = 'PASSAGE',
+  CHARACTER = 'CHARACTER',
   CHOICE = 'CHOICE',
-  INPUT = 'INPUT',
   CONDITION = 'CONDITION',
   EFFECT = 'EFFECT',
+  FOLDER = 'FOLDER',
+  GAME = 'GAME',
+  INPUT = 'INPUT',
+  JUMP = 'JUMP',
+  PASSAGE = 'PASSAGE',
+  ROUTE = 'ROUTE',
+  SCENE = 'SCENE',
+  STUDIO = 'STUDIO',
   VARIABLE = 'VARIABLE'
 }
 
@@ -93,7 +93,7 @@ export interface Studio extends Component {
   games: GameId[] // references by ID
 }
 
-export interface Editor extends Component { }
+export interface Editor extends Component {}
 
 export enum CHARACTER_MOOD_TYPE {
   ANNOYED = 'ANNOYED',
@@ -127,8 +127,6 @@ export interface Character extends Component {
   portraits: CharacterPortrait[]
   refs: CharacterRefs
 }
-
-
 
 export type GameChildRefs = Array<
   [COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ComponentId]
