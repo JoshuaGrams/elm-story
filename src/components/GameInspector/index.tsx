@@ -16,7 +16,7 @@ import GameOutline from '../GameOutline'
 import GameStyles from '../GameStyles'
 import GameProblems from '../GameProblems'
 import GameCharacters from '../GameCharacters'
-import CharacterModal from '../Modal/CharacterModal'
+import { CharacterModal } from '../Modal'
 import GameVariables from '../GameVariables'
 import ComponentHelpButton from '../ComponentHelpButton'
 

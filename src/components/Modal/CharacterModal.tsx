@@ -4,6 +4,8 @@ import { StudioId, GameId, ComponentId } from '../../data/types'
 
 import { Button, Modal, ModalProps, Form } from 'antd'
 
+import CharacterEditor from '../CharacterEditor'
+
 import api from '../../api'
 
 interface CharacterModalProps extends ModalProps {
@@ -77,7 +79,7 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
       centered
       footer={footerButtons}
     >
-      Character Modal
+      <CharacterEditor studioId={studioId} gameId={gameId} />
     </Modal>
   )
 }
