@@ -7,7 +7,15 @@ import {
 
 import React, { useState } from 'react'
 
-import { COMPONENT_TYPE, Game, StudioId, VARIABLE_TYPE } from '../../data/types'
+import {
+  CharacterMood,
+  CHARACTER_MOOD_TYPE,
+  ComponentId,
+  COMPONENT_TYPE,
+  Game,
+  StudioId,
+  VARIABLE_TYPE
+} from '../../data/types'
 
 import { PlusOutlined } from '@ant-design/icons'
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
@@ -33,6 +41,14 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
   studioId,
   game
 }) => {
+  const [characterModal, setCharacterModal] = useState<{
+    characterId?: ComponentId
+    visible: boolean
+  }>({
+    characterId: undefined,
+    visible: false
+  })
+
   const [defaultLayout] = useState<LayoutData>({
     dockbox: {
       mode: 'horizontal',
@@ -75,12 +91,33 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
                       {game.id && (
                         <PlusOutlined
                           className={styles.tabAddComponentButton}
-                          onClick={async () =>
-                            setCharacterModal({
-                              ...characterModal,
-                              visible: true
-                            })
-                          }
+                          onClick={async () => {
+                            if (game.id) {
+                              const baseMood: CharacterMood = {
+                                  imageId: undefined,
+                                  type: CHARACTER_MOOD_TYPE.NEUTRAL
+                                },
+                                character = await api().characters.saveCharacter(
+                                  studioId,
+                                  {
+                                    baseMood,
+                                    description: undefined,
+                                    gameId: game.id,
+                                    moods: [baseMood],
+                                    refs: [],
+                                    tags: [],
+                                    title: 'Untitled Character'
+                                  }
+                                )
+
+                              character.id &&
+                                setCharacterModal({
+                                  ...characterModal,
+                                  characterId: character.id,
+                                  visible: true
+                                })
+                            }
+                          }}
                         />
                       )}
                     </div>
@@ -174,20 +211,20 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   })
 
-  const [characterModal, setCharacterModal] = useState({
-    visible: false
-  })
-
   return (
     <>
       {game.id && (
         <CharacterModal
           studioId={studioId}
           gameId={game.id}
-          type={'NEW'}
+          characterId={characterModal.characterId}
           visible={characterModal.visible}
           onCancel={() =>
-            setCharacterModal({ ...characterModal, visible: false })
+            setCharacterModal({
+              ...characterModal,
+              characterId: undefined,
+              visible: false
+            })
           }
         />
       )}

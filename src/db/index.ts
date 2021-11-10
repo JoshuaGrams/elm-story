@@ -298,7 +298,7 @@ export class LibraryDatabase extends Dexie {
       throw error
     }
 
-    return character.id
+    return character
   }
 
   public async removeCharacter(characterId: ComponentId) {

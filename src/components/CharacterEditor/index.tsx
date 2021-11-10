@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { GameId, StudioId } from '../../data/types'
+import { ComponentId, GameId, StudioId } from '../../data/types'
 
 import { Tabs } from 'antd'
 
@@ -14,10 +14,13 @@ enum TAB_TYPE {
 
 import styles from './styles.module.less'
 
-const CharacterEditor: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
-  studioId,
-  gameId
-}) => {
+const CharacterEditor: React.FC<{
+  studioId: StudioId
+  gameId: GameId
+  characterId: ComponentId
+}> = ({ studioId, gameId, characterId }) => {
+  // get character data
+  
   return (
     <div className={styles.CharacterEditor}>
       <Tabs defaultActiveKey={TAB_TYPE.INFO} centered>

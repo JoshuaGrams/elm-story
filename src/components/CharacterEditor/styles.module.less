@@ -3,24 +3,27 @@
     .defaultMood {
       .portrait {
         width: 100px;
-        height: 100px;
+        height: 125px;
         border: 1px var(--border-color-20) solid;
+        background-image: url(../../img/characters/default-portrait.png);
+        background-size: 100px 125px;
+        overflow: hidden;
 
         &:hover {
           cursor: pointer;
-          border-color: var(--highlight-color-dark);
-        }
+          border-color: var(--highlight-color);
 
-        .defaultMoodIcon {
-          width: 100px;
-          height: 100px;
-          font-size: 100px;
-          color: var(--bg-color-15);
+          .defaultMoodLabel {
+            opacity: 1;
+            bottom: 0px;
+          }
         }
 
         .defaultMoodLabel {
+          transition: opacity 0.2s, bottom 0.2s;
+          opacity: 0;
           position: absolute;
-          bottom: 0px;
+          bottom: -10px;
           width: 100%;
           background: hsla(0, 0%, 5%, 0.8);
           text-align: center;

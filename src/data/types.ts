@@ -121,6 +121,10 @@ export enum CHARACTER_MOOD_TYPE {
                            // min(d,e)
 }
 
+export enum CHARACTER_PRONOUN_TYPES {
+  
+}
+
 export type CharacterRefs = Array<[string, string]> // 0 = uuid, 1 = nick
 
 export interface CharacterMood {
@@ -130,7 +134,7 @@ export interface CharacterMood {
 
 export interface Character extends Component {
   baseMood: CharacterMood // default is NEUTRAL type
-  description: string
+  description?: string
   gameId: GameId
   moods: CharacterMood[]
   refs: CharacterRefs
