@@ -8,6 +8,8 @@ import CharacterEditor from '../CharacterEditor'
 
 import api from '../../api'
 
+import styles from './styles.module.less'
+
 interface CharacterModalProps extends ModalProps {
   studioId: StudioId
   gameId: GameId
@@ -78,6 +80,7 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
       onCancel={(event) => onCancel && onCancel(event)}
       centered
       footer={footerButtons}
+      className={styles.CharacterModal}
     >
       <CharacterEditor studioId={studioId} gameId={gameId} />
     </Modal>
