@@ -27,3 +27,54 @@
 .ant-tree-node-content-wrapper:hover .ant-tree-title span .ant-btn {
   visibility: visible;
 }
+
+.ant-btn {
+  &:active,
+  &:focus {
+    border-color: var(--highlight-color);
+  }
+}
+
+.ant-modal-body {
+  padding: 0px;
+
+  .ant-tabs-nav {
+    margin: 0px;
+
+    .ant-tabs-tab {
+      &:hover,
+      &:active {
+        color: var(--highlight-color-bright);
+      }
+    }
+
+    .ant-tabs-tab-btn {
+      &:focus,
+      &:active {
+        color: var(--highlight-color);
+      }
+    }
+
+    .ant-tabs-tab-active {
+      .ant-tabs-tab-btn {
+        color: var(--highlight-color);
+      }
+    }
+
+    .ant-tabs-ink-bar {
+      background: var(--highlight-color);
+    }
+  }
+
+  .ant-tabs-content-holder {
+    padding: 24px;
+  }
+}
+
+.ant-select-item-option-state {
+  color: var(--highlight-color) !important;
+}
+
+.ant-select-selection-search-input {
+  font-family: 'Fira Code' !important;
+}
