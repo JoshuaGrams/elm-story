@@ -253,6 +253,7 @@
     "react-flow-renderer": "^9.4.1",
     "react-query": "^3.24.4",
     "react-router-dom": "^5.2.0",
+    "react-select": "^5.2.1",
     "react-spring": "^9.2.4",
     "react-string-replace": "^0.4.4",
     "react-transition-group": "^4.4.1",

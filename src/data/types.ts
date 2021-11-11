@@ -122,7 +122,25 @@ export enum CHARACTER_MOOD_TYPE {
 }
 
 export enum CHARACTER_PRONOUN_TYPES {
-  
+  SHE = 'SHE',
+  HER = 'HER',
+  HERS = 'HERS',
+  HERSELF = 'HERSELF',
+  HE = 'HE',
+  HIM = 'HIM',
+  HIS = 'HIS',
+  HIMSELF = 'HIMSELF',
+  THEY = 'THEY',
+  THEM = 'THEM',
+  THEIRS = 'THEIRS',
+  THEMSELF = 'THEMSELF',
+  ZE = 'ZE',
+  HIR = 'HIR',
+  ZIR = 'ZIR',
+  HIRS = 'HIRS',
+  ZIRS = 'ZIRS',
+  HIRSELF = 'HIRSELF',
+  ZIRSELF = 'ZIRSELF'
 }
 
 export type CharacterRefs = Array<[string, string]> // 0 = uuid, 1 = nick

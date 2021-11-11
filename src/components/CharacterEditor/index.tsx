@@ -20,10 +20,10 @@ const CharacterEditor: React.FC<{
   characterId: ComponentId
 }> = ({ studioId, gameId, characterId }) => {
   // get character data
-  
+
   return (
     <div className={styles.CharacterEditor}>
-      <Tabs defaultActiveKey={TAB_TYPE.INFO} centered>
+      <Tabs defaultActiveKey={TAB_TYPE.INFO}>
         <Tabs.TabPane tab="Info" key={TAB_TYPE.INFO}>
           <CharacterInfo studioId={studioId} gameId={gameId} />
         </Tabs.TabPane>
