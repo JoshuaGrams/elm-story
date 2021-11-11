@@ -5,17 +5,18 @@ import {
   uniqueNamesGenerator
 } from 'unique-names-generator'
 
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 
 import {
   CharacterMood,
   CHARACTER_MOOD_TYPE,
-  ComponentId,
   COMPONENT_TYPE,
   Game,
   StudioId,
   VARIABLE_TYPE
 } from '../../data/types'
+
+import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { PlusOutlined } from '@ant-design/icons'
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
@@ -24,7 +25,6 @@ import GameOutline from '../GameOutline'
 import GameStyles from '../GameStyles'
 import GameProblems from '../GameProblems'
 import GameCharacters from '../GameCharacters'
-import { CharacterModal } from '../Modal'
 import GameVariables from '../GameVariables'
 import ComponentHelpButton from '../ComponentHelpButton'
 
@@ -41,13 +41,7 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
   studioId,
   game
 }) => {
-  const [characterModal, setCharacterModal] = useState<{
-    characterId?: ComponentId
-    visible: boolean
-  }>({
-    characterId: undefined,
-    visible: false
-  })
+  const { editor, editorDispatch } = useContext(EditorContext)
 
   const [defaultLayout] = useState<LayoutData>({
     dockbox: {
@@ -111,10 +105,9 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
                                 )
 
                               character.id &&
-                                setCharacterModal({
-                                  ...characterModal,
-                                  characterId: character.id,
-                                  visible: true
+                                editorDispatch({
+                                  type: EDITOR_ACTION_TYPE.OPEN_CHARACTER_MODAL,
+                                  characterId: character.id
                                 })
                             }
                           }}
@@ -212,44 +205,26 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
   })
 
   return (
-    <>
-      {game.id && (
-        <CharacterModal
-          studioId={studioId}
-          gameId={game.id}
-          characterId={characterModal.characterId}
-          visible={characterModal.visible}
-          onCancel={() =>
-            setCharacterModal({
-              ...characterModal,
-              characterId: undefined,
-              visible: false
-            })
+    <DividerBox className={styles.GameInspector} mode="vertical">
+      <DockLayout
+        defaultLayout={defaultLayout}
+        groups={{
+          top: {
+            floatable: false,
+            animated: false,
+            maximizable: false,
+            tabLocked: true
+          },
+          bottom: {
+            floatable: false,
+            animated: false,
+            maximizable: false,
+            tabLocked: true
           }
-        />
-      )}
-
-      <DividerBox className={styles.GameInspector} mode="vertical">
-        <DockLayout
-          defaultLayout={defaultLayout}
-          groups={{
-            top: {
-              floatable: false,
-              animated: false,
-              maximizable: false,
-              tabLocked: true
-            },
-            bottom: {
-              floatable: false,
-              animated: false,
-              maximizable: false,
-              tabLocked: true
-            }
-          }}
-          dropMode="edge"
-        />
-      </DividerBox>
-    </>
+        }}
+        dropMode="edge"
+      />
+    </DividerBox>
   )
 }
 

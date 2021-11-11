@@ -44,6 +44,10 @@ interface EditorState {
     id?: ComponentId
     type?: COMPONENT_TYPE
   }
+  characterModal: {
+    visible: boolean
+    id: ComponentId | undefined
+  }
 }
 
 export enum EDITOR_ACTION_TYPE {
@@ -63,7 +67,9 @@ export enum EDITOR_ACTION_TYPE {
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE',
   COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION = 'COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION',
   COMPONENT_EDITOR_SELECT = 'COMPONENT_EDITOR_SELECT',
-  COMPONENT_EDITOR_CLOSE_TAB = 'COMPONENT_EDITOR_CLOSE_TAB'
+  COMPONENT_EDITOR_CLOSE_TAB = 'COMPONENT_EDITOR_CLOSE_TAB',
+  OPEN_CHARACTER_MODAL = 'OPEN_CHARACTER_MODAL',
+  CLOSE_CHARACTER_MODAL = 'CLOSE_CHARACTER_MODAL'
 }
 
 type EditorActionType =
@@ -163,6 +169,13 @@ type EditorActionType =
         type?: COMPONENT_TYPE
       }
     }
+  | {
+      type: EDITOR_ACTION_TYPE.OPEN_CHARACTER_MODAL
+      characterId: ComponentId
+    }
+  | {
+      type: EDITOR_ACTION_TYPE.CLOSE_CHARACTER_MODAL
+    }
 
 const editorReducer = (
   state: EditorState,
@@ -259,11 +272,26 @@ const editorReducer = (
         selectedComponentEditorComponents:
           action.selectedComponentEditorComponents || []
       }
-
     case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_CLOSE_TAB:
       return {
         ...state,
         closedEditorTab: action.closedEditorTab
+      }
+    case EDITOR_ACTION_TYPE.OPEN_CHARACTER_MODAL:
+      return {
+        ...state,
+        characterModal: {
+          visible: true,
+          id: action.characterId
+        }
+      }
+    case EDITOR_ACTION_TYPE.CLOSE_CHARACTER_MODAL:
+      return {
+        ...state,
+        characterModal: {
+          visible: false,
+          id: undefined
+        }
       }
     default:
       return state
@@ -310,7 +338,11 @@ const defaultEditorState: EditorState = {
   selectedComponentEditorSceneViewChoice: null,
   centeredComponentEditorSceneViewSelection: false,
   selectedComponentEditorComponents: [],
-  closedEditorTab: { id: undefined, type: undefined }
+  closedEditorTab: { id: undefined, type: undefined },
+  characterModal: {
+    visible: false,
+    id: undefined
+  }
 }
 
 export const EditorContext = createContext<EditorContextType>({

@@ -31,6 +31,7 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
       centered
       footer={null}
       className={styles.CharacterModal}
+      
     >
       {characterId && (
         <CharacterEditor

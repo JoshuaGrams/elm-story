@@ -1,2 +1,36 @@
 .GameCharacters {
+  padding: 10px;
+
+  .CharacterRow {
+    height: 44px;
+    display: grid;
+    grid-template-columns: 35px auto;
+    margin-bottom: 8px;
+    align-items: center;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    &:last-of-type {
+      margin: 0;
+    }
+
+    .portrait {
+      width: 35px;
+      height: 100%;
+      background: red;
+      background-image: url(../../img/characters/default-portrait.png);
+      background-size: 35px 100%;
+      border: 1px solid var(--border-color-20);
+    }
+
+    .title {
+      padding-left: 6px;
+      height: 20px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
 }

@@ -9,7 +9,8 @@ import CharacterPersonality from './CharacterPersonality'
 
 enum TAB_TYPE {
   INFO = 'INFO',
-  PERSONALITY = 'PERSONALITY'
+  PERSONALITY = 'PERSONALITY',
+  MENTIONS = 'MENTIONS'
 }
 
 import styles from './styles.module.less'
@@ -40,6 +41,9 @@ const CharacterEditor: React.FC<{
                 gameId={gameId}
                 character={character}
               />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Mentions" key={TAB_TYPE.MENTIONS}>
+              Character Mentions
             </Tabs.TabPane>
           </Tabs>
         </div>

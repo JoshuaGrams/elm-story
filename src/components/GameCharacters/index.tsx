@@ -1,10 +1,34 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
 import { useCharacters } from '../../hooks'
 
-import { GameId, StudioId } from '../../data/types'
+import { Character, GameId, StudioId } from '../../data/types'
+
+import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
+
+import { CharacterModal } from '../Modal'
 
 import styles from './styles.module.less'
+
+const CharacterRow: React.FC<{ character: Character }> = ({ character }) => {
+  const { editorDispatch } = useContext(EditorContext)
+
+  return (
+    <div
+      className={styles.CharacterRow}
+      onClick={() =>
+        character.id &&
+        editorDispatch({
+          type: EDITOR_ACTION_TYPE.OPEN_CHARACTER_MODAL,
+          characterId: character.id
+        })
+      }
+    >
+      <div className={styles.portrait} />
+      <div className={styles.title}>{character.title}</div>
+    </div>
+  )
+}
 
 const GameCharacters: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   studioId,
@@ -12,14 +36,24 @@ const GameCharacters: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
 }) => {
   const characters = useCharacters(studioId, gameId, [])
 
+  const { editor, editorDispatch } = useContext(EditorContext)
+
   return (
     <>
+      <CharacterModal
+        studioId={studioId}
+        gameId={gameId}
+        characterId={editor.characterModal.id}
+        visible={editor.characterModal.visible}
+        onCancel={() =>
+          editorDispatch({ type: EDITOR_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
+        }
+      />
+
       {characters && (
         <div className={styles.GameCharacters}>
           {characters.map((character) => (
-            <div onClick={() => console.log(character.id)}>
-              {character.title}
-            </div>
+            <CharacterRow character={character} />
           ))}
         </div>
       )}

@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { debounce } from 'lodash-es'
 
 import {
   Character,
@@ -18,6 +19,8 @@ import CreateableSelect from 'react-select/creatable'
 
 import styles from './styles.module.less'
 import selectStyles from '../../styles/select.module.less'
+
+import api from '../../api'
 
 type LayoutType = Parameters<typeof Form>[0]['layout']
 
@@ -220,8 +223,42 @@ const CharacterInfo: React.FC<{
   gameId: GameId
   character: Character
 }> = ({ studioId, gameId, character }) => {
-  const [characterInfoForm] = Form.useForm(),
-    [formLayout] = useState<LayoutType>('vertical')
+  const titleInputRef = useRef<Input>(null)
+
+  const [characterInfoForm] = Form.useForm()
+
+  const [formLayout] = useState<LayoutType>('vertical')
+
+  const saveTitle = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const sanitizedTitle = event.target.value.trim()
+
+      character.title !== sanitizedTitle &&
+        (await api().characters.saveCharacter(studioId, {
+          ...character,
+          title: sanitizedTitle
+        }))
+    },
+    [character]
+  )
+
+  const saveDescription = useCallback(
+    async (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const sanitizedDescription = event.target.value.trim()
+
+      if (character.description !== sanitizedDescription) {
+        await api().characters.saveCharacter(studioId, {
+          ...character,
+          description: sanitizedDescription
+        })
+      }
+    },
+    [character]
+  )
+
+  useEffect(() => {
+    titleInputRef.current?.select()
+  }, [])
 
   return (
     <div className={styles.CharacterInfo}>
@@ -239,7 +276,8 @@ const CharacterInfo: React.FC<{
             form={characterInfoForm}
             layout={formLayout}
             initialValues={{
-              title: character.title
+              title: character.title,
+              description: character.description
             }}
           >
             <Form.Item
@@ -252,7 +290,12 @@ const CharacterInfo: React.FC<{
                 }
               ]}
             >
-              <Input autoFocus />
+              <Input
+                ref={titleInputRef}
+                autoFocus
+                onChange={debounce(saveTitle, 200)}
+                onPressEnter={() => titleInputRef.current?.blur()}
+              />
             </Form.Item>
 
             <Form.Item
@@ -265,8 +308,15 @@ const CharacterInfo: React.FC<{
               <ReferencesSelect />
             </Form.Item>
 
-            <Form.Item label="Description" style={{ marginBottom: 0 }}>
-              <Input.TextArea rows={5} />
+            <Form.Item
+              label="Description"
+              name="description"
+              style={{ marginBottom: 0 }}
+            >
+              <Input.TextArea
+                rows={5}
+                onChange={debounce(saveDescription, 200)}
+              />
             </Form.Item>
           </Form>
         </Col>
