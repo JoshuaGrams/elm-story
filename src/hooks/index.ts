@@ -1,5 +1,6 @@
 import useDebouncedResizeObserver from './useDebouncedResizeObserver'
 
+import useCharacters, { useCharacter } from './useCharacters'
 import useStudios, { useStudio } from './useStudios'
 import useGames, { useGame } from './useGames'
 import useFolders, { useFolder } from './useFolders'
@@ -31,6 +32,8 @@ import useVariables, { useVariable } from './useVariables'
 
 export {
   useDebouncedResizeObserver,
+  useCharacters,
+  useCharacter,
   useStudios,
   useStudio,
   useGames,

@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-import { CHARACTER_PRONOUN_TYPES, GameId, StudioId } from '../../data/types'
+import {
+  Character,
+  CHARACTER_PRONOUN_TYPES,
+  GameId,
+  StudioId
+} from '../../data/types'
 
 import { Col, Row, Form, Input, Popover } from 'antd'
 import {
@@ -213,7 +218,8 @@ const ReferencesSelect: React.FC = () => {
 const CharacterInfo: React.FC<{
   studioId: StudioId
   gameId: GameId
-}> = ({ studioId, gameId }) => {
+  character: Character
+}> = ({ studioId, gameId, character }) => {
   const [characterInfoForm] = Form.useForm(),
     [formLayout] = useState<LayoutType>('vertical')
 
@@ -232,6 +238,9 @@ const CharacterInfo: React.FC<{
             id="save-character-info-form"
             form={characterInfoForm}
             layout={formLayout}
+            initialValues={{
+              title: character.title
+            }}
           >
             <Form.Item
               label="Name"
@@ -245,7 +254,6 @@ const CharacterInfo: React.FC<{
             >
               <Input autoFocus />
             </Form.Item>
-            {/* TODO: https://nosir.github.io/cleave.js/? */}
 
             <Form.Item
               label="Pronouns / Aliases"
@@ -256,6 +264,7 @@ const CharacterInfo: React.FC<{
             >
               <ReferencesSelect />
             </Form.Item>
+
             <Form.Item label="Description" style={{ marginBottom: 0 }}>
               <Input.TextArea rows={5} />
             </Form.Item>

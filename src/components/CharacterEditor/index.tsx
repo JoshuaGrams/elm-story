@@ -13,25 +13,38 @@ enum TAB_TYPE {
 }
 
 import styles from './styles.module.less'
+import { useCharacter } from '../../hooks'
 
 const CharacterEditor: React.FC<{
   studioId: StudioId
   gameId: GameId
   characterId: ComponentId
 }> = ({ studioId, gameId, characterId }) => {
-  // get character data
+  const character = useCharacter(studioId, characterId, [characterId])
 
   return (
-    <div className={styles.CharacterEditor}>
-      <Tabs defaultActiveKey={TAB_TYPE.INFO}>
-        <Tabs.TabPane tab="Info" key={TAB_TYPE.INFO}>
-          <CharacterInfo studioId={studioId} gameId={gameId} />
-        </Tabs.TabPane>
-        <Tabs.TabPane tab="Personality" key={TAB_TYPE.PERSONALITY}>
-          <CharacterPersonality studioId={studioId} gameId={gameId} />
-        </Tabs.TabPane>
-      </Tabs>
-    </div>
+    <>
+      {character && (
+        <div className={styles.CharacterEditor}>
+          <Tabs defaultActiveKey={TAB_TYPE.INFO}>
+            <Tabs.TabPane tab="Info" key={TAB_TYPE.INFO}>
+              <CharacterInfo
+                studioId={studioId}
+                gameId={gameId}
+                character={character}
+              />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Personality" key={TAB_TYPE.PERSONALITY}>
+              <CharacterPersonality
+                studioId={studioId}
+                gameId={gameId}
+                character={character}
+              />
+            </Tabs.TabPane>
+          </Tabs>
+        </div>
+      )}
+    </>
   )
 }
 
