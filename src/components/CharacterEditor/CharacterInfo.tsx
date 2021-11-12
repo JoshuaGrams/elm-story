@@ -365,13 +365,7 @@ const CharacterInfo: React.FC<{
               />
             </Form.Item>
 
-            <Form.Item
-              label="Pronouns / Aliases"
-              normalize={(value) => {
-                console.log('here')
-                console.log(value)
-              }}
-            >
+            <Form.Item label="Pronouns / Aliases">
               <ReferencesSelect
                 refs={character.refs}
                 onSelect={async (newRefs) => {
