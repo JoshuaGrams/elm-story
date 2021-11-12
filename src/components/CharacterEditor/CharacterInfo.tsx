@@ -294,11 +294,12 @@ const CharacterInfo: React.FC<{
       const sanitizedTitle = event.target.value.trim()
 
       try {
-        character.title !== sanitizedTitle &&
-          (await api().characters.saveCharacter(studioId, {
+        if (sanitizedTitle && character.title !== sanitizedTitle) {
+          await api().characters.saveCharacter(studioId, {
             ...character,
             title: sanitizedTitle
-          }))
+          })
+        }
       } catch (error) {
         throw error
       }
