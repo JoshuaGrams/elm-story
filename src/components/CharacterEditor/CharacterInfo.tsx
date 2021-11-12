@@ -1,5 +1,6 @@
+import { debounce, isEqual } from 'lodash-es'
+
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { debounce } from 'lodash-es'
 
 import {
   Character,
@@ -34,8 +35,8 @@ interface ReferenceSelectOption {
 const EditAliasPopover: React.FC<{
   editing: boolean
   defaultValue: string | undefined
-  selections: MultiValue<ReferenceSelectOption> | undefined
-  onFinish: (newSelections?: ReferenceSelectOption[]) => void
+  selections: MultiValue<ReferenceSelectOption>
+  onFinish: (newSelections: ReferenceSelectOption[]) => void
   onBlur: () => void
 }> = ({ children, editing, defaultValue, selections, onFinish, onBlur }) => {
   const editRefInputRef = useRef<Input>(null)
@@ -99,10 +100,13 @@ const EditAliasPopover: React.FC<{
 
 EditAliasPopover.displayName = 'EditAliasPopover'
 
-const ReferencesSelect: React.FC = () => {
+const ReferencesSelect: React.FC<{
+  refs: string[]
+  onSelect: (newRefs: string[]) => Promise<void>
+}> = ({ refs, onSelect }) => {
   const [selections, setSelections] = useState<
     MultiValue<ReferenceSelectOption> | undefined
-  >()
+  >(undefined)
 
   const [selectedCustomRef, setSelectedCustomRef] = useState<{
     data: ReferenceSelectOption | undefined
@@ -112,10 +116,7 @@ const ReferencesSelect: React.FC = () => {
     data: undefined
   })
 
-  useEffect(() => {
-    console.log(selections)
-  }, [selections])
-
+  // TODO: breakout
   const MultiValueLabel = (
     props: MultiValueGenericProps<
       ReferenceSelectOption,
@@ -151,34 +152,74 @@ const ReferencesSelect: React.FC = () => {
         }}
       >
         <components.MultiValueLabel {...props}>
-          <EditAliasPopover
-            defaultValue={selectedCustomRef.data?.value}
-            editing={props.data.editing}
-            selections={selections}
-            onFinish={(newSelections) => setSelections(newSelections)}
-            onBlur={() => {
-              if (selections) {
-                setSelections(
-                  selections.map((selection) => ({
-                    ...selection,
-                    editing: false
-                  }))
-                )
+          {selections && (
+            <EditAliasPopover
+              defaultValue={selectedCustomRef.data?.value}
+              editing={props.data.editing}
+              selections={selections}
+              onFinish={(newSelections) => setSelections(newSelections)}
+              onBlur={() => {
+                if (selections) {
+                  setSelections(
+                    selections.map((selection) => ({
+                      ...selection,
+                      editing: false
+                    }))
+                  )
 
-                setSelectedCustomRef({
-                  ...selectedCustomRef,
-                  data: undefined,
-                  editing: false
-                })
-              }
-            }}
-          >
-            {props.data.value}
-          </EditAliasPopover>
+                  setSelectedCustomRef({
+                    ...selectedCustomRef,
+                    data: undefined,
+                    editing: false
+                  })
+                }
+              }}
+            >
+              {props.data.value}
+            </EditAliasPopover>
+          )}
         </components.MultiValueLabel>
       </div>
     )
   }
+
+  useEffect(() => {
+    async function updateCharacterReferences() {
+      const selectionsAsRefArray = selections
+        ? selections.map((selection) => selection.value)
+        : []
+
+      try {
+        !isEqual(refs, selectionsAsRefArray) &&
+          (await onSelect(selectionsAsRefArray))
+      } catch (error) {
+        throw error
+      }
+    }
+
+    selections && updateCharacterReferences()
+  }, [selections])
+
+  useEffect(() => {
+    let incomingSelections: ReferenceSelectOption[] = []
+
+    refs.map((ref) => {
+      const sanitizedRef = ref.toUpperCase().trim(),
+        pronoun =
+          Object.keys(CHARACTER_PRONOUN_TYPES).findIndex(
+            (value) => value === sanitizedRef
+          ) !== -1
+
+      incomingSelections.push({
+        editing: false,
+        label: sanitizedRef,
+        value: sanitizedRef,
+        pronoun
+      })
+    })
+
+    setSelections(incomingSelections)
+  }, [])
 
   return (
     <>
@@ -187,7 +228,7 @@ const ReferencesSelect: React.FC = () => {
         isMulti
         value={selections}
         components={{ MultiValueLabel }}
-        onChange={(newSelections) =>
+        onChange={(newSelections) => {
           setSelections(
             newSelections.map(({ value, label, pronoun }) => ({
               value: value.toUpperCase().trim(),
@@ -196,7 +237,7 @@ const ReferencesSelect: React.FC = () => {
               editing: false
             }))
           )
-        }
+        }}
         options={Object.keys(CHARACTER_PRONOUN_TYPES).map((value) => ({
           value,
           label: value,
@@ -252,11 +293,15 @@ const CharacterInfo: React.FC<{
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const sanitizedTitle = event.target.value.trim()
 
-      character.title !== sanitizedTitle &&
-        (await api().characters.saveCharacter(studioId, {
-          ...character,
-          title: sanitizedTitle
-        }))
+      try {
+        character.title !== sanitizedTitle &&
+          (await api().characters.saveCharacter(studioId, {
+            ...character,
+            title: sanitizedTitle
+          }))
+      } catch (error) {
+        throw error
+      }
     },
     [character]
   )
@@ -265,11 +310,14 @@ const CharacterInfo: React.FC<{
     async (event: React.ChangeEvent<HTMLTextAreaElement>) => {
       const sanitizedDescription = event.target.value.trim()
 
-      if (character.description !== sanitizedDescription) {
-        await api().characters.saveCharacter(studioId, {
-          ...character,
-          description: sanitizedDescription
-        })
+      try {
+        character.description !== sanitizedDescription &&
+          (await api().characters.saveCharacter(studioId, {
+            ...character,
+            description: sanitizedDescription
+          }))
+      } catch (error) {
+        throw error
       }
     },
     [character]
@@ -324,7 +372,19 @@ const CharacterInfo: React.FC<{
                 console.log(value)
               }}
             >
-              <ReferencesSelect />
+              <ReferencesSelect
+                refs={character.refs}
+                onSelect={async (newRefs) => {
+                  try {
+                    await api().characters.saveCharacter(studioId, {
+                      ...character,
+                      refs: newRefs
+                    })
+                  } catch (error) {
+                    throw error
+                  }
+                }}
+              />
             </Form.Item>
 
             <Form.Item
