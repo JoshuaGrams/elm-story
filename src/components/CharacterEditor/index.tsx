@@ -1,11 +1,14 @@
 import React from 'react'
 
+import { useCharacter } from '../../hooks'
+
 import { ComponentId, GameId, StudioId } from '../../data/types'
 
 import { Tabs } from 'antd'
 
 import CharacterInfo from './CharacterInfo'
 import CharacterPersonality from './CharacterPersonality'
+import CharacterMentions from './CharacterMentions'
 
 enum TAB_TYPE {
   INFO = 'INFO',
@@ -14,7 +17,6 @@ enum TAB_TYPE {
 }
 
 import styles from './styles.module.less'
-import { useCharacter } from '../../hooks'
 
 const CharacterEditor: React.FC<{
   studioId: StudioId
@@ -43,7 +45,11 @@ const CharacterEditor: React.FC<{
               />
             </Tabs.TabPane>
             <Tabs.TabPane tab="Mentions" key={TAB_TYPE.MENTIONS}>
-              Character Mentions
+              <CharacterMentions
+                studioId={studioId}
+                gameId={gameId}
+                character={character}
+              />
             </Tabs.TabPane>
           </Tabs>
         </div>

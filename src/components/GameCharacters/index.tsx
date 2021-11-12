@@ -53,7 +53,7 @@ const GameCharacters: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
       {characters && (
         <div className={styles.GameCharacters}>
           {characters.map((character) => (
-            <CharacterRow character={character} />
+            <CharacterRow character={character} key={character.id} />
           ))}
         </div>
       )}

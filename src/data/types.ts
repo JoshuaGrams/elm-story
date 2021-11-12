@@ -143,8 +143,6 @@ export enum CHARACTER_PRONOUN_TYPES {
   ZIRSELF = 'ZIRSELF'
 }
 
-export type CharacterRefs = Array<[string, string]> // 0 = uuid, 1 = nick
-
 export interface CharacterMood {
   imageId?: string // the location will change, but keep asset ID consistent
   type: CHARACTER_MOOD_TYPE
@@ -155,7 +153,7 @@ export interface Character extends Component {
   description?: string
   gameId: GameId
   moods: CharacterMood[]
-  refs: CharacterRefs
+  refs: string[] // all strings must be unique
 }
 
 export type GameChildRefs = Array<

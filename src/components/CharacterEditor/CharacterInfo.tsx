@@ -31,9 +31,75 @@ interface ReferenceSelectOption {
   editing: boolean
 }
 
-const ReferencesSelect: React.FC = () => {
+const EditAliasPopover: React.FC<{
+  editing: boolean
+  defaultValue: string | undefined
+  selections: MultiValue<ReferenceSelectOption> | undefined
+  onFinish: (newSelections?: ReferenceSelectOption[]) => void
+  onBlur: () => void
+}> = ({ children, editing, defaultValue, selections, onFinish, onBlur }) => {
   const editRefInputRef = useRef<Input>(null)
 
+  useEffect(() => {
+    editRefInputRef.current?.select()
+  }, [])
+
+  return (
+    <Popover
+      visible={editing}
+      placement="top"
+      arrowContent={<div style={{ zIndex: 1001 }}>hi</div>}
+      overlayClassName="es-select__editable-value-popover"
+      content={
+        <Input
+          defaultValue={defaultValue}
+          ref={editRefInputRef}
+          style={{
+            textTransform: 'uppercase',
+            background: 'hsl(0, 0%, 3%)',
+            zIndex: 1002
+          }}
+          autoFocus
+          onPressEnter={() => {
+            const newValue = editRefInputRef.current?.input.value
+
+            if (newValue && newValue !== defaultValue && selections) {
+              const sanitizedNewValue = newValue.toUpperCase().trim()
+
+              if (
+                Object.keys(CHARACTER_PRONOUN_TYPES).findIndex(
+                  (pronoun) => pronoun === sanitizedNewValue
+                ) === -1
+              ) {
+                const foundSelectionIndex = selections?.findIndex(
+                  (selection) => selection.value === defaultValue
+                )
+
+                if (foundSelectionIndex !== -1) {
+                  const newSelections = [...selections]
+
+                  newSelections[foundSelectionIndex].label = sanitizedNewValue
+                  newSelections[foundSelectionIndex].value = sanitizedNewValue
+
+                  onFinish(newSelections)
+                }
+              }
+            }
+
+            editRefInputRef.current?.blur()
+          }}
+          onBlur={() => onBlur()}
+        />
+      }
+    >
+      {children}
+    </Popover>
+  )
+}
+
+EditAliasPopover.displayName = 'EditAliasPopover'
+
+const ReferencesSelect: React.FC = () => {
   const [selections, setSelections] = useState<
     MultiValue<ReferenceSelectOption> | undefined
   >()
@@ -85,79 +151,30 @@ const ReferencesSelect: React.FC = () => {
         }}
       >
         <components.MultiValueLabel {...props}>
-          <Popover
-            visible={props.data.editing}
-            placement="top"
-            arrowContent={<div style={{ zIndex: 1001 }}>hi</div>}
-            overlayClassName="es-select__editable-value-popover"
-            content={
-              <Input
-                defaultValue={selectedCustomRef.data?.value}
-                ref={editRefInputRef}
-                style={{
-                  textTransform: 'uppercase',
-                  background: 'hsl(0, 0%, 3%)',
-                  zIndex: 1002
-                }}
-                autoFocus
-                onPressEnter={() => {
-                  const newValue = editRefInputRef.current?.input.value
+          <EditAliasPopover
+            defaultValue={selectedCustomRef.data?.value}
+            editing={props.data.editing}
+            selections={selections}
+            onFinish={(newSelections) => setSelections(newSelections)}
+            onBlur={() => {
+              if (selections) {
+                setSelections(
+                  selections.map((selection) => ({
+                    ...selection,
+                    editing: false
+                  }))
+                )
 
-                  if (
-                    newValue &&
-                    newValue !== selectedCustomRef.data?.value &&
-                    selections
-                  ) {
-                    const sanitizedNewValue = newValue.toUpperCase().trim()
-
-                    if (
-                      Object.keys(CHARACTER_PRONOUN_TYPES).findIndex(
-                        (pronoun) => pronoun === sanitizedNewValue
-                      ) === -1
-                    ) {
-                      const foundSelectionIndex = selections?.findIndex(
-                        (selection) =>
-                          selection.value === selectedCustomRef.data?.value
-                      )
-
-                      if (foundSelectionIndex !== -1) {
-                        const newSelections = [...selections]
-
-                        newSelections[
-                          foundSelectionIndex
-                        ].label = sanitizedNewValue
-                        newSelections[
-                          foundSelectionIndex
-                        ].value = sanitizedNewValue
-
-                        setSelections(newSelections)
-                      }
-                    }
-                  }
-
-                  editRefInputRef.current?.blur()
-                }}
-                onBlur={() => {
-                  if (selections) {
-                    setSelections(
-                      selections.map((selection) => ({
-                        ...selection,
-                        editing: false
-                      }))
-                    )
-
-                    setSelectedCustomRef({
-                      ...selectedCustomRef,
-                      data: undefined,
-                      editing: false
-                    })
-                  }
-                }}
-              />
-            }
+                setSelectedCustomRef({
+                  ...selectedCustomRef,
+                  data: undefined,
+                  editing: false
+                })
+              }
+            }}
           >
             {props.data.value}
-          </Popover>
+          </EditAliasPopover>
         </components.MultiValueLabel>
       </div>
     )
@@ -217,6 +234,8 @@ const ReferencesSelect: React.FC = () => {
     </>
   )
 }
+
+ReferencesSelect.displayName = 'ReferencesSelect'
 
 const CharacterInfo: React.FC<{
   studioId: StudioId

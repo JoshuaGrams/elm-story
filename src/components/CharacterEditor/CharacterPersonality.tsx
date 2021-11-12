@@ -10,7 +10,9 @@ const CharacterPersonality: React.FC<{
   character: Character
 }> = ({ studioId, gameId, character }) => {
   return (
-    <div className={styles.CharacterPersonality}>Character Personality</div>
+    <div className={styles.CharacterPersonality}>
+      Character Personality for "{character.title}".
+    </div>
   )
 }
 
