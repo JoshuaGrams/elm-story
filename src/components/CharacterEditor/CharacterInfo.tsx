@@ -388,11 +388,14 @@ const CharacterInfo: React.FC<{
               style={{ marginBottom: 0 }}
             >
               <Input.TextArea
-                rows={5}
+                rows={8}
                 onChange={debounce(saveDescription, 200)}
+                style={{ resize: 'none' }}
               />
             </Form.Item>
           </Form>
+
+          <div className={styles.componentId}>{character.id}</div>
         </Col>
       </Row>
     </div>

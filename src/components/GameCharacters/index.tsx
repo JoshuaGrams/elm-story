@@ -16,11 +16,6 @@ const CharacterRow: React.FC<{ character: Character }> = ({ character }) => {
   const [selected, setSelected] = useState(false)
 
   useEffect(() => {
-    console.log(selected)
-  }, [])
-
-  useEffect(() => {
-    console.log(editor.characterModal.id)
     setSelected(editor.characterModal.id === character.id)
   }, [editor.characterModal.id])
 
@@ -36,9 +31,7 @@ const CharacterRow: React.FC<{ character: Character }> = ({ character }) => {
       }
     >
       <div className={styles.portrait} />
-      <div className={styles.title}>
-        {character.title}
-      </div>
+      <div className={styles.title}>{character.title}</div>
     </div>
   )
 }
