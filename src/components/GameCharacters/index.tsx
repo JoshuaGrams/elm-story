@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 
 import { useCharacters } from '../../hooks'
 
@@ -11,11 +11,22 @@ import { CharacterModal } from '../Modal'
 import styles from './styles.module.less'
 
 const CharacterRow: React.FC<{ character: Character }> = ({ character }) => {
-  const { editorDispatch } = useContext(EditorContext)
+  const { editor, editorDispatch } = useContext(EditorContext)
+
+  const [selected, setSelected] = useState(false)
+
+  useEffect(() => {
+    console.log(selected)
+  }, [])
+
+  useEffect(() => {
+    console.log(editor.characterModal.id)
+    setSelected(editor.characterModal.id === character.id)
+  }, [editor.characterModal.id])
 
   return (
     <div
-      className={styles.CharacterRow}
+      className={`${styles.CharacterRow} ${selected ? styles.selected : ''}`}
       onClick={() =>
         character.id &&
         editorDispatch({
@@ -25,7 +36,9 @@ const CharacterRow: React.FC<{ character: Character }> = ({ character }) => {
       }
     >
       <div className={styles.portrait} />
-      <div className={styles.title}>{character.title}</div>
+      <div className={styles.title}>
+        {character.title}
+      </div>
     </div>
   )
 }

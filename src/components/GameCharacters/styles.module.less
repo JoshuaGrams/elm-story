@@ -10,6 +10,15 @@
 
     &:hover {
       cursor: pointer;
+
+      .portrait {
+        border-color: var(--highlight-color);
+        opacity: 1;
+      }
+
+      .title {
+        color: white;
+      }
     }
 
     &:last-of-type {
@@ -23,6 +32,8 @@
       background-image: url(../../img/characters/default-portrait.png);
       background-size: 35px 100%;
       border: 1px solid var(--border-color-20);
+      opacity: 0.4;
+      transition: opacity 0.2s, border-color 0.2s;
     }
 
     .title {
@@ -31,6 +42,20 @@
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
+      color: hsl(0, 0%, 60%);
+      transition: color 0.2s;
+    }
+
+    &.selected {
+      .portrait {
+        border-color: var(--highlight-color);
+        opacity: 1;
+      }
+
+      .title {
+        text-decoration: underline;
+        color: white;
+      }
     }
   }
 }
