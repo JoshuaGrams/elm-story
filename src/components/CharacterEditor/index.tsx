@@ -19,6 +19,7 @@ import api from '../../api'
 enum TAB_TYPE {
   INFO = 'INFO',
   PERSONALITY = 'PERSONALITY',
+  INVENTORY = 'INVENTORY',
   MENTIONS = 'MENTIONS'
 }
 
@@ -74,6 +75,9 @@ const CharacterEditor: React.FC<{
                 gameId={gameId}
                 character={character}
               />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Inventory" key={TAB_TYPE.INVENTORY}>
+              Character Inventory
             </Tabs.TabPane>
             <Tabs.TabPane tab="Mentions" key={TAB_TYPE.MENTIONS}>
               <CharacterMentions

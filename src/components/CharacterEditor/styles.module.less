@@ -50,6 +50,13 @@
   }
 
   .CharacterPersonality {
+    .moods {
+      .MoodBox {
+        width: 100px;
+        height: 100px;
+        border: 1px solid hsl(0, 0%, 8%);
+      }
+    }
   }
 
   .RemoveCharacterButton {
@@ -63,6 +70,33 @@
     &:hover {
       cursor: pointer;
       color: var(--warning-color-bright);
+    }
+  }
+}
+
+:global .ant-dropdown {
+  .mood-select-menu {
+    background: hsl(0, 0%, 18%);
+    border: black 1px solid;
+    width: 200px;
+    display: grid;
+    padding: 4px;
+    padding-right: 6px;
+    grid-template-columns: 50% 50%;
+    border-radius: 4px;
+    column-gap: 2px;
+    row-gap: 2px;
+
+    .ant-tag {
+      width: 100%;
+      text-align: center;
+      cursor: pointer;
+      background-color: hsl(0, 0%, 14%);
+
+      &:hover {
+        border-color: var(--highlight-color);
+        background-color: hsl(0, 0%, 8%);
+      }
     }
   }
 }
