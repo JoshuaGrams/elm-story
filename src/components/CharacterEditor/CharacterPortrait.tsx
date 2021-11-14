@@ -6,7 +6,7 @@ import styles from './styles.module.less'
 
 const CharacterPortrait: React.FC<{
   mood: CharacterMood
-  width: number
+  width: string
   overlay?: boolean
   onRemove?: (moodType: CHARACTER_MOOD_TYPE) => void
 }> = ({ mood, width, overlay, onRemove }) => {
@@ -14,12 +14,14 @@ const CharacterPortrait: React.FC<{
     <div
       className={styles.CharacterPortrait}
       style={{
-        width: `${width}px`
+        width
       }}
     >
-      <div className={styles.portrait} />
-      <div className={`${styles.moodType} ${overlay ? styles.overlay : ''}`}>
-        {mood.type}
+      <div className={styles.wrapper}>
+        <div className={styles.portrait} />
+        <div className={`${styles.moodType} ${overlay ? styles.overlay : ''}`}>
+          {mood.type}
+        </div>
       </div>
     </div>
   )

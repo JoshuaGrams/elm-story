@@ -46,8 +46,12 @@
 }
 
 .CharacterModal {
+  :global .ant-tabs-content-holder {
+    height: 508px;
+    overflow-y: auto;
+  }
+
   :global .ant-modal-content {
-    min-height: 585px;
   }
 
   :global .ant-modal-body {

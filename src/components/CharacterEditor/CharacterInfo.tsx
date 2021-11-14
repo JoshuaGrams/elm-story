@@ -333,11 +333,12 @@ const CharacterInfo: React.FC<{
   return (
     <div className={styles.CharacterInfo}>
       <Row>
-        <Col flex="100px">
+        <Col flex="auto">
           <div className={styles.defaultMood}>
-            <CharacterPortrait mood={character.baseMood} width={100} overlay />
+            <CharacterPortrait mood={character.baseMood} width="100%" overlay />
           </div>
         </Col>
+
         <Col flex="auto" className={styles.content}>
           <Form
             id="save-character-info-form"

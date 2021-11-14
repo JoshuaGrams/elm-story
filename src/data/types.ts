@@ -121,6 +121,27 @@ export enum CHARACTER_MOOD_TYPE {
                            // min(d,e)
 }
 
+// prettier-ignore
+export const CHARACTER_TEMPERAMENT_VALUES = {
+    EXCITED: [1, 1],
+      TENSE: [-1, 1],
+     LIVELY: [.75, .75],
+    NERVOUS: [-.75, .75],
+   CHEERFUL: [.5, .5],
+  IRRITATED: [-.5, .5],
+      HAPPY: [0.25, .25],
+    ANNOYED: [-0.25, .25],
+    NEUTRAL: [0, 0],
+    RELAXED: [.25, -.25],
+      BORED: [-.25, -.25],
+   CAREFREE: [.5, -.5],
+      WEARY: [-.5, -.5],
+       CALM: [.75, -.75],
+     GLOOMY: [-.75, -.75],
+     SERENE: [1, -1],
+        SAD: [-1, -1]
+}
+
 export enum CHARACTER_PRONOUN_TYPES {
   SHE = 'SHE',
   HER = 'HER',

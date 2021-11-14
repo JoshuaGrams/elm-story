@@ -5,7 +5,8 @@ import {
   CharacterMood,
   GameId,
   StudioId,
-  CHARACTER_MOOD_TYPE
+  CHARACTER_MOOD_TYPE,
+  CHARACTER_TEMPERAMENT_VALUES
 } from '../../data/types'
 
 import { Divider, Dropdown, Tag } from 'antd'
@@ -47,8 +48,8 @@ const MoodHeader: React.FC<{
   )
 
   return (
-    <div className={styles.MoodHeader}>
-      <Divider style={{ marginTop: '0' }}>
+    <div className={`${styles.header} ${styles.MoodHeader}`}>
+      <Divider style={{ marginTop: '0' }} className={styles.title}>
         <Dropdown
           overlay={menu}
           trigger={['click']}
@@ -66,12 +67,29 @@ const MoodHeader: React.FC<{
 
 MoodHeader.displayName = 'MoodHeader'
 
+function getTemperValues(selectedMoods: CharacterMood[]) {
+  let temperValue = { desire: 0, energy: 0 }
+
+  selectedMoods.map((selectedMood) => {
+    temperValue.desire += CHARACTER_TEMPERAMENT_VALUES[selectedMood.type][0]
+    temperValue.energy += CHARACTER_TEMPERAMENT_VALUES[selectedMood.type][1]
+  })
+
+  temperValue.desire = (temperValue.desire / 5) * 100
+  temperValue.energy = (temperValue.energy / 5) * 100
+
+  console.log(temperValue)
+
+  return temperValue
+}
+
 const CharacterPersonality: React.FC<{
   studioId: StudioId
   gameId: GameId
   character: Character
 }> = ({ studioId, gameId, character }) => {
-  const [selectedMoods, setSelectedMoods] = useState<CharacterMood[]>([])
+  const [selectedMoods, setSelectedMoods] = useState<CharacterMood[]>([]),
+    [temperValues, setTemperValues] = useState({ desire: 0, energy: 0 })
 
   const addSelectedMood = async (selectedMood: CHARACTER_MOOD_TYPE) => {
     await api().characters.saveCharacter(studioId, {
@@ -95,24 +113,80 @@ const CharacterPersonality: React.FC<{
     ])
   }, [character.baseMood, character.moods])
 
+  useEffect(() => {
+    setTemperValues(getTemperValues(selectedMoods))
+  }, [selectedMoods])
+
   return (
     <div className={styles.CharacterPersonality}>
-      <MoodHeader
-        selectedMoods={character.moods}
-        onMoodSelect={(selectedMood, remove) =>
-          remove ? removeMood(selectedMood) : addSelectedMood(selectedMood)
-        }
-      />
+      <div className={styles.Temperament}>
+        <div className={styles.header}>
+          <Divider className={styles.title}>Temperament</Divider>
+        </div>
 
-      <div className={styles.moods}>
-        {selectedMoods.map((mood) => (
-          <CharacterPortrait
-            mood={mood}
-            width={86}
-            onRemove={removeMood}
-            key={mood.type}
-          />
-        ))}
+        <div className={`${styles.bar} ${styles.desire}`}>
+          <div className={styles.title}>DESIRABLE</div>
+
+          <div className={styles.wrapper}>
+            <div
+              className={`${styles.negative}`}
+              style={{
+                width: `${
+                  temperValues.desire > 0 ? 0 : temperValues.desire * -1
+                }%`
+              }}
+            />
+            <div className={styles.divider} />
+            <div
+              className={`${styles.positive}`}
+              style={{
+                width: `${temperValues.desire < 0 ? 0 : temperValues.desire}%`
+              }}
+            />
+          </div>
+        </div>
+
+        <div className={`${styles.bar} ${styles.energy}`}>
+          <div className={styles.title}>ENERGETIC</div>
+
+          <div className={styles.wrapper}>
+            <div
+              className={`${styles.negative}`}
+              style={{
+                width: `${
+                  temperValues.energy > 0 ? 0 : temperValues.energy * -1
+                }%`
+              }}
+            />
+            <div className={styles.divider} />
+            <div
+              className={`${styles.positive}`}
+              style={{
+                width: `${temperValues.energy < 0 ? 0 : temperValues.energy}%`
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.Moods}>
+        <MoodHeader
+          selectedMoods={character.moods}
+          onMoodSelect={(selectedMood, remove) =>
+            remove ? removeMood(selectedMood) : addSelectedMood(selectedMood)
+          }
+        />
+
+        <div className={styles.moodGrid}>
+          {selectedMoods.map((mood) => (
+            <CharacterPortrait
+              mood={mood}
+              width="100%"
+              onRemove={removeMood}
+              key={mood.type}
+            />
+          ))}
+        </div>
       </div>
     </div>
   )
