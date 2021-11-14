@@ -35,41 +35,44 @@
   }
 }
 
-.ant-modal-body {
-  .ant-tabs-nav {
-    margin: 0px;
+.ant-modal {
+  padding-bottom: 0px;
+  .ant-modal-body {
+    .ant-tabs-nav {
+      margin: 0px;
 
-    .ant-tabs-nav-list {
-      margin-left: 24px;
-    }
-
-    .ant-tabs-tab {
-      &:hover,
-      &:active {
-        color: var(--highlight-color-bright);
+      .ant-tabs-nav-list {
+        margin-left: 24px;
       }
-    }
 
-    .ant-tabs-tab-btn {
-      &:focus,
-      &:active {
-        color: var(--highlight-color);
+      .ant-tabs-tab {
+        &:hover,
+        &:active {
+          color: var(--highlight-color-bright);
+        }
       }
-    }
 
-    .ant-tabs-tab-active {
       .ant-tabs-tab-btn {
-        color: var(--highlight-color);
+        &:focus,
+        &:active {
+          color: var(--highlight-color);
+        }
+      }
+
+      .ant-tabs-tab-active {
+        .ant-tabs-tab-btn {
+          color: var(--highlight-color);
+        }
+      }
+
+      .ant-tabs-ink-bar {
+        background: var(--highlight-color);
       }
     }
 
-    .ant-tabs-ink-bar {
-      background: var(--highlight-color);
+    .ant-tabs-content-holder {
+      padding: 24px;
     }
-  }
-
-  .ant-tabs-content-holder {
-    padding: 24px;
   }
 }
 

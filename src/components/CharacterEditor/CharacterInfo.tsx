@@ -18,6 +18,8 @@ import {
 } from 'react-select'
 import CreateableSelect from 'react-select/creatable'
 
+import CharacterPortrait from './CharacterPortrait'
+
 import styles from './styles.module.less'
 import selectStyles from '../../styles/select.module.less'
 
@@ -333,9 +335,7 @@ const CharacterInfo: React.FC<{
       <Row>
         <Col flex="100px">
           <div className={styles.defaultMood}>
-            <div className={styles.portrait}>
-              <div className={styles.defaultMoodLabel}>Neutral</div>
-            </div>
+            <CharacterPortrait mood={character.baseMood} width={100} overlay />
           </div>
         </Col>
         <Col flex="auto" className={styles.content}>

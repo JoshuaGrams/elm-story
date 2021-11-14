@@ -8,73 +8,57 @@ import {
   CHARACTER_MOOD_TYPE
 } from '../../data/types'
 
-import { Divider, Row, Col, Dropdown, Tag } from 'antd'
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
+import { Divider, Dropdown, Tag } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
 import api from '../../api'
-
-const MoodBox: React.FC<{
-  mood: CharacterMood
-  onRemove: (moodToRemove: CHARACTER_MOOD_TYPE) => void
-}> = ({ mood, onRemove }) => {
-  return (
-    <Col className={styles.MoodBox}>
-      {mood.type}{' '}
-      {mood.type !== CHARACTER_MOOD_TYPE.NEUTRAL ? (
-        <DeleteOutlined onClick={() => onRemove(mood.type)} />
-      ) : (
-        ''
-      )}
-    </Col>
-  )
-}
-
-MoodBox.displayName = 'MoodBox'
+import CharacterPortrait from './CharacterPortrait'
 
 const MoodHeader: React.FC<{
   selectedMoods: CharacterMood[]
-  onMoodSelect: (selectedMood: CHARACTER_MOOD_TYPE) => void
+  onMoodSelect: (selectedMood: CHARACTER_MOOD_TYPE, remove: boolean) => void
 }> = ({ selectedMoods, onMoodSelect }) => {
-  const availableMoods = Object.keys(CHARACTER_MOOD_TYPE).filter(
-    (moodType) =>
-      !selectedMoods.find((currentMood) => currentMood.type === moodType)
-  )
-
   const menu: JSX.Element = (
-    <div
-      className="mood-select-menu"
-      style={
-        availableMoods.length === 1
-          ? { width: '100px', gridTemplateColumns: '100%' }
-          : {}
-      }
-    >
-      {availableMoods.map((availableMood) => (
-        <Tag onClick={() => onMoodSelect(availableMood as CHARACTER_MOOD_TYPE)}>
-          {availableMood}
-        </Tag>
-      ))}
+    <div className="mood-select-menu">
+      {Object.keys(CHARACTER_MOOD_TYPE)
+        .filter((moodType) => moodType !== CHARACTER_MOOD_TYPE.NEUTRAL)
+        .map((moodType) => {
+          const isSelectedMood = selectedMoods.find(
+            (selectedMood) => selectedMood.type === moodType
+          )
+            ? true
+            : false
+
+          return (
+            <Tag
+              onClick={() =>
+                onMoodSelect(moodType as CHARACTER_MOOD_TYPE, isSelectedMood)
+              }
+              className={`${isSelectedMood ? 'selected-mood' : ''}`}
+              key={moodType}
+            >
+              {moodType}
+            </Tag>
+          )
+        })}
     </div>
   )
 
   return (
     <div className={styles.MoodHeader}>
       <Divider style={{ marginTop: '0' }}>
-        Moods
-        {availableMoods.length > 0 && (
-          <>
-            {' '}
-            <Dropdown
-              overlay={menu}
-              trigger={['click']}
-              className={styles.dropdown}
-            >
-              <PlusOutlined />
-            </Dropdown>
-          </>
-        )}
+        <Dropdown
+          overlay={menu}
+          trigger={['click']}
+          className={styles.dropdown}
+          placement="bottomCenter"
+        >
+          <span className={styles.title}>
+            Moods <PlusOutlined />
+          </span>
+        </Dropdown>
       </Divider>
     </div>
   )
@@ -92,7 +76,7 @@ const CharacterPersonality: React.FC<{
   const addSelectedMood = async (selectedMood: CHARACTER_MOOD_TYPE) => {
     await api().characters.saveCharacter(studioId, {
       ...character,
-      moods: [{ type: selectedMood, imageId: undefined }, ...character.moods]
+      moods: [...character.moods, { type: selectedMood, imageId: undefined }]
     })
   }
 
@@ -115,14 +99,21 @@ const CharacterPersonality: React.FC<{
     <div className={styles.CharacterPersonality}>
       <MoodHeader
         selectedMoods={character.moods}
-        onMoodSelect={addSelectedMood}
+        onMoodSelect={(selectedMood, remove) =>
+          remove ? removeMood(selectedMood) : addSelectedMood(selectedMood)
+        }
       />
 
-      <Row justify="start" className={styles.moods}>
+      <div className={styles.moods}>
         {selectedMoods.map((mood) => (
-          <MoodBox mood={mood} key={mood.type} onRemove={removeMood} />
+          <CharacterPortrait
+            mood={mood}
+            width={86}
+            onRemove={removeMood}
+            key={mood.type}
+          />
         ))}
-      </Row>
+      </div>
     </div>
   )
 }
