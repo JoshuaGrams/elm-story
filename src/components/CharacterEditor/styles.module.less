@@ -39,10 +39,12 @@
         background: var(--desire-color-dark);
         align-self: center;
         display: grid;
+        box-shadow: 0 0 4px 0 var(--desire-color-dark);
 
         .positive,
         .negative {
           background: var(--desire-color);
+          box-shadow: 0 0 8px 0 var(--desire-color);
           transition: width 0.5s;
         }
 
@@ -61,10 +63,13 @@
         background: var(--energy-color-dark);
         justify-self: center;
         display: grid;
+        display: grid;
+        box-shadow: 0 0 4px 0 var(--energy-color-dark);
 
         .positive,
         .negative {
           background: var(--energy-color);
+          box-shadow: 0 0 8px 0 var(--energy-color);
           transition: height 0.5s;
         }
 
@@ -132,7 +137,7 @@
 
   .wrapper {
     margin: 1px;
-    border: 1px black solid;
+    border: 1px transparent solid;
     transition: border-color 0.5s;
 
     &.active {
