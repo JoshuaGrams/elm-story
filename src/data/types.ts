@@ -28,6 +28,7 @@ export enum GAME_TEMPLATE {
 }
 
 export enum VARIABLE_TYPE {
+  CHARACTER = 'CHARACTER',
   STRING = 'STRING',
   NUMBER = 'NUMBER',
   BOOLEAN = 'BOOLEAN',
@@ -97,7 +98,7 @@ export interface Editor extends Component {}
 
 // prettier-ignore
 // [desire (x), energy (y)]
-export enum CHARACTER_MOOD_TYPE {
+export enum CHARACTER_MASK_TYPE {
                            // max(d,e)
       EXCITED = 'EXCITED', // [+1.00, +1.00]
           TENSE = 'TENSE', // [-1.00, +1.00]
@@ -122,8 +123,8 @@ export enum CHARACTER_MOOD_TYPE {
 }
 
 // prettier-ignore
-export const CHARACTER_TEMPERAMENT_VALUES: {
-  [moodType: string]: [number, number]
+export const CHARACTER_MASK_VALUES: {
+  [maskType: string]: [number, number]
 } = {
     EXCITED: [1, 1],
       TENSE: [-1, 1],
@@ -166,17 +167,29 @@ export enum CHARACTER_PRONOUN_TYPES {
   ZIRSELF = 'ZIRSELF'
 }
 
-export interface CharacterMood {
+export interface CharacterMakeup {
+  aggregate: {
+    desire: number
+    energy: number
+  }
+  dominate: {
+    desire: CHARACTER_MASK_TYPE
+    energy: CHARACTER_MASK_TYPE
+  }
+}
+
+export interface CharacterMask {
+  active: boolean
   imageId?: string // the location will change, but keep asset ID consistent
-  type: CHARACTER_MOOD_TYPE
+  type: CHARACTER_MASK_TYPE
 }
 
 export interface Character extends Component {
-  baseMood: CharacterMood // default is NEUTRAL type
   description?: string
   gameId: GameId
-  moods: CharacterMood[]
+  masks: CharacterMask[]
   refs: string[] // all strings must be unique
+  // TODO: add variable ID
 }
 
 export type GameChildRefs = Array<

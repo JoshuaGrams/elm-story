@@ -8,8 +8,8 @@ import {
 import React, { useState, useContext } from 'react'
 
 import {
-  CharacterMood,
-  CHARACTER_MOOD_TYPE,
+  CharacterMask,
+  CHARACTER_MASK_TYPE,
   COMPONENT_TYPE,
   Game,
   StudioId,
@@ -87,22 +87,17 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
                           className={styles.tabAddComponentButton}
                           onClick={async () => {
                             if (game.id) {
-                              const baseMood: CharacterMood = {
-                                  imageId: undefined,
-                                  type: CHARACTER_MOOD_TYPE.NEUTRAL
-                                },
-                                character = await api().characters.saveCharacter(
-                                  studioId,
-                                  {
-                                    baseMood,
-                                    description: undefined,
-                                    gameId: game.id,
-                                    moods: [baseMood],
-                                    refs: [],
-                                    tags: [],
-                                    title: 'Untitled Character'
-                                  }
-                                )
+                              const character = await api().characters.saveCharacter(
+                                studioId,
+                                {
+                                  description: undefined,
+                                  gameId: game.id,
+                                  masks: [],
+                                  refs: [],
+                                  tags: [],
+                                  title: 'Untitled Character'
+                                }
+                              )
 
                               character.id &&
                                 editorDispatch({

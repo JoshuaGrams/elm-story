@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 
 import {
   Character,
+  CHARACTER_MASK_TYPE,
   CHARACTER_PRONOUN_TYPES,
   GameId,
   StudioId
@@ -18,7 +19,7 @@ import {
 } from 'react-select'
 import CreateableSelect from 'react-select/creatable'
 
-import CharacterPortrait from './CharacterPortrait'
+import CharacterMask from './CharacterMask'
 
 import styles from './styles.module.less'
 import selectStyles from '../../styles/select.module.less'
@@ -335,8 +336,10 @@ const CharacterInfo: React.FC<{
       <Row>
         <Col flex="auto">
           <div className={styles.defaultMood}>
-            <CharacterPortrait
-              moodType={character.baseMood.type}
+            {/* TODO: dominate mask */}
+            <CharacterMask
+              active
+              type={CHARACTER_MASK_TYPE.NEUTRAL}
               width="100%"
               overlay
             />

@@ -1,4 +1,9 @@
 .CharacterEditor {
+  --desire-color: hsl(185, 100%, 60%);
+  --desire-color-dark: hsl(185, 100%, 20%);
+  --energy-color: hsl(30, 100%, 60%);
+  --energy-color-dark: hsl(30, 100%, 20%);
+
   .CharacterInfo {
     .content {
       padding-left: 24px;
@@ -24,18 +29,52 @@
     grid-template-rows: 182px auto 182px;
 
     .bar {
-      &.desirable {
+      width: 100%;
+      height: 100%;
+      display: grid;
+
+      .desirable {
         height: 1px;
         width: 100%;
-        background: hsl(125, 100%, 60%);
+        background: var(--desire-color-dark);
         align-self: center;
+        display: grid;
+
+        .positive,
+        .negative {
+          background: var(--desire-color);
+          transition: width 0.5s;
+        }
+
+        .positive {
+        }
+
+        .negative {
+          width: 0%;
+          justify-self: end;
+        }
       }
 
-      &.energetic {
+      .energetic {
         width: 1px;
         height: 100%;
-        background: hsl(30, 100%, 60%);
+        background: hsl(30, 100%, 20%);
         justify-self: center;
+        display: grid;
+
+        .positive,
+        .negative {
+          background: hsl(30, 100%, 60%);
+          transition: height 0.5s;
+        }
+
+        .positive {
+          align-self: flex-end;
+        }
+
+        .negative {
+          align-self: flex-start;
+        }
       }
     }
 
@@ -60,128 +99,6 @@
         }
       }
     }
-
-    // .header {
-    //   .title {
-    //     margin-top: 0;
-    //     text-transform: uppercase;
-    //     font-size: 14px;
-    //   }
-
-    //   &.MoodHeader {
-    //     .title {
-    //       &:hover {
-    //         cursor: pointer;
-
-    //         :global .anticon {
-    //           color: var(--highlight-color);
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-
-    // .Temperament {
-    //   .bar {
-    //     width: 100%;
-    //     height: auto;
-    //     margin-bottom: 4px;
-    //     display: grid;
-    //     grid-template-columns: min-content auto;
-
-    //     .title {
-    //       font-size: 12px;
-    //       text-transform: uppercase;
-    //       text-align: right;
-    //       padding-right: 4px;
-    //     }
-
-    //     .wrapper {
-    //       display: grid;
-    //       grid-template-columns: auto 2px auto;
-    //       height: 2px;
-    //       background: black;
-    //       align-self: center;
-
-    //       .divider {
-    //         width: 100%;
-    //         height: 100%;
-    //         background: black;
-    //       }
-    //     }
-
-    //     &.desire {
-    //       .title {
-    //         color: hsl(125, 100%, 60%);
-    //       }
-
-    //       .wrapper {
-    //         background: hsl(125, 100%, 20%);
-    //       }
-    //     }
-
-    //     &.desire .negative,
-    //     &.desire .positive {
-    //       background: hsl(125, 100%, 60%);
-    //     }
-
-    //     .negative,
-    //     .positive {
-    //       width: 100%;
-    //       height: 100%;
-    //       align-self: center;
-    //       transition: width 0.2s;
-    //     }
-
-    //     .negative {
-    //       justify-self: end;
-    //     }
-
-    //     .positive {
-    //       justify-self: start;
-    //     }
-
-    //     &.desire .negative {
-    //       width: 25%;
-    //     }
-
-    //     &.desire .positive {
-    //       width: 0%;
-    //     }
-
-    //     &.energy {
-    //       .title {
-    //         color: hsl(30, 100%, 60%);
-    //       }
-
-    //       .wrapper {
-    //         background: hsl(30, 100%, 20%);
-    //       }
-    //     }
-
-    //     &.energy .negative,
-    //     &.energy .positive {
-    //       background: hsl(30, 100%, 60%);
-    //     }
-
-    //     &.energy .negative {
-    //       width: 0%;
-    //     }
-
-    //     &.energy .positive {
-    //       width: 75%;
-    //     }
-    //   }
-    // }
-
-    // .Moods {
-    //   .moodGrid {
-    //     display: grid;
-    //     grid-template-columns: repeat(5, 19.5%);
-    //     column-gap: 0.625%;
-    //     row-gap: 0.625%;
-    //   }
-    // }
   }
 
   .RemoveCharacterButton {
@@ -199,12 +116,28 @@
   }
 }
 
-.CharacterPortrait {
+.CharacterMask {
   overflow: hidden;
+  border: 1px solid var(--border-color-20);
+  transition: border-color 0.5s;
+
+  &.dominateDesire {
+    border-left-color: var(--desire-color);
+    border-right-color: var(--desire-color);
+  }
+  &.dominateEnergy {
+    border-top-color: var(--energy-color);
+    border-bottom-color: var(--energy-color);
+  }
 
   .wrapper {
-    border: 1px var(--border-color-20) solid;
-    transition: border-color 0.2s;
+    margin: 1px;
+    border: 1px black solid;
+    transition: border-color 0.5s;
+
+    &.active {
+      border-color: black;
+    }
 
     &:hover {
       border-color: var(--highlight-color);
@@ -216,9 +149,15 @@
       background-image: url(../../img/characters/default-portrait.png);
       background-size: cover;
       background-position: center;
+      opacity: 0.2;
+      transition: opacity 0.5s;
+
+      &.active {
+        opacity: 1;
+      }
     }
 
-    .moodType {
+    .type {
       text-align: center;
       font-size: 12px;
       background: hsl(0, 0%, 0%);

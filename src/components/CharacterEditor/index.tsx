@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 
 import { useCharacter } from '../../hooks'
 
-import { ComponentId, GameId, StudioId } from '../../data/types'
+import { Character, ComponentId, GameId, StudioId } from '../../data/types'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
@@ -38,9 +38,8 @@ RemoveCharacterButton.displayName = 'RemoveCharacterButton'
 const CharacterEditor: React.FC<{
   studioId: StudioId
   gameId: GameId
-  characterId: ComponentId
-}> = ({ studioId, gameId, characterId }) => {
-  const character = useCharacter(studioId, characterId, [characterId])
+  character: Character
+}> = ({ studioId, gameId, character }) => {
 
   const { editor, editorDispatch } = useContext(EditorContext)
 
@@ -57,7 +56,7 @@ const CharacterEditor: React.FC<{
                     type: EDITOR_ACTION_TYPE.CLOSE_CHARACTER_MODAL
                   })
 
-                  api().characters.removeCharacter(studioId, characterId)
+                  character.id && api().characters.removeCharacter(studioId, character.id)
                 }}
               />
             }

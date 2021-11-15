@@ -1,8 +1,11 @@
 import React from 'react'
 
+import { useCharacter } from '../../hooks'
+
 import { StudioId, GameId, ComponentId } from '../../data/types'
 
 import { Modal, ModalProps } from 'antd'
+import { UserOutlined } from '@ant-design/icons'
 
 import CharacterEditor from '../CharacterEditor'
 
@@ -22,22 +25,27 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
   visible,
   onCancel
 }) => {
+  const character = useCharacter(studioId, characterId, [characterId])
+
   return (
     <Modal
-      title="Edit Character"
+      title={
+        <>
+          <UserOutlined className={styles.icon} /> {character?.title || ''}
+        </>
+      }
       visible={visible}
       destroyOnClose
       onCancel={(event) => onCancel && onCancel(event)}
       centered
       footer={null}
       className={styles.CharacterModal}
-      
     >
-      {characterId && (
+      {character && (
         <CharacterEditor
           studioId={studioId}
           gameId={gameId}
-          characterId={characterId}
+          character={character}
         />
       )}
     </Modal>
