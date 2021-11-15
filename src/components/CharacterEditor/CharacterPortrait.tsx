@@ -1,26 +1,29 @@
 import React from 'react'
 
-import { CharacterMood, CHARACTER_MOOD_TYPE } from '../../data/types'
+import { CHARACTER_MOOD_TYPE } from '../../data/types'
 
 import styles from './styles.module.less'
 
 const CharacterPortrait: React.FC<{
-  mood: CharacterMood
-  width: string
+  moodType: CHARACTER_MOOD_TYPE
+  width?: string
+  height?: string
+  aspectRatio?: string
   overlay?: boolean
   onRemove?: (moodType: CHARACTER_MOOD_TYPE) => void
-}> = ({ mood, width, overlay, onRemove }) => {
+}> = ({ moodType, width, height, aspectRatio = '4/5', overlay, onRemove }) => {
   return (
     <div
       className={styles.CharacterPortrait}
       style={{
-        width
+        width: width || 'auto',
+        height: height || 'auto'
       }}
     >
       <div className={styles.wrapper}>
-        <div className={styles.portrait} />
+        <div className={styles.portrait} style={{ aspectRatio }} />
         <div className={`${styles.moodType} ${overlay ? styles.overlay : ''}`}>
-          {mood.type}
+          {moodType}
         </div>
       </div>
     </div>

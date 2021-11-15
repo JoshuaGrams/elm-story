@@ -1,191 +1,152 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
-import {
-  Character,
-  CharacterMood,
-  GameId,
-  StudioId,
-  CHARACTER_MOOD_TYPE,
-  CHARACTER_TEMPERAMENT_VALUES
-} from '../../data/types'
+import { CHARACTER_MOOD_TYPE } from '../../data/types'
 
-import { Divider, Dropdown, Tag } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import CharacterPortrait from './CharacterPortrait'
 
 import styles from './styles.module.less'
 
-import api from '../../api'
-import CharacterPortrait from './CharacterPortrait'
-
-const MoodHeader: React.FC<{
-  selectedMoods: CharacterMood[]
-  onMoodSelect: (selectedMood: CHARACTER_MOOD_TYPE, remove: boolean) => void
-}> = ({ selectedMoods, onMoodSelect }) => {
-  const menu: JSX.Element = (
-    <div className="mood-select-menu">
-      {Object.keys(CHARACTER_MOOD_TYPE)
-        .filter((moodType) => moodType !== CHARACTER_MOOD_TYPE.NEUTRAL)
-        .map((moodType) => {
-          const isSelectedMood = selectedMoods.find(
-            (selectedMood) => selectedMood.type === moodType
-          )
-            ? true
-            : false
-
-          return (
-            <Tag
-              onClick={() =>
-                onMoodSelect(moodType as CHARACTER_MOOD_TYPE, isSelectedMood)
-              }
-              className={`${isSelectedMood ? 'selected-mood' : ''}`}
-              key={moodType}
-            >
-              {moodType}
-            </Tag>
-          )
-        })}
-    </div>
-  )
-
-  return (
-    <div className={`${styles.header} ${styles.MoodHeader}`}>
-      <Divider style={{ marginTop: '0' }} className={styles.title}>
-        <Dropdown
-          overlay={menu}
-          trigger={['click']}
-          className={styles.dropdown}
-          placement="bottomCenter"
-        >
-          <span className={styles.title}>
-            Moods <PlusOutlined />
-          </span>
-        </Dropdown>
-      </Divider>
-    </div>
-  )
+const portraitDefaults = {
+  width: '100%',
+  height: '100%',
+  aspectRatio: '1/1',
+  overlay: true
 }
 
-MoodHeader.displayName = 'MoodHeader'
-
-function getTemperValues(selectedMoods: CharacterMood[]) {
-  let temperValue = { desire: 0, energy: 0 }
-
-  selectedMoods.map((selectedMood) => {
-    temperValue.desire += CHARACTER_TEMPERAMENT_VALUES[selectedMood.type][0]
-    temperValue.energy += CHARACTER_TEMPERAMENT_VALUES[selectedMood.type][1]
-  })
-
-  temperValue.desire = (temperValue.desire / 5) * 100
-  temperValue.energy = (temperValue.energy / 5) * 100
-
-  console.log(temperValue)
-
-  return temperValue
-}
-
-const CharacterPersonality: React.FC<{
-  studioId: StudioId
-  gameId: GameId
-  character: Character
-}> = ({ studioId, gameId, character }) => {
-  const [selectedMoods, setSelectedMoods] = useState<CharacterMood[]>([]),
-    [temperValues, setTemperValues] = useState({ desire: 0, energy: 0 })
-
-  const addSelectedMood = async (selectedMood: CHARACTER_MOOD_TYPE) => {
-    await api().characters.saveCharacter(studioId, {
-      ...character,
-      moods: [...character.moods, { type: selectedMood, imageId: undefined }]
-    })
-  }
-
-  const removeMood = async (moodToRemove: CHARACTER_MOOD_TYPE) => {
-    // TODO: what happens if the baseMood is removed?
-    api().characters.saveCharacter(studioId, {
-      ...character,
-      moods: character.moods.filter((mood) => mood.type !== moodToRemove)
-    })
-  }
-
-  useEffect(() => {
-    setSelectedMoods([
-      character.baseMood,
-      ...character.moods.filter((mood) => mood.type !== character.baseMood.type)
-    ])
-  }, [character.baseMood, character.moods])
-
-  useEffect(() => {
-    setTemperValues(getTemperValues(selectedMoods))
-  }, [selectedMoods])
-
+const CharacterPersonality: React.FC = () => {
   return (
     <div className={styles.CharacterPersonality}>
-      <div className={styles.Temperament}>
-        <div className={styles.header}>
-          <Divider className={styles.title}>Temperament</Divider>
+      {/* row 1 col 1 */}
+      <div className={`${styles.zone}`}>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.TENSE}
+          />
         </div>
-
-        <div className={`${styles.bar} ${styles.desire}`}>
-          <div className={styles.title}>DESIRABLE</div>
-
-          <div className={styles.wrapper}>
-            <div
-              className={`${styles.negative}`}
-              style={{
-                width: `${
-                  temperValues.desire > 0 ? 0 : temperValues.desire * -1
-                }%`
-              }}
-            />
-            <div className={styles.divider} />
-            <div
-              className={`${styles.positive}`}
-              style={{
-                width: `${temperValues.desire < 0 ? 0 : temperValues.desire}%`
-              }}
-            />
-          </div>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.NERVOUS}
+          />
         </div>
-
-        <div className={`${styles.bar} ${styles.energy}`}>
-          <div className={styles.title}>ENERGETIC</div>
-
-          <div className={styles.wrapper}>
-            <div
-              className={`${styles.negative}`}
-              style={{
-                width: `${
-                  temperValues.energy > 0 ? 0 : temperValues.energy * -1
-                }%`
-              }}
-            />
-            <div className={styles.divider} />
-            <div
-              className={`${styles.positive}`}
-              style={{
-                width: `${temperValues.energy < 0 ? 0 : temperValues.energy}%`
-              }}
-            />
-          </div>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.IRRITATED}
+          />
+        </div>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.ANNOYED}
+          />
         </div>
       </div>
 
-      <div className={styles.Moods}>
-        <MoodHeader
-          selectedMoods={character.moods}
-          onMoodSelect={(selectedMood, remove) =>
-            remove ? removeMood(selectedMood) : addSelectedMood(selectedMood)
-          }
-        />
+      {/* row 1 col 2; energetic */}
+      <div className={`${styles.bar} ${styles.energetic}`} />
 
-        <div className={styles.moodGrid}>
-          {selectedMoods.map((mood) => (
-            <CharacterPortrait
-              mood={mood}
-              width="100%"
-              onRemove={removeMood}
-              key={mood.type}
-            />
-          ))}
+      {/* row 1 col 3 */}
+      <div className={`${styles.zone}`}>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.LIVELY}
+          />
+        </div>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.EXCITED}
+          />
+        </div>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.HAPPY}
+          />
+        </div>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.CHEERFUL}
+          />
+        </div>
+      </div>
+
+      {/* row 2 col 1; desireable */}
+      <div className={`${styles.bar} ${styles.desirable}`} />
+
+      {/* row 2 col 2 */}
+      <div>
+        <div className={`${styles.portrait} ${styles.central}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.NEUTRAL}
+          />
+        </div>
+      </div>
+
+      {/* row 2 col 3; desirable*/}
+      <div className={`${styles.bar} ${styles.desirable}`} />
+
+      {/* row 3 col 1 */}
+      <div className={`${styles.zone}`}>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.WEARY}
+          />
+        </div>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.BORED}
+          />
+        </div>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.SAD}
+          />
+        </div>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.GLOOMY}
+          />
+        </div>
+      </div>
+
+      {/* row 3 col 2; energetic */}
+      <div className={`${styles.bar} ${styles.energetic}`} />
+
+      {/* row 3 col 3 */}
+      <div className={`${styles.zone}`}>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.RELAXED}
+          />
+        </div>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.CAREFREE}
+          />
+        </div>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.CALM}
+          />
+        </div>
+        <div className={`${styles.portrait} ${styles.edge}`}>
+          <CharacterPortrait
+            {...portraitDefaults}
+            moodType={CHARACTER_MOOD_TYPE.SERENE}
+          />
         </div>
       </div>
     </div>

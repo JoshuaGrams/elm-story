@@ -17,127 +17,171 @@
   }
 
   .CharacterPersonality {
-    .header {
-      .title {
-        margin-top: 0;
-        text-transform: uppercase;
-        font-size: 14px;
-      }
+    width: 470px;
+    height: 470px;
+    display: grid;
+    grid-template-columns: 182px auto 182px;
+    grid-template-rows: 182px auto 182px;
 
-      &.MoodHeader {
-        .title {
-          &:hover {
-            cursor: pointer;
-
-            :global .anticon {
-              color: var(--highlight-color);
-            }
-          }
-        }
-      }
-    }
-
-    .Temperament {
-      .bar {
+    .bar {
+      &.desirable {
+        height: 1px;
         width: 100%;
-        height: auto;
-        margin-bottom: 4px;
-        display: grid;
-        grid-template-columns: min-content auto;
+        background: hsl(125, 100%, 60%);
+        align-self: center;
+      }
 
-        .title {
-          font-size: 12px;
-          text-transform: uppercase;
-          text-align: right;
-          padding-right: 4px;
-        }
+      &.energetic {
+        width: 1px;
+        height: 100%;
+        background: hsl(30, 100%, 60%);
+        justify-self: center;
+      }
+    }
 
-        .wrapper {
-          display: grid;
-          grid-template-columns: auto 2px auto;
-          height: 2px;
-          background: black;
-          align-self: center;
+    .portrait {
+      &.central {
+        width: 100px;
+        height: 100px;
+        margin: 3px;
+      }
+    }
 
-          .divider {
-            width: 100%;
-            height: 100%;
-            background: black;
-          }
-        }
+    .zone {
+      display: grid;
+      grid-template-columns: repeat(2, 50%);
+      grid-template-rows: repeat(2, 50%);
+      grid-gap: 3px;
 
-        &.desire {
-          .title {
-            color: hsl(125, 100%, 60%);
-          }
-
-          .wrapper {
-            background: hsl(125, 100%, 20%);
-          }
-        }
-
-        &.desire .negative,
-        &.desire .positive {
-          background: hsl(125, 100%, 60%);
-        }
-
-        .negative,
-        .positive {
-          width: 100%;
-          height: 100%;
-          align-self: center;
-          transition: width 0.2s;
-        }
-
-        .negative {
-          justify-self: end;
-        }
-
-        .positive {
-          justify-self: start;
-        }
-
-        &.desire .negative {
-          width: 25%;
-        }
-
-        &.desire .positive {
-          width: 0%;
-        }
-
-        &.energy {
-          .title {
-            color: hsl(30, 100%, 60%);
-          }
-
-          .wrapper {
-            background: hsl(30, 100%, 20%);
-          }
-        }
-
-        &.energy .negative,
-        &.energy .positive {
-          background: hsl(30, 100%, 60%);
-        }
-
-        &.energy .negative {
-          width: 0%;
-        }
-
-        &.energy .positive {
-          width: 75%;
+      .portrait {
+        &.edge {
+          width: 88px;
+          height: 88px;
         }
       }
     }
 
-    .Moods {
-      .moodGrid {
-        display: grid;
-        grid-template-columns: repeat(5, 19.5%);
-        column-gap: 0.625%;
-        row-gap: 0.625%;
-      }
-    }
+    // .header {
+    //   .title {
+    //     margin-top: 0;
+    //     text-transform: uppercase;
+    //     font-size: 14px;
+    //   }
+
+    //   &.MoodHeader {
+    //     .title {
+    //       &:hover {
+    //         cursor: pointer;
+
+    //         :global .anticon {
+    //           color: var(--highlight-color);
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+
+    // .Temperament {
+    //   .bar {
+    //     width: 100%;
+    //     height: auto;
+    //     margin-bottom: 4px;
+    //     display: grid;
+    //     grid-template-columns: min-content auto;
+
+    //     .title {
+    //       font-size: 12px;
+    //       text-transform: uppercase;
+    //       text-align: right;
+    //       padding-right: 4px;
+    //     }
+
+    //     .wrapper {
+    //       display: grid;
+    //       grid-template-columns: auto 2px auto;
+    //       height: 2px;
+    //       background: black;
+    //       align-self: center;
+
+    //       .divider {
+    //         width: 100%;
+    //         height: 100%;
+    //         background: black;
+    //       }
+    //     }
+
+    //     &.desire {
+    //       .title {
+    //         color: hsl(125, 100%, 60%);
+    //       }
+
+    //       .wrapper {
+    //         background: hsl(125, 100%, 20%);
+    //       }
+    //     }
+
+    //     &.desire .negative,
+    //     &.desire .positive {
+    //       background: hsl(125, 100%, 60%);
+    //     }
+
+    //     .negative,
+    //     .positive {
+    //       width: 100%;
+    //       height: 100%;
+    //       align-self: center;
+    //       transition: width 0.2s;
+    //     }
+
+    //     .negative {
+    //       justify-self: end;
+    //     }
+
+    //     .positive {
+    //       justify-self: start;
+    //     }
+
+    //     &.desire .negative {
+    //       width: 25%;
+    //     }
+
+    //     &.desire .positive {
+    //       width: 0%;
+    //     }
+
+    //     &.energy {
+    //       .title {
+    //         color: hsl(30, 100%, 60%);
+    //       }
+
+    //       .wrapper {
+    //         background: hsl(30, 100%, 20%);
+    //       }
+    //     }
+
+    //     &.energy .negative,
+    //     &.energy .positive {
+    //       background: hsl(30, 100%, 60%);
+    //     }
+
+    //     &.energy .negative {
+    //       width: 0%;
+    //     }
+
+    //     &.energy .positive {
+    //       width: 75%;
+    //     }
+    //   }
+    // }
+
+    // .Moods {
+    //   .moodGrid {
+    //     display: grid;
+    //     grid-template-columns: repeat(5, 19.5%);
+    //     column-gap: 0.625%;
+    //     row-gap: 0.625%;
+    //   }
+    // }
   }
 
   .RemoveCharacterButton {
@@ -156,6 +200,8 @@
 }
 
 .CharacterPortrait {
+  overflow: hidden;
+
   .wrapper {
     border: 1px var(--border-color-20) solid;
     transition: border-color 0.2s;
@@ -166,10 +212,10 @@
     }
 
     .portrait {
-      aspect-ratio: 4/5;
       height: auto;
       background-image: url(../../img/characters/default-portrait.png);
-      background-size: 100% 100%;
+      background-size: cover;
+      background-position: center;
     }
 
     .moodType {

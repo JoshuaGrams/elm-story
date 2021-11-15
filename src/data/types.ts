@@ -122,7 +122,9 @@ export enum CHARACTER_MOOD_TYPE {
 }
 
 // prettier-ignore
-export const CHARACTER_TEMPERAMENT_VALUES = {
+export const CHARACTER_TEMPERAMENT_VALUES: {
+  [moodType: string]: [number, number]
+} = {
     EXCITED: [1, 1],
       TENSE: [-1, 1],
      LIVELY: [.75, .75],

@@ -335,7 +335,11 @@ const CharacterInfo: React.FC<{
       <Row>
         <Col flex="auto">
           <div className={styles.defaultMood}>
-            <CharacterPortrait mood={character.baseMood} width="100%" overlay />
+            <CharacterPortrait
+              moodType={character.baseMood.type}
+              width="100%"
+              overlay
+            />
           </div>
         </Col>
 
