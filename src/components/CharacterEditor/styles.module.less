@@ -1,8 +1,8 @@
 .CharacterEditor {
   --desire-color: hsl(185, 100%, 60%);
   --desire-color-dark: hsl(185, 100%, 20%);
-  --energy-color: hsl(30, 100%, 60%);
-  --energy-color-dark: hsl(30, 100%, 20%);
+  --energy-color: hsl(40, 100%, 60%);
+  --energy-color-dark: hsl(40, 100%, 20%);
 
   .CharacterInfo {
     .content {
@@ -34,7 +34,7 @@
       display: grid;
 
       .desirable {
-        height: 1px;
+        height: 2px;
         width: 100%;
         background: var(--desire-color-dark);
         align-self: center;
@@ -56,15 +56,15 @@
       }
 
       .energetic {
-        width: 1px;
+        width: 2px;
         height: 100%;
-        background: hsl(30, 100%, 20%);
+        background: var(--energy-color-dark);
         justify-self: center;
         display: grid;
 
         .positive,
         .negative {
-          background: hsl(30, 100%, 60%);
+          background: var(--energy-color);
           transition: height 0.5s;
         }
 
