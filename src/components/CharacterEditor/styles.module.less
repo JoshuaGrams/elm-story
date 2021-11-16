@@ -1,8 +1,8 @@
 .CharacterEditor {
   --desire-color: hsl(185, 100%, 60%);
-  --desire-color-dark: hsl(185, 100%, 20%);
+  --desire-color-dark: hsla(185, 100%, 60%, 0.2);
   --energy-color: hsl(40, 100%, 60%);
-  --energy-color-dark: hsl(40, 100%, 20%);
+  --energy-color-dark: hsla(40, 100%, 60%, 0.2);
 
   .CharacterInfo {
     .content {
@@ -21,6 +21,13 @@
     }
   }
 
+  .ImportMaskImage {
+    position: absolute;
+    width: 470px;
+    height: 470px;
+    z-index: 1;
+  }
+
   .CharacterPersonality {
     width: 470px;
     height: 470px;
@@ -34,56 +41,58 @@
       display: grid;
 
       .desirable {
-        height: 2px;
+        height: 1px;
         width: 100%;
         background: var(--desire-color-dark);
         align-self: center;
         display: grid;
-        box-shadow: 0 0 4px 0 var(--desire-color-dark);
+        // box-shadow: 0 0 4px 0 var(--desire-color-dark);
 
         .positive,
         .negative {
           background: var(--desire-color);
-          box-shadow: 0 0 8px 0 var(--desire-color);
           transition: width 0.5s;
         }
 
         .positive {
+          box-shadow: -10px 0 50px 4px var(--desire-color);
         }
 
         .negative {
           width: 0%;
           justify-self: end;
+          box-shadow: 10px 0 50px 4px var(--desire-color);
         }
       }
 
       .energetic {
-        width: 2px;
+        width: 1px;
         height: 100%;
         background: var(--energy-color-dark);
         justify-self: center;
         display: grid;
         display: grid;
-        box-shadow: 0 0 4px 0 var(--energy-color-dark);
+        // box-shadow: 0 0 4px 0 var(--energy-color-dark);
 
         .positive,
         .negative {
           background: var(--energy-color);
-          box-shadow: 0 0 8px 0 var(--energy-color);
           transition: height 0.5s;
         }
 
         .positive {
+          box-shadow: 0 10px 50px 4px var(--energy-color);
           align-self: flex-end;
         }
 
         .negative {
+          box-shadow: 0 -10px 50px 4px var(--energy-color);
           align-self: flex-start;
         }
       }
     }
 
-    .portrait {
+    .mask {
       &.central {
         width: 100px;
         height: 100px;
@@ -97,7 +106,7 @@
       grid-template-rows: repeat(2, 50%);
       grid-gap: 3px;
 
-      .portrait {
+      .mask {
         &.edge {
           width: 88px;
           height: 88px;

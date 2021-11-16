@@ -61,6 +61,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
         })
 
         // TODO: handle finish errors
+        // TODO: ts errors
         await importGameDataJSON(gameData, true).finish()
 
         appDispatch({
@@ -84,6 +85,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
         await api().games.removeGame(gameData._.studioId, gameData._.id)
 
         // TODO: handle finish errors
+        // TODO: ts errors
         await importGameDataJSON(gameData, true).finish()
 
         appDispatch({
@@ -131,6 +133,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
   useEffect(() => {
     async function importGameData() {
       if (gameData) {
+        // TODO: ts errors
         const { errors, finish } = importGameDataJSON(gameData)
 
         if (errors.length > 0) {

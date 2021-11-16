@@ -1,6 +1,6 @@
-import React, { useEffect, useContext, useState, useRef } from 'react'
+import React, { useContext, useState, useRef } from 'react'
 
-import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
+import { AppContext } from '../../contexts/AppContext'
 
 import { Button } from 'antd'
 import { ImportOutlined } from '@ant-design/icons'
@@ -12,7 +12,7 @@ import GameLibrary from '../../components/GameLibrary'
 import styles from './styles.module.less'
 
 const Dashboard = () => {
-  const { app, appDispatch } = useContext(AppContext)
+  const { app } = useContext(AppContext)
 
   const importGameDataJSONInput = useRef<HTMLInputElement>(null)
 
@@ -37,10 +37,6 @@ const Dashboard = () => {
       importGameDataJSONInput.current.value = ''
     }
   }
-
-  useEffect(() => {
-    appDispatch({ type: APP_ACTION_TYPE.HEADER, header: 'Dashboard' })
-  }, [])
 
   return (
     <>

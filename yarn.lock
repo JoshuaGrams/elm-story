@@ -9358,6 +9358,11 @@ normalize-url@^4.1.0:
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-4.5.0.tgz#453354087e6ca96957bd8f5baf753f5982142129"
   integrity sha512-2s47yzUxdexf1OhyRi4Em83iQk0aPvwTddtFz4hnSSw9dCEsLEGf6SwIO8ss/19S9iBb5sJaOuTvTGDeZI00BQ==
 
+normalize-wheel@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/normalize-wheel/-/normalize-wheel-1.0.1.tgz#aec886affdb045070d856447df62ecf86146ec45"
+  integrity sha1-rsiGr/2wRQcNhWRH32Ls+GFG7EU=
+
 npm-bundled@^1.0.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/npm-bundled/-/npm-bundled-1.1.1.tgz#1edd570865a94cdb1bc8220775e29466c9fb234b"
@@ -10987,6 +10992,14 @@ react-draggable@^4.4.3:
   dependencies:
     classnames "^2.2.5"
     prop-types "^15.6.0"
+
+react-easy-crop@^3.5.3:
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/react-easy-crop/-/react-easy-crop-3.5.3.tgz#7481b6e484a8b6ac308373f0b173aad4f1d10239"
+  integrity sha512-ApTbh+lzKAvKqYW81ihd5J6ZTNN3vPDwi6ncFuUrHPI4bko2DlYOESkRm+0NYoW0H8YLaD7bxox+Z3EvIzAbUA==
+  dependencies:
+    normalize-wheel "^1.0.1"
+    tslib "2.0.1"
 
 react-flow-renderer@^9.4.1:
   version "9.4.1"
@@ -12931,6 +12944,11 @@ tsconfig-paths@^3.9.0:
     json5 "^1.0.1"
     minimist "^1.2.0"
     strip-bom "^3.0.0"
+
+tslib@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.1.tgz#410eb0d113e5b6356490eec749603725b021b43e"
+  integrity sha512-SgIkNheinmEBgx1IUNirK0TUD4X9yjjBRTqqjggWCU3pUEqIk3/Uwl3yRixYKT6WjQuGiwDv4NomL3wqRCj+CQ==
 
 tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.14.1"
