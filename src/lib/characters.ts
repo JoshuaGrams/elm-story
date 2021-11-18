@@ -4,6 +4,8 @@ import {
   CHARACTER_MASK_VALUES
 } from '../data/types'
 
+import { Area } from 'react-easy-crop/types'
+
 export const getCharacterPersonalityMakeup = (activeMasks: CharacterMask[]) => {
   let value = { desire: 0, energy: 0 }
 
@@ -65,4 +67,44 @@ export const getCharacterDominateMakeup = (activeMasks: CharacterMask[]) => {
       energy: CHARACTER_MASK_TYPE.NEUTRAL
     }
   }
+}
+
+const createImage = (url: string): Promise<HTMLImageElement> =>
+  new Promise((resolve, reject) => {
+    const image = new Image()
+
+    image.addEventListener('load', () => resolve(image))
+    image.addEventListener('error', (error) => reject(error))
+
+    image.src = url
+  })
+
+export const getCroppedImageData = async (
+  src: string,
+  pixelCrop: Area
+): Promise<{ data: Blob | null; url: string } | null> => {
+  const image = await createImage(src),
+    canvas = document.createElement('canvas'),
+    context = canvas.getContext('2d')
+
+  canvas.width = 200
+  canvas.height = 250
+
+  context?.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    200,
+    250
+  )
+
+  return new Promise((resolve) => {
+    canvas.toBlob((file) => {
+      resolve({ data: file, url: URL.createObjectURL(file) })
+    }, 'image/jpeg')
+  })
 }

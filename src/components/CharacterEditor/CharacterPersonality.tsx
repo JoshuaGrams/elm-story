@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef, useImperativeHandle } from 'react'
 
-import { getCharacterDominateMakeup } from '../../lib/characters'
+import {
+  getCharacterDominateMakeup,
+  getCroppedImageData
+} from '../../lib/characters'
 
 import {
   Character,
@@ -10,7 +13,8 @@ import {
 } from '../../data/types'
 
 import Cropper from 'react-easy-crop'
-import { Slider } from 'antd'
+import { Area } from 'react-easy-crop/types'
+import { Button, Slider } from 'antd'
 
 import Mask from './CharacterMask'
 
@@ -83,20 +87,27 @@ const MaskWrapper: React.FC<{
 }
 
 const ImportMaskImage = React.forwardRef<
-  { import: () => void },
+  { import: (type: CHARACTER_MASK_TYPE) => void },
   {
     show: boolean
     onMaskImageData: () => void
-    onMaskImageCropComplete: () => void
+    onMaskImageCropComplete: (
+      mask: {
+        data: Blob | null
+        url: string
+      } | null
+    ) => void
   }
 >(({ show, onMaskImageData, onMaskImageCropComplete }, ref) => {
   const importMaskImageInputRef = useRef<HTMLInputElement>(null)
 
-  const [maskImageData, setMaskImageData] = useState<
-      string | ArrayBuffer | null
-    >(null),
+  const [maskType, setMaskType] = useState<CHARACTER_MASK_TYPE | null>(null),
+    [maskImageData, setMaskImageData] = useState<string | ArrayBuffer | null>(
+      null
+    ),
     [crop, setCrop] = useState({ x: 0, y: 0 }),
-    [zoom, setZoom] = useState(1)
+    [zoom, setZoom] = useState(1),
+    [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
 
   const onMaskImageSelect = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -118,8 +129,22 @@ const ImportMaskImage = React.forwardRef<
     }
   }
 
+  const resetState = () => {
+    if (importMaskImageInputRef.current)
+      importMaskImageInputRef.current.value = ''
+
+    setMaskType(null)
+    setCrop({ x: 0, y: 0 })
+    setZoom(1)
+    setMaskImageData(null)
+  }
+
   useImperativeHandle(ref, () => ({
-    import: () => importMaskImageInputRef.current?.click()
+    import: (type) => {
+      setMaskType(type)
+
+      importMaskImageInputRef.current?.click()
+    }
   }))
 
   useEffect(() => {
@@ -138,32 +163,24 @@ const ImportMaskImage = React.forwardRef<
 
       {show && (
         <div className={styles.ImportMaskImage}>
+          {maskType}
+
           {maskImageData && (
-            <div
-              style={{
-                width: '100%',
-                height: '250px',
-                bottom: 0
-              }}
-            >
+            <div className={styles.cropContainer}>
               <Cropper
                 style={{
-                  containerStyle: {
-                    width: '100%',
-                    height: '100%'
-                  },
                   cropAreaStyle: {
-                    color: 'hsla(0, 0%, 3%, 0.9)'
+                    color: 'hsla(0, 0%, 3%, 0.90)'
                   }
                 }}
-                image={maskImageData}
+                image={maskImageData as string}
                 showGrid={false}
                 crop={crop}
                 zoom={zoom}
                 aspect={4 / 5}
                 onCropChange={setCrop}
-                onCropComplete={(croppedArea, croppedAreaPixels) =>
-                  console.log(croppedAreaPixels)
+                onCropComplete={(_, croppedAreaPixels) =>
+                  setCroppedAreaPixels(croppedAreaPixels)
                 }
                 onZoomChange={setZoom}
               />
@@ -180,20 +197,32 @@ const ImportMaskImage = React.forwardRef<
               value={zoom}
             />
 
-            <button
+            <Button
               onClick={() => {
-                if (importMaskImageInputRef.current)
-                  importMaskImageInputRef.current.value = ''
+                onMaskImageCropComplete(null)
 
-                onMaskImageCropComplete()
-
-                setCrop({ x: 0, y: 0 })
-                setZoom(1)
-                setMaskImageData(null)
+                resetState()
               }}
             >
-              close
-            </button>
+              Cancel
+            </Button>
+
+            <Button
+              onClick={async () => {
+                if (maskImageData && croppedAreaPixels) {
+                  onMaskImageCropComplete(
+                    await getCroppedImageData(
+                      maskImageData as string,
+                      croppedAreaPixels
+                    )
+                  )
+
+                  resetState()
+                }
+              }}
+            >
+              Save
+            </Button>
           </div>
         </div>
       )}
@@ -205,7 +234,9 @@ const CharacterPersonality: React.FC<{
   studioId: StudioId
   character: Character
 }> = ({ studioId, character }) => {
-  const importMaskImageRef = useRef<{ import: () => void }>(null)
+  const importMaskImageRef = useRef<{
+    import: (type: CHARACTER_MASK_TYPE) => void
+  }>(null)
 
   const [makeup, setMakeup] = useState<CharacterMakeup>({
     aggregate: { desire: 0, energy: 0 },
@@ -227,10 +258,8 @@ const CharacterPersonality: React.FC<{
     studioId,
     makeup,
     character,
-    onChangeMaskImage: (type: CHARACTER_MASK_TYPE) => {
-      console.log(type)
-      importMaskImageRef.current?.import()
-    }
+    onChangeMaskImage: (type: CHARACTER_MASK_TYPE) =>
+      importMaskImageRef.current?.import(type)
   }
 
   return (
@@ -239,7 +268,10 @@ const CharacterPersonality: React.FC<{
         ref={importMaskImageRef}
         show={cropMaskImage}
         onMaskImageData={() => setCropMaskImage(true)}
-        onMaskImageCropComplete={() => setCropMaskImage(false)}
+        onMaskImageCropComplete={(mask) => {
+          console.log(mask)
+          setCropMaskImage(false)
+        }}
       />
 
       {!cropMaskImage && (
