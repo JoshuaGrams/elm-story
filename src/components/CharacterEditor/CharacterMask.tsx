@@ -1,13 +1,19 @@
-import React from 'react'
+import { ipcRenderer } from 'electron'
 
-import { CHARACTER_MASK_TYPE } from '../../data/types'
+import React, { useEffect, useState } from 'react'
+
+import { CHARACTER_MASK_TYPE, StudioId } from '../../data/types'
+import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
 import { Dropdown, Menu } from 'antd'
 
 import styles from './styles.module.less'
 
 const CharacterMask: React.FC<{
+  studioId: StudioId
+  character: Character
   type: CHARACTER_MASK_TYPE
+  imageId?: string
   active?: boolean
   dominate?: { desire: boolean; energy: boolean }
   width?: string
@@ -18,7 +24,10 @@ const CharacterMask: React.FC<{
   onChangeMaskImage?: (type: CHARACTER_MASK_TYPE) => void
   onToggle?: (type: CHARACTER_MASK_TYPE) => void
 }> = ({
+  studioId,
+  character,
   type,
+  imageId,
   active,
   dominate,
   width,
@@ -29,6 +38,31 @@ const CharacterMask: React.FC<{
   onChangeMaskImage,
   onToggle
 }) => {
+  const [maskImagePath, setMaskImagePath] = useState<string | undefined>(
+    undefined
+  )
+
+  useEffect(() => {
+    async function getMaskImagePath() {
+      if (imageId) {
+        setMaskImagePath(
+          await ipcRenderer.invoke(WINDOW_EVENT_TYPE.GET_ASSET_PATH, {
+            studioId,
+            gameId: character.gameId,
+            id: imageId,
+            ext: 'jpeg'
+          })
+        )
+      }
+    }
+
+    getMaskImagePath()
+  }, [imageId])
+
+  useEffect(() => {
+    console.log(maskImagePath)
+  }, [maskImagePath])
+
   return (
     <>
       <Dropdown
@@ -58,7 +92,10 @@ const CharacterMask: React.FC<{
           <div className={`${styles.wrapper} ${active && styles.active}`}>
             <div
               className={`${styles.portrait} ${active && styles.active}`}
-              style={{ aspectRatio }}
+              style={{
+                aspectRatio,
+                backgroundImage: maskImagePath ? `url(${maskImagePath})` : ''
+              }}
             />
             <div className={`${styles.type} ${overlay ? styles.overlay : ''}`}>
               {type}

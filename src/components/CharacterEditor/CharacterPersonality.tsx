@@ -1,4 +1,13 @@
-import React, { useState, useEffect, useRef, useImperativeHandle } from 'react'
+import { ipcRenderer } from 'electron'
+import { v4 as uuid } from 'uuid'
+
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  useCallback
+} from 'react'
 
 import {
   getCharacterDominateMakeup,
@@ -21,6 +30,7 @@ import Mask from './CharacterMask'
 import styles from './styles.module.less'
 
 import api from '../../api'
+import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
 const MaskWrapper: React.FC<{
   studioId: StudioId
@@ -41,7 +51,14 @@ const MaskWrapper: React.FC<{
   return (
     <Mask
       {...maskDefaults}
+      studioId={studioId}
+      character={character}
       type={type}
+      imageId={
+        foundMaskIndex !== -1
+          ? character.masks[foundMaskIndex].imageId
+          : undefined
+      }
       active={
         type === CHARACTER_MASK_TYPE.NEUTRAL ||
         (foundMaskIndex !== -1 && character.masks[foundMaskIndex].active)
@@ -93,6 +110,7 @@ const ImportMaskImage = React.forwardRef<
     onMaskImageData: () => void
     onMaskImageCropComplete: (
       mask: {
+        type: CHARACTER_MASK_TYPE
         data: Blob | null
         url: string
       } | null
@@ -128,6 +146,24 @@ const ImportMaskImage = React.forwardRef<
       reader.readAsDataURL(maskImage)
     }
   }
+
+  const onSave = useCallback(async () => {
+    if (maskImageData && croppedAreaPixels) {
+      const maskData = await getCroppedImageData(
+        maskImageData as string,
+        croppedAreaPixels
+      )
+
+      maskType &&
+        maskData &&
+        onMaskImageCropComplete({
+          type: maskType,
+          ...maskData
+        })
+
+      resetState()
+    }
+  }, [maskType, maskImageData, croppedAreaPixels])
 
   const resetState = () => {
     if (importMaskImageInputRef.current)
@@ -207,22 +243,7 @@ const ImportMaskImage = React.forwardRef<
               Cancel
             </Button>
 
-            <Button
-              onClick={async () => {
-                if (maskImageData && croppedAreaPixels) {
-                  onMaskImageCropComplete(
-                    await getCroppedImageData(
-                      maskImageData as string,
-                      croppedAreaPixels
-                    )
-                  )
-
-                  resetState()
-                }
-              }}
-            >
-              Save
-            </Button>
+            <Button onClick={onSave}>Save</Button>
           </div>
         </div>
       )}
@@ -268,8 +289,45 @@ const CharacterPersonality: React.FC<{
         ref={importMaskImageRef}
         show={cropMaskImage}
         onMaskImageData={() => setCropMaskImage(true)}
-        onMaskImageCropComplete={(mask) => {
-          console.log(mask)
+        onMaskImageCropComplete={async (mask) => {
+          if (mask?.data) {
+            // TODO: need to find mask in character... if it doesn't exist, create
+            // TODO: if an asset already exists, need to replace it
+            // TODO: error handling
+            const newMasks = [...character.masks],
+              foundMaskIndex = newMasks.findIndex(
+                (newMask) => newMask.type === mask.type
+              )
+
+            if (foundMaskIndex !== -1) {
+              const assetId = uuid()
+
+              newMasks[foundMaskIndex].imageId = assetId
+
+              await ipcRenderer.invoke(WINDOW_EVENT_TYPE.SAVE_ASSET, {
+                studioId,
+                gameId: character.gameId,
+                id: assetId,
+                data: await mask.data.arrayBuffer(),
+                ext: 'jpeg'
+              })
+
+              await api().characters.saveCharacter(studioId, {
+                ...character,
+                masks: newMasks
+              })
+
+              console.log(
+                await ipcRenderer.invoke(WINDOW_EVENT_TYPE.GET_ASSET_PATH, {
+                  studioId,
+                  gameId: character.gameId,
+                  id: assetId,
+                  ext: 'jpeg'
+                })
+              )
+            }
+          }
+
           setCropMaskImage(false)
         }}
       />

@@ -104,7 +104,7 @@ export const getCroppedImageData = async (
 
   return new Promise((resolve) => {
     canvas.toBlob((file) => {
-      resolve({ data: file, url: URL.createObjectURL(file) })
+      resolve({ data: file, url: canvas.toDataURL('image/jpeg') })
     }, 'image/jpeg')
   })
 }

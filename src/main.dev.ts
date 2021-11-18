@@ -8,6 +8,8 @@
  * When running `yarn build` or `yarn build-main`, this file is compiled to
  * `./src/main.prod.js` using webpack. This gives us some performance wins.
  */
+import logger from './lib/logger'
+
 import os from 'os'
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
@@ -17,14 +19,14 @@ import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import MenuBuilder from './menu'
 import contextMenu from 'electron-context-menu'
-import fs from 'fs-extra'
+import fs, { outputFile } from 'fs-extra'
 import format from './lib/compiler/format'
 import md5 from 'md5'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
-import { GameDataJSON } from './lib/transport/types/0.5.1'
 
-import logger from './lib/logger'
+import { GameId, StudioId } from './data/types'
+import { GameDataJSON } from './lib/transport/types/0.5.1'
 
 export default class AppUpdater {
   constructor() {
@@ -160,6 +162,59 @@ const createWindow = async () => {
 
       ipcMain.on(WINDOW_EVENT_TYPE.OPEN_EXTERNAL_LINK, (_, [address]) =>
         shell.openExternal(address)
+      )
+
+      ipcMain.handle(
+        WINDOW_EVENT_TYPE.SAVE_ASSET,
+        async (
+          _,
+          {
+            studioId,
+            gameId,
+            id,
+            data,
+            ext
+          }: {
+            studioId: StudioId
+            gameId: GameId
+            id: string
+            data: ArrayBuffer
+            ext: 'jpeg'
+          }
+        ): Promise<string | null> => {
+          if (mainWindow) {
+            const path = `${app.getPath(
+              'userData'
+            )}/${studioId}/${gameId}/${id}.${ext}`
+
+            try {
+              await outputFile(path, Buffer.from(data))
+
+              return path
+            } catch (error) {
+              throw error
+            }
+          }
+
+          return null
+        }
+      )
+
+      ipcMain.handle(
+        WINDOW_EVENT_TYPE.GET_ASSET_PATH,
+        async (
+          _,
+          {
+            studioId,
+            gameId,
+            id,
+            ext
+          }: { studioId: StudioId; gameId: GameId; id: string; ext: 'jpeg' }
+        ) => {
+          return `${app.getPath(
+            'userData'
+          )}/${studioId}/${gameId}/${id}.${ext}`.replace(/\\/g, '/')
+        }
       )
 
       ipcMain.on(
