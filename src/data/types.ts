@@ -97,7 +97,7 @@ export interface Studio extends Component {
 export interface Editor extends Component {}
 
 // prettier-ignore
-// [desire (x), energy (y)]
+// [drive (x), energy (y)]
 export enum CHARACTER_MASK_TYPE {
                            // max(d,e)
       EXCITED = 'EXCITED', // [+1.00, +1.00]
@@ -169,11 +169,11 @@ export enum CHARACTER_PRONOUN_TYPES {
 
 export interface CharacterMakeup {
   aggregate: {
-    desire: number
+    drive: number
     energy: number
   }
   dominate: {
-    desire: CHARACTER_MASK_TYPE
+    drive: CHARACTER_MASK_TYPE
     energy: CHARACTER_MASK_TYPE
   }
 }

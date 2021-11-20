@@ -92,7 +92,12 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
                                 {
                                   description: undefined,
                                   gameId: game.id,
-                                  masks: [],
+                                  masks: [
+                                    {
+                                      type: CHARACTER_MASK_TYPE.NEUTRAL,
+                                      active: true
+                                    }
+                                  ],
                                   refs: [],
                                   tags: [],
                                   title: 'Untitled Character'

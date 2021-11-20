@@ -7,14 +7,14 @@ import {
 import { Area } from 'react-easy-crop/types'
 
 export const getCharacterPersonalityMakeup = (activeMasks: CharacterMask[]) => {
-  let value = { desire: 0, energy: 0 }
+  let value = { drive: 0, energy: 0 }
 
   activeMasks.map((activeMask) => {
-    value.desire += CHARACTER_MASK_VALUES[activeMask.type][0]
+    value.drive += CHARACTER_MASK_VALUES[activeMask.type][0]
     value.energy += CHARACTER_MASK_VALUES[activeMask.type][1]
   })
 
-  value.desire = (value.desire / 5) * 100
+  value.drive = (value.drive / 5) * 100
   value.energy = (value.energy / 5) * 100
 
   return value
@@ -46,8 +46,8 @@ export const getCharacterDominateMakeup = (activeMasks: CharacterMask[]) => {
     return {
       aggregate: makeup,
       dominate: {
-        desire: desireSearchArray.reduce((prev, curr) =>
-          Math.abs(curr[1] - makeup.desire) < Math.abs(prev[1] - makeup.desire)
+        drive: desireSearchArray.reduce((prev, curr) =>
+          Math.abs(curr[1] - makeup.drive) < Math.abs(prev[1] - makeup.drive)
             ? curr
             : prev
         )[0],
@@ -63,7 +63,7 @@ export const getCharacterDominateMakeup = (activeMasks: CharacterMask[]) => {
   return {
     aggregate: makeup,
     dominate: {
-      desire: CHARACTER_MASK_TYPE.NEUTRAL,
+      drive: CHARACTER_MASK_TYPE.NEUTRAL,
       energy: CHARACTER_MASK_TYPE.NEUTRAL
     }
   }

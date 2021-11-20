@@ -1,6 +1,6 @@
 .CharacterEditor {
-  --desire-color: hsl(185, 100%, 60%);
-  --desire-color-dark: hsla(185, 100%, 60%, 0.2);
+  --drive-color: hsl(185, 100%, 60%);
+  --drive-color-dark: hsla(185, 100%, 60%, 0.2);
   --energy-color: hsl(40, 100%, 60%);
   --energy-color-dark: hsla(40, 100%, 60%, 0.2);
 
@@ -49,25 +49,24 @@
       .desirable {
         height: 1px;
         width: 100%;
-        background: var(--desire-color-dark);
+        background: var(--drive-color-dark);
         align-self: center;
         display: grid;
-        // box-shadow: 0 0 4px 0 var(--desire-color-dark);
 
         .positive,
         .negative {
-          background: var(--desire-color);
+          background: var(--drive-color);
           transition: width 0.5s;
         }
 
         .positive {
-          box-shadow: -10px 0 50px 4px var(--desire-color);
+          box-shadow: -10px 0 50px 4px var(--drive-color);
         }
 
         .negative {
           width: 0%;
           justify-self: end;
-          box-shadow: 10px 0 50px 4px var(--desire-color);
+          box-shadow: 10px 0 50px 4px var(--drive-color);
         }
       }
 
@@ -141,9 +140,9 @@
   border: 1px solid var(--border-color-20);
   transition: border-color 0.5s;
 
-  &.dominateDesire {
-    border-left-color: var(--desire-color);
-    border-right-color: var(--desire-color);
+  &.dominateDrive {
+    border-left-color: var(--drive-color);
+    border-right-color: var(--drive-color);
   }
   &.dominateEnergy {
     border-top-color: var(--energy-color);

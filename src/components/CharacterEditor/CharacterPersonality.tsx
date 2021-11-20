@@ -54,17 +54,9 @@ const MaskWrapper: React.FC<{
       studioId={studioId}
       character={character}
       type={type}
-      imageId={
-        foundMaskIndex !== -1
-          ? character.masks[foundMaskIndex].imageId
-          : undefined
-      }
-      active={
-        type === CHARACTER_MASK_TYPE.NEUTRAL ||
-        (foundMaskIndex !== -1 && character.masks[foundMaskIndex].active)
-      }
+      active={foundMaskIndex !== -1 && character.masks[foundMaskIndex].active}
       dominate={{
-        desire: makeup.dominate.desire === type,
+        drive: makeup.dominate.drive === type,
         energy: makeup.dominate.energy === type
       }}
       contextMenu
@@ -260,9 +252,9 @@ const CharacterPersonality: React.FC<{
   }>(null)
 
   const [makeup, setMakeup] = useState<CharacterMakeup>({
-    aggregate: { desire: 0, energy: 0 },
+    aggregate: { drive: 0, energy: 0 },
     dominate: {
-      desire: CHARACTER_MASK_TYPE.NEUTRAL,
+      drive: CHARACTER_MASK_TYPE.NEUTRAL,
       energy: CHARACTER_MASK_TYPE.NEUTRAL
     }
   })
@@ -299,11 +291,25 @@ const CharacterPersonality: React.FC<{
                 (newMask) => newMask.type === mask.type
               )
 
+            let assetId: string | undefined = undefined
+
+            if (foundMaskIndex === -1) {
+              assetId = uuid()
+
+              newMasks.push({
+                type: mask.type,
+                active: false,
+                imageId: assetId
+              })
+            }
+
             if (foundMaskIndex !== -1) {
-              const assetId = uuid()
+              assetId = newMasks[foundMaskIndex].imageId || uuid()
 
               newMasks[foundMaskIndex].imageId = assetId
+            }
 
+            if (assetId) {
               await ipcRenderer.invoke(WINDOW_EVENT_TYPE.SAVE_ASSET, {
                 studioId,
                 gameId: character.gameId,
@@ -316,15 +322,6 @@ const CharacterPersonality: React.FC<{
                 ...character,
                 masks: newMasks
               })
-
-              console.log(
-                await ipcRenderer.invoke(WINDOW_EVENT_TYPE.GET_ASSET_PATH, {
-                  studioId,
-                  gameId: character.gameId,
-                  id: assetId,
-                  ext: 'jpeg'
-                })
-              )
             }
           }
 
@@ -411,9 +408,7 @@ const CharacterPersonality: React.FC<{
                 className={styles.negative}
                 style={{
                   width: `${
-                    makeup.aggregate.desire < 0
-                      ? makeup.aggregate.desire * -1
-                      : 0
+                    makeup.aggregate.drive < 0 ? makeup.aggregate.drive * -1 : 0
                   }%`
                 }}
               />
@@ -437,7 +432,7 @@ const CharacterPersonality: React.FC<{
                 className={styles.positive}
                 style={{
                   width: `${
-                    makeup.aggregate.desire > 0 ? makeup.aggregate.desire : 0
+                    makeup.aggregate.drive > 0 ? makeup.aggregate.drive : 0
                   }%`
                 }}
               />

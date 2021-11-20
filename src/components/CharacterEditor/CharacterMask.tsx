@@ -15,7 +15,7 @@ const CharacterMask: React.FC<{
   type: CHARACTER_MASK_TYPE
   imageId?: string
   active?: boolean
-  dominate?: { desire: boolean; energy: boolean }
+  dominate?: { drive: boolean; energy: boolean }
   width?: string
   height?: string
   aspectRatio?: string
@@ -81,7 +81,7 @@ const CharacterMask: React.FC<{
       >
         <div
           className={`${styles.CharacterMask} ${
-            dominate?.desire && styles.dominateDesire
+            dominate?.drive && styles.dominateDesire
           } ${dominate?.energy && styles.dominateEnergy} `}
           style={{
             width: width || 'auto',
