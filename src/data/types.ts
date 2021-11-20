@@ -124,25 +124,25 @@ export enum CHARACTER_MASK_TYPE {
 
 // prettier-ignore
 export const CHARACTER_MASK_VALUES: {
-  [maskType: string]: [number, number]
+  [maskType: string]: [number, number, number] // drive, energy, influence
 } = {
-    EXCITED: [1, 1],
-      TENSE: [-1, 1],
-     LIVELY: [.75, .75],
-    NERVOUS: [-.75, .75],
-   CHEERFUL: [.5, .5],
-  IRRITATED: [-.5, .5],
-      HAPPY: [0.25, .25],
-    ANNOYED: [-0.25, .25],
-    NEUTRAL: [0, 0],
-    RELAXED: [.25, -.25],
-      BORED: [-.25, -.25],
-   CAREFREE: [.5, -.5],
-      WEARY: [-.5, -.5],
-       CALM: [.75, -.75],
-     GLOOMY: [-.75, -.75],
-     SERENE: [1, -1],
-        SAD: [-1, -1]
+    EXCITED: [1, 1, 4],
+      TENSE: [-1, 1, 4],
+     LIVELY: [.75, .75, 3],
+    NERVOUS: [-.75, .75, 3],
+   CHEERFUL: [.5, .5, 2],
+  IRRITATED: [-.5, .5, 2],
+      HAPPY: [0.25, .25, 1],
+    ANNOYED: [-0.25, .25, 1],
+    NEUTRAL: [0, 0, 0],
+    RELAXED: [.25, -.25, 1],
+      BORED: [-.25, -.25, 1],
+   CAREFREE: [.5, -.5, 2],
+      WEARY: [-.5, -.5, 2],
+       CALM: [.75, -.75, 3],
+     GLOOMY: [-.75, -.75, 3],
+     SERENE: [1, -1, 4],
+        SAD: [-1, -1, 4]
 }
 
 export enum CHARACTER_PRONOUN_TYPES {

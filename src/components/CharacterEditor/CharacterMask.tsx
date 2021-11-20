@@ -2,10 +2,15 @@ import { ipcRenderer } from 'electron'
 
 import React, { useEffect, useState } from 'react'
 
-import { CHARACTER_MASK_TYPE, GameId, StudioId } from '../../data/types'
+import {
+  CHARACTER_MASK_TYPE,
+  CHARACTER_MASK_VALUES,
+  GameId,
+  StudioId
+} from '../../data/types'
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
-import { Dropdown, Menu } from 'antd'
+import { Button, Dropdown } from 'antd'
 
 import styles from './styles.module.less'
 
@@ -22,6 +27,7 @@ const CharacterMask: React.FC<{
   overlay?: boolean
   contextMenu?: boolean
   onChangeMaskImage?: (type: CHARACTER_MASK_TYPE) => void
+  onReset?: (type: CHARACTER_MASK_TYPE) => void
   onToggle?: (type: CHARACTER_MASK_TYPE) => void
 }> = React.memo(
   ({
@@ -37,24 +43,60 @@ const CharacterMask: React.FC<{
     overlay,
     contextMenu,
     onChangeMaskImage,
+    onReset,
     onToggle
   }) => {
     const [maskImagePath, setMaskImagePath] = useState<string | undefined>(
       undefined
     )
 
+    const mask = (
+      <div
+        className={`${styles.CharacterMask} ${
+          dominate?.drive ? styles.dominateDrive : ''
+        } ${dominate?.energy ? styles.dominateEnergy : ''} ${
+          contextMenu ? styles.interactive : ''
+        } ${active ? styles.active : ''}`}
+        style={{
+          width: width || 'auto',
+          height: height || 'auto'
+        }}
+        onClick={() => onToggle && onToggle(type)}
+      >
+        <div className={`${styles.wrapper} ${active ? styles.active : ''}`}>
+          <div
+            className={`${styles.mask} ${active ? styles.active : ''}`}
+            style={{
+              aspectRatio,
+              backgroundImage: maskImagePath ? `url(${maskImagePath})` : ''
+            }}
+          />
+
+          {overlay && (
+            <div
+              className={`${styles.overlay} ${styles.type}  ${
+                active && styles.active
+              }`}
+            >
+              {type}
+            </div>
+          )}
+        </div>
+      </div>
+    )
+
     useEffect(() => {
       async function getMaskImagePath() {
-        if (assetId) {
-          setMaskImagePath(
-            await ipcRenderer.invoke(WINDOW_EVENT_TYPE.GET_ASSET, {
-              studioId,
-              gameId,
-              id: assetId,
-              ext: 'jpeg'
-            })
-          )
-        }
+        setMaskImagePath(
+          assetId
+            ? await ipcRenderer.invoke(WINDOW_EVENT_TYPE.GET_ASSET, {
+                studioId,
+                gameId,
+                id: assetId,
+                ext: 'jpeg'
+              })
+            : undefined
+        )
       }
 
       getMaskImagePath()
@@ -62,53 +104,75 @@ const CharacterMask: React.FC<{
 
     return (
       <>
-        <Dropdown
-          disabled={!contextMenu}
-          overlay={
-            <Menu>
-              <Menu.Item
-                key="1"
-                onClick={() => onChangeMaskImage && onChangeMaskImage(type)}
-              >
-                Change Mask Image
-              </Menu.Item>
-            </Menu>
-          }
-          trigger={['contextMenu']}
-        >
-          <div
-            className={`${styles.CharacterMask} ${
-              dominate?.drive ? styles.dominateDrive : ''
-            } ${dominate?.energy ? styles.dominateEnergy : ''} ${
-              contextMenu ? styles.active : ''
-            }`}
-            style={{
-              width: width || 'auto',
-              height: height || 'auto'
-            }}
-            onClick={() => onToggle && onToggle(type)}
-          >
-            <div className={`${styles.wrapper} ${active ? styles.active : ''}`}>
-              <div
-                className={`${styles.mask} ${active ? styles.active : ''}`}
-                style={{
-                  aspectRatio,
-                  backgroundImage: maskImagePath ? `url(${maskImagePath})` : ''
-                }}
-              />
-
-              {overlay && (
-                <div
-                  className={`${styles.type} ${styles.overlay} ${
-                    active && styles.active
-                  }`}
-                >
-                  {type}
+        {contextMenu && (
+          <Dropdown
+            disabled={!contextMenu}
+            overlayClassName="mask-details-menu"
+            placement="topLeft"
+            overlay={
+              <div className={styles.content}>
+                <div className={styles.title}>
+                  <h1
+                    style={{
+                      marginBottom:
+                        type !== CHARACTER_MASK_TYPE.NEUTRAL ? 'unset' : '0'
+                    }}
+                  >
+                    {type}
+                  </h1>
+                  {type !== CHARACTER_MASK_TYPE.NEUTRAL && (
+                    <h2>
+                      {`${CHARACTER_MASK_VALUES[type][0] > 0 ? '+' : '-'}DRIVE`}{' '}
+                      {`${
+                        CHARACTER_MASK_VALUES[type][1] > 0 ? '+' : '-'
+                      }ENERGY`}{' '}
+                      <span>|</span> {CHARACTER_MASK_VALUES[type][2]}X
+                    </h2>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
-        </Dropdown>
+
+                <div
+                  className={styles.maskImage}
+                  style={{
+                    backgroundImage: maskImagePath
+                      ? `url(${maskImagePath})`
+                      : ''
+                  }}
+                >
+                  <div className={styles.buttons}>
+                    <div>
+                      {type !== CHARACTER_MASK_TYPE.NEUTRAL && (
+                        <Button onClick={() => onToggle && onToggle(type)}>
+                          {active ? 'Disable' : 'Enable'}
+                        </Button>
+                      )}
+
+                      <Button
+                        onClick={() =>
+                          onChangeMaskImage && onChangeMaskImage(type)
+                        }
+                      >
+                        Change
+                      </Button>
+
+                      {((active && type !== CHARACTER_MASK_TYPE.NEUTRAL) ||
+                        assetId) && (
+                        <Button onClick={() => onReset && onReset(type)}>
+                          Reset
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+            trigger={['contextMenu']}
+          >
+            {mask}
+          </Dropdown>
+        )}
+
+        {!contextMenu && mask}
       </>
     )
   }

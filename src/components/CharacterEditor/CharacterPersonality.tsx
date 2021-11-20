@@ -65,6 +65,36 @@ const MaskWrapper: React.FC<{
       }}
       contextMenu
       onChangeMaskImage={(type) => onChangeMaskImage(type)}
+      onReset={async (type) => {
+        const newMasks = [...character.masks]
+
+        if (foundMaskIndex !== -1) {
+          try {
+            const assetId = newMasks[foundMaskIndex].assetId
+
+            if (type === CHARACTER_MASK_TYPE.NEUTRAL) {
+              newMasks[foundMaskIndex].assetId = undefined
+            } else {
+              newMasks.splice(foundMaskIndex, 1)
+            }
+
+            await Promise.all([
+              ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
+                studioId,
+                gameId: character.gameId,
+                id: assetId,
+                ext: 'jpeg'
+              }),
+              api().characters.saveCharacter(studioId, {
+                ...character,
+                masks: newMasks
+              })
+            ])
+          } catch (error) {
+            throw error
+          }
+        }
+      }}
       onToggle={async (type) => {
         if (type !== CHARACTER_MASK_TYPE.NEUTRAL) {
           const newMasks = [...character.masks]
@@ -81,8 +111,12 @@ const MaskWrapper: React.FC<{
           }
 
           if (foundMaskIndex !== -1) {
-            newMasks[foundMaskIndex].active = !character.masks[foundMaskIndex]
-              .active
+            if (newMasks[foundMaskIndex].assetId) {
+              newMasks[foundMaskIndex].active = !character.masks[foundMaskIndex]
+                .active
+            } else {
+              newMasks.splice(foundMaskIndex, 1)
+            }
 
             try {
               await api().characters.saveCharacter(studioId, {
@@ -297,7 +331,7 @@ const CharacterPersonality: React.FC<{
 
               newMasks.push({
                 type: mask.type,
-                active: false,
+                active: true,
                 assetId: assetId
               })
             }
@@ -312,6 +346,7 @@ const CharacterPersonality: React.FC<{
                 })
               }
 
+              newMasks[foundMaskIndex].active = true
               newMasks[foundMaskIndex].assetId = assetId
             }
 

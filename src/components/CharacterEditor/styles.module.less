@@ -151,12 +151,16 @@
 .CharacterMask {
   overflow: hidden;
   border: 1px solid var(--border-color-20);
-  transition: border-color 0.5s;
+  transition: border-color 0.5s, box-shadow 0.5s;
 
-  &.active {
+  &.interactive {
     &:hover {
       cursor: pointer;
     }
+  }
+
+  &.active {
+    border-color: hsl(0, 0%, 60%);
   }
 
   &.dominateDrive {
@@ -184,9 +188,11 @@
       background-size: cover;
       background-position: center;
       opacity: 0.2;
-      transition: opacity 0.5s;
+      transition: opacity 0.5s, filter 0.5s;
+      filter: grayscale(100%);
 
       &.active {
+        filter: grayscale(0%);
         opacity: 1;
       }
     }
@@ -196,7 +202,7 @@
       font-size: 12px;
       background: hsl(0, 0%, 0%);
       opacity: 0.4;
-      transition: opacity 0.2s;
+      transition: opacity 0.5s;
 
       &.active {
         opacity: 1;
@@ -208,6 +214,78 @@
         position: absolute;
         bottom: 0;
         width: 100%;
+      }
+    }
+  }
+}
+
+:global .mask-details-menu {
+  border: 1px solid var(--border-color-20);
+  background: hsl(0, 0%, 8%);
+  box-shadow: 0px 5px 20px 0px black;
+
+  :local .content {
+    .title {
+      padding: 10px 0;
+
+      h1,
+      h2 {
+        text-align: center;
+      }
+
+      h1 {
+        color: hsl(0, 0%, 60%);
+        text-transform: uppercase;
+        font-size: 16px;
+        margin-bottom: 2px;
+      }
+
+      h2 {
+        font-size: 12px;
+        margin-bottom: 0;
+
+        span {
+          color: hsl(0, 0%, 40%);
+        }
+      }
+    }
+
+    .maskImage {
+      width: 200px;
+      height: auto;
+      aspect-ratio: 4/5;
+      background-image: url(../../img/characters/mask-placeholder.svg);
+      background-size: cover;
+
+      &:hover .buttons {
+        opacity: 1;
+        backdrop-filter: blur(4px) grayscale(100%);
+      }
+
+      .buttons {
+        opacity: 0;
+        transition: opacity 0.2s, backdrop-filter 0.2s;
+        background: hsla(0, 0%, 0%, 0.5);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+        display: grid;
+        align-items: center;
+        justify-content: center;
+
+        button {
+          background: black;
+          display: block;
+          width: 100%;
+          margin-bottom: 4px;
+
+          &:last-of-type {
+            margin-bottom: 0;
+          }
+        }
       }
     }
   }
