@@ -2,15 +2,24 @@ import React, { useContext, useState, useEffect } from 'react'
 
 import { useCharacters } from '../../hooks'
 
-import { Character, GameId, StudioId } from '../../data/types'
+import {
+  Character,
+  CHARACTER_MASK_TYPE,
+  GameId,
+  StudioId
+} from '../../data/types'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { CharacterModal } from '../Modal'
 
 import styles from './styles.module.less'
+import CharacterMask from '../CharacterEditor/CharacterMask'
 
-const CharacterRow: React.FC<{ character: Character }> = ({ character }) => {
+const CharacterRow: React.FC<{ studioId: StudioId; character: Character }> = ({
+  studioId,
+  character
+}) => {
   const { editor, editorDispatch } = useContext(EditorContext)
 
   const [selected, setSelected] = useState(false)
@@ -30,7 +39,21 @@ const CharacterRow: React.FC<{ character: Character }> = ({ character }) => {
         })
       }
     >
-      <div className={styles.portrait} />
+      <div className={styles.mask}>
+        <CharacterMask
+          studioId={studioId}
+          gameId={character.gameId}
+          type={CHARACTER_MASK_TYPE.NEUTRAL}
+          overlay={false}
+          aspectRatio="4/5"
+          active
+          assetId={
+            character.masks.find(
+              (mask) => mask.type === CHARACTER_MASK_TYPE.NEUTRAL
+            )?.assetId
+          }
+        />
+      </div>
       <div className={styles.title}>{character.title}</div>
     </div>
   )
@@ -59,7 +82,11 @@ const GameCharacters: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
       {characters && (
         <div className={styles.GameCharacters}>
           {characters.map((character) => (
-            <CharacterRow character={character} key={character.id} />
+            <CharacterRow
+              studioId={studioId}
+              character={character}
+              key={character.id}
+            />
           ))}
         </div>
       )}

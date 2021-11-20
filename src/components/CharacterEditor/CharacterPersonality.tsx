@@ -52,7 +52,11 @@ const MaskWrapper: React.FC<{
     <Mask
       {...maskDefaults}
       studioId={studioId}
-      character={character}
+      gameId={character.gameId}
+      assetId={
+        (foundMaskIndex !== -1 && character.masks[foundMaskIndex].assetId) ||
+        undefined
+      }
       type={type}
       active={foundMaskIndex !== -1 && character.masks[foundMaskIndex].active}
       dominate={{
@@ -98,7 +102,7 @@ const MaskWrapper: React.FC<{
 const ImportMaskImage = React.forwardRef<
   { import: (type: CHARACTER_MASK_TYPE) => void },
   {
-    show: boolean
+    cropping: boolean
     onMaskImageData: () => void
     onMaskImageCropComplete: (
       mask: {
@@ -108,7 +112,7 @@ const ImportMaskImage = React.forwardRef<
       } | null
     ) => void
   }
->(({ show, onMaskImageData, onMaskImageCropComplete }, ref) => {
+>(({ cropping, onMaskImageData, onMaskImageCropComplete }, ref) => {
   const importMaskImageInputRef = useRef<HTMLInputElement>(null)
 
   const [maskType, setMaskType] = useState<CHARACTER_MASK_TYPE | null>(null),
@@ -152,8 +156,6 @@ const ImportMaskImage = React.forwardRef<
           type: maskType,
           ...maskData
         })
-
-      resetState()
     }
   }, [maskType, maskImageData, croppedAreaPixels])
 
@@ -179,6 +181,11 @@ const ImportMaskImage = React.forwardRef<
     maskImageData && onMaskImageData()
   }, [maskImageData])
 
+  useEffect(() => {
+    // TODO: hack; hook into transition complete
+    !cropping && setTimeout(resetState, 300)
+  }, [cropping])
+
   return (
     <>
       <input
@@ -189,56 +196,50 @@ const ImportMaskImage = React.forwardRef<
         onChange={onMaskImageSelect}
       />
 
-      {show && (
-        <div className={styles.ImportMaskImage}>
-          {maskType}
+      <div
+        className={`${styles.ImportMaskImage} ${
+          cropping && maskImageData ? styles.cropping : ''
+        }`}
+      >
+        {maskType}
 
-          {maskImageData && (
-            <div className={styles.cropContainer}>
-              <Cropper
-                style={{
-                  cropAreaStyle: {
-                    color: 'hsla(0, 0%, 3%, 0.90)'
-                  }
-                }}
-                image={maskImageData as string}
-                showGrid={false}
-                crop={crop}
-                zoom={zoom}
-                aspect={4 / 5}
-                onCropChange={setCrop}
-                onCropComplete={(_, croppedAreaPixels) =>
-                  setCroppedAreaPixels(croppedAreaPixels)
+        {maskImageData && (
+          <div className={styles.cropContainer}>
+            <Cropper
+              style={{
+                cropAreaStyle: {
+                  color: 'hsla(0, 0%, 3%, 0.90)'
                 }
-                onZoomChange={setZoom}
-              />
-            </div>
-          )}
-
-          <div style={{ height: '24px ' }}>
-            <Slider
-              min={1}
-              max={3}
-              step={0.05}
-              tooltipVisible={false}
-              onChange={(value) => setZoom(value)}
-              value={zoom}
-            />
-
-            <Button
-              onClick={() => {
-                onMaskImageCropComplete(null)
-
-                resetState()
               }}
-            >
-              Cancel
-            </Button>
-
-            <Button onClick={onSave}>Save</Button>
+              image={maskImageData as string}
+              showGrid={false}
+              crop={crop}
+              zoom={zoom}
+              aspect={4 / 5}
+              onCropChange={setCrop}
+              onCropComplete={(_, croppedAreaPixels) =>
+                setCroppedAreaPixels(croppedAreaPixels)
+              }
+              onZoomChange={setZoom}
+            />
           </div>
+        )}
+
+        <div style={{ height: '24px ' }}>
+          <Slider
+            min={1}
+            max={3}
+            step={0.05}
+            tooltipVisible={false}
+            onChange={(value) => setZoom(value)}
+            value={zoom}
+          />
+
+          <Button onClick={() => onMaskImageCropComplete(null)}>Cancel</Button>
+
+          <Button onClick={onSave}>Save</Button>
         </div>
-      )}
+      </div>
     </>
   )
 })
@@ -259,7 +260,7 @@ const CharacterPersonality: React.FC<{
     }
   })
 
-  const [cropMaskImage, setCropMaskImage] = useState(false)
+  const [croppingMaskImage, setCroppingMaskImage] = useState(false)
 
   useEffect(() => {
     setMakeup(
@@ -279,19 +280,17 @@ const CharacterPersonality: React.FC<{
     <>
       <ImportMaskImage
         ref={importMaskImageRef}
-        show={cropMaskImage}
-        onMaskImageData={() => setCropMaskImage(true)}
+        cropping={croppingMaskImage}
+        onMaskImageData={() => setCroppingMaskImage(true)}
         onMaskImageCropComplete={async (mask) => {
           if (mask?.data) {
-            // TODO: need to find mask in character... if it doesn't exist, create
-            // TODO: if an asset already exists, need to replace it
             // TODO: error handling
             const newMasks = [...character.masks],
               foundMaskIndex = newMasks.findIndex(
                 (newMask) => newMask.type === mask.type
               )
 
-            let assetId: string | undefined = undefined
+            let assetId: string = uuid()
 
             if (foundMaskIndex === -1) {
               assetId = uuid()
@@ -304,7 +303,14 @@ const CharacterPersonality: React.FC<{
             }
 
             if (foundMaskIndex !== -1) {
-              assetId = newMasks[foundMaskIndex].assetId || uuid()
+              if (newMasks[foundMaskIndex].assetId) {
+                await ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
+                  studioId,
+                  gameId: character.gameId,
+                  id: newMasks[foundMaskIndex].assetId,
+                  ext: 'jpeg'
+                })
+              }
 
               newMasks[foundMaskIndex].assetId = assetId
             }
@@ -325,193 +331,193 @@ const CharacterPersonality: React.FC<{
             }
           }
 
-          setCropMaskImage(false)
+          setCroppingMaskImage(false)
         }}
       />
 
-      {!cropMaskImage && (
-        <div className={styles.CharacterPersonality}>
-          {/* row 1 col 1 */}
-          <div className={`${styles.zone}`}>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.TENSE}
-              />
-            </div>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.NERVOUS}
-              />
-            </div>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.IRRITATED}
-              />
-            </div>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.ANNOYED}
-              />
-            </div>
+      <div
+        className={`${styles.CharacterPersonality} ${
+          croppingMaskImage && styles.croppingMaskImage
+        }`}
+      >
+        {/* row 1 col 1 */}
+        <div className={`${styles.zone}`}>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.TENSE}
+            />
           </div>
-
-          {/* row 1 col 2; energetic */}
-          <div className={styles.bar}>
-            <div className={styles.energetic}>
-              <div
-                className={styles.positive}
-                style={{
-                  height: `${
-                    makeup.aggregate.energy > 0 ? makeup.aggregate.energy : 0
-                  }%`
-                }}
-              />
-            </div>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.NERVOUS}
+            />
           </div>
-
-          {/* row 1 col 3 */}
-          <div className={`${styles.zone}`}>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.LIVELY}
-              />
-            </div>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.EXCITED}
-              />
-            </div>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.HAPPY}
-              />
-            </div>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.CHEERFUL}
-              />
-            </div>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.IRRITATED}
+            />
           </div>
-
-          {/* row 2 col 1; desireable */}
-          <div className={styles.bar}>
-            <div className={styles.desirable}>
-              <div
-                className={styles.negative}
-                style={{
-                  width: `${
-                    makeup.aggregate.drive < 0 ? makeup.aggregate.drive * -1 : 0
-                  }%`
-                }}
-              />
-            </div>
-          </div>
-
-          {/* row 2 col 2 */}
-          <div>
-            <div className={`${styles.mask} ${styles.central}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.NEUTRAL}
-              />
-            </div>
-          </div>
-
-          {/* row 2 col 3; desirable*/}
-          <div className={styles.bar}>
-            <div className={styles.desirable}>
-              <div
-                className={styles.positive}
-                style={{
-                  width: `${
-                    makeup.aggregate.drive > 0 ? makeup.aggregate.drive : 0
-                  }%`
-                }}
-              />
-            </div>
-          </div>
-
-          {/* row 3 col 1 */}
-          <div className={`${styles.zone}`}>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.WEARY}
-              />
-            </div>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.BORED}
-              />
-            </div>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.SAD}
-              />
-            </div>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.GLOOMY}
-              />
-            </div>
-          </div>
-
-          {/* row 3 col 2; energetic */}
-          <div className={styles.bar}>
-            <div className={styles.energetic}>
-              <div
-                className={styles.negative}
-                style={{
-                  height: `${
-                    makeup.aggregate.energy < 0
-                      ? makeup.aggregate.energy * -1
-                      : 0
-                  }%`
-                }}
-              />
-            </div>
-          </div>
-
-          {/* row 3 col 3 */}
-          <div className={`${styles.zone}`}>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.RELAXED}
-              />
-            </div>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.CAREFREE}
-              />
-            </div>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.CALM}
-              />
-            </div>
-            <div className={`${styles.mask} ${styles.edge}`}>
-              <MaskWrapper
-                {...maskWrapperDefaults}
-                type={CHARACTER_MASK_TYPE.SERENE}
-              />
-            </div>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.ANNOYED}
+            />
           </div>
         </div>
-      )}
+
+        {/* row 1 col 2; energetic */}
+        <div className={styles.bar}>
+          <div className={styles.energetic}>
+            <div
+              className={styles.positive}
+              style={{
+                height: `${
+                  makeup.aggregate.energy > 0 ? makeup.aggregate.energy : 0
+                }%`
+              }}
+            />
+          </div>
+        </div>
+
+        {/* row 1 col 3 */}
+        <div className={`${styles.zone}`}>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.LIVELY}
+            />
+          </div>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.EXCITED}
+            />
+          </div>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.HAPPY}
+            />
+          </div>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.CHEERFUL}
+            />
+          </div>
+        </div>
+
+        {/* row 2 col 1; desireable */}
+        <div className={styles.bar}>
+          <div className={styles.desirable}>
+            <div
+              className={styles.negative}
+              style={{
+                width: `${
+                  makeup.aggregate.drive < 0 ? makeup.aggregate.drive * -1 : 0
+                }%`
+              }}
+            />
+          </div>
+        </div>
+
+        {/* row 2 col 2 */}
+        <div>
+          <div className={`${styles.mask} ${styles.central}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.NEUTRAL}
+            />
+          </div>
+        </div>
+
+        {/* row 2 col 3; desirable*/}
+        <div className={styles.bar}>
+          <div className={styles.desirable}>
+            <div
+              className={styles.positive}
+              style={{
+                width: `${
+                  makeup.aggregate.drive > 0 ? makeup.aggregate.drive : 0
+                }%`
+              }}
+            />
+          </div>
+        </div>
+
+        {/* row 3 col 1 */}
+        <div className={`${styles.zone}`}>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.WEARY}
+            />
+          </div>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.BORED}
+            />
+          </div>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.SAD}
+            />
+          </div>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.GLOOMY}
+            />
+          </div>
+        </div>
+
+        {/* row 3 col 2; energetic */}
+        <div className={styles.bar}>
+          <div className={styles.energetic}>
+            <div
+              className={styles.negative}
+              style={{
+                height: `${
+                  makeup.aggregate.energy < 0 ? makeup.aggregate.energy * -1 : 0
+                }%`
+              }}
+            />
+          </div>
+        </div>
+
+        {/* row 3 col 3 */}
+        <div className={`${styles.zone}`}>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.RELAXED}
+            />
+          </div>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.CAREFREE}
+            />
+          </div>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.CALM}
+            />
+          </div>
+          <div className={`${styles.mask} ${styles.edge}`}>
+            <MaskWrapper
+              {...maskWrapperDefaults}
+              type={CHARACTER_MASK_TYPE.SERENE}
+            />
+          </div>
+        </div>
+      </div>
     </>
   )
 }

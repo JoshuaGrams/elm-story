@@ -11,7 +11,7 @@
     &:hover {
       cursor: pointer;
 
-      .portrait {
+      .mask {
         border-color: var(--highlight-color);
         opacity: 1;
       }
@@ -25,13 +25,7 @@
       margin: 0;
     }
 
-    .portrait {
-      width: 35px;
-      height: 100%;
-      background: red;
-      background-image: url(../../img/characters/default-portrait.png);
-      background-size: 35px 100%;
-      border: 1px solid var(--border-color-20);
+    .mask {
       opacity: 0.4;
       transition: opacity 0.2s, border-color 0.2s;
     }
@@ -47,7 +41,7 @@
     }
 
     &.selected {
-      .portrait {
+      .mask {
         border-color: var(--highlight-color);
         opacity: 1;
       }

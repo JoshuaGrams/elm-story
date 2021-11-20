@@ -182,26 +182,54 @@ const createWindow = async () => {
             ext: 'jpeg'
           }
         ): Promise<string | null> => {
-          if (mainWindow) {
-            const path = `${app.getPath(
-              'userData'
-            )}/${studioId}/${gameId}/${id}.${ext}`
+          const path = `${app.getPath(
+            'userData'
+          )}/assets/${studioId}/${gameId}/${id}.${ext}`
 
-            try {
-              await outputFile(path, Buffer.from(data))
+          try {
+            await outputFile(path, Buffer.from(data))
 
-              return path
-            } catch (error) {
-              throw error
-            }
+            return path
+          } catch (error) {
+            // TODO: return error to app
+            throw error
           }
-
-          return null
         }
       )
 
       ipcMain.handle(
-        WINDOW_EVENT_TYPE.GET_ASSET_PATH,
+        WINDOW_EVENT_TYPE.REMOVE_ASSET,
+        async (
+          _,
+          {
+            studioId,
+            gameId,
+            id,
+            ext
+          }: {
+            studioId: StudioId
+            gameId: GameId
+            id: string
+            data: ArrayBuffer
+            ext: 'jpeg'
+          }
+        ) => {
+          const path = `${app.getPath(
+            'userData'
+          )}/assets/${studioId}/${gameId}/${id}.${ext}`
+
+          try {
+            await fs.remove(path)
+          } catch (error) {
+            // TODO: return error to app
+            throw error
+          }
+        }
+      )
+
+      // TODO: check if exists
+      ipcMain.handle(
+        WINDOW_EVENT_TYPE.GET_ASSET,
         async (
           _,
           {
@@ -213,7 +241,7 @@ const createWindow = async () => {
         ) => {
           return `${app.getPath(
             'userData'
-          )}/${studioId}/${gameId}/${id}.${ext}`.replace(/\\/g, '/')
+          )}/assets/${studioId}/${gameId}/${id}.${ext}`.replace(/\\/g, '/')
         }
       )
 

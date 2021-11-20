@@ -8,8 +8,7 @@
     .content {
       padding-left: 24px;
       max-width: 370px;
-
-      .componentId {
+      I .componentId {
         padding-top: 24px;
         font-size: 10px;
         color: var(--component-id);
@@ -26,6 +25,14 @@
     width: 470px;
     height: 470px;
     z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+
+    &.cropping {
+      pointer-events: unset;
+      opacity: 1;
+    }
 
     .cropContainer {
       width: 100%;
@@ -40,6 +47,12 @@
     display: grid;
     grid-template-columns: 182px auto 182px;
     grid-template-rows: 182px auto 182px;
+    opacity: 1;
+    transition: opacity 0.2s;
+
+    &.croppingMaskImage {
+      opacity: 0;
+    }
 
     .bar {
       width: 100%;
@@ -140,6 +153,10 @@
   border: 1px solid var(--border-color-20);
   transition: border-color 0.5s;
 
+  &:hover {
+    cursor: pointer;
+  }
+
   &.dominateDrive {
     border-left-color: var(--drive-color);
     border-right-color: var(--drive-color);
@@ -158,14 +175,9 @@
       border-color: black;
     }
 
-    &:hover {
-      border-color: var(--highlight-color);
-      cursor: pointer;
-    }
-
-    .portrait {
+    .mask {
       height: auto;
-      background-image: url(../../img/characters/default-portrait.png);
+      background-image: url(../../img/characters/mask-placeholder.svg);
       background-size: cover;
       background-position: center;
       opacity: 0.2;
@@ -180,9 +192,16 @@
       text-align: center;
       font-size: 12px;
       background: hsl(0, 0%, 0%);
+      opacity: 0.4;
+      transition: opacity 0.2s;
+
+      &.active {
+        opacity: 1;
+      }
 
       &.overlay {
-        background: hsla(0, 0%, 5%, 0.8);
+        background: hsla(0, 0%, 3%, 0.8);
+        border-top: 1px solid black;
         position: absolute;
         bottom: 0;
         width: 100%;
