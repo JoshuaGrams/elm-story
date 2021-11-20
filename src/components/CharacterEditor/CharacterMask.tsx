@@ -13,7 +13,7 @@ const CharacterMask: React.FC<{
   studioId: StudioId
   character: Character
   type: CHARACTER_MASK_TYPE
-  imageId?: string
+  assetId?: string
   active?: boolean
   dominate?: { drive: boolean; energy: boolean }
   width?: string
@@ -27,7 +27,7 @@ const CharacterMask: React.FC<{
   studioId,
   character,
   type,
-  imageId,
+  assetId,
   active,
   dominate,
   width,
@@ -44,12 +44,12 @@ const CharacterMask: React.FC<{
 
   useEffect(() => {
     async function getMaskImagePath() {
-      if (imageId) {
+      if (assetId) {
         setMaskImagePath(
           await ipcRenderer.invoke(WINDOW_EVENT_TYPE.GET_ASSET_PATH, {
             studioId,
             gameId: character.gameId,
-            id: imageId,
+            id: assetId,
             ext: 'jpeg'
           })
         )
@@ -57,7 +57,7 @@ const CharacterMask: React.FC<{
     }
 
     getMaskImagePath()
-  }, [imageId])
+  }, [assetId])
 
   useEffect(() => {
     console.log(maskImagePath)

@@ -69,7 +69,7 @@ const MaskWrapper: React.FC<{
             try {
               await api().characters.saveCharacter(studioId, {
                 ...character,
-                masks: [...newMasks, { active: true, type, imageId: undefined }]
+                masks: [...newMasks, { active: true, type, assetId: undefined }]
               })
             } catch (error) {
               throw error
@@ -299,14 +299,14 @@ const CharacterPersonality: React.FC<{
               newMasks.push({
                 type: mask.type,
                 active: false,
-                imageId: assetId
+                assetId: assetId
               })
             }
 
             if (foundMaskIndex !== -1) {
-              assetId = newMasks[foundMaskIndex].imageId || uuid()
+              assetId = newMasks[foundMaskIndex].assetId || uuid()
 
-              newMasks[foundMaskIndex].imageId = assetId
+              newMasks[foundMaskIndex].assetId = assetId
             }
 
             if (assetId) {

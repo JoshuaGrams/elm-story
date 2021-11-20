@@ -180,7 +180,7 @@ export interface CharacterMakeup {
 
 export interface CharacterMask {
   active: boolean
-  imageId?: string // the location will change, but keep asset ID consistent
+  assetId?: string // the location will change, but keep asset ID consistent
   type: CHARACTER_MASK_TYPE
 }
 
