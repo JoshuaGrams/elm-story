@@ -153,14 +153,17 @@
   border: 1px solid var(--border-color-20);
   transition: border-color 0.5s;
 
-  &:hover {
-    cursor: pointer;
+  &.active {
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   &.dominateDrive {
     border-left-color: var(--drive-color);
     border-right-color: var(--drive-color);
   }
+
   &.dominateEnergy {
     border-top-color: var(--energy-color);
     border-bottom-color: var(--energy-color);

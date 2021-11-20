@@ -78,17 +78,19 @@ const CharacterMask: React.FC<{
         >
           <div
             className={`${styles.CharacterMask} ${
-              dominate?.drive && styles.dominateDrive
-            } ${dominate?.energy && styles.dominateEnergy} `}
+              dominate?.drive ? styles.dominateDrive : ''
+            } ${dominate?.energy ? styles.dominateEnergy : ''} ${
+              contextMenu ? styles.active : ''
+            }`}
             style={{
               width: width || 'auto',
               height: height || 'auto'
             }}
             onClick={() => onToggle && onToggle(type)}
           >
-            <div className={`${styles.wrapper} ${active && styles.active}`}>
+            <div className={`${styles.wrapper} ${active ? styles.active : ''}`}>
               <div
-                className={`${styles.mask} ${active && styles.active}`}
+                className={`${styles.mask} ${active ? styles.active : ''}`}
                 style={{
                   aspectRatio,
                   backgroundImage: maskImagePath ? `url(${maskImagePath})` : ''
