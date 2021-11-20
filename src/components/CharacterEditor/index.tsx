@@ -1,8 +1,6 @@
 import React, { useContext } from 'react'
 
-import { useCharacter } from '../../hooks'
-
-import { Character, ComponentId, GameId, StudioId } from '../../data/types'
+import { Character, GameId, StudioId } from '../../data/types'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
@@ -40,8 +38,7 @@ const CharacterEditor: React.FC<{
   gameId: GameId
   character: Character
 }> = ({ studioId, gameId, character }) => {
-
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { editorDispatch } = useContext(EditorContext)
 
   return (
     <>
@@ -56,7 +53,8 @@ const CharacterEditor: React.FC<{
                     type: EDITOR_ACTION_TYPE.CLOSE_CHARACTER_MODAL
                   })
 
-                  character.id && api().characters.removeCharacter(studioId, character.id)
+                  character.id &&
+                    api().characters.removeCharacter(studioId, character.id)
                 }}
               />
             }
@@ -69,14 +67,7 @@ const CharacterEditor: React.FC<{
               />
             </Tabs.TabPane>
             <Tabs.TabPane tab="Personality" key={TAB_TYPE.PERSONALITY}>
-              <CharacterPersonality
-                studioId={studioId}
-                gameId={gameId}
-                character={character}
-              />
-            </Tabs.TabPane>
-            <Tabs.TabPane tab="Inventory" key={TAB_TYPE.INVENTORY}>
-              Character Inventory
+              <CharacterPersonality studioId={studioId} character={character} />
             </Tabs.TabPane>
             <Tabs.TabPane tab="Mentions" key={TAB_TYPE.MENTIONS}>
               <CharacterMentions
