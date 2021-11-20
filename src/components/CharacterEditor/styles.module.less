@@ -1,9 +1,4 @@
 .CharacterEditor {
-  --drive-color: hsl(185, 100%, 60%);
-  --drive-color-dark: hsla(185, 100%, 60%, 0.2);
-  --energy-color: hsl(40, 100%, 60%);
-  --energy-color-dark: hsla(40, 100%, 60%, 0.2);
-
   .CharacterInfo {
     .content {
       padding-left: 24px;
@@ -234,18 +229,37 @@
       }
 
       h1 {
-        color: hsl(0, 0%, 60%);
+        color: hsl(0, 0%, 40%);
         text-transform: uppercase;
         font-size: 16px;
         margin-bottom: 2px;
+
+        &.active {
+          color: white !important;
+        }
       }
 
       h2 {
         font-size: 12px;
         margin-bottom: 0;
+        color: hsl(0, 0%, 40%);
 
         span {
-          color: hsl(0, 0%, 40%);
+          &.active {
+            color: white;
+          }
+
+          &.drive.active {
+            color: var(--drive-color);
+          }
+
+          &.energy.active {
+            color: var(--energy-color);
+          }
+
+          &.dominate {
+            text-decoration: underline;
+          }
         }
       }
     }

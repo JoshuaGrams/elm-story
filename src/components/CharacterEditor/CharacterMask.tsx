@@ -113,6 +113,7 @@ const CharacterMask: React.FC<{
               <div className={styles.content}>
                 <div className={styles.title}>
                   <h1
+                    className={`${active ? styles.active : ''}`}
                     style={{
                       marginBottom:
                         type !== CHARACTER_MASK_TYPE.NEUTRAL ? 'unset' : '0'
@@ -122,11 +123,26 @@ const CharacterMask: React.FC<{
                   </h1>
                   {type !== CHARACTER_MASK_TYPE.NEUTRAL && (
                     <h2>
-                      {`${CHARACTER_MASK_VALUES[type][0] > 0 ? '+' : '-'}DRIVE`}{' '}
-                      {`${
-                        CHARACTER_MASK_VALUES[type][1] > 0 ? '+' : '-'
-                      }ENERGY`}{' '}
-                      <span>|</span> {CHARACTER_MASK_VALUES[type][2]}X
+                      <span
+                        className={`${styles.drive} ${
+                          active ? styles.active : ''
+                        } ${dominate?.drive ? styles.dominate : ''}`}
+                      >
+                        {`${CHARACTER_MASK_VALUES[type][0] > 0 ? '+' : '-'}`}
+                        DRIVE
+                      </span>{' '}
+                      <span
+                        className={`${styles.energy} ${
+                          active ? styles.active : ''
+                        } ${dominate?.energy ? styles.dominate : ''}`}
+                      >
+                        {`${CHARACTER_MASK_VALUES[type][1] > 0 ? '+' : '-'}`}
+                        ENERGY
+                      </span>{' '}
+                      <span>|</span>{' '}
+                      <span className={`${active ? styles.active : ''}`}>
+                        {CHARACTER_MASK_VALUES[type][2]}X
+                      </span>
                     </h2>
                   )}
                 </div>
