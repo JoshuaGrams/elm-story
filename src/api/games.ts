@@ -69,7 +69,7 @@ export async function removeGame(studioId: StudioId, gameId: GameId) {
   try {
     await api().studios.removeGameRef(studioId, gameId)
 
-    await new LibraryDatabase(studioId).removeGame(gameId)
+    await new LibraryDatabase(studioId).removeGame(studioId, gameId)
   } catch (error) {
     throw error
   }

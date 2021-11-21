@@ -227,6 +227,39 @@ const createWindow = async () => {
         }
       )
 
+      // removes studio or game assets
+      ipcMain.handle(
+        WINDOW_EVENT_TYPE.REMOVE_ASSETS,
+        async (
+          _,
+          {
+            studioId,
+            gameId,
+            type
+          }: { studioId: StudioId; gameId?: GameId; type: 'STUDIO' | 'GAME' }
+        ) => {
+          if (type === 'GAME' && !gameId)
+            throw 'Unable to remove game assets. Missing ID.'
+
+          const root = `${app.getPath('userData')}/assets`
+
+          let path: string | undefined
+
+          switch (type) {
+            case 'STUDIO':
+              path = `${root}/${studioId}/`
+              break
+            case 'GAME':
+              path = `${root}/${studioId}/${gameId}`
+              break
+            default:
+              break
+          }
+
+          path && (await fs.remove(path))
+        }
+      )
+
       // TODO: also return binary data
       ipcMain.handle(
         WINDOW_EVENT_TYPE.GET_ASSET,

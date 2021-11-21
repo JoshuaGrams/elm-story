@@ -148,7 +148,13 @@ export class AppDatabase extends Dexie {
     try {
       await this.transaction('rw', this.studios, async () => {
         if (await this.getComponent(APP_TABLE.STUDIOS, studioId)) {
-          await this.studios.delete(studioId)
+          await Promise.all([
+            ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSETS, {
+              studioId,
+              type: 'STUDIO'
+            }),
+            this.studios.delete(studioId)
+          ])
         } else {
           throw new Error(
             `Unable to remove studio with ID: '${studioId}'. Does not exist.`
@@ -428,15 +434,20 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeGame(gameId: GameId) {
-    if (!gameId) throw new Error('Unable to remove game. Missing ID.')
+  public async removeGame(studioId: StudioId, gameId: GameId) {
+    if (!studioId) throw 'Unable to remove game. Missing studio ID.'
+    if (!gameId) throw new Error('Unable to remove game. Missing game ID.')
 
     try {
       logger.info(`Removing game with ID: ${gameId}`)
 
       // TODO: replace 'delete' method with methods that handle children
-      // TODO: remove all assets for game
       await Promise.all([
+        ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSETS, {
+          studioId,
+          gameId,
+          type: 'GAME'
+        }),
         this.bookmarks.where({ gameId }).delete(),
         this.characters.where({ gameId }).delete(),
         this.choices.where({ gameId }).delete(),
