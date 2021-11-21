@@ -30,7 +30,7 @@ export async function removeCharacter(
   characterId: ComponentId
 ) {
   try {
-    await new LibraryDatabase(studioId).removeCharacter(characterId)
+    await new LibraryDatabase(studioId).removeCharacter(studioId, characterId)
   } catch (error) {
     throw error
   }

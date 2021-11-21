@@ -1,3 +1,5 @@
+import { ipcRenderer } from 'electron'
+
 import Dexie from 'dexie'
 import logger from '../lib/logger'
 
@@ -36,6 +38,7 @@ import {
   EngineEventData,
   EngineSettingsData
 } from '../lib/transport/types/0.5.1'
+import { WINDOW_EVENT_TYPE } from '../lib/events'
 
 // DATABASE VERSIONS / UPGRADES
 import v1 from './v1'
@@ -301,17 +304,31 @@ export class LibraryDatabase extends Dexie {
     return character
   }
 
-  public async removeCharacter(characterId: ComponentId) {
+  public async removeCharacter(studioId: StudioId, characterId: ComponentId) {
     logger.info(`LibraryDatabase->removeCharacter`)
 
     // TODO: consider dependencies e.g. passages
 
     try {
       await this.transaction('rw', this.characters, async () => {
-        if (await this.getComponent(LIBRARY_TABLE.CHARACTERS, characterId)) {
+        const character = await this.characters.get(characterId)
+
+        if (character) {
           logger.info(
             `LibraryDatabase->removeCharacter->Removing character with ID: ${characterId}`
           )
+
+          await Promise.all([
+            character.masks.map(async (mask) => {
+              mask.assetId &&
+                (await ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
+                  studioId,
+                  gameId: character.gameId,
+                  id: mask.assetId,
+                  ext: 'jpeg'
+                }))
+            })
+          ])
 
           await this.characters.delete(characterId)
         } else {
