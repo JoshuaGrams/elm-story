@@ -54,12 +54,40 @@
       height: 100%;
       display: grid;
 
-      .desirable {
+      .value {
+        position: absolute;
+        align-self: center;
+        justify-self: center;
+        padding: 2px 6px;
+        border-radius: 8px;
+        z-index: 1;
+        font-size: 12px;
+        backdrop-filter: blur(10px);
+        width: 60px;
+        text-align: center;
+        text-transform: uppercase;
+        opacity: 0;
+        transition: opacity 0.5s, backdrop-filer 0.5s;
+
+        &.active {
+          opacity: 1;
+        }
+      }
+
+      .drive {
         height: 1px;
         width: 100%;
         background: var(--drive-color-dark);
         align-self: center;
         display: grid;
+
+        .value {
+          border: 1px solid var(--drive-color);
+
+          span {
+            color: var(--drive-color) !important;
+          }
+        }
 
         .positive,
         .negative {
@@ -78,14 +106,21 @@
         }
       }
 
-      .energetic {
+      .energy {
         width: 1px;
         height: 100%;
         background: var(--energy-color-dark);
         justify-self: center;
         display: grid;
         display: grid;
-        // box-shadow: 0 0 4px 0 var(--energy-color-dark);
+
+        .value {
+          border: 1px solid var(--energy-color);
+
+          span {
+            color: var(--energy-color) !important;
+          }
+        }
 
         .positive,
         .negative {

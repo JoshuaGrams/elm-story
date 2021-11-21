@@ -14,8 +14,8 @@ export const getCharacterPersonalityMakeup = (activeMasks: CharacterMask[]) => {
     value.energy += CHARACTER_MASK_VALUES[activeMask.type][1]
   })
 
-  value.drive = (value.drive / 5) * 100
-  value.energy = (value.energy / 5) * 100
+  value.drive = ((value.drive / 5) * 100) | 0
+  value.energy = ((value.energy / 5) * 100) | 0
 
   return value
 }
@@ -33,12 +33,12 @@ export const getCharacterDominateMakeup = (activeMasks: CharacterMask[]) => {
   activeMasks.map((activeMask) => {
     desireSearchArray.push([
       activeMask.type,
-      CHARACTER_MASK_VALUES[activeMask.type][0] * 100
+      Math.round(CHARACTER_MASK_VALUES[activeMask.type][0] * 100)
     ])
 
     energySearchArray.push([
       activeMask.type,
-      CHARACTER_MASK_VALUES[activeMask.type][1] * 100
+      Math.round(CHARACTER_MASK_VALUES[activeMask.type][1] * 100)
     ])
   })
 

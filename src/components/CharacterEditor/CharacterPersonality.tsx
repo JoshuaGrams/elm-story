@@ -403,9 +403,17 @@ const CharacterPersonality: React.FC<{
           </div>
         </div>
 
-        {/* row 1 col 2; energetic */}
+        {/* row 1 col 2; energy */}
         <div className={styles.bar}>
-          <div className={styles.energetic}>
+          <div className={styles.energy}>
+            <div
+              className={`${styles.value} ${
+                makeup.aggregate.energy > 0 ? styles.active : ''
+              }`}
+            >
+              {makeup.aggregate.energy}% <span>Energy</span>
+            </div>
+
             <div
               className={styles.positive}
               style={{
@@ -447,7 +455,15 @@ const CharacterPersonality: React.FC<{
 
         {/* row 2 col 1; desireable */}
         <div className={styles.bar}>
-          <div className={styles.desirable}>
+          <div className={styles.drive}>
+            <div
+              className={`${styles.value} ${
+                makeup.aggregate.drive < 0 ? styles.active : ''
+              }`}
+            >
+              {makeup.aggregate.drive}% <span>Drive</span>
+            </div>
+
             <div
               className={styles.negative}
               style={{
@@ -469,9 +485,17 @@ const CharacterPersonality: React.FC<{
           </div>
         </div>
 
-        {/* row 2 col 3; desirable*/}
+        {/* row 2 col 3; drive*/}
         <div className={styles.bar}>
-          <div className={styles.desirable}>
+          <div className={styles.drive}>
+            <div
+              className={`${styles.value} ${
+                makeup.aggregate.drive > 0 ? styles.active : ''
+              }`}
+            >
+              {makeup.aggregate.drive}% <span>Drive</span>
+            </div>
+
             <div
               className={styles.positive}
               style={{
@@ -511,9 +535,17 @@ const CharacterPersonality: React.FC<{
           </div>
         </div>
 
-        {/* row 3 col 2; energetic */}
+        {/* row 3 col 2; energy */}
         <div className={styles.bar}>
-          <div className={styles.energetic}>
+          <div className={styles.energy}>
+            <div
+              className={`${styles.value} ${
+                makeup.aggregate.energy < 0 ? styles.active : ''
+              }`}
+            >
+              {makeup.aggregate.energy}% <span>Energy</span>
+            </div>
+
             <div
               className={styles.negative}
               style={{
