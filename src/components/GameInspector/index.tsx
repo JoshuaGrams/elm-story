@@ -2,6 +2,7 @@ import {
   adjectives,
   animals,
   colors,
+  names,
   uniqueNamesGenerator
 } from 'unique-names-generator'
 
@@ -100,7 +101,11 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
                                   ],
                                   refs: [],
                                   tags: [],
-                                  title: 'Untitled Character'
+                                  title: uniqueNamesGenerator({
+                                    dictionaries: [names, names],
+                                    length: 2,
+                                    separator: ' '
+                                  })
                                 }
                               )
 

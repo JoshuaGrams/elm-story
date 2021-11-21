@@ -1,4 +1,5 @@
 import { debounce, isEqual } from 'lodash-es'
+import { names, uniqueNamesGenerator } from 'unique-names-generator'
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 
@@ -10,7 +11,8 @@ import {
   StudioId
 } from '../../data/types'
 
-import { Col, Row, Form, Input, Popover } from 'antd'
+import { Col, Row, Form, Input, Popover, Button } from 'antd'
+import { RedoOutlined } from '@ant-design/icons'
 import {
   MultiValue,
   components,
@@ -293,7 +295,7 @@ const CharacterInfo: React.FC<{
   const [formLayout] = useState<LayoutType>('vertical')
 
   const saveTitle = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
+    async (event: { target: { value: string } }) => {
       const sanitizedTitle = event.target.value.trim()
 
       try {
@@ -378,6 +380,26 @@ const CharacterInfo: React.FC<{
                 autoFocus
                 onChange={debounce(saveTitle, 200)}
                 onPressEnter={() => titleInputRef.current?.blur()}
+                suffix={
+                  <Button
+                    icon={<RedoOutlined />}
+                    onClick={() => {
+                      const randomName = uniqueNamesGenerator({
+                        dictionaries: [names, names],
+                        length: 2,
+                        separator: ' '
+                      })
+
+                      saveTitle({ target: { value: randomName } })
+
+                      characterInfoForm.setFieldsValue({
+                        ...characterInfoForm.getFieldsValue,
+                        title: randomName
+                      })
+                    }}
+                  />
+                }
+                style={{ paddingRight: '4px' }}
               />
             </Form.Item>
 

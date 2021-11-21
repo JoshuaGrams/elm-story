@@ -223,14 +223,17 @@ h3 {
   }
 }
 
-.ant-input {
+.ant-input,
+.ant-input-affix-wrapper {
+  box-shadow: unset !important;
+
   &:hover {
     border-color: var(--highlight-color-50a);
   }
 
-  &:focus {
-    border-color: var(--highlight-color);
-    box-shadow: unset;
+  &:focus,
+  &.ant-input-affix-wrapper-focused {
+    border-color: var(--highlight-color) !important;
   }
 }
 
