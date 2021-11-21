@@ -59,7 +59,7 @@ const CharacterRow: React.FC<{ studioId: StudioId; character: Character }> = ({
   )
 }
 
-const GameCharacters: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
+const StoryCharacters: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   studioId,
   gameId
 }) => {
@@ -94,6 +94,6 @@ const GameCharacters: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
   )
 }
 
-GameCharacters.displayName = 'GameCharacters'
+StoryCharacters.displayName = 'StoryCharacters'
 
-export default GameCharacters
+export default StoryCharacters

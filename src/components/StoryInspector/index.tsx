@@ -9,7 +9,6 @@ import {
 import React, { useState, useContext } from 'react'
 
 import {
-  CharacterMask,
   CHARACTER_MASK_TYPE,
   COMPONENT_TYPE,
   Game,
@@ -25,7 +24,7 @@ import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 import GameOutline from '../GameOutline'
 import GameStyles from '../GameStyles'
 import GameProblems from '../GameProblems'
-import GameCharacters from '../GameCharacters'
+import StoryCharacters from '../StoryCharacters'
 import GameVariables from '../GameVariables'
 import ComponentHelpButton from '../ComponentHelpButton'
 
@@ -38,7 +37,7 @@ const TAB_TYPE = {
   VARIABLES: 'VARIABLES'
 }
 
-const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
+const StoryInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
   studioId,
   game
 }) => {
@@ -124,7 +123,7 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
                   content: (
                     <>
                       {game.id && (
-                        <GameCharacters studioId={studioId} gameId={game.id} />
+                        <StoryCharacters studioId={studioId} gameId={game.id} />
                       )}
                     </>
                   ),
@@ -233,6 +232,6 @@ const GameInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
   )
 }
 
-GameInspector.displayName = 'GameInspector'
+StoryInspector.displayName = 'StoryInspector'
 
-export default GameInspector
+export default StoryInspector
