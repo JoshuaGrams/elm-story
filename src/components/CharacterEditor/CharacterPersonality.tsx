@@ -23,7 +23,7 @@ import {
 
 import Cropper from 'react-easy-crop'
 import { Area } from 'react-easy-crop/types'
-import { Button, Slider } from 'antd'
+import { Button, Slider, Divider } from 'antd'
 
 import Mask from './CharacterMask'
 
@@ -235,43 +235,55 @@ const ImportMaskImage = React.forwardRef<
           cropping && maskImageData ? styles.cropping : ''
         }`}
       >
-        {maskType}
+        <div>
+          <h1>{maskType}</h1>
 
-        {maskImageData && (
-          <div className={styles.cropContainer}>
-            <Cropper
-              style={{
-                cropAreaStyle: {
-                  color: 'hsla(0, 0%, 3%, 0.90)'
-                }
-              }}
-              image={maskImageData as string}
-              showGrid={false}
-              crop={crop}
-              zoom={zoom}
-              aspect={4 / 5}
-              onCropChange={setCrop}
-              onCropComplete={(_, croppedAreaPixels) =>
-                setCroppedAreaPixels(croppedAreaPixels)
-              }
-              onZoomChange={setZoom}
-            />
-          </div>
-        )}
+          {maskImageData && (
+            <>
+              <div className={styles.cropContainer}>
+                <Cropper
+                  style={{
+                    cropAreaStyle: {
+                      color: 'hsla(0, 0%, 0%, 0.9)'
+                    },
+                    containerStyle: {
+                      background: 'black'
+                    }
+                  }}
+                  image={maskImageData as string}
+                  showGrid={false}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={4 / 5}
+                  onCropChange={setCrop}
+                  onCropComplete={(_, croppedAreaPixels) =>
+                    setCroppedAreaPixels(croppedAreaPixels)
+                  }
+                  onZoomChange={setZoom}
+                />
+              </div>
 
-        <div style={{ height: '24px ' }}>
-          <Slider
-            min={1}
-            max={3}
-            step={0.05}
-            tooltipVisible={false}
-            onChange={(value) => setZoom(value)}
-            value={zoom}
-          />
+              <Slider
+                min={1}
+                max={3}
+                step={0.05}
+                tooltipVisible={false}
+                onChange={(value) => setZoom(value)}
+                value={zoom}
+                style={{ marginBottom: '30px' }}
+              />
 
-          <Button onClick={() => onMaskImageCropComplete(null)}>Cancel</Button>
+              <div style={{ height: '24px ' }}>
+                <div className={styles.buttons}>
+                  <Button onClick={() => onMaskImageCropComplete(null)}>
+                    Cancel
+                  </Button>
 
-          <Button onClick={onSave}>Save</Button>
+                  <Button onClick={onSave}>Save</Button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>
