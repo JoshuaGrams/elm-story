@@ -435,6 +435,7 @@ export class LibraryDatabase extends Dexie {
       logger.info(`Removing game with ID: ${gameId}`)
 
       // TODO: replace 'delete' method with methods that handle children
+      // TODO: remove all assets for game
       await Promise.all([
         this.bookmarks.where({ gameId }).delete(),
         this.characters.where({ gameId }).delete(),

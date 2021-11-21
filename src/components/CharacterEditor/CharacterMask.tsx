@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import {
   CHARACTER_MASK_TYPE,
   CHARACTER_MASK_VALUES,
+  ComponentId,
   GameId,
   StudioId
 } from '../../data/types'
@@ -14,9 +15,12 @@ import { Button, Dropdown } from 'antd'
 
 import styles from './styles.module.less'
 
+import api from '../../api'
+
 const CharacterMask: React.FC<{
   studioId: StudioId
   gameId: GameId
+  characterId: ComponentId
   type: CHARACTER_MASK_TYPE
   assetId?: string
   active?: boolean
@@ -33,6 +37,7 @@ const CharacterMask: React.FC<{
   ({
     studioId,
     gameId,
+    characterId,
     type,
     assetId,
     active,
@@ -87,16 +92,49 @@ const CharacterMask: React.FC<{
 
     useEffect(() => {
       async function getMaskImagePath() {
-        setMaskImagePath(
-          assetId
-            ? await ipcRenderer.invoke(WINDOW_EVENT_TYPE.GET_ASSET, {
-                studioId,
-                gameId,
-                id: assetId,
-                ext: 'jpeg'
-              })
-            : undefined
-        )
+        if (!assetId) {
+          setMaskImagePath(undefined)
+          return
+        }
+
+        if (assetId) {
+          const path: string | null = await ipcRenderer.invoke(
+            WINDOW_EVENT_TYPE.GET_ASSET,
+            {
+              studioId,
+              gameId,
+              id: assetId,
+              ext: 'jpeg'
+            }
+          )
+
+          if (path) {
+            setMaskImagePath(path)
+            return
+          }
+
+          if (!path) {
+            const character = await api().characters.getCharacter(
+              studioId,
+              characterId
+            )
+
+            if (character) {
+              const newMasks = [...character.masks],
+                foundMaskIndex = newMasks.findIndex(
+                  (newMask) => newMask.type === type
+                )
+
+              if (foundMaskIndex !== -1) {
+                newMasks[foundMaskIndex].assetId = undefined
+                await api().characters.saveCharacter(studioId, {
+                  ...character,
+                  masks: newMasks
+                })
+              }
+            }
+          }
+        }
       }
 
       getMaskImagePath()

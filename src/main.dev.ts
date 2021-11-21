@@ -227,7 +227,7 @@ const createWindow = async () => {
         }
       )
 
-      // TODO: check if exists
+      // TODO: also return binary data
       ipcMain.handle(
         WINDOW_EVENT_TYPE.GET_ASSET,
         async (
@@ -239,9 +239,17 @@ const createWindow = async () => {
             ext
           }: { studioId: StudioId; gameId: GameId; id: string; ext: 'jpeg' }
         ) => {
-          return `${app.getPath(
-            'userData'
-          )}/assets/${studioId}/${gameId}/${id}.${ext}`.replace(/\\/g, '/')
+          const exists = await fs.pathExists(
+            `${app.getPath(
+              'userData'
+            )}/assets/${studioId}/${gameId}/${id}.${ext}`.replace(/\\/g, '/')
+          )
+
+          return exists
+            ? `${app.getPath(
+                'userData'
+              )}/assets/${studioId}/${gameId}/${id}.${ext}`.replace(/\\/g, '/')
+            : null
         }
       )
 

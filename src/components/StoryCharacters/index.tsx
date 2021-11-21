@@ -40,19 +40,22 @@ const CharacterRow: React.FC<{ studioId: StudioId; character: Character }> = ({
       }
     >
       <div className={styles.mask}>
-        <CharacterMask
-          studioId={studioId}
-          gameId={character.gameId}
-          type={CHARACTER_MASK_TYPE.NEUTRAL}
-          overlay={false}
-          aspectRatio="4/5"
-          active
-          assetId={
-            character.masks.find(
-              (mask) => mask.type === CHARACTER_MASK_TYPE.NEUTRAL
-            )?.assetId
-          }
-        />
+        {character.id && (
+          <CharacterMask
+            studioId={studioId}
+            gameId={character.gameId}
+            characterId={character.id}
+            type={CHARACTER_MASK_TYPE.NEUTRAL}
+            overlay={false}
+            aspectRatio="4/5"
+            active
+            assetId={
+              character.masks.find(
+                (mask) => mask.type === CHARACTER_MASK_TYPE.NEUTRAL
+              )?.assetId
+            }
+          />
+        )}
       </div>
       <div className={styles.title}>{character.title}</div>
     </div>

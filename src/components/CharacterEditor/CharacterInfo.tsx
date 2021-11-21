@@ -339,19 +339,22 @@ const CharacterInfo: React.FC<{
         <Col flex="auto">
           <div className={styles.defaultMood}>
             {/* TODO: dominate mask */}
-            <CharacterMask
-              studioId={studioId}
-              gameId={gameId}
-              active
-              type={CHARACTER_MASK_TYPE.NEUTRAL}
-              width="100%"
-              overlay={false}
-              assetId={
-                character.masks.find(
-                  (mask) => mask.type === CHARACTER_MASK_TYPE.NEUTRAL
-                )?.assetId
-              }
-            />
+            {character.id && (
+              <CharacterMask
+                studioId={studioId}
+                gameId={gameId}
+                characterId={character.id}
+                active
+                type={CHARACTER_MASK_TYPE.NEUTRAL}
+                width="100%"
+                overlay={false}
+                assetId={
+                  character.masks.find(
+                    (mask) => mask.type === CHARACTER_MASK_TYPE.NEUTRAL
+                  )?.assetId
+                }
+              />
+            )}
           </div>
         </Col>
 
