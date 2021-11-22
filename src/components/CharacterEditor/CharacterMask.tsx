@@ -25,11 +25,12 @@ const CharacterMask: React.FC<{
   assetId?: string
   active?: boolean
   dominate?: { drive: boolean; energy: boolean }
-  width?: string
-  height?: string
+  width?: string | number
+  height?: string | number
   aspectRatio?: string
   overlay?: boolean
   contextMenu?: boolean
+  fill?: boolean
   onChangeMaskImage?: (type: CHARACTER_MASK_TYPE) => void
   onReset?: (type: CHARACTER_MASK_TYPE) => void
   onToggle?: (type: CHARACTER_MASK_TYPE) => void
@@ -47,6 +48,7 @@ const CharacterMask: React.FC<{
     aspectRatio = '4/5',
     overlay,
     contextMenu,
+    fill,
     onChangeMaskImage,
     onReset,
     onToggle
@@ -61,14 +63,18 @@ const CharacterMask: React.FC<{
           dominate?.drive ? styles.dominateDrive : ''
         } ${dominate?.energy ? styles.dominateEnergy : ''} ${
           contextMenu ? styles.interactive : ''
-        } ${active ? styles.active : ''}`}
+        } ${active ? styles.active : ''} ${fill ? styles.fill : ''}`}
         style={{
           width: width || 'auto',
           height: height || 'auto'
         }}
         onClick={() => onToggle && onToggle(type)}
       >
-        <div className={`${styles.wrapper} ${active ? styles.active : ''}`}>
+        <div
+          className={`${styles.wrapper} ${active ? styles.active : ''} ${
+            fill ? styles.fill : ''
+          }`}
+        >
           <div
             className={`${styles.mask} ${active ? styles.active : ''}`}
             style={{

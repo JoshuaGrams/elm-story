@@ -47,6 +47,7 @@ import {
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
 import VariableSelectForInput from '../../VariableSelectForInput'
+import PassagePersona from './PassagePersona'
 
 interface MenuInfo {
   domEvent: React.MouseEvent<HTMLElement>
@@ -509,8 +510,15 @@ const PassageNode: React.FC<NodeProps<{
               ) : (
                 <AlignLeftOutlined className={styles.headerIcon} />
               )}
+
               {passage.title}
             </h1>
+
+            <PassagePersona
+              studioId={data.studioId}
+              gameId={passage.gameId}
+              persona={passage.persona}
+            />
 
             {choices.length === 0 && passage.type !== PASSAGE_TYPE.INPUT && (
               <PassageSoureHandle
