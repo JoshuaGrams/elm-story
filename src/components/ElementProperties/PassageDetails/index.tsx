@@ -234,8 +234,8 @@ const PassagePersona: React.FC<{
                       onChange={savePersonaReference}
                     >
                       {selectedCharacter?.refs.map((ref) => (
-                        <Select.Option value={ref} key={ref}>
-                          {ref}
+                        <Select.Option value={ref[1]} key={ref[1]}>
+                          {ref[1]}
                         </Select.Option>
                       ))}
                     </Select>

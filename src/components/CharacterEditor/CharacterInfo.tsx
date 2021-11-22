@@ -1,10 +1,12 @@
 import { debounce, isEqual } from 'lodash-es'
 import { names, uniqueNamesGenerator } from 'unique-names-generator'
+import { v4 as uuid } from 'uuid'
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 
 import {
   Character,
+  CharacterRefs,
   CHARACTER_MASK_TYPE,
   CHARACTER_PRONOUN_TYPES,
   GameId,
@@ -32,7 +34,7 @@ type LayoutType = Parameters<typeof Form>[0]['layout']
 
 interface ReferenceSelectOption {
   value: string
-  label: string
+  id: string | null
   pronoun: boolean | undefined
   editing: boolean
 }
@@ -54,7 +56,6 @@ const EditAliasPopover: React.FC<{
     <Popover
       visible={editing}
       placement="top"
-      arrowContent={<div style={{ zIndex: 1001 }}>hi</div>}
       overlayClassName="es-select__editable-value-popover"
       content={
         <Input
@@ -84,7 +85,6 @@ const EditAliasPopover: React.FC<{
                 if (foundSelectionIndex !== -1) {
                   const newSelections = [...selections]
 
-                  newSelections[foundSelectionIndex].label = sanitizedNewValue
                   newSelections[foundSelectionIndex].value = sanitizedNewValue
 
                   onFinish(newSelections)
@@ -106,8 +106,8 @@ const EditAliasPopover: React.FC<{
 EditAliasPopover.displayName = 'EditAliasPopover'
 
 const ReferencesSelect: React.FC<{
-  refs: string[]
-  onSelect: (newRefs: string[]) => Promise<void>
+  refs: CharacterRefs
+  onSelect: (newRefs: CharacterRefs) => Promise<void>
 }> = ({ refs, onSelect }) => {
   const [selections, setSelections] = useState<
     MultiValue<ReferenceSelectOption> | undefined
@@ -190,8 +190,8 @@ const ReferencesSelect: React.FC<{
 
   useEffect(() => {
     async function updateCharacterReferences() {
-      const selectionsAsRefArray = selections
-        ? selections.map((selection) => selection.value)
+      const selectionsAsRefArray: CharacterRefs = selections
+        ? selections.map((selection) => [selection.id, selection.value])
         : []
 
       try {
@@ -209,7 +209,7 @@ const ReferencesSelect: React.FC<{
     let incomingSelections: ReferenceSelectOption[] = []
 
     refs.map((ref) => {
-      const sanitizedRef = ref.toUpperCase().trim(),
+      const sanitizedRef = ref[1].toUpperCase().trim(),
         pronoun =
           Object.keys(CHARACTER_PRONOUN_TYPES).findIndex(
             (value) => value === sanitizedRef
@@ -217,8 +217,8 @@ const ReferencesSelect: React.FC<{
 
       incomingSelections.push({
         editing: false,
-        label: sanitizedRef,
         value: sanitizedRef,
+        id: ref[0],
         pronoun
       })
     })
@@ -235,9 +235,9 @@ const ReferencesSelect: React.FC<{
         components={{ MultiValueLabel }}
         onChange={(newSelections) => {
           setSelections(
-            newSelections.map(({ value, label, pronoun }) => ({
+            newSelections.map(({ value, id, pronoun }) => ({
               value: value.toUpperCase().trim(),
-              label: label.toUpperCase().trim(),
+              id: pronoun ? null : id || uuid(),
               pronoun,
               editing: false
             }))
@@ -246,6 +246,7 @@ const ReferencesSelect: React.FC<{
         options={Object.keys(CHARACTER_PRONOUN_TYPES).map((value) => ({
           value,
           label: value,
+          id: null,
           pronoun: true,
           editing: false
         }))}

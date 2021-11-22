@@ -184,11 +184,16 @@ export interface CharacterMask {
   type: CHARACTER_MASK_TYPE
 }
 
+// tuple: [uuid | null (pronoun), ...]
+export type CharacterRefs = Array<
+  [string | null, string | CHARACTER_PRONOUN_TYPES]
+>
+
 export interface Character extends Component {
   description?: string
   gameId: GameId
   masks: CharacterMask[]
-  refs: string[] // all strings must be unique
+  refs: CharacterRefs // all strings must be unique
   // TODO: add variable ID
 }
 
