@@ -47,7 +47,7 @@ import {
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
 import VariableSelectForInput from '../../VariableSelectForInput'
-import PassagePersona from './PassagePersona'
+import EventPersonaPane from './EventPersona'
 
 interface MenuInfo {
   domEvent: React.MouseEvent<HTMLElement>
@@ -514,7 +514,7 @@ const PassageNode: React.FC<NodeProps<{
               {passage.title}
             </h1>
 
-            <PassagePersona
+            <EventPersonaPane
               studioId={data.studioId}
               gameId={passage.gameId}
               persona={passage.persona}

@@ -1,8 +1,10 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 
 import {
+  Character,
   CHARACTER_MASK_TYPE,
   ComponentId,
+  EventPersona,
   GameId,
   Passage,
   PASSAGE_TYPE,
@@ -104,38 +106,70 @@ const PassagePersona: React.FC<{
 }> = React.memo(({ studioId, gameId, passage }) => {
   const characters = useCharacters(studioId, gameId)
 
-  const [selectedPersona, setSelectedPersona] = useState<
-    [ComponentId, CHARACTER_MASK_TYPE] | undefined
-  >(passage.persona)
+  const [persona, setPersona] = useState<EventPersona | undefined>(
+      passage.persona
+    ),
+    [selectedCharacter, setSelectedCharacter] = useState<Character | undefined>(
+      undefined
+    )
 
-  const savePersonaCharacter = async (characterId: ComponentId | undefined) => {
-    const persona: [ComponentId, CHARACTER_MASK_TYPE] | undefined = characterId
-      ? [characterId, CHARACTER_MASK_TYPE.NEUTRAL]
-      : undefined
+  const savePersonaCharacter = useCallback(
+    async (characterId: ComponentId | undefined) => {
+      const newPersona: EventPersona | undefined = characterId
+        ? [characterId, CHARACTER_MASK_TYPE.NEUTRAL, undefined]
+        : undefined
 
-    await api().passages.savePassage(studioId, {
-      ...passage,
-      persona
-    })
+      await api().passages.savePassage(studioId, {
+        ...passage,
+        persona: newPersona
+      })
 
-    setSelectedPersona(persona)
-  }
+      setPersona(newPersona)
+    },
+    [passage, persona]
+  )
 
   const savePersonaMask = useCallback(
     async (maskType: CHARACTER_MASK_TYPE | undefined) => {
-      const persona: [ComponentId, CHARACTER_MASK_TYPE] | undefined =
-        maskType && selectedPersona?.[0]
-          ? [selectedPersona?.[0], maskType]
-          : undefined
+      const newPersona: EventPersona | undefined =
+        maskType && persona ? [persona[0], maskType, persona[2]] : undefined
 
-      await api().passages.savePassage(studioId, { ...passage, persona })
+      await api().passages.savePassage(studioId, {
+        ...passage,
+        persona: newPersona
+      })
 
-      setSelectedPersona(persona)
+      setPersona(newPersona)
     },
-    [selectedPersona]
+    [passage, persona]
   )
 
-  useEffect(() => setSelectedPersona(passage.persona), [passage.id])
+  const savePersonaReference = useCallback(
+    async (reference?: string) => {
+      const newPersona: EventPersona | undefined = persona
+        ? [persona[0], persona[1], reference]
+        : undefined
+
+      await api().passages.savePassage(studioId, {
+        ...passage,
+        persona: newPersona
+      })
+
+      setPersona(newPersona)
+    },
+    [passage, persona]
+  )
+
+  useEffect(() => setPersona(passage.persona), [passage.id])
+
+  useEffect(
+    () =>
+      persona &&
+      setSelectedCharacter(
+        characters?.find((character) => character.id === persona[0])
+      ),
+    [characters, persona]
+  )
 
   return (
     <div className={styles.PassageMask}>
@@ -149,7 +183,7 @@ const PassagePersona: React.FC<{
 
           <div className={styles.selectWrapper}>
             <Select
-              value={selectedPersona?.[0]}
+              value={persona?.[0]}
               placeholder="Select character..."
               onChange={savePersonaCharacter}
             >
@@ -163,7 +197,7 @@ const PassagePersona: React.FC<{
               )}
             </Select>
 
-            {selectedPersona?.[0] && (
+            {persona?.[0] && (
               <Button className={styles.rollBackBtn}>
                 <RollbackOutlined
                   onClick={() => savePersonaCharacter(undefined)}
@@ -172,23 +206,48 @@ const PassagePersona: React.FC<{
             )}
           </div>
 
-          {selectedPersona?.[0] && (
+          {persona?.[0] && (
             <>
               <Divider>
                 <h2>Mask</h2>
               </Divider>
 
               <div className={styles.selectWrapper}>
-                <Select value={selectedPersona?.[1]} onChange={savePersonaMask}>
-                  {characters
-                    .find((character) => character.id === selectedPersona?.[0])
-                    ?.masks.map((mask) => (
-                      <Select.Option value={mask.type} key={mask.type}>
-                        {mask.type}
-                      </Select.Option>
-                    ))}
+                <Select value={persona?.[1]} onChange={savePersonaMask}>
+                  {selectedCharacter?.masks.map((mask) => (
+                    <Select.Option value={mask.type} key={mask.type}>
+                      {mask.type}
+                    </Select.Option>
+                  ))}
                 </Select>
               </div>
+
+              {selectedCharacter && selectedCharacter.refs.length > 0 && (
+                <>
+                  <Divider>
+                    <h2>Reference</h2>
+                  </Divider>
+                  <div className={styles.selectWrapper}>
+                    <Select
+                      value={persona?.[2]}
+                      placeholder="Select reference..."
+                      onChange={savePersonaReference}
+                    >
+                      {selectedCharacter?.refs.map((ref) => (
+                        <Select.Option value={ref} key={ref}>
+                          {ref}
+                        </Select.Option>
+                      ))}
+                    </Select>
+
+                    <Button className={styles.rollBackBtn}>
+                      <RollbackOutlined
+                        onClick={() => savePersonaReference(undefined)}
+                      />
+                    </Button>
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>

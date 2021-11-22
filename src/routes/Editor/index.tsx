@@ -16,7 +16,7 @@ import { DividerBox } from 'rc-dock'
 
 import StoryInspector from '../../components/StoryInspector'
 import ComponentEditor from '../../components/ComponentEditor'
-import ComponentInspector from '../../components/ComponentInspector'
+import ElementInspector from '../../components/ElementInspector'
 
 import styles from './styles.module.less'
 
@@ -97,7 +97,7 @@ const Editor: React.FC = () => {
           />
 
           <DividerBox mode="vertical" className={styles.inspectorPanel}>
-            <ComponentInspector
+            <ElementInspector
               studioId={app.selectedStudioId}
               gameId={app.selectedGameId}
             />

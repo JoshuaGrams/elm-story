@@ -4,11 +4,11 @@ import { GameId, StudioId } from '../../data/types'
 
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 
-import ComponentProperties from '../ComponentProperties'
+import ElementProperties from '../ElementProperties'
 
 import styles from './styles.module.less'
 
-const ComponentInspector: React.FC<{
+const ElementInspector: React.FC<{
   studioId: StudioId
   gameId: GameId | undefined
 }> = ({ studioId, gameId = undefined }) => {
@@ -23,12 +23,12 @@ const ComponentInspector: React.FC<{
               tabs: [
                 {
                   id: 'propertiesTab',
-                  title: 'Component Properties',
+                  title: 'Element Properties',
                   minHeight: 32,
                   content: (
                     <>
                       {gameId && (
-                        <ComponentProperties
+                        <ElementProperties
                           studioId={studioId}
                           gameId={gameId}
                         />
@@ -63,6 +63,6 @@ const ComponentInspector: React.FC<{
   )
 }
 
-ComponentInspector.displayName = 'ComponentInspector'
+ElementInspector.displayName = 'ElementInspector'
 
-export default ComponentInspector
+export default ElementInspector

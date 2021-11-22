@@ -12,7 +12,7 @@ import ComponentDetailView from './ComponentDetailView'
 
 import styles from './styles.module.less'
 
-const ComponentProperties: React.FC<{
+const ElementProperties: React.FC<{
   studioId: StudioId
   gameId: GameId | undefined
 }> = ({ studioId, gameId = undefined }) => {
@@ -57,4 +57,6 @@ const ComponentProperties: React.FC<{
   )
 }
 
-export default ComponentProperties
+ElementProperties.displayName = 'ElementProperties'
+
+export default ElementProperties

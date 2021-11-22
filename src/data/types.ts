@@ -278,6 +278,12 @@ export enum PASSAGE_TYPE {
   INPUT = 'INPUT'
 }
 
+export type EventPersona = [
+  ComponentId,
+  CHARACTER_MASK_TYPE,
+  string | undefined
+] // [characterId, mask, reference]
+
 export interface Passage extends Component {
   gameOver: boolean // game end
   gameId: GameId
@@ -285,7 +291,7 @@ export interface Passage extends Component {
   choices: ComponentId[]
   content: string
   input?: ComponentId // input ref
-  persona?: [ComponentId, CHARACTER_MASK_TYPE] // [0]: characterId
+  persona?: EventPersona
   type: PASSAGE_TYPE
 }
 
