@@ -1,13 +1,16 @@
-import React, { useCallback, useContext, useEffect } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 
 import {
+  CHARACTER_MASK_TYPE,
   ComponentId,
+  GameId,
   Passage,
   PASSAGE_TYPE,
   StudioId
 } from '../../../data/types'
 
 import {
+  useCharacters,
   useChoicesByPassageRef,
   usePassage,
   useRoutePassthroughsByPassageRef
@@ -18,7 +21,8 @@ import {
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
 
-import { Checkbox, Select } from 'antd'
+import { Checkbox, Select, Divider, Button } from 'antd'
+import { RollbackOutlined } from '@ant-design/icons'
 import { CheckboxChangeEvent } from 'antd/lib/checkbox'
 
 import ComponentTitle from '../ComponentTitle'
@@ -93,6 +97,108 @@ const PassageType: React.FC<{
 
 PassageType.displayName = 'PassageType'
 
+const PassagePersona: React.FC<{
+  studioId: StudioId
+  gameId: GameId
+  passage: Passage
+}> = React.memo(({ studioId, gameId, passage }) => {
+  const characters = useCharacters(studioId, gameId)
+
+  const [selectedPersona, setSelectedPersona] = useState<
+    [ComponentId, CHARACTER_MASK_TYPE] | undefined
+  >(passage.persona)
+
+  const savePersonaCharacter = async (characterId: ComponentId | undefined) => {
+    const persona: [ComponentId, CHARACTER_MASK_TYPE] | undefined = characterId
+      ? [characterId, CHARACTER_MASK_TYPE.NEUTRAL]
+      : undefined
+
+    await api().passages.savePassage(studioId, {
+      ...passage,
+      persona
+    })
+
+    setSelectedPersona(persona)
+  }
+
+  const savePersonaMask = useCallback(
+    async (maskType: CHARACTER_MASK_TYPE | undefined) => {
+      const persona: [ComponentId, CHARACTER_MASK_TYPE] | undefined =
+        maskType && selectedPersona?.[0]
+          ? [selectedPersona?.[0], maskType]
+          : undefined
+
+      await api().passages.savePassage(studioId, { ...passage, persona })
+
+      setSelectedPersona(persona)
+    },
+    [selectedPersona]
+  )
+
+  useEffect(() => setSelectedPersona(passage.persona), [passage.id])
+
+  return (
+    <div className={styles.PassageMask}>
+      <div className={styles.header}>Persona</div>
+
+      {characters && (
+        <div className={styles.contentWrapper}>
+          <Divider>
+            <h2>Character</h2>
+          </Divider>
+
+          <div className={styles.selectWrapper}>
+            <Select
+              value={selectedPersona?.[0]}
+              placeholder="Select character..."
+              onChange={savePersonaCharacter}
+            >
+              {characters.map(
+                (character) =>
+                  character.id && (
+                    <Select.Option value={character.id} key={character.id}>
+                      {character.title}
+                    </Select.Option>
+                  )
+              )}
+            </Select>
+
+            {selectedPersona?.[0] && (
+              <Button className={styles.rollBackBtn}>
+                <RollbackOutlined
+                  onClick={() => savePersonaCharacter(undefined)}
+                />
+              </Button>
+            )}
+          </div>
+
+          {selectedPersona?.[0] && (
+            <>
+              <Divider>
+                <h2>Mask</h2>
+              </Divider>
+
+              <div className={styles.selectWrapper}>
+                <Select value={selectedPersona?.[1]} onChange={savePersonaMask}>
+                  {characters
+                    .find((character) => character.id === selectedPersona?.[0])
+                    ?.masks.map((mask) => (
+                      <Select.Option value={mask.type} key={mask.type}>
+                        {mask.type}
+                      </Select.Option>
+                    ))}
+                </Select>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  )
+})
+
+PassagePersona.displayName = 'PassagePersona'
+
 const PassageEndToggle: React.FC<{
   studioId: StudioId
   passage: Passage
@@ -136,6 +242,7 @@ const PassageEndToggle: React.FC<{
         onChange={toggleGameEnd}
         checked={passage.gameOver}
         disabled={
+          (!choices && !routePassthroughs) ||
           (choices && choices.length > 0) ||
           (routePassthroughs && routePassthroughs.length > 0) ||
           passage.type === PASSAGE_TYPE.INPUT
@@ -185,11 +292,17 @@ const PassageDetails: React.FC<{
             />
             <div className={parentStyles.componentId}>{passage.id}</div>
 
-            <PassageType studioId={studioId} passage={passage} />
-
             {passage.id && (
               <PassageEndToggle studioId={studioId} passage={passage} />
             )}
+
+            <PassageType studioId={studioId} passage={passage} />
+
+            <PassagePersona
+              studioId={studioId}
+              gameId={passage.gameId}
+              passage={passage}
+            />
           </div>
         </div>
       )}
