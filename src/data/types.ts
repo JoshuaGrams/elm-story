@@ -285,6 +285,7 @@ export interface Passage extends Component {
   choices: ComponentId[]
   content: string
   input?: ComponentId // input ref
+  persona?: [ComponentId, CHARACTER_MASK_TYPE] // [0]: characterId
   type: PASSAGE_TYPE
 }
 

@@ -1,5 +1,6 @@
 .PassageDetails {
-  .PassageType {
+  .PassageType,
+  .PassageMask {
     // TODO: combine with duplicates in RouteDetails
     border: 1px solid hsl(0, 0%, 15%);
     margin-top: 10px;
@@ -15,13 +16,56 @@
       height: 32px;
       line-height: 32px;
     }
+  }
 
+  .PassageType {
     .select {
       width: 100%;
       font-size: 12px;
 
       :global .ant-select-selector {
         border: none;
+      }
+    }
+  }
+
+  .PassageMask {
+    .contentWrapper {
+      padding: 10px;
+
+      // TODO: combine with JumpSelect
+      :global .ant-divider {
+        margin: 0px !important;
+        margin-bottom: 4px !important;
+
+        :local h2 {
+          margin: 0px;
+          font-size: 12px;
+          text-transform: uppercase;
+          color: hsl(0, 0%, 50%);
+        }
+      }
+
+      .selectWrapper {
+        display: flex;
+
+        :global .ant-select {
+          width: 100%;
+          margin-bottom: 4px !important;
+          flex-grow: 1;
+        }
+
+        :global .ant-btn {
+          margin: 0px;
+        }
+
+        .rollBackBtn {
+          width: 32px !important;
+          margin: 0px;
+          padding: 0px;
+          border: none;
+          flex-grow: 0;
+        }
       }
     }
   }
