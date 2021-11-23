@@ -1,6 +1,6 @@
 .PassageDetails {
   .PassageType,
-  .PassageMask {
+  .EventPersona {
     // TODO: combine with duplicates in RouteDetails
     border: 1px solid hsl(0, 0%, 15%);
     margin-top: 10px;
@@ -29,7 +29,12 @@
     }
   }
 
-  .PassageMask {
+  .EventPersona {
+    .noCharacters {
+      color: var(--warning-message-color);
+      font-size: 10px;
+    }
+
     .contentWrapper {
       padding: 10px;
 

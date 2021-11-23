@@ -99,7 +99,7 @@ const PassageType: React.FC<{
 
 PassageType.displayName = 'PassageType'
 
-const PassagePersona: React.FC<{
+const Persona: React.FC<{
   studioId: StudioId
   gameId: GameId
   passage: Passage
@@ -185,39 +185,49 @@ const PassagePersona: React.FC<{
   }, [selectedCharacter])
 
   return (
-    <div className={styles.PassageMask}>
+    <div className={styles.EventPersona}>
       <div className={styles.header}>Persona</div>
 
       {characters && (
         <div className={styles.contentWrapper}>
-          <Divider>
-            <h2>Character</h2>
-          </Divider>
+          {characters.length === 0 && (
+            <div className={styles.noCharacters}>
+              At least 1 story character is required to compose event persona.
+            </div>
+          )}
 
-          <div className={styles.selectWrapper}>
-            <Select
-              value={persona?.[0]}
-              placeholder="Select character..."
-              onChange={savePersonaCharacter}
-            >
-              {characters.map(
-                (character) =>
-                  character.id && (
-                    <Select.Option value={character.id} key={character.id}>
-                      {character.title}
-                    </Select.Option>
-                  )
-              )}
-            </Select>
+          {characters.length > 0 && (
+            <>
+              <Divider>
+                <h2>Character</h2>
+              </Divider>
 
-            {persona?.[0] && (
-              <Button className={styles.rollBackBtn}>
-                <RollbackOutlined
-                  onClick={() => savePersonaCharacter(undefined)}
-                />
-              </Button>
-            )}
-          </div>
+              <div className={styles.selectWrapper}>
+                <Select
+                  value={persona?.[0]}
+                  placeholder="Select character..."
+                  onChange={savePersonaCharacter}
+                >
+                  {characters.map(
+                    (character) =>
+                      character.id && (
+                        <Select.Option value={character.id} key={character.id}>
+                          {character.title}
+                        </Select.Option>
+                      )
+                  )}
+                </Select>
+
+                {persona?.[0] && (
+                  <Button className={styles.rollBackBtn}>
+                    <RollbackOutlined
+                      onClick={() => savePersonaCharacter(undefined)}
+                    />
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
 
           {persona?.[0] && selectedCharacter && (
             <>
@@ -282,7 +292,7 @@ const PassagePersona: React.FC<{
   )
 })
 
-PassagePersona.displayName = 'PassagePersona'
+Persona.displayName = 'EventPersona'
 
 const PassageEndToggle: React.FC<{
   studioId: StudioId
@@ -383,7 +393,7 @@ const PassageDetails: React.FC<{
 
             <PassageType studioId={studioId} passage={passage} />
 
-            <PassagePersona
+            <Persona
               studioId={studioId}
               gameId={passage.gameId}
               passage={passage}
