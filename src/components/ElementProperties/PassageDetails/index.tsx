@@ -174,13 +174,11 @@ const Persona: React.FC<{
   useEffect(() => {
     if (selectedCharacter && persona?.[2]) {
       const foundRef = selectedCharacter.refs.find(
-        (ref) =>
-          (ref[0] && ref[0] === persona[2]) ||
-          (!ref[0] && ref[1] === persona[2])
+        (ref) => ref[0] && ref[0] === persona[2]
       )
 
       // reference has been removed
-      !foundRef && savePersonaReference(undefined)
+      !foundRef && persona && setPersona([persona[0], persona[1], undefined])
     }
   }, [selectedCharacter])
 
@@ -251,10 +249,7 @@ const Persona: React.FC<{
                       onChange={savePersonaReference}
                     >
                       {selectedCharacter.refs.map((ref) => (
-                        <Select.Option
-                          value={ref[0] || ref[1]}
-                          key={ref[0] || ref[1]}
-                        >
+                        <Select.Option value={ref[0]} key={ref[0]}>
                           {ref[1]}
                         </Select.Option>
                       ))}

@@ -7,7 +7,8 @@ import {
   ComponentId,
   StudioId,
   GameId,
-  PASSAGE_TYPE
+  PASSAGE_TYPE,
+  CharacterRefs
 } from '../data/types'
 
 import api from '.'
@@ -217,6 +218,44 @@ export async function setPassageGameEnd(
 ) {
   try {
     await new LibraryDatabase(studioId).setPassageGameEnd(passageId, gameOver)
+  } catch (error) {
+    throw error
+  }
+}
+
+// receive new references and clear dead
+export async function clearDeadPersonaRefs(
+  studioId: StudioId,
+  characterId: ComponentId,
+  newRefs: CharacterRefs
+) {
+  const db = new LibraryDatabase(studioId)
+
+  try {
+    const passages = await db.passages
+      .where('persona')
+      .equals(characterId)
+      .toArray()
+
+    await Promise.all(
+      passages.map(async (passage) => {
+        let clearRef = true
+
+        newRefs.map((newRef) => {
+          if (newRef[0] === passage.persona?.[2]) {
+            clearRef = false
+          }
+        })
+
+        if (clearRef && passage.id && passage.persona) {
+          await db.passages.update(passage.id, {
+            ...passage,
+            persona: [passage.persona[0], passage.persona[1], undefined],
+            updated: Date.now()
+          })
+        }
+      })
+    )
   } catch (error) {
     throw error
   }

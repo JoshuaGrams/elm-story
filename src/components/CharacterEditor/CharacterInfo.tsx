@@ -237,7 +237,7 @@ const ReferencesSelect: React.FC<{
           setSelections(
             newSelections.map(({ value, id, pronoun }) => ({
               value: value.toUpperCase().trim(),
-              id: pronoun ? null : id || uuid(),
+              id: id || uuid(),
               pronoun,
               editing: false
             }))
@@ -411,13 +411,23 @@ const CharacterInfo: React.FC<{
               <ReferencesSelect
                 refs={character.refs}
                 onSelect={async (newRefs) => {
-                  try {
-                    await api().characters.saveCharacter(studioId, {
-                      ...character,
-                      refs: newRefs
-                    })
-                  } catch (error) {
-                    throw error
+                  if (character.id) {
+                    try {
+                      await Promise.all([
+                        // #455: update associations (passages persona, content)
+                        api().passages.clearDeadPersonaRefs(
+                          studioId,
+                          character.id,
+                          newRefs
+                        ),
+                        api().characters.saveCharacter(studioId, {
+                          ...character,
+                          refs: newRefs
+                        })
+                      ])
+                    } catch (error) {
+                      throw error
+                    }
                   }
                 }}
               />

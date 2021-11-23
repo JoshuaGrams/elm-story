@@ -184,8 +184,8 @@ export interface CharacterMask {
   type: CHARACTER_MASK_TYPE
 }
 
-// tuple: [uuid | null (pronoun), ...]
-export type CharacterRef = [string | null, string | CHARACTER_PRONOUN_TYPES]
+// tuple: [uuid, ...]
+export type CharacterRef = [string, string | CHARACTER_PRONOUN_TYPES]
 
 export type CharacterRefs = Array<CharacterRef>
 
