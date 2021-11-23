@@ -23,7 +23,7 @@ import {
 
 import Cropper from 'react-easy-crop'
 import { Area } from 'react-easy-crop/types'
-import { Button, Slider, Divider } from 'antd'
+import { Button, Slider } from 'antd'
 
 import Mask from './CharacterMask'
 
@@ -129,10 +129,20 @@ const MaskWrapper: React.FC<{
                 }
 
                 try {
-                  await api().characters.saveCharacter(studioId, {
-                    ...character,
-                    masks: newMasks
-                  })
+                  // update event personas
+                  if (character.id) {
+                    await Promise.all([
+                      api().passages.resetPersonaMaskFromEvent(
+                        studioId,
+                        character.id,
+                        newMasks
+                      ),
+                      api().characters.saveCharacter(studioId, {
+                        ...character,
+                        masks: newMasks
+                      })
+                    ])
+                  }
                 } catch (error) {
                   throw error
                 }

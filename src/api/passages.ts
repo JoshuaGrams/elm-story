@@ -8,7 +8,9 @@ import {
   StudioId,
   GameId,
   PASSAGE_TYPE,
-  CharacterRefs
+  CharacterRefs,
+  CharacterMask,
+  CHARACTER_MASK_TYPE
 } from '../data/types'
 
 import api from '.'
@@ -224,7 +226,7 @@ export async function setPassageGameEnd(
 }
 
 // receive new references and remove dead
-export async function removeDeadPersonaRefsFromPassage(
+export async function removeDeadPersonaRefsFromEvent(
   studioId: StudioId,
   characterId: ComponentId,
   newRefs: CharacterRefs
@@ -239,15 +241,18 @@ export async function removeDeadPersonaRefsFromPassage(
 
     await Promise.all(
       passages.map(async (passage) => {
+        if (!passage.persona) return
+
         let clearRef = true
 
         newRefs.map((newRef) => {
           if (newRef[0] === passage.persona?.[2]) {
             clearRef = false
+            return
           }
         })
 
-        if (clearRef && passage.id && passage.persona) {
+        if (clearRef && passage.id) {
           try {
             await db.passages.update(passage.id, {
               ...passage,
@@ -266,7 +271,7 @@ export async function removeDeadPersonaRefsFromPassage(
 }
 
 // when characters are removed
-export async function removeDeadPersonasFromPassage(
+export async function removeDeadPersonasFromEvent(
   studioId: StudioId,
   characterId: ComponentId
 ) {
@@ -292,6 +297,55 @@ export async function removeDeadPersonasFromPassage(
         }
       })
     ])
+  } catch (error) {
+    throw error
+  }
+}
+
+// when mask is disabled, reset to NEUTRAL
+export async function resetPersonaMaskFromEvent(
+  studioId: StudioId,
+  characterId: ComponentId,
+  newMasks: CharacterMask[]
+) {
+  const db = new LibraryDatabase(studioId)
+
+  try {
+    const passages = await db.passages
+      .where('persona')
+      .equals(characterId)
+      .toArray()
+
+    await Promise.all(
+      passages.map(async (passage) => {
+        if (!passage.persona) return
+
+        let resetMask = true
+
+        newMasks.map((newMask) => {
+          if (newMask.type === passage.persona?.[1] && newMask.active) {
+            resetMask = false
+            return
+          }
+        })
+
+        if (resetMask && passage.id) {
+          try {
+            await db.passages.update(passage.id, {
+              ...passage,
+              persona: [
+                passage.persona[0],
+                CHARACTER_MASK_TYPE.NEUTRAL,
+                passage.persona[2]
+              ],
+              updated: Date.now()
+            })
+          } catch (error) {
+            throw error
+          }
+        }
+      })
+    )
   } catch (error) {
     throw error
   }

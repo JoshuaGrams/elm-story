@@ -56,7 +56,7 @@ const CharacterEditor: React.FC<{
                   try {
                     character.id &&
                       (await Promise.all([
-                        api().passages.removeDeadPersonasFromPassage(
+                        api().passages.removeDeadPersonasFromEvent(
                           studioId,
                           character.id
                         ),

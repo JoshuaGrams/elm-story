@@ -160,7 +160,7 @@ const Persona: React.FC<{
     [passage, persona]
   )
 
-  useEffect(() => setPersona(passage.persona), [passage.id])
+  useEffect(() => setPersona(passage.persona), [passage, selectedCharacter])
 
   useEffect(
     () =>
@@ -170,19 +170,6 @@ const Persona: React.FC<{
       ),
     [characters, persona]
   )
-
-  useEffect(() => {
-    if (selectedCharacter && persona?.[2]) {
-      const foundRef = selectedCharacter.refs.find(
-        (ref) => ref[0] && ref[0] === persona[2]
-      )
-
-      // reference has been removed
-      !foundRef && persona && setPersona([persona[0], persona[1], undefined])
-    }
-
-    !selectedCharacter && setPersona(undefined)
-  }, [selectedCharacter])
 
   return (
     <div className={styles.EventPersona}>
@@ -275,8 +262,13 @@ const Persona: React.FC<{
               <div className={styles.selectWrapper}>
                 <Select value={persona?.[1]} onChange={savePersonaMask}>
                   {selectedCharacter?.masks.map((mask) => (
-                    <Select.Option value={mask.type} key={mask.type}>
+                    <Select.Option
+                      value={mask.type}
+                      key={mask.type}
+                      disabled={!mask.active}
+                    >
                       {mask.type}
+                      {!mask.active && ' (Disabled)'}
                     </Select.Option>
                   ))}
                 </Select>

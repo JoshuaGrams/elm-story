@@ -415,7 +415,7 @@ const CharacterInfo: React.FC<{
                     try {
                       await Promise.all([
                         // #455: update associations (passages persona, content)
-                        api().passages.removeDeadPersonaRefsFromPassage(
+                        api().passages.removeDeadPersonaRefsFromEvent(
                           studioId,
                           character.id,
                           newRefs
