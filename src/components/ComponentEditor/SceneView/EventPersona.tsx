@@ -60,6 +60,7 @@ const EventPersonaPane: React.FC<{
 
               <div className={styles.info}>
                 <h1>Persona</h1>
+
                 <h2>Character</h2>
                 <p>
                   <span
@@ -75,8 +76,14 @@ const EventPersonaPane: React.FC<{
                     {character.title}
                   </span>
                 </p>
-                <h2>Reference</h2>
-                <p>{refValue || 'N/A'}</p>
+
+                {refValue && (
+                  <>
+                    <h2>Reference</h2>
+                    <p>{refValue}</p>
+                  </>
+                )}
+
                 <h2>Mask</h2>
                 <p>{persona[1]}</p>
               </div>

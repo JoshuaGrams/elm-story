@@ -250,11 +250,13 @@ const PassagePersona: React.FC<{
                       ))}
                     </Select>
 
-                    <Button className={styles.rollBackBtn}>
-                      <RollbackOutlined
-                        onClick={() => savePersonaReference(undefined)}
-                      />
-                    </Button>
+                    {persona?.[2] && (
+                      <Button className={styles.rollBackBtn}>
+                        <RollbackOutlined
+                          onClick={() => savePersonaReference(undefined)}
+                        />
+                      </Button>
+                    )}
                   </div>
                 </>
               )}
