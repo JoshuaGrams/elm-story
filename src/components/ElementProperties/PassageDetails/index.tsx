@@ -104,7 +104,7 @@ const PassagePersona: React.FC<{
   gameId: GameId
   passage: Passage
 }> = React.memo(({ studioId, gameId, passage }) => {
-  const characters = useCharacters(studioId, gameId)
+  const characters = useCharacters(studioId, gameId, [passage.id])
 
   const [persona, setPersona] = useState<EventPersona | undefined>(
       passage.persona
@@ -171,6 +171,19 @@ const PassagePersona: React.FC<{
     [characters, persona]
   )
 
+  useEffect(() => {
+    if (selectedCharacter && persona?.[2]) {
+      const foundRef = selectedCharacter.refs.find(
+        (ref) =>
+          (ref[0] && ref[0] === persona[2]) ||
+          (!ref[0] && ref[1] === persona[2])
+      )
+
+      // reference has been removed
+      !foundRef && savePersonaReference(undefined)
+    }
+  }, [selectedCharacter])
+
   return (
     <div className={styles.PassageMask}>
       <div className={styles.header}>Persona</div>
@@ -206,35 +219,32 @@ const PassagePersona: React.FC<{
             )}
           </div>
 
-          {persona?.[0] && (
+          {persona?.[0] && selectedCharacter && (
             <>
-              <Divider>
-                <h2>Mask</h2>
-              </Divider>
-
-              <div className={styles.selectWrapper}>
-                <Select value={persona?.[1]} onChange={savePersonaMask}>
-                  {selectedCharacter?.masks.map((mask) => (
-                    <Select.Option value={mask.type} key={mask.type}>
-                      {mask.type}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </div>
-
-              {selectedCharacter && selectedCharacter.refs.length > 0 && (
+              {selectedCharacter.refs.length > 0 && (
                 <>
                   <Divider>
                     <h2>Reference</h2>
                   </Divider>
                   <div className={styles.selectWrapper}>
                     <Select
-                      value={persona?.[2]}
-                      placeholder="Select reference..."
+                      value={
+                        selectedCharacter?.id === persona?.[0]
+                          ? persona?.[2]
+                          : undefined
+                      }
+                      placeholder={
+                        selectedCharacter?.id === persona?.[0]
+                          ? 'Select reference...'
+                          : ''
+                      }
                       onChange={savePersonaReference}
                     >
-                      {selectedCharacter?.refs.map((ref) => (
-                        <Select.Option value={ref[1]} key={ref[1]}>
+                      {selectedCharacter.refs.map((ref) => (
+                        <Select.Option
+                          value={ref[0] || ref[1]}
+                          key={ref[0] || ref[1]}
+                        >
                           {ref[1]}
                         </Select.Option>
                       ))}
@@ -248,6 +258,20 @@ const PassagePersona: React.FC<{
                   </div>
                 </>
               )}
+
+              <Divider>
+                <h2>Mask</h2>
+              </Divider>
+
+              <div className={styles.selectWrapper}>
+                <Select value={persona?.[1]} onChange={savePersonaMask}>
+                  {selectedCharacter?.masks.map((mask) => (
+                    <Select.Option value={mask.type} key={mask.type}>
+                      {mask.type}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
             </>
           )}
         </div>

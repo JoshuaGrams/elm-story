@@ -185,9 +185,9 @@ export interface CharacterMask {
 }
 
 // tuple: [uuid | null (pronoun), ...]
-export type CharacterRefs = Array<
-  [string | null, string | CHARACTER_PRONOUN_TYPES]
->
+export type CharacterRef = [string | null, string | CHARACTER_PRONOUN_TYPES]
+
+export type CharacterRefs = Array<CharacterRef>
 
 export interface Character extends Component {
   description?: string
@@ -287,7 +287,7 @@ export type EventPersona = [
   ComponentId,
   CHARACTER_MASK_TYPE,
   string | undefined
-] // [characterId, mask, reference]
+] // [characterId, mask, reference ID]
 
 export interface Passage extends Component {
   gameOver: boolean // game end

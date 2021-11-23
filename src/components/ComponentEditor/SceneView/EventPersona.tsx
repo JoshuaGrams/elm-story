@@ -22,13 +22,22 @@ const EventPersonaPane: React.FC<{
 
   const { editorDispatch } = useContext(EditorContext)
 
-  const [maskAssetId, setMaskAssetId] = useState<string | undefined>(undefined)
+  const [maskAssetId, setMaskAssetId] = useState<string | undefined>(undefined),
+    [refValue, setRefValue] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     if (persona && character) {
       const foundMask = character.masks.find((mask) => mask.type === persona[1])
 
       foundMask && setMaskAssetId(foundMask.assetId)
+
+      const foundRef = character.refs.find(
+        (ref) =>
+          (ref[0] && ref[0] === persona[2]) ||
+          (!ref[0] && ref[1] === persona[2])
+      )
+
+      setRefValue(foundRef?.[1])
     }
   }, [persona, character])
 
@@ -67,7 +76,7 @@ const EventPersonaPane: React.FC<{
                   </span>
                 </p>
                 <h2>Reference</h2>
-                <p>{persona[2] || 'N/A'}</p>
+                <p>{refValue || 'N/A'}</p>
                 <h2>Mask</h2>
                 <p>{persona[1]}</p>
               </div>
