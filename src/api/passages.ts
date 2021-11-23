@@ -223,8 +223,8 @@ export async function setPassageGameEnd(
   }
 }
 
-// receive new references and clear dead
-export async function clearDeadPersonaRefs(
+// receive new references and remove dead
+export async function removeDeadPersonaRefsFromPassage(
   studioId: StudioId,
   characterId: ComponentId,
   newRefs: CharacterRefs
@@ -248,14 +248,50 @@ export async function clearDeadPersonaRefs(
         })
 
         if (clearRef && passage.id && passage.persona) {
-          await db.passages.update(passage.id, {
-            ...passage,
-            persona: [passage.persona[0], passage.persona[1], undefined],
-            updated: Date.now()
-          })
+          try {
+            await db.passages.update(passage.id, {
+              ...passage,
+              persona: [passage.persona[0], passage.persona[1], undefined],
+              updated: Date.now()
+            })
+          } catch (error) {
+            throw error
+          }
         }
       })
     )
+  } catch (error) {
+    throw error
+  }
+}
+
+// when characters are removed
+export async function removeDeadPersonasFromPassage(
+  studioId: StudioId,
+  characterId: ComponentId
+) {
+  const db = new LibraryDatabase(studioId)
+
+  try {
+    const passages = await db.passages
+      .where('persona')
+      .equals(characterId)
+      .toArray()
+
+    await Promise.all([
+      passages.map(async (passage) => {
+        try {
+          passage.id &&
+            (await db.passages.update(passage.id, {
+              ...passage,
+              persona: undefined,
+              updated: Date.now()
+            }))
+        } catch (error) {
+          throw error
+        }
+      })
+    ])
   } catch (error) {
     throw error
   }

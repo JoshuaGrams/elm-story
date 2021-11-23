@@ -180,6 +180,8 @@ const Persona: React.FC<{
       // reference has been removed
       !foundRef && persona && setPersona([persona[0], persona[1], undefined])
     }
+
+    !selectedCharacter && setPersona(undefined)
   }, [selectedCharacter])
 
   return (

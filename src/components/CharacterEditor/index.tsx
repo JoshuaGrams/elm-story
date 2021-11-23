@@ -53,8 +53,18 @@ const CharacterEditor: React.FC<{
                     type: EDITOR_ACTION_TYPE.CLOSE_CHARACTER_MODAL
                   })
 
-                  character.id &&
-                    api().characters.removeCharacter(studioId, character.id)
+                  try {
+                    character.id &&
+                      (await Promise.all([
+                        api().passages.removeDeadPersonasFromPassage(
+                          studioId,
+                          character.id
+                        ),
+                        api().characters.removeCharacter(studioId, character.id)
+                      ]))
+                  } catch (error) {
+                    throw error
+                  }
                 }}
               />
             }
