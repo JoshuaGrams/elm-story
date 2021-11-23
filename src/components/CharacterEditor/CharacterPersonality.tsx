@@ -84,18 +84,25 @@ const MaskWrapper: React.FC<{
                   newMasks.splice(foundMaskIndex, 1)
                 }
 
-                await Promise.all([
-                  ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
-                    studioId,
-                    gameId: character.gameId,
-                    id: assetId,
-                    ext: 'jpeg'
-                  }),
-                  api().characters.saveCharacter(studioId, {
-                    ...character,
-                    masks: newMasks
-                  })
-                ])
+                if (character.id) {
+                  await Promise.all([
+                    ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
+                      studioId,
+                      gameId: character.gameId,
+                      id: assetId,
+                      ext: 'jpeg'
+                    }),
+                    api().passages.resetPersonaMaskFromEvent(
+                      studioId,
+                      character.id,
+                      newMasks
+                    ),
+                    api().characters.saveCharacter(studioId, {
+                      ...character,
+                      masks: newMasks
+                    })
+                  ])
+                }
               } catch (error) {
                 throw error
               }
