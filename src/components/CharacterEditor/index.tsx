@@ -4,12 +4,12 @@ import { Character, GameId, StudioId } from '../../data/types'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
-import { Button, Tabs } from 'antd'
+import { Tabs } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 
 import CharacterInfo from './CharacterInfo'
 import CharacterPersonality from './CharacterPersonality'
-import CharacterMentions from './CharacterMentions'
+import CharacterEvents from './CharacterEvents'
 
 import styles from './styles.module.less'
 import api from '../../api'
@@ -17,8 +17,7 @@ import api from '../../api'
 enum TAB_TYPE {
   INFO = 'INFO',
   PERSONALITY = 'PERSONALITY',
-  INVENTORY = 'INVENTORY',
-  MENTIONS = 'MENTIONS'
+  EVENTS = 'EVENTS'
 }
 
 const RemoveCharacterButton: React.FC<{ onRemove: () => void }> = ({
@@ -79,8 +78,8 @@ const CharacterEditor: React.FC<{
             <Tabs.TabPane tab="Personality" key={TAB_TYPE.PERSONALITY}>
               <CharacterPersonality studioId={studioId} character={character} />
             </Tabs.TabPane>
-            <Tabs.TabPane tab="Mentions" key={TAB_TYPE.MENTIONS}>
-              <CharacterMentions
+            <Tabs.TabPane tab="Events" key={TAB_TYPE.EVENTS}>
+              <CharacterEvents
                 studioId={studioId}
                 gameId={gameId}
                 character={character}

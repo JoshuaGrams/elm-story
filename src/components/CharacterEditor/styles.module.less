@@ -400,3 +400,95 @@
     }
   }
 }
+
+.CharacterEvents {
+  .group {
+    margin-bottom: 20px;
+  }
+
+  .SceneRow {
+    margin-bottom: 10px;
+
+    .icon {
+      color: var(--highlight-color);
+    }
+
+    h1 {
+      display: inline;
+      font-size: 16px;
+      padding-left: 10px;
+      text-transform: uppercase;
+      text-decoration: underline;
+
+      &:hover {
+        cursor: pointer;
+        color: var(--highlight-color);
+      }
+    }
+  }
+
+  .EventRow {
+    margin-bottom: 6px;
+
+    :global .ant-table {
+      background: none;
+      border: 1px solid var(--border-color-20);
+      border-radius: 2px;
+    }
+
+    :global .ant-table-tbody > tr.ant-table-row-level-0:hover > td {
+      background: unset;
+    }
+
+    th {
+      background: black !important;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: hsl(0, 0%, 40%);
+    }
+
+    th,
+    td {
+      padding: 4px 6px;
+    }
+
+    td {
+      border-bottom: none !important;
+
+      &:last-of-type {
+        border-left: 1px solid var(--border-color-20);
+      }
+    }
+
+    tr {
+      background: none !important;
+    }
+
+    .link {
+      text-decoration: underline;
+
+      &:hover {
+        cursor: pointer;
+        color: var(--highlight-color);
+      }
+    }
+
+    .reference {
+      width: 200px;
+    }
+
+    .mask {
+      width: 76px;
+      padding: 0px;
+
+      span {
+        font-size: 10px;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: hsla(0, 0%, 0%, 0.5);
+        text-align: center;
+      }
+    }
+  }
+}
