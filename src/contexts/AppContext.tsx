@@ -28,7 +28,7 @@ export enum APP_ACTION_TYPE {
 
 export enum APP_LOCATION {
   DASHBOARD = '/',
-  EDITOR = '/editor'
+  COMPOSER = '/editor'
 }
 
 type AppActionType =

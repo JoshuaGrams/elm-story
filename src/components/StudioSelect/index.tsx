@@ -105,7 +105,7 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
                   value={`${studio.id}`}
                   key={studio.id}
                 >
-                  {studio.title} | {studio.games.length} Games
+                  {studio.title} | {studio.games.length} Storyworlds
                 </Option>
               ))}
             </Select>

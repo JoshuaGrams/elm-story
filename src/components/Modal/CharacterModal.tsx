@@ -7,7 +7,7 @@ import { StudioId, GameId, ComponentId } from '../../data/types'
 import { Modal, ModalProps } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 
-import CharacterEditor from '../CharacterEditor'
+import CharacterComposer from '../CharacterComposer'
 
 import styles from './styles.module.less'
 
@@ -42,7 +42,7 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
       className={styles.CharacterModal}
     >
       {character && (
-        <CharacterEditor
+        <CharacterComposer
           studioId={studioId}
           gameId={gameId}
           character={character}

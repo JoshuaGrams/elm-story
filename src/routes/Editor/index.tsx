@@ -14,8 +14,8 @@ import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { DividerBox } from 'rc-dock'
 
-import StoryInspector from '../../components/StoryInspector'
-import ComponentEditor from '../../components/ComponentEditor'
+import StoryworldInspector from '../../components/StoryworldInspector'
+import ElementComposer from '../../components/ElementComposer'
 import ElementInspector from '../../components/ElementInspector'
 
 import styles from './styles.module.less'
@@ -28,10 +28,7 @@ const Editor: React.FC = () => {
 
   const selectedGame =
     app.selectedStudioId && app.selectedGameId
-      ? useGame(app.selectedStudioId, app.selectedGameId, [
-          app.selectedStudioId,
-          app.selectedGameId
-        ])
+      ? useGame(app.selectedStudioId, app.selectedGameId)
       : undefined
 
   function closeActiveTab() {
@@ -85,13 +82,13 @@ const Editor: React.FC = () => {
       {app.selectedStudioId && selectedGame && (
         <DividerBox mode="horizontal" className={styles.editor}>
           <DividerBox mode="vertical" className={styles.gameOutlinePanel}>
-            <StoryInspector
+            <StoryworldInspector
               studioId={app.selectedStudioId}
               game={selectedGame}
             />
           </DividerBox>
 
-          <ComponentEditor
+          <ElementComposer
             studioId={app.selectedStudioId}
             game={selectedGame}
           />

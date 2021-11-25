@@ -1,0 +1,494 @@
+.CharacterComposer {
+  .CharacterInfo {
+    .content {
+      padding-left: 24px;
+      max-width: 370px;
+      .componentId {
+        padding-top: 24px;
+        font-size: 10px;
+        color: var(--component-id);
+
+        &::before {
+          content: 'CID: ';
+        }
+      }
+    }
+  }
+
+  .ImportMaskImage {
+    position: absolute;
+    width: 470px;
+    height: 470px;
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+
+    &.cropping {
+      pointer-events: unset;
+      opacity: 1;
+    }
+
+    h1 {
+      font-size: 16px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .cropContainer {
+      width: 100%;
+      height: 250px;
+      bottom: 0;
+      background: black;
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      text-align: center;
+
+      button:first-of-type {
+        margin-right: 6px;
+      }
+    }
+  }
+
+  .CharacterPersonality {
+    width: 470px;
+    height: 470px;
+    display: grid;
+    grid-template-columns: 182px auto 182px;
+    grid-template-rows: 182px auto 182px;
+    opacity: 1;
+    transition: opacity 0.2s;
+
+    &.croppingMaskImage {
+      opacity: 0;
+    }
+
+    .bar {
+      width: 100%;
+      height: 100%;
+      display: grid;
+
+      .value {
+        position: absolute;
+        align-self: center;
+        justify-self: center;
+        padding: 2px 6px;
+        border-radius: 8px;
+        z-index: 1;
+        font-size: 12px;
+        backdrop-filter: blur(10px);
+        width: 60px;
+        text-align: center;
+        text-transform: uppercase;
+        opacity: 0;
+        transition: opacity 0.5s, backdrop-filer 0.5s;
+
+        &.active {
+          opacity: 1;
+        }
+      }
+
+      .drive {
+        height: 1px;
+        width: 100%;
+        background: var(--drive-color-dark);
+        align-self: center;
+        display: grid;
+
+        .value {
+          border: 1px solid var(--drive-color);
+
+          span {
+            color: var(--drive-color) !important;
+          }
+        }
+
+        .positive,
+        .negative {
+          background: var(--drive-color);
+          transition: width 0.5s;
+        }
+
+        .positive {
+          box-shadow: -10px 0 50px 4px var(--drive-color);
+        }
+
+        .negative {
+          width: 0%;
+          justify-self: end;
+          box-shadow: 10px 0 50px 4px var(--drive-color);
+        }
+      }
+
+      .energy {
+        width: 1px;
+        height: 100%;
+        background: var(--energy-color-dark);
+        justify-self: center;
+        display: grid;
+        display: grid;
+
+        .value {
+          border: 1px solid var(--energy-color);
+
+          span {
+            color: var(--energy-color) !important;
+          }
+        }
+
+        .positive,
+        .negative {
+          background: var(--energy-color);
+          transition: height 0.5s;
+        }
+
+        .positive {
+          box-shadow: 0 10px 50px 4px var(--energy-color);
+          align-self: flex-end;
+        }
+
+        .negative {
+          box-shadow: 0 -10px 50px 4px var(--energy-color);
+          align-self: flex-start;
+        }
+      }
+    }
+
+    .mask {
+      &.central {
+        width: 100px;
+        height: 100px;
+        margin: 3px;
+      }
+    }
+
+    .zone {
+      display: grid;
+      grid-template-columns: repeat(2, 50%);
+      grid-template-rows: repeat(2, 50%);
+      grid-gap: 3px;
+
+      .mask {
+        &.edge {
+          width: 88px;
+          height: 88px;
+        }
+      }
+    }
+  }
+
+  .RemoveCharacterButton {
+    height: 46px;
+    width: 56px;
+    color: var(--warning-color);
+    text-align: center;
+    display: grid;
+    align-items: center;
+
+    &:hover {
+      cursor: pointer;
+      color: var(--warning-color-bright);
+    }
+  }
+}
+
+.CharacterMask {
+  overflow: hidden;
+  border: 1px solid var(--border-color-20);
+  transition: border-color 0.5s, box-shadow 0.5s;
+
+  &.interactive {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &.active {
+    border-color: hsl(0, 0%, 60%);
+  }
+
+  &.fill {
+    border: none;
+  }
+
+  &.dominateDrive {
+    border-left-color: var(--drive-color);
+    border-right-color: var(--drive-color);
+  }
+
+  &.dominateEnergy {
+    border-top-color: var(--energy-color);
+    border-bottom-color: var(--energy-color);
+  }
+
+  .wrapper {
+    margin: 1px;
+    border: 1px transparent solid;
+    transition: border-color 0.5s;
+
+    &.active {
+      border-color: black;
+    }
+
+    &.fill {
+      margin: 0px;
+      border: none;
+    }
+
+    .mask {
+      height: auto;
+      background-image: url(../../img/characters/mask-placeholder.svg);
+      background-size: cover;
+      background-position: center;
+      opacity: 0.2;
+      transition: opacity 0.5s, filter 0.5s;
+      filter: grayscale(100%);
+
+      &.active {
+        filter: grayscale(0%);
+        opacity: 1;
+      }
+    }
+
+    .type {
+      text-align: center;
+      font-size: 12px;
+      background: hsl(0, 0%, 0%);
+      opacity: 0.4;
+      transition: opacity 0.5s;
+
+      &.active {
+        opacity: 1;
+      }
+
+      &.overlay {
+        background: hsla(0, 0%, 3%, 0.8);
+        border-top: 1px solid black;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+      }
+    }
+  }
+}
+
+:global .mask-details-menu {
+  border: 1px solid var(--border-color-20);
+  background: hsl(0, 0%, 8%);
+  box-shadow: 0px 5px 20px 0px black;
+
+  :local .content {
+    .title {
+      padding: 10px 0;
+
+      h1,
+      h2 {
+        text-align: center;
+      }
+
+      h1 {
+        color: hsl(0, 0%, 40%);
+        text-transform: uppercase;
+        font-size: 16px;
+        margin-bottom: 2px;
+
+        &.active {
+          color: white !important;
+        }
+      }
+
+      h2 {
+        font-size: 12px;
+        margin-bottom: 0;
+        color: hsl(0, 0%, 40%);
+
+        span {
+          &.active {
+            color: white;
+          }
+
+          &.drive.active {
+            color: var(--drive-color);
+          }
+
+          &.energy.active {
+            color: var(--energy-color);
+          }
+
+          &.dominate {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+
+    .maskImage {
+      width: 200px;
+      height: auto;
+      aspect-ratio: 4/5;
+      background-image: url(../../img/characters/mask-placeholder.svg);
+      background-size: cover;
+
+      &:hover .buttons {
+        opacity: 1;
+        backdrop-filter: blur(4px) grayscale(100%);
+      }
+
+      .buttons {
+        opacity: 0;
+        transition: opacity 0.2s, backdrop-filter 0.2s;
+        background: hsla(0, 0%, 0%, 0.5);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+        display: grid;
+        align-items: center;
+        justify-content: center;
+
+        button {
+          background: black;
+          display: block;
+          width: 100%;
+          margin-bottom: 4px;
+
+          &:last-of-type {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+:global .ant-dropdown {
+  .mood-select-menu {
+    background: hsl(0, 0%, 18%);
+    border: black 1px solid;
+    width: 200px;
+    display: grid;
+    padding: 4px;
+    padding-right: 6px;
+    grid-template-columns: 50% 50%;
+    border-radius: 4px;
+    column-gap: 2px;
+    row-gap: 2px;
+
+    .ant-tag {
+      width: 100%;
+      text-align: center;
+      cursor: pointer;
+      background-color: hsl(0, 0%, 14%);
+      color: white !important;
+
+      &.selected-mood {
+        border-color: var(--highlight-color) !important;
+
+        &:hover {
+          background: var(--highlight-color-dark);
+        }
+      }
+
+      &:hover {
+        border-color: white;
+        background: hsl(0, 0%, 8%);
+      }
+    }
+  }
+}
+
+.CharacterEvents {
+  .group {
+    margin-bottom: 20px;
+  }
+
+  .SceneRow {
+    margin-bottom: 10px;
+
+    .icon {
+      color: var(--highlight-color);
+    }
+
+    h1 {
+      display: inline;
+      font-size: 16px;
+      padding-left: 10px;
+      text-transform: uppercase;
+      text-decoration: underline;
+
+      &:hover {
+        cursor: pointer;
+        color: var(--highlight-color);
+      }
+    }
+  }
+
+  .EventRow {
+    margin-bottom: 6px;
+
+    :global .ant-table {
+      background: none;
+      border: 1px solid var(--border-color-20);
+      border-radius: 2px;
+    }
+
+    :global .ant-table-tbody > tr.ant-table-row-level-0:hover > td {
+      background: unset;
+    }
+
+    th {
+      background: black !important;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: hsl(0, 0%, 40%);
+    }
+
+    th,
+    td {
+      padding: 4px 6px;
+    }
+
+    td {
+      border-bottom: none !important;
+
+      &:last-of-type {
+        border-left: 1px solid var(--border-color-20);
+      }
+    }
+
+    tr {
+      background: none !important;
+    }
+
+    .link {
+      text-decoration: underline;
+
+      &:hover {
+        cursor: pointer;
+        color: var(--highlight-color);
+      }
+    }
+
+    .reference {
+      width: 200px;
+    }
+
+    .mask {
+      width: 76px;
+      padding: 0px;
+
+      span {
+        font-size: 10px;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: hsla(0, 0%, 0%, 0.5);
+        text-align: center;
+      }
+    }
+  }
+}

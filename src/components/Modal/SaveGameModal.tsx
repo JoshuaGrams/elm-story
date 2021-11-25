@@ -40,7 +40,7 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
 
   return (
     <Modal
-      title={`${game && edit ? 'Edit' : 'New'} Game`}
+      title={`${game && edit ? 'Edit' : 'New'} Storyworld`}
       visible={visible}
       destroyOnClose
       onCancel={(event) => onCancel && onCancel(event)}
@@ -103,14 +103,14 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
             if (onSave) onSave(savedGame)
             if (afterClose) afterClose()
           } catch (error) {
-            throw new Error(error)
+            throw error
           }
         }}
       >
         <Form.Item
-          label="Game Title"
+          label="Title"
           name="title"
-          rules={[{ required: true, message: 'Game title is required.' }]}
+          rules={[{ required: true, message: 'Title is required.' }]}
         >
           <Input autoFocus />
         </Form.Item>

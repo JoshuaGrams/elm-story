@@ -23,7 +23,7 @@ const ElementInspector: React.FC<{
               tabs: [
                 {
                   id: 'propertiesTab',
-                  title: 'Element Properties',
+                  title: 'Properties',
                   minHeight: 32,
                   content: (
                     <>

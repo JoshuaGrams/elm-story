@@ -79,11 +79,11 @@ export interface Component {
   tags: string[] | []
   updated?: number // UTC timestamp
   editor?: {
-    // SceneView transform
+    // SceneMap transform
     componentEditorTransformX?: number
     componentEditorTransformY?: number
     componentEditorTransformZoom?: number
-    // SceneView->Passage,Jump position
+    // SceneMap->Passage,Jump position
     componentEditorPosX?: number
     componentEditorPosY?: number
   }

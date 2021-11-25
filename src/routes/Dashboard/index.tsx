@@ -7,7 +7,7 @@ import { ImportOutlined } from '@ant-design/icons'
 
 import { ImportJSONModal } from '../../components/Modal'
 import StudioSelect from '../../components/StudioSelect'
-import GameLibrary from '../../components/GameLibrary'
+import StoryworldLibrary from '../../components/StoryworldLibrary'
 
 import styles from './styles.module.less'
 
@@ -64,7 +64,7 @@ const Dashboard = () => {
         </div>
 
         {app.selectedStudioId && (
-          <GameLibrary studioId={app.selectedStudioId} />
+          <StoryworldLibrary studioId={app.selectedStudioId} />
         )}
       </div>
     </>

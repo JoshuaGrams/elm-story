@@ -94,9 +94,9 @@ const TitleBar: React.FC = () => {
   const isFirstRun = useRef(true)
 
   const [esgModalVisible, setESGModalVisible] = useState(false),
-    [appLocationTitle, setAppLocationTitle] = useState<'DASHBOARD' | 'EDITOR'>(
-      'DASHBOARD'
-    )
+    [appLocationTitle, setAppLocationTitle] = useState<
+      'DASHBOARD' | 'COMPOSER'
+    >('DASHBOARD')
 
   const titleBarButtonData = [
     {
@@ -128,7 +128,7 @@ const TitleBar: React.FC = () => {
             helpUrl =
               'https://docs.elmstory.com/guides/production/dashboard/overview'
             break
-          case APP_LOCATION.EDITOR:
+          case APP_LOCATION.COMPOSER:
             helpUrl =
               'https://docs.elmstory.com/guides/production/editor/overview'
             break
@@ -169,13 +169,13 @@ const TitleBar: React.FC = () => {
 
         setAppLocationTitle('DASHBOARD')
         break
-      case APP_LOCATION.EDITOR:
+      case APP_LOCATION.COMPOSER:
         appDispatch({
           type: APP_ACTION_TYPE.SET_LOCATION,
-          location: APP_LOCATION.EDITOR
+          location: APP_LOCATION.COMPOSER
         })
 
-        setAppLocationTitle('EDITOR')
+        setAppLocationTitle('COMPOSER')
         break
       default:
         break

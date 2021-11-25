@@ -8,7 +8,7 @@ import { useGame } from '../../hooks'
 
 import { EditorContext } from '../../contexts/EditorContext'
 
-import ComponentDetailView from './ComponentDetailView'
+import ComponentDetailView from './ElementPropertiesView'
 
 import styles from './styles.module.less'
 

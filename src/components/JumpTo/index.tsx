@@ -107,7 +107,7 @@ const JumpSelect: React.FC<{
       {passages && passages.length > 0 && (
         <>
           <Divider>
-            <h2>Passage</h2>
+            <h2>Event</h2>
           </Divider>
 
           <div className={`${styles.selectWrapper} nodrag`}>
@@ -148,7 +148,7 @@ const JumpSelect: React.FC<{
                 }}
                 className={`${styles.jumpToBtn} nodrag`}
               >
-                Jump to Passage
+                Jump to Event
               </Button>
             )}
           </div>
