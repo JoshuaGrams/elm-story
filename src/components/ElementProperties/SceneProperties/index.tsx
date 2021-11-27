@@ -71,30 +71,32 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
                 }}
               />
               <div className={styles.componentId}>{scene.id}</div>
-            </div>
 
-            <div className={styles.content}>
               {!editor.selectedComponentEditorSceneViewPassage &&
-                editor.totalComponentEditorSceneViewSelectedPassages > 0 && (
-                  <div>
-                    Selected Events:{' '}
-                    {editor.totalComponentEditorSceneViewSelectedPassages}
-                  </div>
-                )}
+                !editor.selectedComponentEditorSceneViewJump &&
+                !editor.selectedComponentEditorSceneViewRoute && (
+                  <div className={styles.multiSelection}>
+                    {editor.totalComponentEditorSceneViewSelectedPassages >
+                      0 && (
+                      <div>
+                        Selected Events:{' '}
+                        {editor.totalComponentEditorSceneViewSelectedPassages}
+                      </div>
+                    )}
 
-              {!editor.selectedComponentEditorSceneViewJump &&
-                editor.totalComponentEditorSceneViewSelectedJumps > 0 && (
-                  <div>
-                    Selected Jumps:{' '}
-                    {editor.totalComponentEditorSceneViewSelectedJumps}
-                  </div>
-                )}
+                    {editor.totalComponentEditorSceneViewSelectedJumps > 0 && (
+                      <div>
+                        Selected Jumps:{' '}
+                        {editor.totalComponentEditorSceneViewSelectedJumps}
+                      </div>
+                    )}
 
-              {!editor.selectedComponentEditorSceneViewRoute &&
-                editor.totalComponentEditorSceneViewSelectedRoutes > 0 && (
-                  <div>
-                    Selected Paths:{' '}
-                    {editor.totalComponentEditorSceneViewSelectedRoutes}
+                    {editor.totalComponentEditorSceneViewSelectedRoutes > 0 && (
+                      <div>
+                        Selected Paths:{' '}
+                        {editor.totalComponentEditorSceneViewSelectedRoutes}
+                      </div>
+                    )}
                   </div>
                 )}
             </div>

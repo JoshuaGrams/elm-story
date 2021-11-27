@@ -9,9 +9,9 @@ import {
   PartitionOutlined
 } from '@ant-design/icons'
 
-import GameDetails from './StoryworldProperties'
-import FolderDetails from './FolderProperties'
-import SceneDetails from './SceneProperties'
+import StoryworldProperties from './StoryworldProperties'
+import FolderProperties from './FolderProperties'
+import SceneProperties from './SceneProperties'
 import EventProperties from './EventProperties'
 import ElementHelpButton from '../ElementHelpButton'
 
@@ -33,7 +33,7 @@ const ComponentDetailView: React.FC<{
             Storyworld
             <ElementHelpButton type={COMPONENT_TYPE.GAME} />
           </div>
-          <GameDetails studioId={studioId} gameId={component.id} />
+          <StoryworldProperties studioId={studioId} gameId={component.id} />
         </>
       )}
 
@@ -43,7 +43,7 @@ const ComponentDetailView: React.FC<{
             <FolderOutlined className={styles.headerIcon} /> Selected Folder
             <ElementHelpButton type={COMPONENT_TYPE.FOLDER} />
           </div>
-          <FolderDetails studioId={studioId} folderId={component.id} />
+          <FolderProperties studioId={studioId} folderId={component.id} />
         </>
       )}
 
@@ -53,7 +53,7 @@ const ComponentDetailView: React.FC<{
             <PartitionOutlined className={styles.headerIcon} /> Selected Scene
             <ElementHelpButton type={COMPONENT_TYPE.SCENE} />
           </div>
-          <SceneDetails studioId={studioId} sceneId={component.id} />
+          <SceneProperties studioId={studioId} sceneId={component.id} />
         </>
       )}
 
