@@ -1,7 +1,7 @@
 // upgrades 0.1.3 data to 0.2.0
 import { cloneDeep, pick } from 'lodash-es'
 
-import { COMPONENT_TYPE } from '../../../data/types'
+import { ELEMENT_TYPE } from '../../../data/types'
 import { GameDataJSON as GameDataJSON_013 } from '../types/0.1.3'
 import {
   FolderCollection,
@@ -27,10 +27,10 @@ export default ({
   Object.keys(clonedChapters).map((chapterId) => {
     folders[chapterId] = {
       children: clonedChapters[chapterId].scenes.map((sceneId) => [
-        COMPONENT_TYPE.SCENE,
+        ELEMENT_TYPE.SCENE,
         sceneId
       ]),
-      parent: [COMPONENT_TYPE.GAME, null],
+      parent: [ELEMENT_TYPE.GAME, null],
       ...pick(clonedChapters[chapterId], ['id', 'tags', 'title', 'updated'])
     }
   })
@@ -49,10 +49,10 @@ export default ({
 
     upgradedScenes[sceneId] = {
       children: clonedScene.passages.map((passageId) => [
-        COMPONENT_TYPE.PASSAGE,
+        ELEMENT_TYPE.PASSAGE,
         passageId
       ]),
-      parent: [COMPONENT_TYPE.FOLDER, clonedScene.chapterId],
+      parent: [ELEMENT_TYPE.FOLDER, clonedScene.chapterId],
       ...pick(clonedScene, [
         'editor',
         'id',
@@ -66,10 +66,7 @@ export default ({
 
   return {
     _: {
-      children: _.chapters.map((chapterId) => [
-        COMPONENT_TYPE.FOLDER,
-        chapterId
-      ]),
+      children: _.chapters.map((chapterId) => [ELEMENT_TYPE.FOLDER, chapterId]),
       engine: '0.2.0',
       ...pick(_, [
         'designer',

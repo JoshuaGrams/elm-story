@@ -1,7 +1,7 @@
 // #356
 import React, { useContext } from 'react'
 
-import { COMPONENT_TYPE, Game, Scene } from '../../../data/types'
+import { ELEMENT_TYPE, World, Scene } from '../../../data/types'
 
 import {
   EditorContext,
@@ -11,7 +11,7 @@ import {
 import styles from './styles.module.less'
 
 const TabToolbar: React.FC<{
-  component: { type: COMPONENT_TYPE; data: Game | Scene | undefined }
+  component: { type: ELEMENT_TYPE; data: World | Scene | undefined }
 }> = ({ children, component }) => {
   const { editor, editorDispatch } = useContext(EditorContext)
 
@@ -20,7 +20,7 @@ const TabToolbar: React.FC<{
       className={styles.TabContentToolbar}
       onMouseDown={() => {
         if (
-          component.type === COMPONENT_TYPE.SCENE &&
+          component.type === ELEMENT_TYPE.SCENE &&
           component.data &&
           component.data.id &&
           component.data.id !== editor.selectedGameOutlineComponent.id
@@ -30,7 +30,7 @@ const TabToolbar: React.FC<{
             selectedGameOutlineComponent: {
               id: component.data.id,
               title: component.data.title,
-              type: COMPONENT_TYPE.SCENE,
+              type: ELEMENT_TYPE.SCENE,
               expanded: true
             }
           })

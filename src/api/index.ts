@@ -3,7 +3,7 @@ import * as studios from './studios'
 
 // LIBRARY
 import * as characters from './characters'
-import * as games from './games'
+import * as worlds from './worlds'
 import * as jumps from './jumps'
 import * as folders from './folders'
 import * as scenes from './scenes'
@@ -18,7 +18,7 @@ import * as variables from './variables'
 export default () => ({
   characters,
   studios,
-  games,
+  worlds,
   jumps,
   folders,
   scenes,

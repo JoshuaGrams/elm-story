@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ElementId, COMPONENT_TYPE, StudioId } from '../../data/types'
+import { ElementId, ELEMENT_TYPE, StudioId } from '../../data/types'
 
 import {
   AlignLeftOutlined,
@@ -21,48 +21,48 @@ const ComponentDetailView: React.FC<{
   studioId: StudioId
   component: {
     id: ElementId
-    type: COMPONENT_TYPE
+    type: ELEMENT_TYPE
   }
 }> = ({ studioId, component }) => {
   return (
     <div className={styles.ComponentDetailView}>
-      {component.type === COMPONENT_TYPE.GAME && (
+      {component.type === ELEMENT_TYPE.GAME && (
         <>
           <div className={styles.componentDetailViewHeader}>
             <DeploymentUnitOutlined className={styles.headerIcon} /> Selected
             Storyworld
-            <ElementHelpButton type={COMPONENT_TYPE.GAME} />
+            <ElementHelpButton type={ELEMENT_TYPE.GAME} />
           </div>
           <StoryworldProperties studioId={studioId} gameId={component.id} />
         </>
       )}
 
-      {component.type === COMPONENT_TYPE.FOLDER && (
+      {component.type === ELEMENT_TYPE.FOLDER && (
         <>
           <div className={styles.componentDetailViewHeader}>
             <FolderOutlined className={styles.headerIcon} /> Selected Folder
-            <ElementHelpButton type={COMPONENT_TYPE.FOLDER} />
+            <ElementHelpButton type={ELEMENT_TYPE.FOLDER} />
           </div>
           <FolderProperties studioId={studioId} folderId={component.id} />
         </>
       )}
 
-      {component.type === COMPONENT_TYPE.SCENE && (
+      {component.type === ELEMENT_TYPE.SCENE && (
         <>
           <div className={styles.componentDetailViewHeader}>
             <PartitionOutlined className={styles.headerIcon} /> Selected Scene
-            <ElementHelpButton type={COMPONENT_TYPE.SCENE} />
+            <ElementHelpButton type={ELEMENT_TYPE.SCENE} />
           </div>
           <SceneProperties studioId={studioId} sceneId={component.id} />
         </>
       )}
 
       {/* TODO: is this dead code? */}
-      {component.type === COMPONENT_TYPE.PASSAGE && (
+      {component.type === ELEMENT_TYPE.PASSAGE && (
         <>
           <div className={styles.componentDetailViewHeader}>
             <AlignLeftOutlined className={styles.headerIcon} /> Selected Event
-            <ElementHelpButton type={COMPONENT_TYPE.PASSAGE} />
+            <ElementHelpButton type={ELEMENT_TYPE.PASSAGE} />
           </div>
           <EventProperties studioId={studioId} passageId={component.id} />
         </>

@@ -3,7 +3,7 @@ import { cloneDeep, Many, pick } from 'lodash'
 import lzwCompress from 'lzwcompress'
 
 import {
-  COMPONENT_TYPE,
+  ELEMENT_TYPE,
   GameDataJSON,
   ESGEngineCollectionData
 } from '../transport/types/0.5.1'
@@ -39,7 +39,7 @@ function format(gameData: GameDataJSON): string {
   return lzwCompress.pack({
     _: {
       children: gameData._.children
-        .filter((child) => child[0] === COMPONENT_TYPE.SCENE)
+        .filter((child) => child[0] === ELEMENT_TYPE.SCENE)
         .map((child) => child),
       ...pick(_, [
         'copyright',

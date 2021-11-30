@@ -4,12 +4,15 @@ import { APP_TABLE, DB_NAME, LIBRARY_TABLE } from '.'
 
 export default (database: Dexie) => {
   if (database.name.includes(DB_NAME.APP)) {
-    database.version(2).upgrade((tx) => {
-      tx.table(APP_TABLE.STUDIOS)
+    database.version(2).upgrade(async (tx) => {
+      await tx
+        .table(APP_TABLE.STUDIOS)
         .toCollection()
         .modify((studio) => {
-          studio.worlds = studio.games
-          delete studio.games
+          if (studio.games) {
+            studio.worlds = [...studio.games]
+            delete studio.games
+          }
         })
     })
   }

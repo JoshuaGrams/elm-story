@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { ElementId, COMPONENT_TYPE } from '../../data/types'
+import { ElementId, ELEMENT_TYPE } from '../../data/types'
 import {
   OnAddComponent,
   OnEditComponentTitle,
@@ -44,7 +44,7 @@ const ComponentItem = ({
 }) => {
   const { editor } = useContext(EditorContext)
 
-  const componentType: COMPONENT_TYPE = item.data.type,
+  const componentType: ELEMENT_TYPE = item.data.type,
     componentTitle: string = item.data.title
 
   const componentIconClassNames = `${styles.itemIcon} ${styles.component}`
@@ -56,16 +56,16 @@ const ComponentItem = ({
         <RightOutlined className={`${styles.itemIcon}`} />
       ),
     ComponentIcon =
-      componentType === COMPONENT_TYPE.FOLDER
+      componentType === ELEMENT_TYPE.FOLDER
         ? () =>
             item.isExpanded ? (
               <FolderOpenOutlined className={componentIconClassNames} />
             ) : (
               <FolderOutlined className={componentIconClassNames} />
             )
-        : componentType === COMPONENT_TYPE.SCENE
+        : componentType === ELEMENT_TYPE.SCENE
         ? () => <PartitionOutlined className={componentIconClassNames} />
-        : componentType === COMPONENT_TYPE.PASSAGE
+        : componentType === ELEMENT_TYPE.PASSAGE
         ? () => (
             <AlignLeftOutlined
               className={`${componentIconClassNames} ${styles.passage}`}
@@ -112,7 +112,7 @@ const ComponentItem = ({
           }}
         >
           <div>
-            {componentType !== COMPONENT_TYPE.PASSAGE && (
+            {componentType !== ELEMENT_TYPE.PASSAGE && (
               <Button
                 type="text"
                 size="small"

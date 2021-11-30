@@ -4,7 +4,7 @@ import React, { useEffect, useState, useContext } from 'react'
 
 import { WorldId, StudioId } from '../../../data/types'
 
-import { useGame, useScenes } from '../../../hooks'
+import { useWorld, useScenes } from '../../../hooks'
 
 import {
   EditorContext,
@@ -25,7 +25,7 @@ const GameDetails: React.FC<{
   studioId: StudioId
   gameId: WorldId
 }> = ({ studioId, gameId }) => {
-  const game = useGame(studioId, gameId, [studioId, gameId]),
+  const world = useWorld(studioId, gameId, [studioId, gameId]),
     scenes = useScenes(studioId, gameId, [studioId, gameId])
 
   const [metadataForm] = Form.useForm()
@@ -35,15 +35,15 @@ const GameDetails: React.FC<{
   const [unsavedMetadataChanges, setUnsavedMetadataChanges] = useState(false)
 
   async function onCreateJump() {
-    if (game?.id && scenes && scenes[0].id) {
+    if (world?.id && scenes && scenes[0].id) {
       const { id: jumpId } = await api().jumps.saveJump(studioId, {
-        gameId: game.id,
+        worldId: world.id,
         title: 'On Game Start Jump',
         route: [scenes[0].id],
         tags: []
       })
 
-      jumpId && (await api().games.saveJumpRefToGame(studioId, gameId, jumpId))
+      jumpId && (await api().worlds.saveJumpRefToWorld(studioId, gameId, jumpId))
     }
   }
 
@@ -60,12 +60,12 @@ const GameDetails: React.FC<{
     version: string
     website: string
   }) {
-    if (game?.id) {
+    if (world?.id) {
       setUnsavedMetadataChanges(false)
 
       try {
-        await api().games.saveGame(studioId, {
-          ...(await api().games.getGame(studioId, game.id)),
+        await api().worlds.saveWorld(studioId, {
+          ...(await api().worlds.getWorld(studioId, world.id)),
           copyright,
           description,
           designer,
@@ -81,21 +81,21 @@ const GameDetails: React.FC<{
   useEffect(() => {
     metadataForm.resetFields()
     setUnsavedMetadataChanges(false)
-  }, [game])
+  }, [world])
 
   return (
     <>
-      {game && (
+      {world && (
         <div
           className={`${parentStyles.componentDetailViewWrapper} ${styles.GameDetails}`}
         >
           <div className={parentStyles.content}>
             <ComponentTitle
-              title={game.title}
+              title={world.title}
               onUpdate={async (title) => {
-                if (game.id) {
-                  await api().games.saveGame(studioId, {
-                    ...(await api().games.getGame(studioId, game.id)),
+                if (world.id) {
+                  await api().worlds.saveWorld(studioId, {
+                    ...(await api().worlds.getWorld(studioId, world.id)),
                     title
                   })
 
@@ -110,7 +110,7 @@ const GameDetails: React.FC<{
               }}
             />
 
-            <div className={parentStyles.componentId}>{game.id}</div>
+            <div className={parentStyles.componentId}>{world.id}</div>
           </div>
 
           <div className={parentStyles.componentDetailViewNestedCollapse}>
@@ -133,7 +133,7 @@ const GameDetails: React.FC<{
 
                     {scenes.length > 0 && (
                       <>
-                        {!game.jump && (
+                        {!world.jump && (
                           <>
                             <Button type="primary" onClick={onCreateJump}>
                               Create Jump
@@ -141,16 +141,16 @@ const GameDetails: React.FC<{
                           </>
                         )}
 
-                        {game.jump && (
+                        {world.jump && (
                           <>
                             <JumpTo
                               studioId={studioId}
-                              jumpId={game.jump}
+                              jumpId={world.jump}
                               onRemove={async () => {
-                                game.id &&
-                                  api().games.saveJumpRefToGame(
+                                world.id &&
+                                  api().worlds.saveJumpRefToGame(
                                     studioId,
-                                    game.id,
+                                    world.id,
                                     null
                                   )
                               }}
@@ -173,11 +173,11 @@ const GameDetails: React.FC<{
                     id="save-game-metadata-form"
                     form={metadataForm}
                     initialValues={{
-                      copyright: game.copyright,
-                      description: game.description,
-                      designer: game.designer,
-                      version: game.version,
-                      website: game.website
+                      copyright: world.copyright,
+                      description: world.description,
+                      designer: world.designer,
+                      version: world.version,
+                      website: world.website
                     }}
                     onChange={() => setUnsavedMetadataChanges(true)}
                     onFinish={saveGameMetadata}

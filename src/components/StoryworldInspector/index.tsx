@@ -10,8 +10,8 @@ import React, { useState, useContext } from 'react'
 
 import {
   CHARACTER_MASK_TYPE,
-  COMPONENT_TYPE,
-  Game,
+  ELEMENT_TYPE,
+  World,
   StudioId,
   VARIABLE_TYPE
 } from '../../data/types'
@@ -35,7 +35,7 @@ const TAB_TYPE = {
   VARIABLES: 'VARIABLES'
 }
 
-const StoryworldInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
+const StoryworldInspector: React.FC<{ studioId: StudioId; game: World }> = ({
   studioId,
   game
 }) => {
@@ -162,14 +162,14 @@ const StoryworldInspector: React.FC<{ studioId: StudioId; game: Game }> = ({
               panelLock: {
                 // @ts-ignore: poor ts defs
                 panelExtra: (panelData, context) => {
-                  let componentType: COMPONENT_TYPE | undefined
+                  let componentType: ELEMENT_TYPE | undefined
 
                   switch (panelData.activeId) {
                     case TAB_TYPE.CHARACTERS:
-                      componentType = COMPONENT_TYPE.CHARACTER
+                      componentType = ELEMENT_TYPE.CHARACTER
                       break
                     case TAB_TYPE.VARIABLES:
-                      componentType = COMPONENT_TYPE.VARIABLE
+                      componentType = ELEMENT_TYPE.VARIABLE
                       break
                     default:
                       break

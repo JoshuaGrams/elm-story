@@ -10,7 +10,7 @@ import { DB_NAME, LibraryDatabase } from './db'
 import {
   COMPARE_OPERATOR_TYPE,
   ElementId,
-  COMPONENT_TYPE,
+  ELEMENT_TYPE,
   WorldId,
   SET_OPERATOR_TYPE,
   VARIABLE_TYPE,
@@ -472,7 +472,7 @@ export const findStartingDestinationPassage = async (
       if (!game.jump) {
         const libraryDatabase = new LibraryDatabase(studioId),
           foundScene =
-            game.children[0] && game.children[0][0] !== COMPONENT_TYPE.FOLDER
+            game.children[0] && game.children[0][0] !== ELEMENT_TYPE.FOLDER
               ? await libraryDatabase.scenes.get(game.children[0][1])
               : await libraryDatabase.scenes.where({ gameId }).first()
 
@@ -496,12 +496,12 @@ export const findStartingDestinationPassage = async (
 export const findDestinationPassage = async (
   studioId: StudioId,
   destinationId: ElementId,
-  destinationType: COMPONENT_TYPE
+  destinationType: ELEMENT_TYPE
 ) => {
   let foundLocation: ElementId | undefined
 
   switch (destinationType) {
-    case COMPONENT_TYPE.PASSAGE:
+    case ELEMENT_TYPE.PASSAGE:
       const foundPassage = await getPassage(studioId, destinationId)
 
       if (foundPassage) {
@@ -509,7 +509,7 @@ export const findDestinationPassage = async (
       }
 
       break
-    case COMPONENT_TYPE.JUMP:
+    case ELEMENT_TYPE.JUMP:
       const foundJump = await getJump(studioId, destinationId)
 
       if (foundJump && foundJump.route[0]) {

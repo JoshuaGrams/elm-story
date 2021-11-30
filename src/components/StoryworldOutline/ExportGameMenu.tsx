@@ -4,7 +4,7 @@ import React, { useContext, useState, useEffect } from 'react'
 
 import getGameDataJSON from '../../lib/getGameDataJSON'
 
-import { Game } from '../../data/types'
+import { World } from '../../data/types'
 import { StudioId } from '../../lib/transport/types/0.5.1'
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
@@ -43,7 +43,7 @@ const HelpButton: React.FC<{ type: 'JSON' | 'PWA' }> = ({ type }) => {
   )
 }
 
-const ExportGameMenu: React.FC<{ studioId: StudioId; game: Game }> = ({
+const ExportGameMenu: React.FC<{ studioId: StudioId; game: World }> = ({
   children,
   studioId,
   game

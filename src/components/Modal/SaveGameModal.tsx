@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 
-import { StudioId, Game, GAME_TEMPLATE } from '../../data/types'
+import { StudioId, World, GAME_TEMPLATE } from '../../data/types'
 
 import { AppContext } from '../../contexts/AppContext'
 
@@ -10,9 +10,9 @@ import api from '../../api'
 
 interface SaveGameModalProps extends ModalProps {
   studioId: StudioId
-  game?: Game
+  game?: World
   edit?: boolean
-  onSave?: (savedGame: Game) => void
+  onSave?: (savedGame: World) => void
 }
 
 const SaveGameModal: React.FC<SaveGameModalProps> = ({
@@ -82,7 +82,7 @@ const SaveGameModal: React.FC<SaveGameModalProps> = ({
           version: string
         }) => {
           try {
-            const savedGame = await api().games.saveGame(
+            const savedGame = await api().worlds.saveWorld(
               studioId,
               game && edit
                 ? { ...game, title, designer, version }

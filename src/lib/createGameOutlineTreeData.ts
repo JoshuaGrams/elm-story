@@ -1,12 +1,12 @@
-import { COMPONENT_TYPE, Folder, Game, Passage, Scene } from '../data/types'
+import { ELEMENT_TYPE, Folder, World, Event, Scene } from '../data/types'
 
 import { TreeData } from '@atlaskit/tree'
 
 const createGameOutlineTreeData = (
-  game: Game,
+  game: World,
   folders: Folder[],
   scenes: Scene[],
-  passages: Passage[]
+  passages: Event[]
 ): TreeData => {
   if (game.id) {
     const gameOutlineTreeData: TreeData = {
@@ -22,7 +22,7 @@ const createGameOutlineTreeData = (
       isChildrenLoading: false,
       data: {
         title: game.title,
-        type: COMPONENT_TYPE.GAME,
+        type: ELEMENT_TYPE.GAME,
         selected: false,
         parentId: undefined,
         renaming: false
@@ -39,7 +39,7 @@ const createGameOutlineTreeData = (
           isChildrenLoading: false,
           data: {
             title: folder.title,
-            type: COMPONENT_TYPE.FOLDER,
+            type: ELEMENT_TYPE.FOLDER,
             selected: false,
             parentId: game.id,
             renaming: false
@@ -61,7 +61,7 @@ const createGameOutlineTreeData = (
           isChildrenLoading: false,
           data: {
             title: scene.title,
-            type: COMPONENT_TYPE.SCENE,
+            type: ELEMENT_TYPE.SCENE,
             selected: false,
             parentId: scene.parent[1] || game.id,
             renaming: false
@@ -83,7 +83,7 @@ const createGameOutlineTreeData = (
           isChildrenLoading: false,
           data: {
             title: passage.title,
-            type: COMPONENT_TYPE.PASSAGE,
+            type: ELEMENT_TYPE.PASSAGE,
             selected: false,
             parentId: passage.sceneId,
             renaming: false

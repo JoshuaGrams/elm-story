@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import {
   COMPARE_OPERATOR_TYPE,
   ElementId,
-  COMPONENT_TYPE,
+  ELEMENT_TYPE,
   WorldId,
   SET_OPERATOR_TYPE,
   StudioId,
@@ -280,7 +280,7 @@ const RouteDetails: React.FC<{
             {/* ROUTE CONDITIONS */}
             <div className={styles.routeFeature}>
               <div className={styles.featureHeader}>
-                Conditions <ElementHelpButton type={COMPONENT_TYPE.CONDITION} />
+                Conditions <ElementHelpButton type={ELEMENT_TYPE.CONDITION} />
               </div>
 
               <div className={styles.featureList}>
@@ -345,7 +345,7 @@ const RouteDetails: React.FC<{
             {/* ROUTE EFFECTS */}
             <div className={styles.routeFeature}>
               <div className={styles.featureHeader}>
-                Effects <ElementHelpButton type={COMPONENT_TYPE.EFFECT} />
+                Effects <ElementHelpButton type={ELEMENT_TYPE.EFFECT} />
               </div>
 
               <div className={styles.featureList}>

@@ -15,7 +15,7 @@ import React, {
 
 import {
   ElementId,
-  COMPONENT_TYPE,
+  ELEMENT_TYPE,
   DEFAULT_PASSAGE_CONTENT,
   Scene,
   StudioId
@@ -92,7 +92,7 @@ export const PassageViewTools: React.FC<{
           onClick={async () => {
             editorDispatch({
               type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
-              removedComponent: { type: COMPONENT_TYPE.PASSAGE, id: passageId }
+              removedComponent: { type: ELEMENT_TYPE.PASSAGE, id: passageId }
             })
 
             const updatedSceneChildren = (
@@ -353,7 +353,7 @@ const PassageView: React.FC<{
                   expanded: true,
                   id: scene.id,
                   title: scene.title,
-                  type: COMPONENT_TYPE.SCENE
+                  type: ELEMENT_TYPE.SCENE
                 }
               })
             }

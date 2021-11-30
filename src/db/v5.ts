@@ -2,7 +2,7 @@
 
 import Dexie from 'dexie'
 
-import { PASSAGE_TYPE } from '../data/types'
+import { EVENT_TYPE } from '../data/types'
 import { DB_NAME, LIBRARY_TABLE } from '.'
 
 export default (database: Dexie) => {
@@ -21,7 +21,7 @@ export default (database: Dexie) => {
 
           await passagesTable.toCollection().modify((passage) => {
             passage.input = undefined
-            passage.type = PASSAGE_TYPE.CHOICE
+            passage.type = EVENT_TYPE.CHOICE
           })
         } catch (error) {}
       })

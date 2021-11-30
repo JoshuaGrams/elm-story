@@ -6,8 +6,8 @@ import {
   GameChildRefs,
   FolderChildRefs,
   FolderParentRef,
-  COMPONENT_TYPE,
-  PASSAGE_TYPE,
+  ELEMENT_TYPE,
+  EVENT_TYPE,
   SceneChildRefs,
   SceneParentRef
 } from './transport/types/0.5.1'
@@ -21,7 +21,7 @@ export default async (
 ): Promise<string> => {
   try {
     const studio = await api().studios.getStudio(studioId),
-      game = await api().games.getGame(studioId, gameId)
+      game = await api().worlds.getGame(studioId, gameId)
 
     const choices = await api().choices.getChoicesByGameRef(studioId, gameId),
       conditions = await api().conditions.getConditionsByGameRef(
@@ -187,11 +187,11 @@ export default async (
         (gameData.routes[id as string] = {
           choiceId,
           destinationId,
-          destinationType: destinationType as COMPONENT_TYPE,
+          destinationType: destinationType as ELEMENT_TYPE,
           id: id as string,
           inputId,
           originId,
-          originType: originType as COMPONENT_TYPE | PASSAGE_TYPE,
+          originType: originType as ELEMENT_TYPE | EVENT_TYPE,
           sceneId,
           tags,
           title,

@@ -6,11 +6,12 @@ export enum PLATFORM_TYPE {
   LINUX = 'linux'
 }
 
-export enum COMPONENT_TYPE {
+export enum ELEMENT_TYPE {
   CHARACTER = 'CHARACTER',
   CHOICE = 'CHOICE',
   CONDITION = 'CONDITION',
   EFFECT = 'EFFECT',
+  EVENT = 'EVENT',
   FOLDER = 'FOLDER',
   GAME = 'GAME',
   INPUT = 'INPUT',
@@ -19,7 +20,8 @@ export enum COMPONENT_TYPE {
   ROUTE = 'ROUTE',
   SCENE = 'SCENE',
   STUDIO = 'STUDIO',
-  VARIABLE = 'VARIABLE'
+  VARIABLE = 'VARIABLE',
+  WORLD = 'WORLD'
 }
 
 export enum GAME_TEMPLATE {
@@ -73,7 +75,7 @@ export interface WorldState {
   }
 }
 
-export interface Component {
+export interface Element {
   id?: ElementId
   title: string
   tags: string[] | []
@@ -89,12 +91,12 @@ export interface Component {
   }
 }
 
-export interface Studio extends Component {
+export interface Studio extends Element {
   id?: StudioId
   worlds: WorldId[] // references by ID
 }
 
-export interface Editor extends Component {}
+export interface Editor extends Element {}
 
 // prettier-ignore
 // [drive (x), energy (y)]
@@ -189,19 +191,19 @@ export type CharacterRef = [string, string | CHARACTER_PRONOUN_TYPES]
 
 export type CharacterRefs = Array<CharacterRef>
 
-export interface Character extends Component {
+export interface Character extends Element {
   description?: string
-  gameId: WorldId
+  worldId: WorldId
   masks: CharacterMask[]
   refs: CharacterRefs // all strings must be unique
   // TODO: add variable ID
 }
 
 export type GameChildRefs = Array<
-  [COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ElementId]
+  [ELEMENT_TYPE.FOLDER | ELEMENT_TYPE.SCENE, ElementId]
 >
 
-export interface Game extends Component {
+export interface World extends Element {
   children: GameChildRefs
   copyright?: string
   description?: string
@@ -216,99 +218,99 @@ export interface Game extends Component {
 
 // To reduce dupe, set null when parent is of type GAME
 export type FolderParentRef = [
-  COMPONENT_TYPE.GAME | COMPONENT_TYPE.FOLDER,
+  ELEMENT_TYPE.GAME | ELEMENT_TYPE.FOLDER,
   ElementId | null
 ]
 export type FolderChildRefs = Array<
-  [COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ElementId]
+  [ELEMENT_TYPE.FOLDER | ELEMENT_TYPE.SCENE, ElementId]
 >
 
-export interface Folder extends Component {
+export interface Folder extends Element {
   children: FolderChildRefs
-  gameId: WorldId
+  worldId: WorldId
   parent: FolderParentRef
 }
 
 export type JumpRoute = [ElementId?, ElementId?] // [sceneId, passageId]
 
-export interface Jump extends Component {
-  gameId: WorldId
+export interface Jump extends Element {
+  worldId: WorldId
   sceneId?: ElementId
   route: JumpRoute
 }
 
 // To reduce dupe, set null when parent is of type GAME
 export type SceneParentRef = [
-  COMPONENT_TYPE.GAME | COMPONENT_TYPE.FOLDER,
+  ELEMENT_TYPE.GAME | ELEMENT_TYPE.FOLDER,
   ElementId | null
 ]
-export type SceneChildRefs = Array<[COMPONENT_TYPE.PASSAGE, ElementId]>
+export type SceneChildRefs = Array<[ELEMENT_TYPE.PASSAGE, ElementId]>
 
-export interface Scene extends Component {
+export interface Scene extends Element {
   children: SceneChildRefs
-  gameId: WorldId
+  worldId: WorldId
   parent: SceneParentRef
   jumps: ElementId[]
 }
 
-export interface Route extends Component {
-  gameId: WorldId
+export interface Route extends Element {
+  worldId: WorldId
   sceneId: ElementId
   originId: ElementId
   choiceId?: ElementId
   inputId?: ElementId
-  originType: COMPONENT_TYPE | PASSAGE_TYPE
+  originType: ELEMENT_TYPE | EVENT_TYPE
   destinationId: ElementId
-  destinationType: COMPONENT_TYPE
+  destinationType: ELEMENT_TYPE
 }
 
 // Route Condition
-export interface Condition extends Component {
-  gameId: WorldId
+export interface Condition extends Element {
+  worldId: WorldId
   routeId: ElementId
   variableId: ElementId
   compare: [ElementId, COMPARE_OPERATOR_TYPE, string, VARIABLE_TYPE] // variable ref
 }
 
 // Route Condition
-export interface Effect extends Component {
-  gameId: WorldId
+export interface Effect extends Element {
+  worldId: WorldId
   routeId: ElementId
   variableId: ElementId
   set: [ElementId, SET_OPERATOR_TYPE, string] // variable ref
 }
 
-export enum PASSAGE_TYPE {
+export enum EVENT_TYPE {
   CHOICE = 'CHOICE',
   INPUT = 'INPUT'
 }
 
 export type EventPersona = [ElementId, CHARACTER_MASK_TYPE, string | undefined] // [characterId, mask, reference ID]
 
-export interface Passage extends Component {
-  gameOver: boolean // game end
-  gameId: WorldId
+export interface Event extends Element {
+  ending: boolean // world end
+  worldId: WorldId
   sceneId: ElementId
   choices: ElementId[]
   content: string
   input?: ElementId // input ref
   persona?: EventPersona
-  type: PASSAGE_TYPE
+  type: EVENT_TYPE
 }
 
-export interface Choice extends Component {
-  gameId: WorldId
+export interface Choice extends Element {
+  worldId: WorldId
   passageId: ElementId
 }
 
-export interface Input extends Component {
-  gameId: WorldId
+export interface Input extends Element {
+  worldId: WorldId
   passageId: ElementId
   variableId?: ElementId
 }
 
-export interface Variable extends Component {
-  gameId: WorldId
+export interface Variable extends Element {
+  worldId: WorldId
   type: VARIABLE_TYPE
   initialValue: string
 }

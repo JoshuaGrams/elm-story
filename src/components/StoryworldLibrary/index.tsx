@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useContext } from 'react'
 
 import { StudioId, Studio } from '../../data/types'
 
-import { useGames, useStudios } from '../../hooks'
-import { GAME_SORT } from '../../hooks/useGames'
+import { useWorlds, useStudios } from '../../hooks'
+import { WORLD_SORT } from '../../hooks/useWorlds'
 
 import { AppContext } from '../../contexts/AppContext'
 
@@ -27,14 +27,14 @@ const StoryworldLibrary: React.FC<StoryworldLibraryProps> = ({ studioId }) => {
       undefined
     ),
     [saveGameModalVisible, setSaveGameModalVisible] = useState(false),
-    [sortBy] = useState<GAME_SORT>(GAME_SORT.DATE),
+    [sortBy] = useState<WORLD_SORT>(WORLD_SORT.DATE),
     [importJSONModal, setImportJSONModal] = useState<{
       visible: boolean
       file: File | null
     }>({ visible: false, file: null })
 
   const studios = useStudios([studioId])
-  const games = useGames(studioId, sortBy, [studioId, sortBy])
+  const worlds = useWorlds(studioId, sortBy, [studioId, sortBy])
 
   // TODO: dupe from dashboard
   function onImportGameDataJSON() {
@@ -92,7 +92,7 @@ const StoryworldLibrary: React.FC<StoryworldLibraryProps> = ({ studioId }) => {
       <div className={styles.StoryworldLibrary}>
         <Divider>Storyworld Library</Divider>
         <div className={styles.contentWrapper}>
-          {selectedStudio && games && games.length === 0 && (
+          {selectedStudio && worlds && worlds.length === 0 && (
             <div className={styles.noContent}>
               There are 0 worlds in this library...
               <br />
@@ -105,16 +105,16 @@ const StoryworldLibrary: React.FC<StoryworldLibraryProps> = ({ studioId }) => {
             </div>
           )}
 
-          {games && games.length > 0 && (
+          {worlds && worlds.length > 0 && (
             <Row justify="start" gutter={[20, 20]}>
-              {games.map((game) =>
-                game.id !== undefined ? (
-                  <Col xs={12} sm={12} md={8} lg={6} key={game.id}>
-                    <StoryworldBox studioId={studioId} game={game} />
+              {worlds.map((world) =>
+                world.id !== undefined ? (
+                  <Col xs={12} sm={12} md={8} lg={6} key={world.id}>
+                    <StoryworldBox studioId={studioId} world={world} />
                   </Col>
                 ) : null
               )}
-              <Col xs={12} sm={12} md={8} lg={6} key="add-game">
+              <Col xs={12} sm={12} md={8} lg={6} key="add-world">
                 <StoryworldBox studioId={studioId} />
               </Col>
             </Row>

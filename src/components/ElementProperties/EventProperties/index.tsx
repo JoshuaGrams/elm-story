@@ -6,8 +6,8 @@ import {
   ElementId,
   EventPersona,
   WorldId,
-  Passage,
-  PASSAGE_TYPE,
+  Event,
+  EVENT_TYPE,
   StudioId
 } from '../../../data/types'
 
@@ -36,18 +36,15 @@ import api from '../../../api'
 
 const PassageType: React.FC<{
   studioId: StudioId
-  passage: Passage
+  passage: Event
 }> = React.memo(({ studioId, passage }) => {
   const { editor, editorDispatch } = useContext(EditorContext)
 
   const changeType = useCallback(
-    async (type: PASSAGE_TYPE) => {
+    async (type: EVENT_TYPE) => {
       if (passage.id) {
         // Change to input
-        if (
-          passage.type === PASSAGE_TYPE.CHOICE &&
-          type === PASSAGE_TYPE.INPUT
-        ) {
+        if (passage.type === EVENT_TYPE.CHOICE && type === EVENT_TYPE.INPUT) {
           editor.selectedGameOutlineComponent.id === passage.sceneId &&
             editorDispatch({
               type:
@@ -62,10 +59,7 @@ const PassageType: React.FC<{
         }
 
         // Change to choice
-        if (
-          passage.type === PASSAGE_TYPE.INPUT &&
-          type === PASSAGE_TYPE.CHOICE
-        ) {
+        if (passage.type === EVENT_TYPE.INPUT && type === EVENT_TYPE.CHOICE) {
           // It will be necessary to remove input and associated routes
           if (passage.input)
             await api().passages.switchPassageFromInputToChoiceType(
@@ -86,10 +80,10 @@ const PassageType: React.FC<{
         onChange={changeType}
         className={styles.select}
       >
-        <Select.Option value={PASSAGE_TYPE.CHOICE} key="choice">
+        <Select.Option value={EVENT_TYPE.CHOICE} key="choice">
           Choice
         </Select.Option>
-        <Select.Option value={PASSAGE_TYPE.INPUT} key="input">
+        <Select.Option value={EVENT_TYPE.INPUT} key="input">
           Input
         </Select.Option>
       </Select>
@@ -102,7 +96,7 @@ PassageType.displayName = 'PassageType'
 const Persona: React.FC<{
   studioId: StudioId
   gameId: WorldId
-  passage: Passage
+  passage: Event
 }> = React.memo(({ studioId, gameId, passage }) => {
   const characters = useCharacters(studioId, gameId, [passage.id])
 
@@ -285,7 +279,7 @@ Persona.displayName = 'EventPersona'
 
 const PassageEndToggle: React.FC<{
   studioId: StudioId
-  passage: Passage
+  passage: Event
 }> = React.memo(({ studioId, passage }) => {
   const { editor } = useContext(EditorContext)
 
@@ -311,8 +305,7 @@ const PassageEndToggle: React.FC<{
 
     // TODO: it might be necessary to check choices in the future #397
     if (
-      ((choices && choices.length > 0) ||
-        passage.type === PASSAGE_TYPE.INPUT) &&
+      ((choices && choices.length > 0) || passage.type === EVENT_TYPE.INPUT) &&
       passage.gameOver &&
       editor.selectedComponentEditorSceneViewPassage === passage.id
     ) {
@@ -329,7 +322,7 @@ const PassageEndToggle: React.FC<{
           (!choices && !routePassthroughs) ||
           (choices && choices.length > 0) ||
           (routePassthroughs && routePassthroughs.length > 0) ||
-          passage.type === PASSAGE_TYPE.INPUT
+          passage.type === EVENT_TYPE.INPUT
         }
       >
         Storyworld Ending

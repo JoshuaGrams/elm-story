@@ -2,9 +2,9 @@ import logger from '../../lib/logger'
 
 import React, { useContext, useEffect } from 'react'
 
-import { COMPONENT_TYPE, Game, WorldId, StudioId } from '../../data/types'
+import { ELEMENT_TYPE, World, WorldId, StudioId } from '../../data/types'
 
-import { useGame } from '../../hooks'
+import { useWorld } from '../../hooks'
 
 import { EditorContext } from '../../contexts/EditorContext'
 
@@ -18,8 +18,8 @@ const ElementProperties: React.FC<{
 }> = ({ studioId, gameId = undefined }) => {
   const { editor } = useContext(EditorContext)
 
-  const selectedGame: Game | undefined = gameId
-    ? useGame(studioId, gameId)
+  const selectedGame: World | undefined = gameId
+    ? useWorld(studioId, gameId)
     : undefined
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const ElementProperties: React.FC<{
             studioId={studioId}
             component={{
               id: selectedGame.id,
-              type: COMPONENT_TYPE.GAME
+              type: ELEMENT_TYPE.GAME
             }}
           />
         )}

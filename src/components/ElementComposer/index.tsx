@@ -4,9 +4,9 @@ import logger from '../../lib/logger'
 
 import {
   ElementId,
-  COMPONENT_TYPE,
-  Game,
-  Passage,
+  ELEMENT_TYPE,
+  World,
+  Event,
   Scene,
   StudioId
 } from '../../data/types'
@@ -40,7 +40,7 @@ import styles from './styles.module.less'
 
 import api from '../../api'
 
-function createBaseLayoutData(studioId: StudioId, game: Game): LayoutData {
+function createBaseLayoutData(studioId: StudioId, game: World): LayoutData {
   if (!game.id)
     throw new Error('Unable to create base layout. Missing game ID.')
 
@@ -55,7 +55,7 @@ function createBaseLayoutData(studioId: StudioId, game: Game): LayoutData {
               title: getTabTitle({
                 id: game.id,
                 title: game.title,
-                type: COMPONENT_TYPE.GAME,
+                type: ELEMENT_TYPE.GAME,
                 expanded: true
               }),
               id: game.id,
@@ -63,7 +63,7 @@ function createBaseLayoutData(studioId: StudioId, game: Game): LayoutData {
                 <TabContent
                   studioId={studioId}
                   id={game.id}
-                  type={COMPONENT_TYPE.GAME}
+                  type={ELEMENT_TYPE.GAME}
                   tools={
                     <StoryworldPreviewTools
                       studioId={studioId}
@@ -88,10 +88,10 @@ function createBaseLayoutData(studioId: StudioId, game: Game): LayoutData {
 function getTabContent(
   studioId: StudioId,
   id: ElementId,
-  type: COMPONENT_TYPE | undefined
+  type: ELEMENT_TYPE | undefined
 ): JSX.Element {
   switch (type) {
-    case COMPONENT_TYPE.SCENE:
+    case ELEMENT_TYPE.SCENE:
       return (
         <TabContent
           studioId={studioId}
@@ -110,11 +110,11 @@ function getTabContent(
   }
 }
 
-function getTabIcon(type: COMPONENT_TYPE | undefined): JSX.Element {
+function getTabIcon(type: ELEMENT_TYPE | undefined): JSX.Element {
   switch (type) {
-    case COMPONENT_TYPE.GAME:
+    case ELEMENT_TYPE.GAME:
       return <DeploymentUnitOutlined className={styles.tabIcon} />
-    case COMPONENT_TYPE.SCENE:
+    case ELEMENT_TYPE.SCENE:
       return <PartitionOutlined className={styles.tabIcon} />
     default:
       return <QuestionOutlined className={styles.tabIcon} />
@@ -125,7 +125,7 @@ function getTabTitle(
   component: {
     id?: string | undefined
     expanded?: boolean | undefined
-    type?: COMPONENT_TYPE | undefined
+    type?: ELEMENT_TYPE | undefined
     title?: string | undefined
   },
   onClose?: (componentId: ElementId) => void
@@ -133,16 +133,16 @@ function getTabTitle(
   return (
     <div className={styles.tabTitle}>
       {getTabIcon(component.type)}
-      {component.type === COMPONENT_TYPE.GAME && (
+      {component.type === ELEMENT_TYPE.GAME && (
         <span className={styles.title}>Preview</span>
       )}
 
-      {component.type !== COMPONENT_TYPE.GAME && (
+      {component.type !== ELEMENT_TYPE.GAME && (
         <span className={styles.title}>
           {component.title || 'Unknown Title'}
         </span>
       )}
-      {component.type !== COMPONENT_TYPE.GAME && (
+      {component.type !== ELEMENT_TYPE.GAME && (
         <CloseOutlined
           className={styles.tabCloseButton}
           onClick={(event) => {
@@ -155,7 +155,7 @@ function getTabTitle(
   )
 }
 
-const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
+const ElementComposer: React.FC<{ studioId: StudioId; game: World }> = ({
   studioId,
   game
 }) => {
@@ -167,14 +167,14 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
       {
         id?: string | undefined
         expanded?: boolean | undefined
-        type?: COMPONENT_TYPE | undefined
+        type?: ELEMENT_TYPE | undefined
         title?: string | undefined
       }[]
     >([
       {
         id: game.id,
         title: game.title,
-        type: COMPONENT_TYPE.GAME,
+        type: ELEMENT_TYPE.GAME,
         expanded: true
       }
     ])
@@ -280,7 +280,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
             id: tabToSelect?.id || game.id,
             expanded: true,
             title: tabToSelect?.title || game.title,
-            type: tabToSelect?.type || COMPONENT_TYPE.GAME
+            type: tabToSelect?.type || ELEMENT_TYPE.GAME
           }
         })
       }
@@ -294,7 +294,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
         logger.info(`Not removing tab`)
 
         // Keep the passage selected in StoryworldOutline
-        // if (editor.selectedGameOutlineComponent.type !== COMPONENT_TYPE.PASSAGE)
+        // if (editor.selectedGameOutlineComponent.type !== ELEMENT_TYPE.PASSAGE)
         editorDispatch({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
           selectedGameOutlineComponent:
@@ -304,7 +304,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
         // #305
         if (
           clonedTabIndex !== -1 &&
-          tabs[clonedTabIndex].type === COMPONENT_TYPE.GAME &&
+          tabs[clonedTabIndex].type === ELEMENT_TYPE.GAME &&
           editor.selectedComponentEditorSceneViewPassage
         )
           editorDispatch({
@@ -327,8 +327,8 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
 
     async function findTabAndOpen() {
       if (dockLayout.current && selectedComponent.id && activePanelId) {
-        const passage: Passage | null =
-            selectedComponent.type === COMPONENT_TYPE.PASSAGE
+        const passage: Event | null =
+            selectedComponent.type === ELEMENT_TYPE.PASSAGE
               ? await api().passages.getPassage(studioId, selectedComponent.id)
               : null,
           sceneFromPassage: Scene | null = passage
@@ -341,7 +341,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
             : selectedComponent.id
         ) as TabData
 
-        if (!foundTab && selectedComponent.type !== COMPONENT_TYPE.FOLDER) {
+        if (!foundTab && selectedComponent.type !== ELEMENT_TYPE.FOLDER) {
           dockLayout.current.dockMove(
             {
               title: getTabTitle(
@@ -350,7 +350,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
                       id: sceneFromPassage.id,
                       expanded: true,
                       title: sceneFromPassage.title,
-                      type: COMPONENT_TYPE.SCENE
+                      type: ELEMENT_TYPE.SCENE
                     }
                   : selectedComponent,
                 (componentId: ElementId) => {
@@ -368,7 +368,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
               content: getTabContent(
                 studioId,
                 sceneFromPassage?.id || selectedComponent.id,
-                sceneFromPassage ? COMPONENT_TYPE.SCENE : selectedComponent.type
+                sceneFromPassage ? ELEMENT_TYPE.SCENE : selectedComponent.type
               ),
               group: 'default',
               closable: true,
@@ -385,7 +385,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
                   id: sceneFromPassage.id,
                   expanded: true,
                   title: sceneFromPassage.title,
-                  type: COMPONENT_TYPE.SCENE
+                  type: ELEMENT_TYPE.SCENE
                 }
               : selectedComponent
           ])
@@ -480,14 +480,14 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
       if (!dockLayout.current || !editor.removedComponent.id) return
 
       let scenesById: ElementId[] =
-          editor.removedComponent.type === COMPONENT_TYPE.SCENE
+          editor.removedComponent.type === ELEMENT_TYPE.SCENE
             ? [editor.removedComponent.id]
             : [],
         passagesById: ElementId[] = []
 
       const clonedTabs = cloneDeep(tabs)
 
-      if (editor.removedComponent.type === COMPONENT_TYPE.FOLDER) {
+      if (editor.removedComponent.type === ELEMENT_TYPE.FOLDER) {
         scenesById = (
           await api().folders.getChildRefsByFolderRef(
             studioId,
@@ -496,7 +496,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
         ).map((child) => child[1])
       }
 
-      if (editor.removedComponent.type === COMPONENT_TYPE.SCENE) {
+      if (editor.removedComponent.type === ELEMENT_TYPE.SCENE) {
         await Promise.all(
           scenesById.map(async (sceneId) => {
             passagesById = [

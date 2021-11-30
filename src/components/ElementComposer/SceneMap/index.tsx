@@ -5,9 +5,9 @@ import { cloneDeep } from 'lodash-es'
 
 import {
   ElementId,
-  COMPONENT_TYPE,
+  ELEMENT_TYPE,
   DEFAULT_PASSAGE_CONTENT,
-  PASSAGE_TYPE,
+  EVENT_TYPE,
   Scene,
   StudioId
 } from '../../../data/types'
@@ -72,13 +72,13 @@ interface NodeData {
   sceneId?: ElementId
   jumpId?: ElementId
   passageId?: ElementId
-  passageType?: PASSAGE_TYPE
+  passageType?: EVENT_TYPE
   selectedChoice?: ElementId | null
   onEditPassage?: (passageId: ElementId) => void
   onChoiceSelect?: (passageId: ElementId, choiceId: ElementId | null) => void
   inputId?: ElementId
   totalChoices: number
-  type: COMPONENT_TYPE
+  type: ELEMENT_TYPE
 }
 
 export const SceneMapTools: React.FC<{
@@ -104,7 +104,7 @@ export const SceneMapTools: React.FC<{
                     const passageId = await addElementToScene(
                       studioId,
                       scene,
-                      COMPONENT_TYPE.PASSAGE,
+                      ELEMENT_TYPE.PASSAGE,
                       {
                         x:
                           editor.selectedComponentEditorSceneViewCenter.x -
@@ -120,7 +120,7 @@ export const SceneMapTools: React.FC<{
                         type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
                         savedComponent: {
                           id: passageId,
-                          type: COMPONENT_TYPE.PASSAGE
+                          type: ELEMENT_TYPE.PASSAGE
                         }
                       })
                   } catch (error) {
@@ -138,7 +138,7 @@ export const SceneMapTools: React.FC<{
                   const jumpId = await addElementToScene(
                     studioId,
                     scene,
-                    COMPONENT_TYPE.JUMP,
+                    ELEMENT_TYPE.JUMP,
                     {
                       x:
                         editor.selectedComponentEditorSceneViewCenter.x -
@@ -157,7 +157,7 @@ export const SceneMapTools: React.FC<{
                       type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
                       savedComponent: {
                         id: jumpId,
-                        type: COMPONENT_TYPE.JUMP
+                        type: ELEMENT_TYPE.JUMP
                       }
                     })
                 }}
@@ -212,12 +212,12 @@ SceneMapTools.displayName = 'SceneMapTools'
 async function addElementToScene(
   studioId: StudioId,
   scene: Scene,
-  type: COMPONENT_TYPE,
+  type: ELEMENT_TYPE,
   position: { x: number; y: number }
 ): Promise<ElementId | undefined> {
   if (scene.id) {
     switch (type) {
-      case COMPONENT_TYPE.PASSAGE:
+      case ELEMENT_TYPE.PASSAGE:
         const passage = await api().passages.savePassage(studioId, {
           gameOver: false,
           gameId: scene.gameId,
@@ -226,7 +226,7 @@ async function addElementToScene(
           choices: [],
           content: JSON.stringify([...DEFAULT_PASSAGE_CONTENT]),
           tags: [],
-          type: PASSAGE_TYPE.CHOICE,
+          type: EVENT_TYPE.CHOICE,
           editor: {
             componentEditorPosX: position.x,
             componentEditorPosY: position.y
@@ -236,11 +236,11 @@ async function addElementToScene(
         passage.id &&
           (await api().scenes.saveChildRefsToScene(studioId, scene.id, [
             ...scene.children,
-            [COMPONENT_TYPE.PASSAGE, passage.id]
+            [ELEMENT_TYPE.PASSAGE, passage.id]
           ]))
 
         return passage.id
-      case COMPONENT_TYPE.JUMP:
+      case ELEMENT_TYPE.JUMP:
         const jump = await api().jumps.saveJump(studioId, {
           gameId: scene.gameId,
           sceneId: scene.id,
@@ -271,12 +271,12 @@ async function addElementToScene(
 async function removeElementFromScene(
   studioId: StudioId,
   scene: Scene,
-  type: COMPONENT_TYPE,
+  type: ELEMENT_TYPE,
   id: ElementId
 ): Promise<void> {
   if (scene.id) {
     switch (type) {
-      case COMPONENT_TYPE.PASSAGE:
+      case ELEMENT_TYPE.PASSAGE:
         const clonedChildRefs = [...scene.children],
           passageRefIndex = clonedChildRefs.findIndex(
             (clonedPassageRef) => clonedPassageRef[1] === id
@@ -295,7 +295,7 @@ async function removeElementFromScene(
         await api().passages.removePassage(studioId, id)
 
         break
-      case COMPONENT_TYPE.JUMP:
+      case ELEMENT_TYPE.JUMP:
         const clonedJumpRefs = [...scene.jumps],
           jumpRefIndex = clonedJumpRefs.findIndex(
             (clonedJumpRef) => clonedJumpRef === id
@@ -388,15 +388,15 @@ const SceneMap: React.FC<{
       const clonedElements = cloneDeep(elements),
         clonedJumps = clonedElements.filter(
           (clonedElement): clonedElement is Node =>
-            clonedElement.data.type === COMPONENT_TYPE.JUMP
+            clonedElement.data.type === ELEMENT_TYPE.JUMP
         ),
         clonedPassages = clonedElements.filter(
           (clonedElement): clonedElement is Node =>
-            clonedElement.data.type === COMPONENT_TYPE.PASSAGE
+            clonedElement.data.type === ELEMENT_TYPE.PASSAGE
         ),
         clonedRoutes = clonedElements.filter(
           (clonedElement): clonedElement is Edge =>
-            clonedElement.data.type === COMPONENT_TYPE.ROUTE
+            clonedElement.data.type === ELEMENT_TYPE.ROUTE
         )
 
       if (elementsToHighlight) {
@@ -488,7 +488,7 @@ const SceneMap: React.FC<{
   async function onNodeDragStop(
     _: React.MouseEvent<Element, MouseEvent>,
     node: Node<{
-      type: COMPONENT_TYPE
+      type: ELEMENT_TYPE
     }>
   ) {
     const { id, position, data } = node
@@ -496,7 +496,7 @@ const SceneMap: React.FC<{
     logger.info(`SceneMap->onNodeDragStop->type:${data?.type}`)
 
     switch (data?.type) {
-      case COMPONENT_TYPE.JUMP:
+      case ELEMENT_TYPE.JUMP:
         if (jumps) {
           const clonedJump = cloneDeep(jumps.find((jump) => jump.id === id))
 
@@ -510,7 +510,7 @@ const SceneMap: React.FC<{
             }))
         }
         break
-      case COMPONENT_TYPE.PASSAGE:
+      case ELEMENT_TYPE.PASSAGE:
         if (passages) {
           const clonedPassage = cloneDeep(
             passages.find((passage) => passage.id === id)
@@ -545,7 +545,7 @@ const SceneMap: React.FC<{
           (element) => element.id === connection.source
         ),
         foundDestinationNode:
-          | FlowElement<{ type: COMPONENT_TYPE }>
+          | FlowElement<{ type: ELEMENT_TYPE }>
           | undefined = elements.find(
           (element) => element.id === connection.targetHandle
         )
@@ -577,12 +577,12 @@ const SceneMap: React.FC<{
           sceneId,
           originId: connection.source,
           choiceId:
-            foundSourceNode?.data.passageType === PASSAGE_TYPE.CHOICE &&
+            foundSourceNode?.data.passageType === EVENT_TYPE.CHOICE &&
             foundSourceNode?.data.totalChoices > 0
               ? connection.sourceHandle
               : undefined,
           inputId:
-            foundSourceNode?.data.passageType === PASSAGE_TYPE.INPUT
+            foundSourceNode?.data.passageType === EVENT_TYPE.INPUT
               ? connection.sourceHandle
               : undefined,
           originType: foundSourceNode?.data.passageType,
@@ -605,14 +605,14 @@ const SceneMap: React.FC<{
       elements.map((element) => {
         switch (element.data.type) {
           // TODO: #45
-          // case COMPONENT_TYPE.JUMP:
+          // case ELEMENT_TYPE.JUMP:
           //   jumpRefs.push(element.id)
           //   break
-          case COMPONENT_TYPE.ROUTE:
+          case ELEMENT_TYPE.ROUTE:
             routeRefs.push(element.id)
             break
           // TODO: #45
-          // case COMPONENT_TYPE.PASSAGE:
+          // case ELEMENT_TYPE.PASSAGE:
           //   passageRefs.push(element.id)
           //   break
           default:
@@ -667,7 +667,7 @@ const SceneMap: React.FC<{
 
   async function onSelectionDragStop(
     event: React.MouseEvent<Element, MouseEvent>,
-    nodes: Node<{ type: COMPONENT_TYPE }>[]
+    nodes: Node<{ type: ELEMENT_TYPE }>[]
   ) {
     if (jumps && passages) {
       const clonedJumps =
@@ -724,13 +724,13 @@ const SceneMap: React.FC<{
 
     selectedElements?.map((element) => {
       switch (element.data.type) {
-        case COMPONENT_TYPE.JUMP:
+        case ELEMENT_TYPE.JUMP:
           _totalSelectedJumps++
           break
-        case COMPONENT_TYPE.PASSAGE:
+        case ELEMENT_TYPE.PASSAGE:
           _totalSelectedPassages++
           break
-        case COMPONENT_TYPE.ROUTE:
+        case ELEMENT_TYPE.ROUTE:
           _totalSelectedRoutes++
           break
         default:
@@ -753,13 +753,13 @@ const SceneMap: React.FC<{
     }
 
     if (selectedElements && selectedElements.length === 1) {
-      selectedElements[0].data.type === COMPONENT_TYPE.JUMP &&
+      selectedElements[0].data.type === ELEMENT_TYPE.JUMP &&
         setSelectedJump(selectedElements[0].id)
 
-      selectedElements[0].data.type === COMPONENT_TYPE.PASSAGE &&
+      selectedElements[0].data.type === ELEMENT_TYPE.PASSAGE &&
         setSelectedPassage(selectedElements[0].id)
 
-      selectedElements[0].data.type === COMPONENT_TYPE.ROUTE &&
+      selectedElements[0].data.type === ELEMENT_TYPE.ROUTE &&
         setSelectedRoute(selectedElements[0].id)
 
       setSelectedChoice(null)
@@ -901,7 +901,7 @@ const SceneMap: React.FC<{
         jump.id &&
           nodes.push({
             id: jump.id,
-            data: { studioId, jumpId: jump.id, type: COMPONENT_TYPE.JUMP },
+            data: { studioId, jumpId: jump.id, type: ELEMENT_TYPE.JUMP },
             type: 'jumpNode',
             position: jump.editor
               ? {
@@ -925,18 +925,18 @@ const SceneMap: React.FC<{
             passageId: passage.id,
             passageType: passage.type,
             totalChoices: passage.choices.length,
-            type: COMPONENT_TYPE.PASSAGE
+            type: ELEMENT_TYPE.PASSAGE
           }
 
           switch (passage.type) {
-            case PASSAGE_TYPE.CHOICE:
+            case EVENT_TYPE.CHOICE:
               passageNodeData = {
                 ...passageNodeData,
                 selectedChoice: null,
                 onChoiceSelect
               }
               break
-            case PASSAGE_TYPE.INPUT:
+            case EVENT_TYPE.INPUT:
               if (passage.input)
                 passageNodeData = {
                   ...passageNodeData,
@@ -974,7 +974,7 @@ const SceneMap: React.FC<{
           type: 'routeEdge',
           animated: true,
           data: {
-            type: COMPONENT_TYPE.ROUTE,
+            type: ELEMENT_TYPE.ROUTE,
             studioId,
             routeId: route.id
           }
@@ -1194,7 +1194,7 @@ const SceneMap: React.FC<{
                 selectedGameOutlineComponent: {
                   id: scene.id,
                   title: scene.title,
-                  type: COMPONENT_TYPE.SCENE,
+                  type: ELEMENT_TYPE.SCENE,
                   expanded: true
                 }
               })
@@ -1229,7 +1229,7 @@ const SceneMap: React.FC<{
                           const passageId = await addElementToScene(
                             studioId,
                             scene,
-                            COMPONENT_TYPE.PASSAGE,
+                            ELEMENT_TYPE.PASSAGE,
                             project(clickPosition)
                           )
 
@@ -1238,7 +1238,7 @@ const SceneMap: React.FC<{
                               type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
                               savedComponent: {
                                 id: passageId,
-                                type: COMPONENT_TYPE.PASSAGE
+                                type: ELEMENT_TYPE.PASSAGE
                               }
                             })
                         } catch (error) {
@@ -1255,7 +1255,7 @@ const SceneMap: React.FC<{
                           const jumpId = await addElementToScene(
                             studioId,
                             scene,
-                            COMPONENT_TYPE.JUMP,
+                            ELEMENT_TYPE.JUMP,
                             project(clickPosition)
                           )
 
@@ -1264,7 +1264,7 @@ const SceneMap: React.FC<{
                               type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
                               savedComponent: {
                                 id: jumpId,
-                                type: COMPONENT_TYPE.JUMP
+                                type: ELEMENT_TYPE.JUMP
                               }
                             })
                         } catch (error) {
@@ -1312,9 +1312,9 @@ const SceneMap: React.FC<{
 
                       if (foundPassage)
                         switch (foundPassage.type) {
-                          case PASSAGE_TYPE.CHOICE:
+                          case EVENT_TYPE.CHOICE:
                             return 'Switch to Input'
-                          case PASSAGE_TYPE.INPUT:
+                          case EVENT_TYPE.INPUT:
                             return 'Switch to Choice'
                           default:
                             break
@@ -1328,7 +1328,7 @@ const SceneMap: React.FC<{
                       )
 
                       if (foundPassage && foundPassage.id) {
-                        if (foundPassage.type === PASSAGE_TYPE.CHOICE) {
+                        if (foundPassage.type === EVENT_TYPE.CHOICE) {
                           editor.selectedComponentEditorSceneViewPassage ===
                             foundPassage.id &&
                             editorDispatch({
@@ -1343,7 +1343,7 @@ const SceneMap: React.FC<{
                           )
                         }
 
-                        foundPassage.type === PASSAGE_TYPE.INPUT &&
+                        foundPassage.type === EVENT_TYPE.INPUT &&
                           foundPassage.input &&
                           (await api().passages.switchPassageFromInputToChoiceType(
                             studioId,
@@ -1360,7 +1360,7 @@ const SceneMap: React.FC<{
                           await removeElementFromScene(
                             studioId,
                             scene,
-                            COMPONENT_TYPE.PASSAGE,
+                            ELEMENT_TYPE.PASSAGE,
                             componentId
                           )
 
@@ -1380,7 +1380,7 @@ const SceneMap: React.FC<{
                           editorDispatch({
                             type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
                             removedComponent: {
-                              type: COMPONENT_TYPE.PASSAGE,
+                              type: ELEMENT_TYPE.PASSAGE,
                               id: componentId
                             }
                           })
@@ -1402,7 +1402,7 @@ const SceneMap: React.FC<{
                           await removeElementFromScene(
                             studioId,
                             scene,
-                            COMPONENT_TYPE.JUMP,
+                            ELEMENT_TYPE.JUMP,
                             componentId
                           )
 

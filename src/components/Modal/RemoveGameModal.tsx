@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { StudioId, Game } from '../../data/types'
+import { StudioId, World } from '../../data/types'
 
 import { Modal, ModalProps } from 'antd'
 
@@ -8,7 +8,7 @@ import api from '../../api'
 
 interface RemoveGameModalProps extends ModalProps {
   studioId: StudioId
-  game: Game
+  game: World
 }
 
 const RemoveGameModal: React.FC<RemoveGameModalProps> = ({
@@ -24,7 +24,7 @@ const RemoveGameModal: React.FC<RemoveGameModalProps> = ({
       visible={visible}
       destroyOnClose
       onOk={async () => {
-        if (game.id) await api().games.removeGame(studioId, game.id)
+        if (game.id) await api().worlds.removeGame(studioId, game.id)
 
         if (afterClose) afterClose()
       }}

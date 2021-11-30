@@ -5,7 +5,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 
 import {
   ElementId,
-  PASSAGE_TYPE,
+  EVENT_TYPE,
   EngineEventData,
   EngineEventStateCollection,
   ENGINE_EVENT_TYPE,
@@ -45,7 +45,7 @@ export type NextEventProcessor = ({
   destinationId: ElementId
   eventResult: EngineEventResult
   originId?: ElementId
-  passageType: PASSAGE_TYPE
+  passageType: EVENT_TYPE
   routeId?: ElementId
   state?: EngineEventStateCollection // override of event state for input type
 }) => Promise<void>
@@ -84,7 +84,7 @@ const Event: React.FC<{ data: EngineEventData }> = ({ data }) => {
         case ENGINE_EVENT_LOOPBACK_RESULT_VALUE:
           eventType =
             ENGINE_EVENT_TYPE[
-              passageType === PASSAGE_TYPE.CHOICE
+              passageType === EVENT_TYPE.CHOICE
                 ? 'CHOICE_LOOPBACK'
                 : 'INPUT_LOOPBACK'
             ]

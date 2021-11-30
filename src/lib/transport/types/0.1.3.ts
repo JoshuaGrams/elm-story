@@ -1,7 +1,7 @@
 import {
   COMPARE_OPERATOR_TYPE,
   ElementId,
-  COMPONENT_TYPE,
+  ELEMENT_TYPE,
   SET_OPERATOR_TYPE,
   StudioId,
   VARIABLE_TYPE
@@ -112,10 +112,10 @@ export interface PassageCollection {
 export interface RouteData {
   choiceId?: ElementId
   destinationId: ElementId
-  destinationType: COMPONENT_TYPE
+  destinationType: ELEMENT_TYPE
   id: ElementId
   originId: ElementId
-  originType: COMPONENT_TYPE
+  originType: ELEMENT_TYPE
   sceneId: ElementId
   tags: string[]
   title: string

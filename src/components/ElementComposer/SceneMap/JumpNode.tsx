@@ -1,6 +1,6 @@
 import React, { memo, useContext } from 'react'
 
-import { ElementId, COMPONENT_TYPE } from '../../../data/types'
+import { ElementId, ELEMENT_TYPE } from '../../../data/types'
 
 import { useJump } from '../../../hooks'
 
@@ -43,8 +43,8 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
 
   const jumps = useStoreState((state) =>
       state.nodes.filter(
-        (node: Node<{ type: COMPONENT_TYPE }>) =>
-          node?.data?.type === COMPONENT_TYPE.JUMP
+        (node: Node<{ type: ELEMENT_TYPE }>) =>
+          node?.data?.type === ELEMENT_TYPE.JUMP
       )
     ),
     setSelectedElement = useStoreActions(

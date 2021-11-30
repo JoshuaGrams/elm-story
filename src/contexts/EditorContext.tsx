@@ -1,25 +1,25 @@
 import React, { createContext, useMemo, useReducer } from 'react'
 
-import { ElementId, COMPONENT_TYPE } from '../data/types'
+import { ElementId, ELEMENT_TYPE } from '../data/types'
 
 interface EditorState {
   savedComponent: {
     id?: ElementId
-    type?: COMPONENT_TYPE
+    type?: ELEMENT_TYPE
   }
   renamedComponent: {
     id?: ElementId
-    type?: COMPONENT_TYPE
+    type?: ELEMENT_TYPE
     newTitle?: string
   }
   removedComponent: {
     id?: ElementId
-    type?: COMPONENT_TYPE
+    type?: ELEMENT_TYPE
   }
   selectedGameOutlineComponent: {
     id?: ElementId
     expanded?: boolean
-    type?: COMPONENT_TYPE
+    type?: ELEMENT_TYPE
     title?: string
   }
   renamingGameOutlineComponent: {
@@ -38,11 +38,11 @@ interface EditorState {
   centeredComponentEditorSceneViewSelection: boolean
   selectedComponentEditorComponents: {
     id?: ElementId
-    type?: COMPONENT_TYPE
+    type?: ELEMENT_TYPE
   }[]
   closedEditorTab: {
     id?: ElementId
-    type?: COMPONENT_TYPE
+    type?: ELEMENT_TYPE
   }
   characterModal: {
     visible: boolean
@@ -77,14 +77,14 @@ type EditorActionType =
       type: EDITOR_ACTION_TYPE.COMPONENT_SAVE
       savedComponent: {
         id?: ElementId
-        type?: COMPONENT_TYPE
+        type?: ELEMENT_TYPE
       }
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_RENAME
       renamedComponent: {
         id?: ElementId
-        type?: COMPONENT_TYPE
+        type?: ELEMENT_TYPE
         newTitle?: string
       }
     }
@@ -92,7 +92,7 @@ type EditorActionType =
       type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE
       removedComponent: {
         id?: ElementId
-        type?: COMPONENT_TYPE
+        type?: ELEMENT_TYPE
       }
     }
   | {
@@ -100,7 +100,7 @@ type EditorActionType =
       selectedGameOutlineComponent: {
         id?: ElementId
         expanded?: boolean
-        type?: COMPONENT_TYPE
+        type?: ELEMENT_TYPE
         title?: string
       }
     }
@@ -159,14 +159,14 @@ type EditorActionType =
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SELECT
       selectedComponentEditorComponents: {
         id?: ElementId
-        type?: COMPONENT_TYPE
+        type?: ELEMENT_TYPE
       }[]
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_CLOSE_TAB
       closedEditorTab: {
         id?: ElementId
-        type?: COMPONENT_TYPE
+        type?: ELEMENT_TYPE
       }
     }
   | {

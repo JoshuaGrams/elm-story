@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext } from 'react'
 
 import {
   Character,
-  COMPONENT_TYPE,
+  ELEMENT_TYPE,
   WorldId,
-  Passage,
+  Event,
   Scene,
   StudioId
 } from '../../data/types'
@@ -36,7 +36,7 @@ const SceneRow: React.FC<{ scene: Scene }> = ({ scene }) => {
                 expanded: true,
                 id: scene.id,
                 title: scene.title,
-                type: COMPONENT_TYPE.SCENE
+                type: ELEMENT_TYPE.SCENE
               }
             })
         }}
@@ -52,7 +52,7 @@ SceneRow.displayName = 'SceneRow'
 const EventRow: React.FC<{
   studioId: StudioId
   character: Character
-  event: Passage
+  event: Event
 }> = ({ studioId, character, event }) => {
   const { editorDispatch } = useContext(EditorContext)
 
@@ -65,7 +65,7 @@ const EventRow: React.FC<{
         expanded: true,
         id: event.sceneId,
         title: event.title,
-        type: COMPONENT_TYPE.SCENE
+        type: ELEMENT_TYPE.SCENE
       }
     })
   }

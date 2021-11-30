@@ -4,13 +4,13 @@ import React, { useEffect } from 'react'
 
 import {
   ElementId,
-  COMPONENT_TYPE,
-  Game,
+  ELEMENT_TYPE,
+  World,
   Scene,
   StudioId
 } from '../../../data/types'
 
-import { useDebouncedResizeObserver, useGame, useScene } from '../../../hooks'
+import { useDebouncedResizeObserver, useWorld, useScene } from '../../../hooks'
 
 import EditorTabProvider from '../../../contexts/EditorTabContext'
 
@@ -21,11 +21,11 @@ import styles from './styles.module.less'
 const TabContent: React.FC<{
   studioId: StudioId
   id: ElementId
-  type: COMPONENT_TYPE
+  type: ELEMENT_TYPE
   view: JSX.Element
   tools: JSX.Element
 }> = ({ studioId, id, type, tools, view }) => {
-  let component: { type: COMPONENT_TYPE; data: Game | Scene | undefined }
+  let component: { type: ELEMENT_TYPE; data: World | Scene | undefined }
 
   const {
     ref: tabContentViewRef,
@@ -34,11 +34,11 @@ const TabContent: React.FC<{
   } = useDebouncedResizeObserver(1000)
 
   switch (type) {
-    case COMPONENT_TYPE.GAME:
-      component = { type: COMPONENT_TYPE.GAME, data: useGame(studioId, id) }
+    case ELEMENT_TYPE.GAME:
+      component = { type: ELEMENT_TYPE.GAME, data: useWorld(studioId, id) }
       break
-    case COMPONENT_TYPE.SCENE:
-      component = { type: COMPONENT_TYPE.SCENE, data: useScene(studioId, id) }
+    case ELEMENT_TYPE.SCENE:
+      component = { type: ELEMENT_TYPE.SCENE, data: useScene(studioId, id) }
       break
     default:
       throw 'Unable to render TabContent. Unknown component type.'
@@ -60,7 +60,7 @@ const TabContent: React.FC<{
           ref={tabContentViewRef}
           className={styles.TabContentView}
           style={{
-            overflow: type === COMPONENT_TYPE.GAME ? 'hidden' : 'initial'
+            overflow: type === ELEMENT_TYPE.GAME ? 'hidden' : 'initial'
           }}
         >
           {view}

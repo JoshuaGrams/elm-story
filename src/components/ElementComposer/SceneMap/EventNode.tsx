@@ -14,9 +14,9 @@ import {
 import {
   Choice,
   ElementId,
-  COMPONENT_TYPE,
+  ELEMENT_TYPE,
   WorldId,
-  PASSAGE_TYPE,
+  EVENT_TYPE,
   Route,
   StudioId
 } from '../../../data/types'
@@ -374,7 +374,7 @@ const EventNode: React.FC<NodeProps<{
   selectedChoice: ElementId | null
   onEditPassage: (passageId: ElementId) => void
   onChoiceSelect: (passageId: ElementId, choiceId: ElementId | null) => void
-  type: COMPONENT_TYPE
+  type: ELEMENT_TYPE
 }>> = ({ data }) => {
   const event = usePassage(data.studioId, data.passageId),
     choicesByEventRef = useChoicesByPassageRef(data.studioId, data.passageId)
@@ -383,8 +383,8 @@ const EventNode: React.FC<NodeProps<{
 
   const events = useStoreState((state) =>
       state.nodes.filter(
-        (node: Node<{ type: COMPONENT_TYPE }>) =>
-          node?.data?.type === COMPONENT_TYPE.PASSAGE
+        (node: Node<{ type: ELEMENT_TYPE }>) =>
+          node?.data?.type === ELEMENT_TYPE.PASSAGE
       )
     ),
     setSelectedElement = useStoreActions(
@@ -478,7 +478,7 @@ const EventNode: React.FC<NodeProps<{
                     event.id &&
                     editor.selectedGameOutlineComponent.id === event.sceneId) ||
                   event.choices.length > 0 ||
-                  event.type === PASSAGE_TYPE.INPUT
+                  event.type === EVENT_TYPE.INPUT
                     ? '0px'
                     : '5px',
                 borderBottomRightRadius:
@@ -486,7 +486,7 @@ const EventNode: React.FC<NodeProps<{
                     event.id &&
                     editor.selectedGameOutlineComponent.id === event.sceneId) ||
                   event.choices.length > 0 ||
-                  event.type === PASSAGE_TYPE.INPUT
+                  event.type === EVENT_TYPE.INPUT
                     ? '0px'
                     : '5px'
               }}
@@ -516,7 +516,7 @@ const EventNode: React.FC<NodeProps<{
               />
             </div>
 
-            {choices.length === 0 && event.type !== PASSAGE_TYPE.INPUT && (
+            {choices.length === 0 && event.type !== EVENT_TYPE.INPUT && (
               <PassageSoureHandle
                 studioId={data.studioId}
                 sceneId={data.sceneId}
@@ -525,7 +525,7 @@ const EventNode: React.FC<NodeProps<{
             )}
           </div>
 
-          {event.type === PASSAGE_TYPE.CHOICE && (
+          {event.type === EVENT_TYPE.CHOICE && (
             <>
               <div
                 className={`${styles.choices} ${
@@ -726,7 +726,7 @@ const EventNode: React.FC<NodeProps<{
             </>
           )}
 
-          {event.type === PASSAGE_TYPE.INPUT && event.input && (
+          {event.type === EVENT_TYPE.INPUT && event.input && (
             <div className={`${styles.input} ${styles.bottomRadius}`}>
               <InputRow
                 studioId={data.studioId}

@@ -5,9 +5,9 @@ import React, { useContext, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
-import { COMPONENT_TYPE } from '../../data/types'
+import { ELEMENT_TYPE } from '../../data/types'
 
-import { useGame } from '../../hooks'
+import { useWorld } from '../../hooks'
 
 import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
@@ -28,11 +28,11 @@ const Editor: React.FC = () => {
 
   const selectedGame =
     app.selectedStudioId && app.selectedGameId
-      ? useGame(app.selectedStudioId, app.selectedGameId)
+      ? useWorld(app.selectedStudioId, app.selectedGameId)
       : undefined
 
   function closeActiveTab() {
-    if (editor.selectedGameOutlineComponent.type !== COMPONENT_TYPE.GAME) {
+    if (editor.selectedGameOutlineComponent.type !== ELEMENT_TYPE.GAME) {
       editorDispatch({
         type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_CLOSE_TAB,
         closedEditorTab: {
@@ -59,7 +59,7 @@ const Editor: React.FC = () => {
         selectedGameOutlineComponent: {
           id: selectedGame.id,
           title: selectedGame.title,
-          type: COMPONENT_TYPE.GAME,
+          type: ELEMENT_TYPE.GAME,
           expanded: true
         }
       })

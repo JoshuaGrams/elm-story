@@ -1,4 +1,4 @@
-export enum COMPONENT_TYPE {
+export enum ELEMENT_TYPE {
   STUDIO = 'STUDIO',
   GAME = 'GAME',
   JUMP = 'JUMP',
@@ -30,7 +30,7 @@ export enum SET_OPERATOR_TYPE {
   DIVIDE = '/'
 }
 
-export enum PASSAGE_TYPE {
+export enum EVENT_TYPE {
   CHOICE = 'CHOICE',
   INPUT = 'INPUT'
 }
@@ -48,24 +48,24 @@ export type WorldId = string
 export type ElementId = string
 
 export type GameChildRefs = Array<
-  [COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ElementId]
+  [ELEMENT_TYPE.FOLDER | ELEMENT_TYPE.SCENE, ElementId]
 >
 
 export type FolderParentRef = [
-  COMPONENT_TYPE.GAME | COMPONENT_TYPE.FOLDER,
+  ELEMENT_TYPE.GAME | ELEMENT_TYPE.FOLDER,
   ElementId | null
 ]
 
 export type FolderChildRefs = Array<
-  [COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ElementId]
+  [ELEMENT_TYPE.FOLDER | ELEMENT_TYPE.SCENE, ElementId]
 >
 
 export type SceneParentRef = [
-  COMPONENT_TYPE.GAME | COMPONENT_TYPE.FOLDER,
+  ELEMENT_TYPE.GAME | ELEMENT_TYPE.FOLDER,
   ElementId | null
 ]
 
-export type SceneChildRefs = Array<[COMPONENT_TYPE.PASSAGE, ElementId]>
+export type SceneChildRefs = Array<[ELEMENT_TYPE.PASSAGE, ElementId]>
 
 export interface RootData {
   children: GameChildRefs
@@ -181,7 +181,7 @@ export interface PassageData {
   sceneId: ElementId
   tags: string[]
   title: string
-  type: PASSAGE_TYPE
+  type: EVENT_TYPE
   updated: number
 }
 
@@ -192,11 +192,11 @@ export interface PassageCollection {
 export interface RouteData {
   choiceId?: ElementId
   destinationId: ElementId
-  destinationType: COMPONENT_TYPE
+  destinationType: ELEMENT_TYPE
   id: ElementId
   inputId?: ElementId
   originId: ElementId
-  originType: COMPONENT_TYPE | PASSAGE_TYPE
+  originType: ELEMENT_TYPE | EVENT_TYPE
   sceneId: ElementId
   tags: string[]
   title: string
@@ -426,7 +426,7 @@ export interface EnginePassageData {
   id: ElementId
   input?: ElementId
   sceneId: ElementId
-  type: PASSAGE_TYPE
+  type: EVENT_TYPE
 }
 
 export interface EnginePassageCollection {
@@ -436,12 +436,12 @@ export interface EnginePassageCollection {
 export interface EngineRouteData {
   choiceId?: ElementId
   destinationId: ElementId
-  destinationType: COMPONENT_TYPE
+  destinationType: ELEMENT_TYPE
   gameId: WorldId
   id: ElementId
   inputId?: ElementId
   originId: ElementId
-  originType: COMPONENT_TYPE | PASSAGE_TYPE
+  originType: ELEMENT_TYPE | EVENT_TYPE
   sceneId: ElementId
 }
 

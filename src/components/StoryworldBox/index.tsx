@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { StudioId, Game } from '../../data/types'
+import { StudioId, World } from '../../data/types'
 
 import {
   AppContext,
@@ -20,10 +20,10 @@ import api from '../../api'
 
 interface StoryworldBoxProps {
   studioId: StudioId
-  game?: Game
+  world?: World
 }
 
-const StoryworldBox: React.FC<StoryworldBoxProps> = ({ studioId, game }) => {
+const StoryworldBox: React.FC<StoryworldBoxProps> = ({ studioId, world }) => {
   const { appDispatch } = useContext(AppContext)
 
   const [saveGameModalVisible, setSaveGameModalVisible] = useState(false),
@@ -36,7 +36,7 @@ const StoryworldBox: React.FC<StoryworldBoxProps> = ({ studioId, game }) => {
   return (
     <>
       {/* MODALS */}
-      {!game && studioId && (
+      {!world && studioId && (
         <SaveGameModal
           visible={saveGameModalVisible}
           onCancel={() => setSaveGameModalVisible(false)}
@@ -45,23 +45,23 @@ const StoryworldBox: React.FC<StoryworldBoxProps> = ({ studioId, game }) => {
         />
       )}
 
-      {game && (
+      {world && (
         <RemoveGameModal
           visible={removeGameModalVisible}
           onCancel={() => setRemoveGameModalVisible(false)}
           afterClose={() => setRemoveGameModalVisible(false)}
           studioId={studioId}
-          game={game}
+          game={world}
         />
       )}
 
       {/* CONTENT */}
       <Card
         className={styles.StoryworldBox}
-        title={game?.title || undefined}
+        title={world?.title || undefined}
         hoverable
         actions={
-          !game
+          !world
             ? []
             : [
                 <Tooltip title="Remove Storyworld" mouseEnterDelay={1}>
@@ -80,16 +80,16 @@ const StoryworldBox: React.FC<StoryworldBoxProps> = ({ studioId, game }) => {
               ]
         }
         onClick={async () => {
-          if (game?.id) {
-            const selectedGame = await api().games.getGame(studioId, game.id)
+          if (world?.id) {
+            const selectedGame = await api().worlds.getWorld(studioId, world.id)
 
-            await api().games.saveGame(studioId, {
+            await api().worlds.saveWorld(studioId, {
               ...selectedGame
             })
 
             appDispatch({
               type: APP_ACTION_TYPE.GAME_SELECT,
-              selectedGameId: game.id
+              selectedGameId: world.id
             })
 
             history.push(APP_LOCATION.COMPOSER)
@@ -98,7 +98,7 @@ const StoryworldBox: React.FC<StoryworldBoxProps> = ({ studioId, game }) => {
           }
         }}
       >
-        {!game && (
+        {!world && (
           <Tooltip title="Create Storyworld" mouseEnterDelay={1}>
             <Button className={styles.addGameButton}>
               <PlusOutlined />
@@ -106,14 +106,14 @@ const StoryworldBox: React.FC<StoryworldBoxProps> = ({ studioId, game }) => {
           </Tooltip>
         )}
 
-        {game && (
+        {world && (
           <>
             <Meta
               title="designed by"
-              description={game.designer}
+              description={world.designer}
               style={{ marginBottom: 20 }}
             />
-            <Meta title="version" description={game.version} />
+            <Meta title="version" description={world.version} />
           </>
         )}
       </Card>

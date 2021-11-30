@@ -4,9 +4,9 @@ import React, { useContext, useEffect, useState } from 'react'
 
 import {
   ElementId,
-  COMPONENT_TYPE,
+  ELEMENT_TYPE,
   WorldId,
-  Passage,
+  Event,
   Scene,
   StudioId
 } from '../../data/types'
@@ -28,14 +28,14 @@ const JumpSelect: React.FC<{
   sceneId?: ElementId
   selectedId: ElementId | undefined
   onChangeRoutePart: (
-    componentType: COMPONENT_TYPE,
+    componentType: ELEMENT_TYPE,
     componentId: ElementId | null
   ) => Promise<void>
 }> = ({ studioId, gameId, sceneId, selectedId, onChangeRoutePart }) => {
   let scenes: Scene[] | undefined = gameId
       ? useScenes(studioId, gameId, [gameId])
       : undefined,
-    passages: Passage[] | undefined = sceneId
+    passages: Event[] | undefined = sceneId
       ? usePassagesBySceneRef(studioId, sceneId, [sceneId])
       : undefined
 
@@ -47,9 +47,9 @@ const JumpSelect: React.FC<{
     )
 
   async function onChange(componentId: string) {
-    gameId && (await onChangeRoutePart(COMPONENT_TYPE.SCENE, componentId))
+    gameId && (await onChangeRoutePart(ELEMENT_TYPE.SCENE, componentId))
 
-    sceneId && (await onChangeRoutePart(COMPONENT_TYPE.PASSAGE, componentId))
+    sceneId && (await onChangeRoutePart(ELEMENT_TYPE.PASSAGE, componentId))
   }
 
   useEffect(() => {
@@ -93,9 +93,7 @@ const JumpSelect: React.FC<{
 
                 <Button className={styles.rollBackBtn}>
                   <RollbackOutlined
-                    onClick={() =>
-                      onChangeRoutePart(COMPONENT_TYPE.SCENE, null)
-                    }
+                    onClick={() => onChangeRoutePart(ELEMENT_TYPE.SCENE, null)}
                   />
                 </Button>
               </>
@@ -127,7 +125,7 @@ const JumpSelect: React.FC<{
                 <Button className={styles.rollBackBtn}>
                   <RollbackOutlined
                     onClick={() =>
-                      onChangeRoutePart(COMPONENT_TYPE.PASSAGE, null)
+                      onChangeRoutePart(ELEMENT_TYPE.PASSAGE, null)
                     }
                   />
                 </Button>
@@ -168,12 +166,12 @@ const JumpTo: React.FC<{
   const { editor, editorDispatch } = useContext(EditorContext)
 
   async function onChangeRoutePart(
-    componentType: COMPONENT_TYPE,
+    componentType: ELEMENT_TYPE,
     componentId: ElementId | null
   ) {
     if (jump?.id) {
       switch (componentType) {
-        case COMPONENT_TYPE.SCENE:
+        case ELEMENT_TYPE.SCENE:
           componentId &&
             (await api().jumps.saveJumpRoute(studioId, jump.id, [componentId]))
 
@@ -192,14 +190,14 @@ const JumpTo: React.FC<{
               })
             }
 
-            await api().games.saveJumpRefToGame(studioId, jump.gameId, null)
+            await api().worlds.saveJumpRefToGame(studioId, jump.gameId, null)
 
             await api().jumps.removeJump(studioId, jump.id)
 
             onRemove && (await onRemove(jumpId))
           }
           break
-        case COMPONENT_TYPE.PASSAGE:
+        case ELEMENT_TYPE.PASSAGE:
           await api().jumps.saveJumpRoute(
             studioId,
             jump.id,

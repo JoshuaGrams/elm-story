@@ -170,13 +170,13 @@ const createWindow = async () => {
           _,
           {
             studioId,
-            gameId,
+            worldId,
             id,
             data,
             ext
           }: {
             studioId: StudioId
-            gameId: WorldId
+            worldId: WorldId
             id: string
             data: ArrayBuffer
             ext: 'jpeg'
@@ -184,7 +184,7 @@ const createWindow = async () => {
         ): Promise<string | null> => {
           const path = `${app.getPath(
             'userData'
-          )}/assets/${studioId}/${gameId}/${id}.${ext}`
+          )}/assets/${studioId}/${worldId}/${id}.${ext}`
 
           try {
             await outputFile(path, Buffer.from(data))
@@ -203,12 +203,12 @@ const createWindow = async () => {
           _,
           {
             studioId,
-            gameId,
+            worldId,
             id,
             ext
           }: {
             studioId: StudioId
-            gameId: WorldId
+            worldId: WorldId
             id: string
             data: ArrayBuffer
             ext: 'jpeg'
@@ -216,7 +216,7 @@ const createWindow = async () => {
         ) => {
           const path = `${app.getPath(
             'userData'
-          )}/assets/${studioId}/${gameId}/${id}.${ext}`
+          )}/assets/${studioId}/${worldId}/${id}.${ext}`
 
           try {
             await fs.remove(path)
@@ -234,11 +234,11 @@ const createWindow = async () => {
           _,
           {
             studioId,
-            gameId,
+            worldId,
             type
-          }: { studioId: StudioId; gameId?: WorldId; type: 'STUDIO' | 'GAME' }
+          }: { studioId: StudioId; worldId?: WorldId; type: 'STUDIO' | 'GAME' }
         ) => {
-          if (type === 'GAME' && !gameId)
+          if (type === 'GAME' && !worldId)
             throw 'Unable to remove storyworld assets. Missing ID.'
 
           const root = `${app.getPath('userData')}/assets`
@@ -250,7 +250,7 @@ const createWindow = async () => {
               path = `${root}/${studioId}/`
               break
             case 'GAME':
-              path = `${root}/${studioId}/${gameId}`
+              path = `${root}/${studioId}/${worldId}`
               break
             default:
               break
@@ -267,21 +267,21 @@ const createWindow = async () => {
           _,
           {
             studioId,
-            gameId,
+            worldId,
             id,
             ext
-          }: { studioId: StudioId; gameId: WorldId; id: string; ext: 'jpeg' }
+          }: { studioId: StudioId; worldId: WorldId; id: string; ext: 'jpeg' }
         ) => {
           const exists = await fs.pathExists(
             `${app.getPath(
               'userData'
-            )}/assets/${studioId}/${gameId}/${id}.${ext}`.replace(/\\/g, '/')
+            )}/assets/${studioId}/${worldId}/${id}.${ext}`.replace(/\\/g, '/')
           )
 
           return exists
             ? `${app.getPath(
                 'userData'
-              )}/assets/${studioId}/${gameId}/${id}.${ext}`.replace(/\\/g, '/')
+              )}/assets/${studioId}/${worldId}/${id}.${ext}`.replace(/\\/g, '/')
             : null
         }
       )

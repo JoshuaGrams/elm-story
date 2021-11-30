@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ElementId, COMPONENT_TYPE } from '../../data/types'
+import { ElementId, ELEMENT_TYPE } from '../../data/types'
 import { OnAddComponent } from '.'
 import { OnEditComponentTitle, OnRemoveComponent } from '.'
 
@@ -9,7 +9,7 @@ import { Dropdown, Menu } from 'antd'
 const ContextMenu: React.FC<{
   component: {
     id: ElementId
-    type: COMPONENT_TYPE
+    type: ELEMENT_TYPE
     title: string
     disabled: boolean
     onAdd: OnAddComponent
@@ -31,22 +31,22 @@ const ContextMenu: React.FC<{
   const menuItems: React.ReactElement[] = []
 
   switch (type) {
-    case COMPONENT_TYPE.GAME:
+    case ELEMENT_TYPE.GAME:
       menuItems.push(
         <Menu.Item
           key={`${id}-add-folder`}
-          onClick={() => onAdd(id, COMPONENT_TYPE.FOLDER)}
+          onClick={() => onAdd(id, ELEMENT_TYPE.FOLDER)}
         >
           Add Folder to '{title}'
         </Menu.Item>
       )
 
       break
-    case COMPONENT_TYPE.FOLDER:
+    case ELEMENT_TYPE.FOLDER:
       menuItems.push(
         <Menu.Item
           key={`${id}-add-folder`}
-          onClick={() => onAdd(id, COMPONENT_TYPE.FOLDER)}
+          onClick={() => onAdd(id, ELEMENT_TYPE.FOLDER)}
         >
           Add Folder to '{title}'
         </Menu.Item>
@@ -55,31 +55,31 @@ const ContextMenu: React.FC<{
       menuItems.push(
         <Menu.Item
           key={`${id}-add-scene`}
-          onClick={() => onAdd(id, COMPONENT_TYPE.SCENE)}
+          onClick={() => onAdd(id, ELEMENT_TYPE.SCENE)}
         >
           Add Scene to '{title}'
         </Menu.Item>
       )
 
       break
-    case COMPONENT_TYPE.SCENE:
+    case ELEMENT_TYPE.SCENE:
       menuItems.push(
         <Menu.Item
           key={`${id}-add`}
-          onClick={() => onAdd(id, COMPONENT_TYPE.PASSAGE)}
+          onClick={() => onAdd(id, ELEMENT_TYPE.PASSAGE)}
         >
           Add Event to '{title}'
         </Menu.Item>
       )
 
       break
-    case COMPONENT_TYPE.PASSAGE:
+    case ELEMENT_TYPE.PASSAGE:
       break
     default:
       break
   }
 
-  if (type !== COMPONENT_TYPE.GAME) {
+  if (type !== ELEMENT_TYPE.GAME) {
     menuItems.push(
       <Menu.Item
         key={`${id}-rename`}

@@ -9,7 +9,7 @@ import {
   ENGINE_DEVTOOLS_EVENT_TYPE
 } from '../../../lib/transport/types/0.5.1'
 
-import { useGame } from '../../../hooks'
+import { useWorld } from '../../../hooks'
 
 import { Menu } from 'antd'
 
@@ -95,7 +95,7 @@ const StoryworldPreview: React.FC<{
   studioId: StudioId
   gameId: WorldId
 }> = ({ studioId, gameId }) => {
-  const game = useGame(studioId, gameId)
+  const game = useWorld(studioId, gameId)
 
   useEffect(() => {
     logger.info(`GameView->useEffect`)

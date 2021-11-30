@@ -56,7 +56,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
         await api().studios.saveStudio({
           id: studioNotFound.id,
           title: studioNotFound.title,
-          games: [],
+          worlds: [],
           tags: []
         })
 
@@ -82,7 +82,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
 
       try {
         // Remove game first to prevent merging of existing data
-        await api().games.removeGame(gameData._.studioId, gameData._.id)
+        await api().worlds.removeGame(gameData._.studioId, gameData._.id)
 
         // TODO: handle finish errors
         // TODO: ts errors
@@ -163,7 +163,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
             if (
               foundStudio.games.findIndex((id) => id === gameData._.id) !== -1
             ) {
-              const foundGame = await api().games.getGame(
+              const foundGame = await api().worlds.getGame(
                 gameData._.studioId,
                 gameData._.id
               )

@@ -4,7 +4,7 @@
 
 import Dexie from 'dexie'
 
-import { Passage } from '../data/types'
+import { Event } from '../data/types'
 import { DB_NAME, LIBRARY_TABLE } from '.'
 
 export default (database: Dexie) => {
@@ -21,9 +21,7 @@ export default (database: Dexie) => {
       })
       .upgrade(async (tx) => {
         try {
-          const passagesTable = tx.table<Passage, string>(
-            LIBRARY_TABLE.PASSAGES
-          )
+          const passagesTable = tx.table<Event, string>(LIBRARY_TABLE.PASSAGES)
 
           await passagesTable.toCollection().modify((passage) => {
             passage.gameOver = false

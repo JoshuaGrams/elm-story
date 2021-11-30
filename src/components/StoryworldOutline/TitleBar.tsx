@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useHistory } from 'react-router'
 
-import { COMPONENT_TYPE, Game, WorldId, StudioId } from '../../data/types'
+import { ELEMENT_TYPE, World, WorldId, StudioId } from '../../data/types'
 import { OnAddComponent } from '.'
 
 import { APP_LOCATION } from '../../contexts/AppContext'
@@ -17,7 +17,7 @@ import styles from './styles.module.less'
 
 const TitleBar: React.FC<{
   studioId: StudioId
-  game: Game
+  game: World
   onAdd: OnAddComponent
   onStoryworldSelect: () => void
 }> = ({ studioId, game, onAdd, onStoryworldSelect }) => {
@@ -70,9 +70,7 @@ const TitleBar: React.FC<{
 
           <AddComponentMenu
             gameId={game.id as WorldId}
-            onAdd={(gameId: WorldId, type: COMPONENT_TYPE) =>
-              onAdd(gameId, type)
-            }
+            onAdd={(gameId: WorldId, type: ELEMENT_TYPE) => onAdd(gameId, type)}
           >
             <Tooltip
               title="Add Element..."

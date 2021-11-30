@@ -3,11 +3,11 @@ import { v4 as uuid } from 'uuid'
 
 import { Descendant } from 'slate'
 import {
-  Passage,
+  Event,
   ElementId,
   StudioId,
   WorldId,
-  PASSAGE_TYPE,
+  EVENT_TYPE,
   CharacterRefs,
   CharacterMask,
   CHARACTER_MASK_TYPE
@@ -25,8 +25,8 @@ export async function getPassage(studioId: StudioId, passageId: ElementId) {
 
 export async function savePassage(
   studioId: StudioId,
-  passage: Passage
-): Promise<Passage> {
+  passage: Event
+): Promise<Event> {
   if (!passage.id) passage.id = uuid()
 
   try {
@@ -47,7 +47,7 @@ export async function removePassage(studioId: StudioId, passageId: ElementId) {
 export async function getPassagesByGameRef(
   studioId: StudioId,
   gameId: WorldId
-): Promise<Passage[]> {
+): Promise<Event[]> {
   try {
     return await new LibraryDatabase(studioId).getPassagesByGameRef(gameId)
   } catch (error) {
@@ -74,7 +74,7 @@ export async function savePassageTitle(
 export async function savePassageType(
   studioId: StudioId,
   passageId: ElementId,
-  type: PASSAGE_TYPE
+  type: EVENT_TYPE
 ) {
   try {
     await new LibraryDatabase(studioId).savePassageType(passageId, type)
@@ -142,7 +142,7 @@ export async function saveChoiceRefsToPassage(
 
 export async function switchPassageFromChoiceToInputType(
   studioId: StudioId,
-  passage: Passage
+  passage: Event
 ) {
   if (passage && passage.id) {
     try {
@@ -162,7 +162,7 @@ export async function switchPassageFromChoiceToInputType(
             await api().choices.removeChoice(studioId, choiceId)
         ),
         api().passages.saveChoiceRefsToPassage(studioId, passage.id, []),
-        api().passages.savePassageType(studioId, passage.id, PASSAGE_TYPE.INPUT)
+        api().passages.savePassageType(studioId, passage.id, EVENT_TYPE.INPUT)
       ])
 
       const input = await api().inputs.saveInput(studioId, {
@@ -187,18 +187,14 @@ export async function switchPassageFromChoiceToInputType(
 
 export async function switchPassageFromInputToChoiceType(
   studioId: StudioId,
-  passage: Passage
+  passage: Event
 ) {
   if (passage && passage.id && passage.input) {
     try {
       await Promise.all([
         api().inputs.removeInput(studioId, passage.input),
         api().passages.savePassageInput(studioId, passage.id, undefined),
-        api().passages.savePassageType(
-          studioId,
-          passage.id,
-          PASSAGE_TYPE.CHOICE
-        )
+        api().passages.savePassageType(studioId, passage.id, EVENT_TYPE.CHOICE)
       ])
     } catch (error) {
       throw error

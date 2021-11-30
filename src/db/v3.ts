@@ -3,7 +3,7 @@
 import Dexie from 'dexie'
 
 import {
-  COMPONENT_TYPE,
+  ELEMENT_TYPE,
   ElementId,
   FolderChildRefs,
   SceneChildRefs,
@@ -31,7 +31,7 @@ export default (database: Dexie) => {
               gameChildren: GameChildRefs = []
 
             chapterIds.map((chapterId) =>
-              gameChildren.push([COMPONENT_TYPE.FOLDER, chapterId])
+              gameChildren.push([ELEMENT_TYPE.FOLDER, chapterId])
             )
 
             game.children = gameChildren
@@ -43,13 +43,13 @@ export default (database: Dexie) => {
           await folderTable.bulkAdd(await tx.table('chapters').toArray())
 
           await folderTable.toCollection().modify((folder) => {
-            folder.parent = [COMPONENT_TYPE.GAME, null]
+            folder.parent = [ELEMENT_TYPE.GAME, null]
 
             const sceneIds: ElementId[] = folder.scenes,
               folderChildren: FolderChildRefs = []
 
             sceneIds.map((sceneId) =>
-              folderChildren.push([COMPONENT_TYPE.SCENE, sceneId])
+              folderChildren.push([ELEMENT_TYPE.SCENE, sceneId])
             )
 
             folder.children = folderChildren
@@ -63,14 +63,14 @@ export default (database: Dexie) => {
           const sceneTable = tx.table(LIBRARY_TABLE.SCENES)
 
           await sceneTable.toCollection().modify((scene) => {
-            scene.parent = [COMPONENT_TYPE.FOLDER, scene.chapterId]
+            scene.parent = [ELEMENT_TYPE.FOLDER, scene.chapterId]
             delete scene.chapterId
 
             const passageIds: ElementId[] = scene.passages,
               sceneChildren: SceneChildRefs = []
 
             passageIds.map((passageId) =>
-              sceneChildren.push([COMPONENT_TYPE.PASSAGE, passageId])
+              sceneChildren.push([ELEMENT_TYPE.PASSAGE, passageId])
             )
 
             scene.children = sceneChildren

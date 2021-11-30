@@ -3,7 +3,7 @@ import useResizeObserver from '@react-hook/resize-observer'
 
 import api from '../../api'
 
-import { COMPONENT_TYPE, WorldId, StudioId } from '../../data/types'
+import { ELEMENT_TYPE, WorldId, StudioId } from '../../data/types'
 import {
   EngineDevToolsEvent,
   ENGINE_DEVTOOLS_EVENTS,
@@ -45,7 +45,7 @@ const GameEngine: React.FC<{
                   expanded: true,
                   id: scene.id,
                   title: scene.title,
-                  type: COMPONENT_TYPE.SCENE
+                  type: ELEMENT_TYPE.SCENE
                 }
               })
 

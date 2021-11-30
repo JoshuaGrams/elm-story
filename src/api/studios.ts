@@ -44,7 +44,7 @@ export async function removeStudio(studioId: StudioId) {
   }
 }
 
-export async function saveGameRef(studioId: StudioId, gameId: WorldId) {
+export async function saveWorldRef(studioId: StudioId, gameId: WorldId) {
   try {
     const studio = await getStudio(studioId),
       exists = studio ? studio.worlds.indexOf(gameId) !== -1 : false
@@ -69,7 +69,7 @@ export async function saveGameRef(studioId: StudioId, gameId: WorldId) {
   }
 }
 
-export async function removeGameRef(studioId: StudioId, gameId: WorldId) {
+export async function removeWorldRef(studioId: StudioId, gameId: WorldId) {
   try {
     const studio = await getStudio(studioId)
 

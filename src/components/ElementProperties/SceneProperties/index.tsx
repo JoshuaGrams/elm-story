@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { ElementId, COMPONENT_TYPE, StudioId } from '../../../data/types'
+import { ElementId, ELEMENT_TYPE, StudioId } from '../../../data/types'
 
 import { useScene } from '../../../hooks'
 
@@ -109,7 +109,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                     <>
                       <ForwardOutlined className={styles.headerIcon} />
                       Selected Jump
-                      <ElementHelpButton type={COMPONENT_TYPE.JUMP} />
+                      <ElementHelpButton type={ELEMENT_TYPE.JUMP} />
                     </>
                   }
                   key="jump-details-panel"
@@ -130,7 +130,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                     <>
                       <NodeIndexOutlined className={styles.headerIcon} />{' '}
                       Selected Path
-                      <ElementHelpButton type={COMPONENT_TYPE.ROUTE} />
+                      <ElementHelpButton type={ELEMENT_TYPE.ROUTE} />
                     </>
                   }
                   key="route-details-panel"
@@ -158,7 +158,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                       <>
                         <AlignLeftOutlined className={styles.headerIcon} />{' '}
                         Selected Event
-                        <ElementHelpButton type={COMPONENT_TYPE.PASSAGE} />
+                        <ElementHelpButton type={ELEMENT_TYPE.PASSAGE} />
                       </>
                     }
                     key="passage-details-panel"
@@ -177,7 +177,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                       <>
                         <BranchesOutlined className={styles.headerIcon} />{' '}
                         Selected Choice
-                        <ElementHelpButton type={COMPONENT_TYPE.CHOICE} />
+                        <ElementHelpButton type={ELEMENT_TYPE.CHOICE} />
                       </>
                     }
                     key="choice-details-panel"

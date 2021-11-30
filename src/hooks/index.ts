@@ -5,7 +5,7 @@ import useCharacters, {
   useCharacterEvents
 } from './useCharacters'
 import useStudios, { useStudio } from './useStudios'
-import useGames, { useGame } from './useGames'
+import useWorlds, { useWorld } from './useWorlds'
 import useFolders, { useFolder } from './useFolders'
 import useJumps, { useJump, useJumpsBySceneRef } from './useJumps'
 import useScenes, { useScenesByChapterRef, useScene } from './useScenes'
@@ -40,8 +40,8 @@ export {
   useCharacterEvents,
   useStudios,
   useStudio,
-  useGames,
-  useGame,
+  useWorlds,
+  useWorld,
   useFolders,
   useFolder,
   useJumps,

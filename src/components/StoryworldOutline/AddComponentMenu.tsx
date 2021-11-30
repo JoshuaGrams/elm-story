@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { COMPONENT_TYPE, WorldId } from '../../data/types'
+import { ELEMENT_TYPE, WorldId } from '../../data/types'
 import { OnAddComponent } from '.'
 
 import { EditorContext } from '../../contexts/EditorContext'
@@ -24,12 +24,10 @@ const AddComponentMenu: React.FC<{
         <Menu onClick={(event) => event.domEvent.stopPropagation()}>
           <Menu.Item
             key={'add-folder'}
-            onClick={() => onAdd(gameId, COMPONENT_TYPE.FOLDER)}
+            onClick={() => onAdd(gameId, ELEMENT_TYPE.FOLDER)}
             disabled={
-              editor.selectedGameOutlineComponent.type ===
-                COMPONENT_TYPE.SCENE ||
-              editor.selectedGameOutlineComponent.type ===
-                COMPONENT_TYPE.PASSAGE
+              editor.selectedGameOutlineComponent.type === ELEMENT_TYPE.SCENE ||
+              editor.selectedGameOutlineComponent.type === ELEMENT_TYPE.PASSAGE
             }
           >
             <FolderOutlined />
@@ -37,12 +35,10 @@ const AddComponentMenu: React.FC<{
           </Menu.Item>
           <Menu.Item
             key={'add-scene'}
-            onClick={() => onAdd(gameId, COMPONENT_TYPE.SCENE)}
+            onClick={() => onAdd(gameId, ELEMENT_TYPE.SCENE)}
             disabled={
-              editor.selectedGameOutlineComponent.type ===
-                COMPONENT_TYPE.SCENE ||
-              editor.selectedGameOutlineComponent.type ===
-                COMPONENT_TYPE.PASSAGE
+              editor.selectedGameOutlineComponent.type === ELEMENT_TYPE.SCENE ||
+              editor.selectedGameOutlineComponent.type === ELEMENT_TYPE.PASSAGE
             }
           >
             <PartitionOutlined />
@@ -50,11 +46,10 @@ const AddComponentMenu: React.FC<{
           </Menu.Item>
           <Menu.Item
             key={'add-event'}
-            onClick={() => onAdd(gameId, COMPONENT_TYPE.PASSAGE)}
+            onClick={() => onAdd(gameId, ELEMENT_TYPE.PASSAGE)}
             disabled={
-              editor.selectedGameOutlineComponent.type ===
-                COMPONENT_TYPE.GAME ||
-              editor.selectedGameOutlineComponent.type === COMPONENT_TYPE.FOLDER
+              editor.selectedGameOutlineComponent.type === ELEMENT_TYPE.GAME ||
+              editor.selectedGameOutlineComponent.type === ELEMENT_TYPE.FOLDER
             }
           >
             <AlignLeftOutlined />

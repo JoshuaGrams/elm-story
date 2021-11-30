@@ -9,8 +9,8 @@ import { LibraryDatabase } from '../lib/db'
 
 import {
   ElementId,
-  COMPONENT_TYPE,
-  PASSAGE_TYPE,
+  ELEMENT_TYPE,
+  EVENT_TYPE,
   EngineEventData,
   EngineEventStateCollection,
   EnginePassageData,
@@ -116,7 +116,7 @@ export const EventPassage: React.FC<{
             destinationId: foundPassage.id,
             eventResult: result,
             originId:
-              route?.destinationType === COMPONENT_TYPE.PASSAGE
+              route?.destinationType === ELEMENT_TYPE.PASSAGE
                 ? originId || event.destination
                 : undefined,
             passageType: foundPassage.type,
@@ -164,7 +164,7 @@ export const EventPassage: React.FC<{
               state={event.state}
             />
 
-            {passage.type === PASSAGE_TYPE.CHOICE && (
+            {passage.type === EVENT_TYPE.CHOICE && (
               <EventPassageChoices
                 passage={passage}
                 event={event}
@@ -172,7 +172,7 @@ export const EventPassage: React.FC<{
               />
             )}
 
-            {passage.type === PASSAGE_TYPE.INPUT && (
+            {passage.type === EVENT_TYPE.INPUT && (
               <EventPassageInput
                 passage={passage}
                 event={event}

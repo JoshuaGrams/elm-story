@@ -1,11 +1,11 @@
 import {
   COMPARE_OPERATOR_TYPE,
   ElementId,
-  COMPONENT_TYPE,
+  ELEMENT_TYPE,
   FolderChildRefs,
   FolderParentRef,
   GameChildRefs,
-  PASSAGE_TYPE,
+  EVENT_TYPE,
   SceneChildRefs,
   SceneParentRef,
   SET_OPERATOR_TYPE,
@@ -123,7 +123,7 @@ export interface PassageData {
   sceneId: ElementId
   tags: string[]
   title: string
-  type: PASSAGE_TYPE
+  type: EVENT_TYPE
   updated: number
 }
 
@@ -134,11 +134,11 @@ export interface PassageCollection {
 export interface RouteData {
   choiceId?: ElementId
   destinationId: ElementId
-  destinationType: COMPONENT_TYPE
+  destinationType: ELEMENT_TYPE
   id: ElementId
   inputId?: ElementId
   originId: ElementId
-  originType: COMPONENT_TYPE | PASSAGE_TYPE
+  originType: ELEMENT_TYPE | EVENT_TYPE
   sceneId: ElementId
   tags: string[]
   title: string

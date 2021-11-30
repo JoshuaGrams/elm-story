@@ -88,7 +88,7 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
             const studioId = await api().studios.saveStudio(
               studio && edit
                 ? { ...studio, title }
-                : { title, tags: [], games: [] }
+                : { title, tags: [], worlds: [] }
             )
 
             onSave && onSave(studioId)

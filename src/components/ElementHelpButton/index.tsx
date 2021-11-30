@@ -3,13 +3,13 @@ import { ipcRenderer } from 'electron'
 import React from 'react'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
-import { COMPONENT_TYPE } from '../../data/types'
+import { ELEMENT_TYPE } from '../../data/types'
 
 import { QuestionCircleFilled } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
-const ElementHelpButton: React.FC<{ type: COMPONENT_TYPE }> = ({ type }) => {
+const ElementHelpButton: React.FC<{ type: ELEMENT_TYPE }> = ({ type }) => {
   const openHelp = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation()
 
@@ -17,37 +17,37 @@ const ElementHelpButton: React.FC<{ type: COMPONENT_TYPE }> = ({ type }) => {
       'https://docs.elmstory.com/guides/production/editor/components'
 
     switch (type) {
-      case COMPONENT_TYPE.CHARACTER:
+      case ELEMENT_TYPE.CHARACTER:
         helpUrl = `${helpUrl}/character-component/`
         break
-      case COMPONENT_TYPE.CHOICE:
+      case ELEMENT_TYPE.CHOICE:
         helpUrl = `${helpUrl}/choice-component/`
         break
-      case COMPONENT_TYPE.CONDITION:
+      case ELEMENT_TYPE.CONDITION:
         helpUrl = `${helpUrl}/condition-component/`
         break
-      case COMPONENT_TYPE.EFFECT:
+      case ELEMENT_TYPE.EFFECT:
         helpUrl = `${helpUrl}/effect-component/`
         break
-      case COMPONENT_TYPE.FOLDER:
+      case ELEMENT_TYPE.FOLDER:
         helpUrl = `${helpUrl}/folder-component/`
         break
-      case COMPONENT_TYPE.GAME:
+      case ELEMENT_TYPE.GAME:
         helpUrl = `${helpUrl}/game-root-component/`
         break
-      case COMPONENT_TYPE.JUMP:
+      case ELEMENT_TYPE.JUMP:
         helpUrl = `${helpUrl}/jump-component/`
         break
-      case COMPONENT_TYPE.PASSAGE:
+      case ELEMENT_TYPE.PASSAGE:
         helpUrl = `${helpUrl}/passage-component/`
         break
-      case COMPONENT_TYPE.ROUTE:
+      case ELEMENT_TYPE.ROUTE:
         helpUrl = `${helpUrl}/route-component/`
         break
-      case COMPONENT_TYPE.SCENE:
+      case ELEMENT_TYPE.SCENE:
         helpUrl = `${helpUrl}/scene-component/`
         break
-      case COMPONENT_TYPE.VARIABLE:
+      case ELEMENT_TYPE.VARIABLE:
         helpUrl = `${helpUrl}/variable-component/`
         break
       default:

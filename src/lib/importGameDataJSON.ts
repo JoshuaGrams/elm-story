@@ -111,7 +111,7 @@ export default (
             { id, passageId, tags, title, updated }
           ] of Object.entries(choices)) {
             await api().choices.saveChoice(_.studioId, {
-              gameId: _.id,
+              worldId: _.id,
               id,
               passageId,
               tags,
@@ -127,7 +127,7 @@ export default (
           ] of Object.entries(conditions)) {
             await api().conditions.saveCondition(_.studioId, {
               compare: [...compare, variables[variableId].type],
-              gameId: _.id,
+              worldId: _.id,
               id,
               routeId,
               tags,
@@ -143,7 +143,7 @@ export default (
             { id, routeId, set, tags, title, updated, variableId }
           ] of Object.entries(effects)) {
             await api().effects.saveEffect(_.studioId, {
-              gameId: _.id,
+              worldId: _.id,
               id,
               routeId,
               tags,
@@ -161,7 +161,7 @@ export default (
           ] of Object.entries(folders)) {
             await api().folders.saveFolder(_.studioId, {
               children,
-              gameId: _.id,
+              worldId: _.id,
               id,
               parent,
               tags,
@@ -176,7 +176,7 @@ export default (
             { id, passageId, tags, title, updated, variableId }
           ] of Object.entries(inputs)) {
             await api().inputs.saveInput(_.studioId, {
-              gameId: _.id,
+              worldId: _.id,
               id,
               passageId,
               tags,
@@ -193,7 +193,7 @@ export default (
           ] of Object.entries(jumps)) {
             await api().jumps.saveJump(_.studioId, {
               editor,
-              gameId: _.id,
+              worldId: _.id,
               id,
               route,
               sceneId,
@@ -224,8 +224,8 @@ export default (
               choices,
               content,
               editor,
-              gameOver,
-              gameId: _.id,
+              ending,
+              worldId: _.id,
               id,
               input,
               sceneId,
@@ -259,7 +259,7 @@ export default (
               destinationType,
               id,
               inputId,
-              gameId: _.id,
+              worldId: _.id,
               originId,
               originType,
               sceneId,
@@ -278,7 +278,7 @@ export default (
               children,
               editor,
               id,
-              gameId: _.id,
+              worldId: _.id,
               jumps,
               parent,
               tags,
@@ -295,7 +295,7 @@ export default (
             await api().variables.saveVariable(_.studioId, {
               id,
               initialValue,
-              gameId: _.id,
+              worldId: _.id,
               tags,
               title,
               type,
@@ -304,7 +304,7 @@ export default (
           }
 
           // Save game data
-          await api().games.saveGame(_.studioId, {
+          await api().worlds.saveWorld(_.studioId, {
             children: _.children,
             copyright: _.copyright,
             description: _.description,
