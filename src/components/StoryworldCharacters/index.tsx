@@ -14,7 +14,7 @@ import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 import { CharacterModal } from '../Modal'
 
 import styles from './styles.module.less'
-import CharacterMask from '../CharacterComposer/CharacterMask'
+import CharacterMask from '../CharacterManager/CharacterMask'
 
 const CharacterRow: React.FC<{ studioId: StudioId; character: Character }> = ({
   studioId,

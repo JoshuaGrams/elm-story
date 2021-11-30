@@ -239,7 +239,7 @@ const createWindow = async () => {
           }: { studioId: StudioId; gameId?: GameId; type: 'STUDIO' | 'GAME' }
         ) => {
           if (type === 'GAME' && !gameId)
-            throw 'Unable to remove game assets. Missing ID.'
+            throw 'Unable to remove storyworld assets. Missing ID.'
 
           const root = `${app.getPath('userData')}/assets`
 

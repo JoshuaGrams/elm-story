@@ -94,7 +94,7 @@ const StoryworldLibrary: React.FC<StoryworldLibraryProps> = ({ studioId }) => {
         <div className={styles.contentWrapper}>
           {selectedStudio && games && games.length === 0 && (
             <div className={styles.noContent}>
-              There are 0 storyworlds in this library...
+              There are 0 worlds in this library...
               <br />
               Select another studio or{' '}
               <a onClick={() => setSaveGameModalVisible(true)}>create</a> /{' '}

@@ -1,6 +1,6 @@
 {
   "name": "@elmstorygames/engine",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "The Elm Story game engine.",
   "repository": {
     "type": "git",

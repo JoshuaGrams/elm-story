@@ -32,7 +32,7 @@ const RemoveCharacterButton: React.FC<{ onRemove: () => void }> = ({
 
 RemoveCharacterButton.displayName = 'RemoveCharacterButton'
 
-const CharacterComposer: React.FC<{
+const CharacterManager: React.FC<{
   studioId: StudioId
   gameId: GameId
   character: Character
@@ -42,7 +42,7 @@ const CharacterComposer: React.FC<{
   return (
     <>
       {character && (
-        <div className={styles.CharacterComposer}>
+        <div className={styles.CharacterManager}>
           <Tabs
             defaultActiveKey={TAB_TYPE.INFO}
             tabBarExtraContent={
@@ -92,6 +92,6 @@ const CharacterComposer: React.FC<{
   )
 }
 
-CharacterComposer.displayName = 'CharacterComposer'
+CharacterManager.displayName = 'CharacterManager'
 
-export default CharacterComposer
+export default CharacterManager

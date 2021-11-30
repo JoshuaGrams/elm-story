@@ -83,7 +83,7 @@ export async function removeGameRef(studioId: StudioId, gameId: GameId) {
       await saveStudio(studio)
     } else {
       throw new Error(
-        `Unable to remove game with ID: ${gameId}. Studio with ID ${studioId} does not exist.`
+        `Unable to remove storyworld with ID: ${gameId}. Studio with ID ${studioId} does not exist.`
       )
     }
   } catch (error) {

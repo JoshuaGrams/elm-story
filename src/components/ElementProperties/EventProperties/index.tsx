@@ -332,7 +332,7 @@ const PassageEndToggle: React.FC<{
           passage.type === PASSAGE_TYPE.INPUT
         }
       >
-        Storyworld Ending Event
+        Storyworld Ending
       </Checkbox>
     </div>
   )

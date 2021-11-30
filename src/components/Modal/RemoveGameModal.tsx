@@ -20,7 +20,7 @@ const RemoveGameModal: React.FC<RemoveGameModalProps> = ({
 }) => {
   return (
     <Modal
-      title="Remove Game"
+      title="Remove Storyworld"
       visible={visible}
       destroyOnClose
       onOk={async () => {
@@ -33,7 +33,7 @@ const RemoveGameModal: React.FC<RemoveGameModalProps> = ({
       okText="Remove"
       okButtonProps={{ danger: true }}
     >
-      <div>Are you sure you want to remove game '{game.title}'?</div>
+      <div>Are you sure you want to remove world '{game.title}'?</div>
     </Modal>
   )
 }

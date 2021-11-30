@@ -435,8 +435,9 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async removeGame(studioId: StudioId, gameId: GameId) {
-    if (!studioId) throw 'Unable to remove game. Missing studio ID.'
-    if (!gameId) throw new Error('Unable to remove game. Missing game ID.')
+    if (!studioId) throw 'Unable to remove storyworld. Missing studio ID.'
+    if (!gameId)
+      throw new Error('Unable to remove storyworld. Missing game ID.')
 
     try {
       logger.info(`Removing game with ID: ${gameId}`)
@@ -469,7 +470,7 @@ export class LibraryDatabase extends Dexie {
           await this.games.delete(gameId)
         } else {
           throw new Error(
-            `Unable to remove game with ID: '${gameId}'. Does not exist.`
+            `Unable to remove storyworld with ID: '${gameId}'. Does not exist.`
           )
         }
       })

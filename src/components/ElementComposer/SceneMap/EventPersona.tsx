@@ -9,7 +9,7 @@ import {
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
 
-import CharacterMask from '../../CharacterComposer/CharacterMask'
+import CharacterMask from '../../CharacterManager/CharacterMask'
 
 import styles from './styles.module.less'
 
