@@ -8,8 +8,8 @@ import {
   StudioId,
   Editor,
   Game,
-  GameId,
-  ComponentId,
+  WorldId,
+  ElementId,
   Folder,
   Scene,
   Passage,
@@ -86,15 +86,13 @@ export class AppDatabase extends Dexie {
     super(DB_NAME.APP)
 
     v1(this)
+    v2(this)
 
     this.studios = this.table(APP_TABLE.STUDIOS)
     this.editors = this.table(APP_TABLE.EDITORS)
   }
 
-  public async getComponent(
-    table: APP_TABLE,
-    id: ComponentId
-  ): Promise<boolean> {
+  public async getComponent(table: APP_TABLE, id: ElementId): Promise<boolean> {
     let exists = false
 
     try {
@@ -215,7 +213,7 @@ export class LibraryDatabase extends Dexie {
     this.variables = this.table(LIBRARY_TABLE.VARIABLES)
   }
 
-  public async getComponent(table: LIBRARY_TABLE, id: ComponentId) {
+  public async getComponent(table: LIBRARY_TABLE, id: ElementId) {
     let component = undefined
 
     try {
@@ -227,7 +225,7 @@ export class LibraryDatabase extends Dexie {
     return component
   }
 
-  public async getComponentsByGameRef(gameId: GameId, table: LIBRARY_TABLE) {
+  public async getComponentsByGameRef(gameId: WorldId, table: LIBRARY_TABLE) {
     try {
       return await this[table].where({ gameId }).toArray()
     } catch (error) {
@@ -236,7 +234,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveComponentTitle(
-    componentId: ComponentId,
+    componentId: ElementId,
     table: LIBRARY_TABLE,
     title: string
   ) {
@@ -263,7 +261,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getCharacter(characterId: ComponentId) {
+  public async getCharacter(characterId: ElementId) {
     try {
       const character = await this.characters.get(characterId)
 
@@ -310,7 +308,7 @@ export class LibraryDatabase extends Dexie {
     return character
   }
 
-  public async removeCharacter(studioId: StudioId, characterId: ComponentId) {
+  public async removeCharacter(studioId: StudioId, characterId: ElementId) {
     logger.info(`LibraryDatabase->removeCharacter`)
 
     // TODO: consider dependencies e.g. passages
@@ -348,7 +346,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getGame(gameId: GameId): Promise<Game> {
+  public async getGame(gameId: WorldId): Promise<Game> {
     try {
       const game = await this.games.get(gameId)
 
@@ -390,7 +388,7 @@ export class LibraryDatabase extends Dexie {
     return game
   }
 
-  public async saveChildRefsToGame(gameId: GameId, children: GameChildRefs) {
+  public async saveChildRefsToGame(gameId: WorldId, children: GameChildRefs) {
     try {
       await this.transaction('rw', this.games, async () => {
         if (gameId) {
@@ -412,7 +410,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveJumpRefToGame(gameId: GameId, jumpId: ComponentId | null) {
+  public async saveJumpRefToGame(gameId: WorldId, jumpId: ElementId | null) {
     try {
       await this.transaction('rw', this.games, async () => {
         if (gameId) {
@@ -434,7 +432,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeGame(studioId: StudioId, gameId: GameId) {
+  public async removeGame(studioId: StudioId, gameId: WorldId) {
     if (!studioId) throw 'Unable to remove storyworld. Missing studio ID.'
     if (!gameId)
       throw new Error('Unable to remove storyworld. Missing game ID.')
@@ -479,7 +477,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getFolder(folderId: ComponentId): Promise<Folder> {
+  public async getFolder(folderId: ElementId): Promise<Folder> {
     try {
       const folder = await this.folders.get(folderId)
 
@@ -495,7 +493,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveFolder(folder: Folder): Promise<ComponentId> {
+  public async saveFolder(folder: Folder): Promise<ElementId> {
     if (!folder.gameId)
       throw new Error('Unable to save folder to database. Missing game ID.')
     if (!folder.id)
@@ -528,7 +526,7 @@ export class LibraryDatabase extends Dexie {
 
   public async saveParentRefToFolder(
     parent: FolderParentRef,
-    folderId: ComponentId
+    folderId: ElementId
   ) {
     try {
       const folder = await this.getComponent(LIBRARY_TABLE.FOLDERS, folderId)
@@ -548,7 +546,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveChildRefsToFolder(
-    folderId: ComponentId,
+    folderId: ElementId,
     children: FolderChildRefs
   ) {
     try {
@@ -575,10 +573,10 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeFolder(folderId: ComponentId) {
-    let children: [COMPONENT_TYPE, ComponentId][] = []
+  public async removeFolder(folderId: ElementId) {
+    let children: [COMPONENT_TYPE, ElementId][] = []
 
-    const getChildren = async (itemId: ComponentId, type: COMPONENT_TYPE) => {
+    const getChildren = async (itemId: ElementId, type: COMPONENT_TYPE) => {
       let item: Folder | Scene | undefined = undefined
 
       switch (type) {
@@ -660,7 +658,7 @@ export class LibraryDatabase extends Dexie {
     return
   }
 
-  public async getFoldersByGameRef(gameId: GameId): Promise<Folder[]> {
+  public async getFoldersByGameRef(gameId: WorldId): Promise<Folder[]> {
     try {
       return await this.folders.where({ gameId }).toArray()
     } catch (error) {
@@ -669,7 +667,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async getChildRefsByFolderRef(
-    folderId: ComponentId
+    folderId: ElementId
   ): Promise<FolderChildRefs> {
     try {
       const folder = await this.folders.where({ id: folderId }).first()
@@ -684,7 +682,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getJump(jumpId: ComponentId): Promise<Jump> {
+  public async getJump(jumpId: ElementId): Promise<Jump> {
     try {
       const jump = await this.jumps.get(jumpId)
 
@@ -700,7 +698,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getJumpsByGameRef(gameId: GameId): Promise<Jump[]> {
+  public async getJumpsByGameRef(gameId: WorldId): Promise<Jump[]> {
     try {
       return await this.jumps.where({ gameId }).toArray()
     } catch (error) {
@@ -736,7 +734,7 @@ export class LibraryDatabase extends Dexie {
     return jump
   }
 
-  public async saveJumpRoute(jumpId: ComponentId, route: JumpRoute) {
+  public async saveJumpRoute(jumpId: ElementId, route: JumpRoute) {
     logger.info(
       `LibraryDatabase->saveJumpRoute->jumpId: ${jumpId} route: ${route}`
     )
@@ -758,7 +756,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeJump(jumpId: ComponentId) {
+  public async removeJump(jumpId: ElementId) {
     logger.info(`LibraryDatabase->removeJump:${jumpId}`)
 
     const routes = await this.routes.where({ destinationId: jumpId }).toArray()
@@ -779,7 +777,7 @@ export class LibraryDatabase extends Dexie {
       const jump: Jump | undefined = await this.jumps.get(jumpId)
 
       if (jump?.sceneId) {
-        const updatedSceneJumpRefs: ComponentId[] | undefined = (
+        const updatedSceneJumpRefs: ElementId[] | undefined = (
             await this.scenes.get(jump.sceneId)
           )?.jumps,
           foundJumpIndex = updatedSceneJumpRefs
@@ -812,7 +810,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getJumpsBySceneRef(sceneId: ComponentId): Promise<Jump[]> {
+  public async getJumpsBySceneRef(sceneId: ElementId): Promise<Jump[]> {
     try {
       return await this.jumps.where({ route: sceneId }).toArray()
     } catch (error) {
@@ -820,7 +818,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getJumpsByPassageRef(passageId: ComponentId): Promise<Jump[]> {
+  public async getJumpsByPassageRef(passageId: ElementId): Promise<Jump[]> {
     try {
       return await this.jumps.where({ route: passageId }).toArray()
     } catch (error) {
@@ -828,7 +826,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getScene(sceneId: ComponentId): Promise<Scene> {
+  public async getScene(sceneId: ElementId): Promise<Scene> {
     try {
       const scene = await this.scenes.get(sceneId)
 
@@ -844,7 +842,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveScene(scene: Scene): Promise<ComponentId> {
+  public async saveScene(scene: Scene): Promise<ElementId> {
     if (!scene.parent)
       throw new Error('Unable to save scene to database. Missing parent.')
     if (!scene.id)
@@ -877,7 +875,7 @@ export class LibraryDatabase extends Dexie {
 
   public async saveParentRefToScene(
     parent: SceneParentRef,
-    sceneId: ComponentId
+    sceneId: ElementId
   ) {
     try {
       const scene = await this.getComponent(LIBRARY_TABLE.SCENES, sceneId)
@@ -897,7 +895,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveChildRefsToScene(
-    sceneId: ComponentId,
+    sceneId: ElementId,
     children: SceneChildRefs
   ) {
     try {
@@ -921,7 +919,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveJumpRefsToScene(sceneId: ComponentId, jumps: ComponentId[]) {
+  public async saveJumpRefsToScene(sceneId: ElementId, jumps: ElementId[]) {
     try {
       await this.transaction('rw', this.scenes, async () => {
         if (sceneId) {
@@ -944,7 +942,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveSceneViewTransform(
-    sceneId: ComponentId,
+    sceneId: ElementId,
     transform: { x: number; y: number; zoom: number }
   ) {
     try {
@@ -974,7 +972,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeScene(sceneId: ComponentId) {
+  public async removeScene(sceneId: ElementId) {
     logger.info(`LibraryDatabase->removeScene`)
 
     try {
@@ -1041,7 +1039,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getScenesByGameRef(gameId: GameId): Promise<Scene[]> {
+  public async getScenesByGameRef(gameId: WorldId): Promise<Scene[]> {
     try {
       return await this.scenes.where({ gameId }).toArray()
     } catch (error) {
@@ -1050,7 +1048,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async getChildRefsBySceneRef(
-    sceneId: ComponentId
+    sceneId: ElementId
   ): Promise<SceneChildRefs> {
     try {
       const scene = await this.scenes.where({ id: sceneId }).first()
@@ -1065,7 +1063,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getRoute(routeId: ComponentId): Promise<Route> {
+  public async getRoute(routeId: ElementId): Promise<Route> {
     try {
       const route = await this.routes.get(routeId)
 
@@ -1081,7 +1079,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getRoutesByGameRef(gameId: GameId): Promise<Route[]> {
+  public async getRoutesByGameRef(gameId: WorldId): Promise<Route[]> {
     try {
       return await this.routes.where({ gameId }).toArray()
     } catch (error) {
@@ -1089,7 +1087,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveRoute(route: Route): Promise<ComponentId> {
+  public async saveRoute(route: Route): Promise<ElementId> {
     if (!route.sceneId)
       throw new Error('Unable to save route to databse. Missing scene ID.')
     if (!route.id)
@@ -1120,7 +1118,7 @@ export class LibraryDatabase extends Dexie {
     return route.id
   }
 
-  public async removeRoute(routeId: ComponentId) {
+  public async removeRoute(routeId: ElementId) {
     logger.info(`LibraryDatabase->removeRoute`)
 
     try {
@@ -1156,7 +1154,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeRoutesByPassageRef(passageId: ComponentId) {
+  public async removeRoutesByPassageRef(passageId: ElementId) {
     logger.info(`LibraryDatabase->removeRoutesByPassageRef`)
 
     try {
@@ -1182,7 +1180,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeRoutesByChoiceRef(choiceId: ComponentId) {
+  public async removeRoutesByChoiceRef(choiceId: ElementId) {
     try {
       const routes = await this.routes.where({ choiceId }).toArray()
 
@@ -1196,7 +1194,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getCondition(conditionId: ComponentId): Promise<Condition> {
+  public async getCondition(conditionId: ElementId): Promise<Condition> {
     try {
       const condition = await this.conditions.get(conditionId)
 
@@ -1212,7 +1210,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getConditionsByGameRef(gameId: GameId): Promise<Condition[]> {
+  public async getConditionsByGameRef(gameId: WorldId): Promise<Condition[]> {
     try {
       return await this.conditions.where({ gameId }).toArray()
     } catch (error) {
@@ -1221,7 +1219,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async getConditionsByRouteRef(
-    routeId: ComponentId,
+    routeId: ElementId,
     countOnly?: boolean
   ): Promise<number | Condition[]> {
     try {
@@ -1234,7 +1232,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async getConditionsByVariableRef(
-    variableId: ComponentId
+    variableId: ElementId
   ): Promise<Condition[]> {
     try {
       return await this.conditions.where({ variableId }).toArray()
@@ -1243,7 +1241,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveCondition(condition: Condition): Promise<ComponentId> {
+  public async saveCondition(condition: Condition): Promise<ElementId> {
     if (!condition.routeId)
       throw new Error('Unable to save condition to databse. Missing route ID.')
     if (!condition.id)
@@ -1275,7 +1273,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveConditionCompareOperatorType(
-    condtionId: ComponentId,
+    condtionId: ElementId,
     newCompareOperatorType: COMPARE_OPERATOR_TYPE
   ) {
     try {
@@ -1312,7 +1310,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveConditionValue(conditionId: ComponentId, newValue: string) {
+  public async saveConditionValue(conditionId: ElementId, newValue: string) {
     try {
       await this.transaction('rw', this.conditions, async () => {
         if (conditionId) {
@@ -1343,7 +1341,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeCondition(conditionId: ComponentId) {
+  public async removeCondition(conditionId: ElementId) {
     logger.info(`LibraryDatabase->removeCondition`)
 
     try {
@@ -1366,7 +1364,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getEffect(effectId: ComponentId): Promise<Effect> {
+  public async getEffect(effectId: ElementId): Promise<Effect> {
     try {
       const effect = await this.effects.get(effectId)
 
@@ -1382,7 +1380,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getEffectsByGameRef(gameId: GameId): Promise<Effect[]> {
+  public async getEffectsByGameRef(gameId: WorldId): Promise<Effect[]> {
     try {
       return await this.effects.where({ gameId }).toArray()
     } catch (error) {
@@ -1391,7 +1389,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async getEffectsByRouteRef(
-    routeId: ComponentId,
+    routeId: ElementId,
     countOnly?: boolean
   ): Promise<number | Effect[]> {
     try {
@@ -1404,7 +1402,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async getEffectsByVariableRef(
-    variableId: ComponentId
+    variableId: ElementId
   ): Promise<Effect[]> {
     try {
       return await this.effects.where({ variableId }).toArray()
@@ -1413,7 +1411,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveEffect(effect: Effect): Promise<ComponentId> {
+  public async saveEffect(effect: Effect): Promise<ElementId> {
     if (!effect.routeId)
       throw new Error('Unable to save effect to databse. Missing route ID.')
     if (!effect.id)
@@ -1445,7 +1443,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveEffectSetOperatorType(
-    effectId: ComponentId,
+    effectId: ElementId,
     newSetOperatorType: SET_OPERATOR_TYPE
   ) {
     try {
@@ -1473,7 +1471,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveEffectValue(effectId: ComponentId, newValue: string) {
+  public async saveEffectValue(effectId: ElementId, newValue: string) {
     try {
       await this.transaction('rw', this.effects, async () => {
         if (effectId) {
@@ -1497,7 +1495,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeEffect(effectId: ComponentId) {
+  public async removeEffect(effectId: ElementId) {
     logger.info(`LibraryDatabase->removeEffect`)
 
     try {
@@ -1520,7 +1518,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getPassage(passageId: ComponentId): Promise<Passage> {
+  public async getPassage(passageId: ElementId): Promise<Passage> {
     try {
       const passage = await this.passages.get(passageId)
 
@@ -1567,7 +1565,7 @@ export class LibraryDatabase extends Dexie {
     return passage
   }
 
-  public async savePassageType(passageId: ComponentId, type: PASSAGE_TYPE) {
+  public async savePassageType(passageId: ElementId, type: PASSAGE_TYPE) {
     try {
       await this.transaction('rw', this.passages, async () => {
         if (passageId) {
@@ -1594,7 +1592,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async savePassageInput(passageId: ComponentId, inputId?: ComponentId) {
+  public async savePassageInput(passageId: ElementId, inputId?: ElementId) {
     try {
       await this.transaction('rw', this.passages, async () => {
         if (passageId) {
@@ -1621,7 +1619,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async savePassageContent(passageId: ComponentId, content: string) {
+  public async savePassageContent(passageId: ElementId, content: string) {
     try {
       await this.transaction('rw', this.passages, async () => {
         if (passageId) {
@@ -1650,10 +1648,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveSceneRefToPassage(
-    sceneId: ComponentId,
-    passageId: ComponentId
-  ) {
+  public async saveSceneRefToPassage(sceneId: ElementId, passageId: ElementId) {
     logger.info(
       `LibraryDatabase->saveSceneRefToPassage->scene: ${sceneId}->passage: ${passageId}`
     )
@@ -1676,8 +1671,8 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveChoiceRefsToPassage(
-    passageId: ComponentId,
-    choices: ComponentId[]
+    passageId: ElementId,
+    choices: ElementId[]
   ) {
     try {
       await this.transaction('rw', this.passages, async () => {
@@ -1703,7 +1698,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async setPassageGameEnd(passageId: ComponentId, gameOver: boolean) {
+  public async setPassageGameEnd(passageId: ElementId, gameOver: boolean) {
     try {
       await this.transaction('rw', this.passages, async () => {
         if (passageId) {
@@ -1728,7 +1723,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removePassage(passageId: ComponentId) {
+  public async removePassage(passageId: ElementId) {
     try {
       logger.info('LibraryDatabase->removePassage')
 
@@ -1793,7 +1788,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getPassagesByGameRef(gameId: GameId): Promise<Passage[]> {
+  public async getPassagesByGameRef(gameId: WorldId): Promise<Passage[]> {
     try {
       return await this.passages.where({ gameId }).toArray()
     } catch (error) {
@@ -1801,7 +1796,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getChoice(choiceId: ComponentId): Promise<Choice> {
+  public async getChoice(choiceId: ElementId): Promise<Choice> {
     logger.info(`LibraryDatabase->getChoice`)
 
     try {
@@ -1819,7 +1814,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getChoicesByGameRef(gameId: GameId): Promise<Choice[]> {
+  public async getChoicesByGameRef(gameId: WorldId): Promise<Choice[]> {
     try {
       return await this.choices.where({ gameId }).toArray()
     } catch (error) {
@@ -1860,7 +1855,7 @@ export class LibraryDatabase extends Dexie {
     return choice
   }
 
-  public async removeChoice(choiceId: ComponentId) {
+  public async removeChoice(choiceId: ElementId) {
     try {
       const routes = await this.routes.where({ choiceId }).toArray()
 
@@ -1892,7 +1887,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getInput(inputId: ComponentId): Promise<Input> {
+  public async getInput(inputId: ElementId): Promise<Input> {
     logger.info(`LibraryDatabase->getInput`)
 
     try {
@@ -1910,7 +1905,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getInputsByGameRef(gameId: GameId): Promise<Input[]> {
+  public async getInputsByGameRef(gameId: WorldId): Promise<Input[]> {
     try {
       return await this.inputs.where({ gameId }).toArray()
     } catch (error) {
@@ -1952,8 +1947,8 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveVariableRefToInput(
-    inputId: ComponentId,
-    variableId?: ComponentId
+    inputId: ElementId,
+    variableId?: ElementId
   ) {
     logger.info(
       `LibraryDatabase->saveVariableRefToInput->input: ${inputId}->variable: ${variableId}`
@@ -1976,7 +1971,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeInput(inputId: ComponentId) {
+  public async removeInput(inputId: ElementId) {
     try {
       const routes = await this.routes.where({ inputId }).toArray()
 
@@ -2008,7 +2003,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getVariable(variableId: ComponentId): Promise<Variable> {
+  public async getVariable(variableId: ElementId): Promise<Variable> {
     try {
       const variable = await this.variables.get(variableId)
 
@@ -2024,7 +2019,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getVariablesByGameRef(gameId: GameId): Promise<Variable[]> {
+  public async getVariablesByGameRef(gameId: WorldId): Promise<Variable[]> {
     try {
       return await this.variables.where({ gameId }).toArray()
     } catch (error) {
@@ -2032,7 +2027,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveVariable(variable: Variable): Promise<ComponentId> {
+  public async saveVariable(variable: Variable): Promise<ElementId> {
     if (!variable.gameId)
       throw new Error('Unable to save variable to databse. Missing game ID.')
     if (!variable.id)
@@ -2063,7 +2058,7 @@ export class LibraryDatabase extends Dexie {
     return variable.id
   }
 
-  public async removeVariable(variableId: ComponentId) {
+  public async removeVariable(variableId: ElementId) {
     logger.info(`LibraryDatabase->removeVariable:${variableId}`)
 
     try {
@@ -2103,7 +2098,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveVariableType(variableId: ComponentId, type: VARIABLE_TYPE) {
+  public async saveVariableType(variableId: ElementId, type: VARIABLE_TYPE) {
     await this.transaction('rw', this.variables, async () => {
       if (variableId) {
         const component = await this.getComponent(
@@ -2133,7 +2128,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveVariableInitialValue(
-    variableId: ComponentId,
+    variableId: ElementId,
     initialValue: string
   ) {
     await this.transaction('rw', this.variables, async () => {

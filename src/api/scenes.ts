@@ -3,14 +3,14 @@ import { v4 as uuid } from 'uuid'
 
 import {
   Scene,
-  ComponentId,
+  ElementId,
   StudioId,
-  GameId,
+  WorldId,
   SceneParentRef,
   SceneChildRefs
 } from '../data/types'
 
-export async function getScene(studioId: StudioId, sceneId: ComponentId) {
+export async function getScene(studioId: StudioId, sceneId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getScene(sceneId)
   } catch (error) {
@@ -21,7 +21,7 @@ export async function getScene(studioId: StudioId, sceneId: ComponentId) {
 export async function saveScene(
   studioId: StudioId,
   scene: Scene
-): Promise<ComponentId> {
+): Promise<ElementId> {
   if (!scene.id) scene.id = uuid()
 
   try {
@@ -31,7 +31,7 @@ export async function saveScene(
   }
 }
 
-export async function removeScene(studioId: StudioId, sceneId: ComponentId) {
+export async function removeScene(studioId: StudioId, sceneId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removeScene(sceneId)
   } catch (error) {
@@ -41,7 +41,7 @@ export async function removeScene(studioId: StudioId, sceneId: ComponentId) {
 
 export async function getScenesByGameRef(
   studioId: StudioId,
-  gameId: GameId
+  gameId: WorldId
 ): Promise<Scene[]> {
   try {
     return await new LibraryDatabase(studioId).getScenesByGameRef(gameId)
@@ -52,7 +52,7 @@ export async function getScenesByGameRef(
 
 export async function getChildRefsBySceneRef(
   studioId: StudioId,
-  sceneId: ComponentId
+  sceneId: ElementId
 ): Promise<SceneChildRefs> {
   try {
     return await new LibraryDatabase(studioId).getChildRefsBySceneRef(sceneId)
@@ -63,7 +63,7 @@ export async function getChildRefsBySceneRef(
 
 export async function saveSceneTitle(
   studioId: StudioId,
-  sceneId: ComponentId,
+  sceneId: ElementId,
   title: string
 ) {
   try {
@@ -79,7 +79,7 @@ export async function saveSceneTitle(
 
 export async function saveSceneViewTransform(
   studioId: StudioId,
-  sceneId: ComponentId,
+  sceneId: ElementId,
   transform: { x: number; y: number; zoom: number }
 ) {
   try {
@@ -95,7 +95,7 @@ export async function saveSceneViewTransform(
 export async function saveParentRefToScene(
   studioId: StudioId,
   parent: SceneParentRef,
-  sceneId: ComponentId
+  sceneId: ElementId
 ) {
   try {
     await new LibraryDatabase(studioId).saveParentRefToScene(parent, sceneId)
@@ -106,7 +106,7 @@ export async function saveParentRefToScene(
 
 export async function saveChildRefsToScene(
   studioId: StudioId,
-  sceneId: ComponentId,
+  sceneId: ElementId,
   children: SceneChildRefs
 ) {
   try {
@@ -118,8 +118,8 @@ export async function saveChildRefsToScene(
 
 export async function saveJumpRefsToScene(
   studioId: StudioId,
-  sceneId: ComponentId,
-  jumps: ComponentId[]
+  sceneId: ElementId,
+  jumps: ElementId[]
 ) {
   try {
     await new LibraryDatabase(studioId).saveJumpRefsToScene(sceneId, jumps)

@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
 
-import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
+import { ElementId, COMPONENT_TYPE, StudioId } from '../../../data/types'
 
 import {
   useRouteConditionsCountByRouteRef,
@@ -30,7 +30,7 @@ interface GetBezierPathParams {
 export interface RouteEdgeData {
   type: COMPONENT_TYPE.ROUTE
   studioId: StudioId
-  routeId: ComponentId
+  routeId: ElementId
 }
 
 export function getBezierPath({

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import reactStringReplace from 'react-string-replace'
 
-import { GameState } from '../../../data/types'
+import { WorldState } from '../../../data/types'
 import {
   gameMethods,
   getProcessedTemplate,
   getTemplateExpressions,
   parseTemplateExpressions
 } from '../../../../engine/src/lib/templates'
-import { GameId, StudioId, VARIABLE_TYPE } from '../../../../engine/src/types'
+import { WorldId, StudioId, VARIABLE_TYPE } from '../../../../engine/src/types'
 
 import { useVariables } from '../../../hooks'
 
@@ -16,7 +16,7 @@ import styles from './styles.module.less'
 
 const processTemplateBlock = (
   template: string,
-  state: GameState
+  state: WorldState
 ): [string, string[]] => {
   const expressions = getTemplateExpressions(template),
     variables: {
@@ -50,7 +50,7 @@ const processTemplateBlock = (
   ]
 }
 
-const decorate = (template: string, state: GameState) => {
+const decorate = (template: string, state: WorldState) => {
   const [processedTemplate, expressions] = processTemplateBlock(template, state)
 
   let matchExpressionCounter = 0
@@ -76,14 +76,14 @@ const decorate = (template: string, state: GameState) => {
 
 const PassageSnippet: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  gameId: WorldId
   content: string
   onEditPassage: () => void
 }> = ({ studioId, gameId, content, onEditPassage }) => {
   const variables = useVariables(studioId, gameId, [])
 
   const [initialGameState, setInitialGameState] = useState<
-    GameState | undefined
+    WorldState | undefined
   >(undefined)
 
   const parsedContent: {
@@ -93,7 +93,7 @@ const PassageSnippet: React.FC<{
 
   useEffect(() => {
     if (variables) {
-      const updatedInitialGameState: GameState = {}
+      const updatedInitialGameState: WorldState = {}
 
       variables.map(({ id, initialValue, title, type }) => {
         if (id)

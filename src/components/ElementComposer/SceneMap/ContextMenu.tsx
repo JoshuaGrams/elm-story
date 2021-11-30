@@ -2,7 +2,7 @@ import logger from '../../../lib/logger'
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-import { ComponentId } from '../../../data/types'
+import { ElementId } from '../../../data/types'
 
 import { Menu } from 'antd'
 
@@ -13,7 +13,7 @@ interface MenuItemReturnData {
     x: number
     y: number
   }
-  componentId: ComponentId | null
+  componentId: ElementId | null
 }
 
 const CONTEXT_MENU_CLASS_NAME = 'sv-cm',
@@ -45,7 +45,7 @@ const ContextMenu: React.FC<{
       x: 0,
       y: 0
     }),
-    [byComponentId, setByComponentId] = useState<ComponentId | null>(null)
+    [byComponentId, setByComponentId] = useState<ElementId | null>(null)
 
   const whitelistByClassName = features.map((feature) => feature.className)
 

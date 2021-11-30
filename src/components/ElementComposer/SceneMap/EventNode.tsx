@@ -13,9 +13,9 @@ import {
 
 import {
   Choice,
-  ComponentId,
+  ElementId,
   COMPONENT_TYPE,
-  GameId,
+  WorldId,
   PASSAGE_TYPE,
   Route,
   StudioId
@@ -55,8 +55,8 @@ interface MenuInfo {
 
 const ChoiceSourceHandle: React.FC<{
   studioId: StudioId
-  sceneId: ComponentId
-  choiceId: ComponentId
+  sceneId: ElementId
+  choiceId: ElementId
 }> = ({ studioId, sceneId, choiceId }) => {
   // TODO: do we really need to get access to routes on every choice?
   const routes = useRoutesBySceneRef(studioId, sceneId)
@@ -95,20 +95,20 @@ const ChoiceSourceHandle: React.FC<{
 
 const ChoiceRow: React.FC<{
   studioId: StudioId
-  sceneId: ComponentId
-  choiceId: ComponentId
+  sceneId: ElementId
+  choiceId: ElementId
   title: string
   order: [number, number] // [position, total]
   showDivider: boolean
   handle: JSX.Element
   selected: boolean
-  onSelect: (passageId: ComponentId, choiceId: ComponentId) => void
+  onSelect: (passageId: ElementId, choiceId: ElementId) => void
   onReorder: (
-    passageId: ComponentId,
-    choiceId: ComponentId,
+    passageId: ElementId,
+    choiceId: ElementId,
     newPosition: number
   ) => void
-  onDelete: (choiceId: ComponentId, outgoingRoutes: Route[]) => void
+  onDelete: (choiceId: ElementId, outgoingRoutes: Route[]) => void
 }> = ({
   studioId,
   sceneId,
@@ -234,8 +234,8 @@ const ChoiceRow: React.FC<{
 
 const InputSoureHandle: React.FC<{
   studioId: StudioId
-  sceneId: ComponentId
-  inputId: ComponentId
+  sceneId: ElementId
+  inputId: ElementId
 }> = ({ studioId, sceneId, inputId }) => {
   const routes = useRoutesBySceneRef(studioId, sceneId)
 
@@ -273,8 +273,8 @@ const InputSoureHandle: React.FC<{
 
 const InputRow: React.FC<{
   studioId: StudioId
-  gameId: GameId
-  inputId: ComponentId
+  gameId: WorldId
+  inputId: ElementId
   handle: JSX.Element
 }> = ({ studioId, gameId, inputId, handle }) => {
   return (
@@ -291,8 +291,8 @@ const InputRow: React.FC<{
 
 const PassageTargetHandle: React.FC<{
   studioId: StudioId
-  sceneId: ComponentId
-  passageId: ComponentId
+  sceneId: ElementId
+  passageId: ElementId
 }> = ({ studioId, sceneId, passageId }) => {
   // TODO: do we really need to get access to routes on every passage?
   const routes = useRoutesBySceneRef(studioId, sceneId)
@@ -330,8 +330,8 @@ const PassageTargetHandle: React.FC<{
 
 const PassageSoureHandle: React.FC<{
   studioId: StudioId
-  sceneId: ComponentId
-  passageId: ComponentId
+  sceneId: ElementId
+  passageId: ElementId
 }> = ({ studioId, sceneId, passageId }) => {
   const routes = useRoutesBySceneRef(studioId, sceneId)
 
@@ -369,11 +369,11 @@ const PassageSoureHandle: React.FC<{
 
 const EventNode: React.FC<NodeProps<{
   studioId: StudioId
-  sceneId: ComponentId
-  passageId: ComponentId
-  selectedChoice: ComponentId | null
-  onEditPassage: (passageId: ComponentId) => void
-  onChoiceSelect: (passageId: ComponentId, choiceId: ComponentId | null) => void
+  sceneId: ElementId
+  passageId: ElementId
+  selectedChoice: ElementId | null
+  onEditPassage: (passageId: ElementId) => void
+  onChoiceSelect: (passageId: ElementId, choiceId: ElementId | null) => void
   type: COMPONENT_TYPE
 }>> = ({ data }) => {
   const event = usePassage(data.studioId, data.passageId),
@@ -394,7 +394,7 @@ const EventNode: React.FC<NodeProps<{
   const { editor, editorDispatch } = useContext(EditorContext)
 
   const [choices, setChoices] = useState<
-    { id: ComponentId; title: string; handle: JSX.Element }[]
+    { id: ElementId; title: string; handle: JSX.Element }[]
   >([])
 
   useEffect(() => {

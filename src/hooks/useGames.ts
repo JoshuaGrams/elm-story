@@ -1,7 +1,7 @@
 import { LibraryDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import { StudioId, Game, GameId } from '../data/types'
+import { StudioId, Game, WorldId } from '../data/types'
 
 export enum GAME_SORT {
   NAME = 'NAME',
@@ -37,7 +37,7 @@ const useGames = (
 
 const useGame = (
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   deps?: any[]
 ): Game | undefined =>
   useLiveQuery(

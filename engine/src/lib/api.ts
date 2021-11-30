@@ -9,9 +9,9 @@ import { DB_NAME, LibraryDatabase } from './db'
 
 import {
   COMPARE_OPERATOR_TYPE,
-  ComponentId,
+  ElementId,
   COMPONENT_TYPE,
-  GameId,
+  WorldId,
   SET_OPERATOR_TYPE,
   VARIABLE_TYPE,
   ESGEngineCollectionData,
@@ -39,7 +39,7 @@ import {
 export const getGameInfo = async (
   studioId: StudioId,
 
-  gameId: GameId
+  gameId: WorldId
 ): Promise<EngineGameData | null> => {
   try {
     const foundGame = await new LibraryDatabase(studioId).games.get(gameId)
@@ -54,7 +54,7 @@ export const getGameInfo = async (
   return null
 }
 
-export const saveGameMeta = (studioId: StudioId, gameId: GameId) => {
+export const saveGameMeta = (studioId: StudioId, gameId: WorldId) => {
   if (!localStorage.getItem(gameId))
     localStorage.setItem(gameId, JSON.stringify({ gameId, studioId }))
 }
@@ -152,7 +152,7 @@ export const saveEngineCollectionData = async (
 
 export const saveEngineDefaultGameCollectionData = async (
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   gameVersion: string
 ) => {
   const libraryDatabase = new LibraryDatabase(studioId)
@@ -250,7 +250,7 @@ export const saveEngineDefaultGameCollectionData = async (
 // #373: recursive
 const findEventFromBookmarkWithExistingDestination = async (
   studioId: StudioId,
-  eventId: ComponentId
+  eventId: ElementId
 ): Promise<EngineEventData | undefined> => {
   const libraryDatabase = new LibraryDatabase(studioId)
 
@@ -285,7 +285,7 @@ const findEventFromBookmarkWithExistingDestination = async (
 // #373
 export const updateEngineDefaultGameCollectionData = async (
   studioId: StudioId,
-  gameId: GameId
+  gameId: WorldId
 ) => {
   const libraryDatabase = new LibraryDatabase(studioId)
 
@@ -386,7 +386,7 @@ export const unpackEngineData = (
   packedEngineData: string
 ): ESGEngineCollectionData => lzwCompress.unpack(packedEngineData)
 
-export const removeGameData = async (studioId: StudioId, gameId: GameId) => {
+export const removeGameData = async (studioId: StudioId, gameId: WorldId) => {
   const libraryDatabase = new LibraryDatabase(studioId)
 
   try {
@@ -410,7 +410,7 @@ export const removeGameData = async (studioId: StudioId, gameId: GameId) => {
 // #30
 export const resetGame = async (
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   skipInstall?: boolean,
   isEditor?: boolean
 ) => {
@@ -440,8 +440,8 @@ export const resetGame = async (
 
 export const findStartingDestinationPassage = async (
   studioId: StudioId,
-  gameId: GameId
-): Promise<ComponentId | undefined> => {
+  gameId: WorldId
+): Promise<ElementId | undefined> => {
   const libraryDatabase = new LibraryDatabase(studioId),
     game = await libraryDatabase.games.get(gameId)
 
@@ -495,10 +495,10 @@ export const findStartingDestinationPassage = async (
 
 export const findDestinationPassage = async (
   studioId: StudioId,
-  destinationId: ComponentId,
+  destinationId: ElementId,
   destinationType: COMPONENT_TYPE
 ) => {
-  let foundLocation: ComponentId | undefined
+  let foundLocation: ElementId | undefined
 
   switch (destinationType) {
     case COMPONENT_TYPE.PASSAGE:
@@ -538,7 +538,7 @@ export const findDestinationPassage = async (
   }
 }
 
-export const getBookmarkAuto = async (studioId: StudioId, gameId: GameId) => {
+export const getBookmarkAuto = async (studioId: StudioId, gameId: WorldId) => {
   try {
     return await new LibraryDatabase(studioId).bookmarks.get(
       `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`
@@ -550,7 +550,7 @@ export const getBookmarkAuto = async (studioId: StudioId, gameId: GameId) => {
 
 export const getBookmark = async (
   studioId: StudioId,
-  bookmarkId: ComponentId
+  bookmarkId: ElementId
 ) => {
   try {
     return await new LibraryDatabase(studioId).bookmarks.get(bookmarkId)
@@ -559,7 +559,7 @@ export const getBookmark = async (
   }
 }
 
-export const getBookmarks = async (studioId: StudioId, gameId: GameId) => {
+export const getBookmarks = async (studioId: StudioId, gameId: WorldId) => {
   try {
     return await new LibraryDatabase(studioId).bookmarks
       .where({ gameId })
@@ -571,8 +571,8 @@ export const getBookmarks = async (studioId: StudioId, gameId: GameId) => {
 
 export const saveBookmarkEvent = async (
   studioId: StudioId,
-  bookmarkId: ComponentId,
-  eventId: ComponentId
+  bookmarkId: ElementId,
+  eventId: ElementId
 ) => {
   try {
     const libraryDatabase = new LibraryDatabase(studioId),
@@ -598,7 +598,7 @@ export const saveBookmarkEvent = async (
   }
 }
 
-export const getChoice = async (studioId: StudioId, choiceId: ComponentId) => {
+export const getChoice = async (studioId: StudioId, choiceId: ElementId) => {
   try {
     return await new LibraryDatabase(studioId).choices.get(choiceId)
   } catch (error) {
@@ -608,7 +608,7 @@ export const getChoice = async (studioId: StudioId, choiceId: ComponentId) => {
 
 export const getConditionsByRoutes = async (
   studioId: StudioId,
-  routeIds: ComponentId[]
+  routeIds: ElementId[]
 ) => {
   try {
     return await new LibraryDatabase(studioId).conditions
@@ -622,7 +622,7 @@ export const getConditionsByRoutes = async (
 
 export const getEffectsByRouteRef = async (
   studioId: StudioId,
-  routeId: ComponentId
+  routeId: ElementId
 ) => {
   try {
     return await new LibraryDatabase(studioId).effects
@@ -635,7 +635,7 @@ export const getEffectsByRouteRef = async (
 
 export const processEffectsByRoute = async (
   studioId: StudioId,
-  routeId: ComponentId,
+  routeId: ElementId,
   state: EngineEventStateCollection
 ) => {
   const effects = await getEffectsByRouteRef(studioId, routeId)
@@ -694,8 +694,8 @@ export const saveEvent = async (
 
 export const saveEventDestination = async (
   studioId: StudioId,
-  eventId: ComponentId,
-  destination: ComponentId
+  eventId: ElementId,
+  destination: ElementId
 ) => {
   try {
     const libraryDatabase = new LibraryDatabase(studioId),
@@ -714,8 +714,8 @@ export const saveEventDestination = async (
 
 export const saveEventNext = async (
   studioId: StudioId,
-  eventId: ComponentId,
-  nextEventId: ComponentId
+  eventId: ElementId,
+  nextEventId: ElementId
 ) => {
   try {
     const libraryDatabase = new LibraryDatabase(studioId),
@@ -734,7 +734,7 @@ export const saveEventNext = async (
 
 export const saveEventResult = async (
   studioId: StudioId,
-  eventId: ComponentId,
+  eventId: ElementId,
   result: EngineEventResult
 ) => {
   try {
@@ -755,7 +755,7 @@ export const saveEventResult = async (
 
 export const saveEventState = async (
   studioId: StudioId,
-  eventId: ComponentId,
+  eventId: ElementId,
   state: EngineEventStateCollection
 ) => {
   try {
@@ -776,7 +776,7 @@ export const saveEventState = async (
 
 export const saveEventType = async (
   studioId: StudioId,
-  eventId: ComponentId,
+  eventId: ElementId,
   type: ENGINE_EVENT_TYPE
 ) => {
   try {
@@ -796,7 +796,7 @@ export const saveEventType = async (
 }
 export const saveEventDate = async (
   studioId: StudioId,
-  eventId: ComponentId,
+  eventId: ElementId,
   date?: number
 ) => {
   try {
@@ -816,8 +816,8 @@ export const saveEventDate = async (
 
 export const getRecentEvents = async (
   studioId: StudioId,
-  gameId: GameId,
-  fromEventId: ComponentId,
+  gameId: WorldId,
+  fromEventId: ElementId,
   gameVersion: string,
   history?: number
 ): Promise<EngineEventData[]> => {
@@ -858,7 +858,7 @@ export const getRecentEvents = async (
 
 export const checkEventDestinations = async (
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   passages: EnginePassageData[]
 ) => {
   const passageIds = passages.map((passage) => passage.id),
@@ -878,7 +878,7 @@ export const checkEventDestinations = async (
   return destinationsValid
 }
 
-export const getEventInitial = async (studioId: StudioId, gameId: GameId) => {
+export const getEventInitial = async (studioId: StudioId, gameId: WorldId) => {
   try {
     return await new LibraryDatabase(studioId).events.get(
       `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
@@ -888,7 +888,7 @@ export const getEventInitial = async (studioId: StudioId, gameId: GameId) => {
   }
 }
 
-export const getEvent = async (studioId: StudioId, eventId: ComponentId) => {
+export const getEvent = async (studioId: StudioId, eventId: ElementId) => {
   try {
     return await new LibraryDatabase(studioId).events.get(eventId)
   } catch (error) {
@@ -896,7 +896,7 @@ export const getEvent = async (studioId: StudioId, eventId: ComponentId) => {
   }
 }
 
-export const getJump = async (studioId: StudioId, jumpId: ComponentId) => {
+export const getJump = async (studioId: StudioId, jumpId: ElementId) => {
   try {
     return await new LibraryDatabase(studioId).jumps.get(jumpId)
   } catch (error) {
@@ -904,10 +904,7 @@ export const getJump = async (studioId: StudioId, jumpId: ComponentId) => {
   }
 }
 
-export const getPassage = async (
-  studioId: StudioId,
-  passageId: ComponentId
-) => {
+export const getPassage = async (studioId: StudioId, passageId: ElementId) => {
   try {
     return await new LibraryDatabase(studioId).passages.get(passageId)
   } catch (error) {
@@ -917,7 +914,7 @@ export const getPassage = async (
 
 export const getChoicesFromPassage = async (
   studioId: StudioId,
-  passageId: ComponentId
+  passageId: ElementId
 ): Promise<EngineChoiceData[]> => {
   try {
     return await new LibraryDatabase(studioId).choices
@@ -935,10 +932,10 @@ export const getChoicesFromPassageWithOpenRoute = async (
   includeAll?: boolean // editor can show choices with closed routes
 ): Promise<{
   filteredChoices: EngineChoiceData[]
-  openRoutes: { [choiceId: ComponentId]: EngineRouteData }
+  openRoutes: { [choiceId: ElementId]: EngineRouteData }
 }> => {
   const choicesFromPassage = choices,
-    openRoutes: { [choiceId: ComponentId]: EngineRouteData } = {}
+    openRoutes: { [choiceId: ElementId]: EngineRouteData } = {}
 
   const _choices = await Promise.all(
     choicesFromPassage.map(async (choice) => {
@@ -970,7 +967,7 @@ export const getChoicesFromPassageWithOpenRoute = async (
 
 export const getInputByPassage = async (
   studioId: StudioId,
-  passageId: ComponentId
+  passageId: ElementId
 ): Promise<EngineInputData | undefined> => {
   try {
     return await new LibraryDatabase(studioId).inputs
@@ -983,7 +980,7 @@ export const getInputByPassage = async (
 
 export const getRoutesFromChoice = async (
   studioId: StudioId,
-  choiceId: ComponentId
+  choiceId: ElementId
 ): Promise<EngineRouteData[]> => {
   try {
     return await new LibraryDatabase(studioId).routes
@@ -996,7 +993,7 @@ export const getRoutesFromChoice = async (
 
 export const getRoutesFromChoices = async (
   studioId: StudioId,
-  choiceIds: ComponentId[]
+  choiceIds: ElementId[]
 ) => {
   try {
     return await new LibraryDatabase(studioId).routes
@@ -1010,7 +1007,7 @@ export const getRoutesFromChoices = async (
 
 export const getRoutesFromInput = async (
   studioId: StudioId,
-  inputId: ComponentId
+  inputId: ElementId
 ) => {
   try {
     return await new LibraryDatabase(studioId).routes
@@ -1023,7 +1020,7 @@ export const getRoutesFromInput = async (
 
 export const getRouteFromDestination = async (
   studioId: StudioId,
-  destinationId: ComponentId
+  destinationId: ElementId
 ) => {
   try {
     return new LibraryDatabase(studioId).routes.where({ destinationId }).first()
@@ -1144,7 +1141,7 @@ export const isRouteOpen = async (
   return isOpen
 }
 
-export const getScene = async (studioId: StudioId, sceneId: ComponentId) => {
+export const getScene = async (studioId: StudioId, sceneId: ElementId) => {
   try {
     return await new LibraryDatabase(studioId).scenes.get(sceneId)
   } catch (error) {
@@ -1154,7 +1151,7 @@ export const getScene = async (studioId: StudioId, sceneId: ComponentId) => {
 
 export const getVariable = async (
   studioId: StudioId,
-  variableId: ComponentId
+  variableId: ElementId
 ) => {
   try {
     return await new LibraryDatabase(studioId).variables.get(variableId)
@@ -1165,7 +1162,7 @@ export const getVariable = async (
 
 export const getSettingsDefault = async (
   studioId: StudioId,
-  gameId: GameId
+  gameId: WorldId
 ) => {
   try {
     return await new LibraryDatabase(studioId).settings.get(
@@ -1178,7 +1175,7 @@ export const getSettingsDefault = async (
 
 export const saveThemeSetting = async (
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   theme: ENGINE_THEME
 ) => {
   try {
@@ -1203,7 +1200,7 @@ export const saveThemeSetting = async (
   }
 }
 
-export const getThemeSetting = async (studioId: StudioId, gameId: GameId) => {
+export const getThemeSetting = async (studioId: StudioId, gameId: WorldId) => {
   try {
     return (
       await new LibraryDatabase(studioId).settings.get(

@@ -27,7 +27,7 @@ import {
   EngineSettingsData,
   EngineVariableCollection,
   EngineVariableData,
-  GameId,
+  WorldId,
   StudioId
 } from '../../types'
 
@@ -117,7 +117,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveChoiceCollectionData(
-    gameId: GameId,
+    gameId: WorldId,
     choiceCollection: EngineChoiceCollection
   ) {
     try {
@@ -141,7 +141,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveConditionCollectionData(
-    gameId: GameId,
+    gameId: WorldId,
     conditionCollection: EngineConditionCollection
   ) {
     try {
@@ -165,7 +165,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveEffectCollectionData(
-    gameId: GameId,
+    gameId: WorldId,
     effectCollection: EngineEffectCollection
   ) {
     try {
@@ -189,7 +189,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveEventCollectionData(
-    gameId: GameId,
+    gameId: WorldId,
     eventCollection: EngineEventCollection
   ) {
     try {
@@ -225,7 +225,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveInputCollectionData(
-    gameId: GameId,
+    gameId: WorldId,
     inputCollection: EngineInputCollection
   ) {
     try {
@@ -249,7 +249,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveJumpCollectionData(
-    gameId: GameId,
+    gameId: WorldId,
     jumpCollection: EngineJumpCollection
   ) {
     try {
@@ -273,7 +273,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async savePassageCollectionData(
-    gameId: GameId,
+    gameId: WorldId,
     passageCollection: EnginePassageCollection
   ) {
     try {
@@ -297,7 +297,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveRouteCollectionData(
-    gameId: GameId,
+    gameId: WorldId,
     routeCollection: EngineRouteCollection
   ) {
     try {
@@ -321,7 +321,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveSceneCollectionData(
-    gameId: GameId,
+    gameId: WorldId,
     sceneCollection: EngineSceneCollection
   ) {
     try {
@@ -370,7 +370,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveVariableCollectionData(
-    gameId: GameId,
+    gameId: WorldId,
     variableCollection: EngineVariableCollection
   ) {
     try {

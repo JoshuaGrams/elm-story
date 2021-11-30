@@ -1,8 +1,19 @@
 import Dexie from 'dexie'
 
-import { DB_NAME, LIBRARY_TABLE } from '.'
+import { APP_TABLE, DB_NAME, LIBRARY_TABLE } from '.'
 
 export default (database: Dexie) => {
+  if (database.name.includes(DB_NAME.APP)) {
+    database.version(2).upgrade((tx) => {
+      tx.table(APP_TABLE.STUDIOS)
+        .toCollection()
+        .modify((studio) => {
+          studio.worlds = studio.games
+          delete studio.games
+        })
+    })
+  }
+
   // UID is added to base library database name
   if (database.name.includes(DB_NAME.LIBRARY)) {
     database

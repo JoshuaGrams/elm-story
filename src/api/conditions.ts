@@ -3,16 +3,13 @@ import { v4 as uuid } from 'uuid'
 
 import {
   COMPARE_OPERATOR_TYPE,
-  ComponentId,
+  ElementId,
   Condition,
-  GameId,
+  WorldId,
   StudioId
 } from '../data/types'
 
-export async function getCondition(
-  studioId: StudioId,
-  conditionId: ComponentId
-) {
+export async function getCondition(studioId: StudioId, conditionId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getCondition(conditionId)
   } catch (error) {
@@ -22,7 +19,7 @@ export async function getCondition(
 
 export async function getConditionsByGameRef(
   studioId: StudioId,
-  gameId: GameId
+  gameId: WorldId
 ): Promise<Condition[]> {
   try {
     return await new LibraryDatabase(studioId).getConditionsByGameRef(gameId)
@@ -33,7 +30,7 @@ export async function getConditionsByGameRef(
 
 export async function getConditionsByRouteRef(
   studioId: StudioId,
-  routeId: ComponentId,
+  routeId: ElementId,
   countOnly?: boolean
 ): Promise<number | Condition[]> {
   try {
@@ -48,7 +45,7 @@ export async function getConditionsByRouteRef(
 
 export async function getConditionsByVariableRef(
   studioId: StudioId,
-  variableId: ComponentId
+  variableId: ElementId
 ): Promise<Condition[]> {
   try {
     return await new LibraryDatabase(studioId).getConditionsByVariableRef(
@@ -62,7 +59,7 @@ export async function getConditionsByVariableRef(
 export async function saveCondition(
   studioId: StudioId,
   condition: Condition
-): Promise<ComponentId> {
+): Promise<ElementId> {
   if (!condition.id) condition.id = uuid()
 
   try {
@@ -74,7 +71,7 @@ export async function saveCondition(
 
 export async function saveConditionCompareOperatorType(
   studioId: StudioId,
-  conditionId: ComponentId,
+  conditionId: ElementId,
   newCompareOperatorType: COMPARE_OPERATOR_TYPE
 ) {
   try {
@@ -89,7 +86,7 @@ export async function saveConditionCompareOperatorType(
 
 export async function saveConditionValue(
   studioId: StudioId,
-  conditionId: ComponentId,
+  conditionId: ElementId,
   newValue: string
 ) {
   try {
@@ -104,7 +101,7 @@ export async function saveConditionValue(
 
 export async function removeCondition(
   studioId: StudioId,
-  conditionId: ComponentId
+  conditionId: ElementId
 ) {
   try {
     await new LibraryDatabase(studioId).removeCondition(conditionId)

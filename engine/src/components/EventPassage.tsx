@@ -8,7 +8,7 @@ import { findDestinationPassage, getEventInitial, getPassage } from '../lib/api'
 import { LibraryDatabase } from '../lib/db'
 
 import {
-  ComponentId,
+  ElementId,
   COMPONENT_TYPE,
   PASSAGE_TYPE,
   EngineEventData,
@@ -37,7 +37,7 @@ export type RouteProcessor = ({
   route,
   state
 }: {
-  originId?: ComponentId
+  originId?: ElementId
   result: EngineEventResult
   route?: EngineRouteData
   state?: EngineEventStateCollection
@@ -58,7 +58,7 @@ export function translateEventResultValue(value: string) {
 }
 
 export const EventPassage: React.FC<{
-  passageId: ComponentId
+  passageId: ElementId
   event: EngineEventData
   onRouteFound: NextEventProcessor
 }> = React.memo(({ passageId, event, onRouteFound }) => {

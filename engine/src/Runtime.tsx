@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { unpackEngineData } from './lib/api'
 
-import { GameId, StudioId, ESGEngineCollectionData } from './types'
+import { WorldId, StudioId, ESGEngineCollectionData } from './types'
 
 import EngineProvider from './contexts/EngineContext'
 import SettingsProvider from './contexts/SettingsContext'
@@ -24,7 +24,7 @@ const queryClient = new QueryClient({
 const Runtime: React.FC<{
   studioId?: StudioId // if provided, is isEditor install (ESG app)
   game: {
-    id: GameId
+    id: WorldId
     data?: string
     packed?: boolean
   }

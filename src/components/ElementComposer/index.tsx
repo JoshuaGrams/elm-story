@@ -3,7 +3,7 @@ import { cloneDeep } from 'lodash-es'
 import logger from '../../lib/logger'
 
 import {
-  ComponentId,
+  ElementId,
   COMPONENT_TYPE,
   Game,
   Passage,
@@ -87,7 +87,7 @@ function createBaseLayoutData(studioId: StudioId, game: Game): LayoutData {
 
 function getTabContent(
   studioId: StudioId,
-  id: ComponentId,
+  id: ElementId,
   type: COMPONENT_TYPE | undefined
 ): JSX.Element {
   switch (type) {
@@ -128,7 +128,7 @@ function getTabTitle(
     type?: COMPONENT_TYPE | undefined
     title?: string | undefined
   },
-  onClose?: (componentId: ComponentId) => void
+  onClose?: (componentId: ElementId) => void
 ): JSX.Element {
   return (
     <div className={styles.tabTitle}>
@@ -162,9 +162,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
   const dockLayout = useRef<DockLayout>(null)
 
   const [activePanelId, setActivePanelId] = useState<string | undefined>('+0'),
-    [activeTabId, setActiveTabId] = useState<ComponentId | undefined>(
-      undefined
-    ),
+    [activeTabId, setActiveTabId] = useState<ElementId | undefined>(undefined),
     [tabs, setTabs] = useState<
       {
         id?: string | undefined
@@ -355,7 +353,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
                       type: COMPONENT_TYPE.SCENE
                     }
                   : selectedComponent,
-                (componentId: ComponentId) => {
+                (componentId: ElementId) => {
                   const tabToRemove = dockLayout.current?.find(componentId) as
                     | TabData
                     | undefined
@@ -432,7 +430,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
               ...foundTab,
               title: editor.renamedComponent.newTitle
             },
-            (componentId: ComponentId) => {
+            (componentId: ElementId) => {
               const tabToRemove = dockLayout.current?.find(componentId) as
                 | TabData
                 | undefined
@@ -481,11 +479,11 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: Game }> = ({
     async function removeTabs() {
       if (!dockLayout.current || !editor.removedComponent.id) return
 
-      let scenesById: ComponentId[] =
+      let scenesById: ElementId[] =
           editor.removedComponent.type === COMPONENT_TYPE.SCENE
             ? [editor.removedComponent.id]
             : [],
-        passagesById: ComponentId[] = []
+        passagesById: ElementId[] = []
 
       const clonedTabs = cloneDeep(tabs)
 

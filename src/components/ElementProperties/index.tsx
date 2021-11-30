@@ -2,7 +2,7 @@ import logger from '../../lib/logger'
 
 import React, { useContext, useEffect } from 'react'
 
-import { COMPONENT_TYPE, Game, GameId, StudioId } from '../../data/types'
+import { COMPONENT_TYPE, Game, WorldId, StudioId } from '../../data/types'
 
 import { useGame } from '../../hooks'
 
@@ -14,7 +14,7 @@ import styles from './styles.module.less'
 
 const ElementProperties: React.FC<{
   studioId: StudioId
-  gameId: GameId | undefined
+  gameId: WorldId | undefined
 }> = ({ studioId, gameId = undefined }) => {
   const { editor } = useContext(EditorContext)
 

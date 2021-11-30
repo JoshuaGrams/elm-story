@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { ComponentId, COMPONENT_TYPE, StudioId } from '../../../data/types'
+import { ElementId, COMPONENT_TYPE, StudioId } from '../../../data/types'
 
 import { useScene } from '../../../hooks'
 
@@ -28,7 +28,7 @@ import styles from '../styles.module.less'
 
 import api from '../../../api'
 
-const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ComponentId }> = ({
+const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
   studioId,
   sceneId
 }) => {

@@ -1,9 +1,9 @@
 import { LibraryDatabase } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { ComponentId, GameId, Route, StudioId } from '../data/types'
+import { ElementId, WorldId, Route, StudioId } from '../data/types'
 
-export async function getRoute(studioId: StudioId, routeId: ComponentId) {
+export async function getRoute(studioId: StudioId, routeId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getRoute(routeId)
   } catch (error) {
@@ -13,7 +13,7 @@ export async function getRoute(studioId: StudioId, routeId: ComponentId) {
 
 export async function getRoutesByGameRef(
   studioId: StudioId,
-  gameId: GameId
+  gameId: WorldId
 ): Promise<Route[]> {
   try {
     return await new LibraryDatabase(studioId).getRoutesByGameRef(gameId)
@@ -24,7 +24,7 @@ export async function getRoutesByGameRef(
 
 export async function getPassthroughRoutesByPassageRef(
   studioId: StudioId,
-  passageId: ComponentId
+  passageId: ElementId
 ) {
   try {
     const foundRoutes = await new LibraryDatabase(studioId).routes
@@ -40,7 +40,7 @@ export async function getPassthroughRoutesByPassageRef(
 export async function saveRoute(
   studioId: StudioId,
   route: Route
-): Promise<ComponentId> {
+): Promise<ElementId> {
   if (!route.id) route.id = uuid()
 
   try {
@@ -50,7 +50,7 @@ export async function saveRoute(
   }
 }
 
-export async function removeRoute(studioId: StudioId, routeId: ComponentId) {
+export async function removeRoute(studioId: StudioId, routeId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removeRoute(routeId)
   } catch (error) {
@@ -60,7 +60,7 @@ export async function removeRoute(studioId: StudioId, routeId: ComponentId) {
 
 export async function removeRoutesByPassageRef(
   studioId: StudioId,
-  passageId: ComponentId
+  passageId: ElementId
 ) {
   try {
     await new LibraryDatabase(studioId).removeRoutesByPassageRef(passageId)
@@ -71,7 +71,7 @@ export async function removeRoutesByPassageRef(
 
 export async function removeRoutesByChoiceRef(
   studioId: StudioId,
-  choiceId: ComponentId
+  choiceId: ElementId
 ) {
   try {
     await new LibraryDatabase(studioId).removeRoutesByChoiceRef(choiceId)

@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash-es'
 
 import {
-  ComponentId,
+  ElementId,
   COMPONENT_TYPE,
   DEFAULT_PASSAGE_CONTENT,
   PASSAGE_TYPE,
@@ -69,24 +69,21 @@ export enum DEFAULT_NODE_SIZE {
 
 interface NodeData {
   studioId: StudioId
-  sceneId?: ComponentId
-  jumpId?: ComponentId
-  passageId?: ComponentId
+  sceneId?: ElementId
+  jumpId?: ElementId
+  passageId?: ElementId
   passageType?: PASSAGE_TYPE
-  selectedChoice?: ComponentId | null
-  onEditPassage?: (passageId: ComponentId) => void
-  onChoiceSelect?: (
-    passageId: ComponentId,
-    choiceId: ComponentId | null
-  ) => void
-  inputId?: ComponentId
+  selectedChoice?: ElementId | null
+  onEditPassage?: (passageId: ElementId) => void
+  onChoiceSelect?: (passageId: ElementId, choiceId: ElementId | null) => void
+  inputId?: ElementId
   totalChoices: number
   type: COMPONENT_TYPE
 }
 
 export const SceneMapTools: React.FC<{
   studioId: StudioId
-  sceneId: ComponentId
+  sceneId: ElementId
 }> = ({ studioId, sceneId }) => {
   const scene = useScene(studioId, sceneId, [sceneId])
 
@@ -217,7 +214,7 @@ async function addElementToScene(
   scene: Scene,
   type: COMPONENT_TYPE,
   position: { x: number; y: number }
-): Promise<ComponentId | undefined> {
+): Promise<ElementId | undefined> {
   if (scene.id) {
     switch (type) {
       case COMPONENT_TYPE.PASSAGE:
@@ -275,7 +272,7 @@ async function removeElementFromScene(
   studioId: StudioId,
   scene: Scene,
   type: COMPONENT_TYPE,
-  id: ComponentId
+  id: ElementId
 ): Promise<void> {
   if (scene.id) {
     switch (type) {
@@ -323,7 +320,7 @@ async function removeElementFromScene(
   }
 }
 
-function findElement(elements: FlowElement[], componentId: ComponentId | null) {
+function findElement(elements: FlowElement[], componentId: ElementId | null) {
   if (!componentId) return undefined
 
   return cloneDeep(elements.find((element) => element.id === componentId))
@@ -331,7 +328,7 @@ function findElement(elements: FlowElement[], componentId: ComponentId | null) {
 
 const SceneMap: React.FC<{
   studioId: StudioId
-  sceneId: ComponentId
+  sceneId: ElementId
 }> = ({ studioId, sceneId }) => {
   const {
     ref: flowWrapperRef,
@@ -361,12 +358,12 @@ const SceneMap: React.FC<{
     [totalSelectedJumps, setTotalSelectedJumps] = useState<number>(0),
     [totalSelectedPassages, setTotalSelectedPassages] = useState<number>(0),
     [totalSelectedRoutes, setTotalSelectedRoutes] = useState<number>(0),
-    [selectedJump, setSelectedJump] = useState<ComponentId | null>(null),
-    [selectedPassage, setSelectedPassage] = useState<ComponentId | null>(
+    [selectedJump, setSelectedJump] = useState<ElementId | null>(null),
+    [selectedPassage, setSelectedPassage] = useState<ElementId | null>(
       editor.selectedComponentEditorSceneViewPassage
     ),
-    [selectedRoute, setSelectedRoute] = useState<ComponentId | null>(null),
-    [selectedChoice, setSelectedChoice] = useState<ComponentId | null>(null),
+    [selectedRoute, setSelectedRoute] = useState<ElementId | null>(null),
+    [selectedChoice, setSelectedChoice] = useState<ElementId | null>(null),
     [elements, setElements] = useState<FlowElement[]>([]),
     [paneMoving, setPaneMoving] = useState(false)
 
@@ -601,9 +598,9 @@ const SceneMap: React.FC<{
     logger.info('onElementsRemove')
 
     if (!editor.selectedComponentEditorSceneViewChoice) {
-      const jumpRefs: ComponentId[] = [],
-        routeRefs: ComponentId[] = [],
-        passageRefs: ComponentId[] = []
+      const jumpRefs: ElementId[] = [],
+        routeRefs: ElementId[] = [],
+        passageRefs: ElementId[] = []
 
       elements.map((element) => {
         switch (element.data.type) {
@@ -659,10 +656,7 @@ const SceneMap: React.FC<{
     // }
   }
 
-  function onChoiceSelect(
-    passageId: ComponentId,
-    choiceId: ComponentId | null
-  ) {
+  function onChoiceSelect(passageId: ElementId, choiceId: ElementId | null) {
     logger.info(
       `Sceneview->onChoiceSelect->
        passageId: ${passageId} choiceId: ${choiceId}`
@@ -789,7 +783,7 @@ const SceneMap: React.FC<{
   }
 
   // When selecting a nested component e.g. passage from the StoryworldOutline
-  function selectElement(componentId: ComponentId | null) {
+  function selectElement(componentId: ElementId | null) {
     const foundElement = findElement(elements, componentId || null)
 
     foundElement && setSelectedElements([foundElement])
@@ -923,7 +917,7 @@ const SceneMap: React.FC<{
           let passageNodeData: NodeData = {
             studioId,
             sceneId: scene.id,
-            onEditPassage: (id: ComponentId) =>
+            onEditPassage: (id: ElementId) =>
               editorTabDispatch({
                 type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
                 passageForEditing: { id, visible: true }

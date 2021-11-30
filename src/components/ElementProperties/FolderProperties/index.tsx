@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { ComponentId, StudioId } from '../../../data/types'
+import { ElementId, StudioId } from '../../../data/types'
 
 import { useFolder } from '../../../hooks'
 
@@ -17,7 +17,7 @@ import api from '../../../api'
 
 const FolderDetails: React.FC<{
   studioId: StudioId
-  folderId: ComponentId
+  folderId: ElementId
 }> = ({ studioId, folderId }) => {
   const folder = useFolder(studioId, folderId, [folderId])
 

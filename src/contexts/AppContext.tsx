@@ -1,5 +1,5 @@
 import React, { useMemo, createContext, useReducer } from 'react'
-import { StudioId, GameId, PLATFORM_TYPE } from '../data/types'
+import { StudioId, WorldId, PLATFORM_TYPE } from '../data/types'
 
 interface AppState {
   version: string
@@ -10,7 +10,7 @@ interface AppState {
   menuOpen: boolean
   modalOpen: boolean
   selectedStudioId?: StudioId
-  selectedGameId?: GameId
+  selectedGameId?: WorldId
 }
 
 export enum APP_ACTION_TYPE {
@@ -41,7 +41,7 @@ type AppActionType =
   | { type: APP_ACTION_TYPE.MODAL_OPEN }
   | { type: APP_ACTION_TYPE.MODAL_CLOSE }
   | { type: APP_ACTION_TYPE.STUDIO_SELECT; selectedStudioId?: StudioId }
-  | { type: APP_ACTION_TYPE.GAME_SELECT; selectedGameId?: GameId }
+  | { type: APP_ACTION_TYPE.GAME_SELECT; selectedGameId?: WorldId }
 
 const appReducer = (state: AppState, action: AppActionType): AppState => {
   switch (action.type) {

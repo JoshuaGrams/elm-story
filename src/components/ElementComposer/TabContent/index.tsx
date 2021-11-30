@@ -3,7 +3,7 @@ import logger from '../../../lib/logger'
 import React, { useEffect } from 'react'
 
 import {
-  ComponentId,
+  ElementId,
   COMPONENT_TYPE,
   Game,
   Scene,
@@ -20,7 +20,7 @@ import styles from './styles.module.less'
 
 const TabContent: React.FC<{
   studioId: StudioId
-  id: ComponentId
+  id: ElementId
   type: COMPONENT_TYPE
   view: JSX.Element
   tools: JSX.Element

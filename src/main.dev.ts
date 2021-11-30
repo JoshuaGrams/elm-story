@@ -25,7 +25,7 @@ import md5 from 'md5'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
 
-import { GameId, StudioId } from './data/types'
+import { WorldId, StudioId } from './data/types'
 import { GameDataJSON } from './lib/transport/types/0.5.1'
 
 export default class AppUpdater {
@@ -176,7 +176,7 @@ const createWindow = async () => {
             ext
           }: {
             studioId: StudioId
-            gameId: GameId
+            gameId: WorldId
             id: string
             data: ArrayBuffer
             ext: 'jpeg'
@@ -208,7 +208,7 @@ const createWindow = async () => {
             ext
           }: {
             studioId: StudioId
-            gameId: GameId
+            gameId: WorldId
             id: string
             data: ArrayBuffer
             ext: 'jpeg'
@@ -236,7 +236,7 @@ const createWindow = async () => {
             studioId,
             gameId,
             type
-          }: { studioId: StudioId; gameId?: GameId; type: 'STUDIO' | 'GAME' }
+          }: { studioId: StudioId; gameId?: WorldId; type: 'STUDIO' | 'GAME' }
         ) => {
           if (type === 'GAME' && !gameId)
             throw 'Unable to remove storyworld assets. Missing ID.'
@@ -270,7 +270,7 @@ const createWindow = async () => {
             gameId,
             id,
             ext
-          }: { studioId: StudioId; gameId: GameId; id: string; ext: 'jpeg' }
+          }: { studioId: StudioId; gameId: WorldId; id: string; ext: 'jpeg' }
         ) => {
           const exists = await fs.pathExists(
             `${app.getPath(

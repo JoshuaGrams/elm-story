@@ -3,14 +3,14 @@ import { v4 as uuid } from 'uuid'
 
 import {
   Folder,
-  ComponentId,
-  GameId,
+  ElementId,
+  WorldId,
   StudioId,
   FolderChildRefs,
   FolderParentRef
 } from '../data/types'
 
-export async function getFolder(studioId: StudioId, folderId: ComponentId) {
+export async function getFolder(studioId: StudioId, folderId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getFolder(folderId)
   } catch (error) {
@@ -21,7 +21,7 @@ export async function getFolder(studioId: StudioId, folderId: ComponentId) {
 export async function saveFolder(
   studioId: StudioId,
   chapter: Folder
-): Promise<ComponentId> {
+): Promise<ElementId> {
   if (!chapter.id) chapter.id = uuid()
 
   try {
@@ -31,7 +31,7 @@ export async function saveFolder(
   }
 }
 
-export async function removeFolder(studioId: StudioId, folderId: ComponentId) {
+export async function removeFolder(studioId: StudioId, folderId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removeFolder(folderId)
   } catch (error) {
@@ -41,7 +41,7 @@ export async function removeFolder(studioId: StudioId, folderId: ComponentId) {
 
 export async function getFoldersByGameRef(
   studioId: StudioId,
-  gameId: GameId
+  gameId: WorldId
 ): Promise<Folder[]> {
   try {
     return await new LibraryDatabase(studioId).getFoldersByGameRef(gameId)
@@ -52,7 +52,7 @@ export async function getFoldersByGameRef(
 
 export async function getChildRefsByFolderRef(
   studioId: StudioId,
-  folderId: ComponentId
+  folderId: ElementId
 ): Promise<FolderChildRefs> {
   try {
     return await new LibraryDatabase(studioId).getChildRefsByFolderRef(folderId)
@@ -63,7 +63,7 @@ export async function getChildRefsByFolderRef(
 
 export async function saveFolderTitle(
   studioId: StudioId,
-  folderId: ComponentId,
+  folderId: ElementId,
   title: string
 ) {
   try {
@@ -80,7 +80,7 @@ export async function saveFolderTitle(
 export async function saveParentRefToFolder(
   studioId: StudioId,
   parent: FolderParentRef,
-  folderId: ComponentId
+  folderId: ElementId
 ) {
   try {
     await new LibraryDatabase(studioId).saveParentRefToFolder(parent, folderId)
@@ -91,7 +91,7 @@ export async function saveParentRefToFolder(
 
 export async function saveChildRefsToFolder(
   studioId: StudioId,
-  folderId: ComponentId,
+  folderId: ElementId,
   children: FolderChildRefs
 ) {
   try {

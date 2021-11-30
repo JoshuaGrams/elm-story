@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react'
 
 import {
   COMPARE_OPERATOR_TYPE,
-  ComponentId,
+  ElementId,
   COMPONENT_TYPE,
-  GameId,
+  WorldId,
   SET_OPERATOR_TYPE,
   StudioId,
   VARIABLE_TYPE
@@ -36,8 +36,8 @@ import api from '../../../api'
 
 const RouteConditionRow: React.FC<{
   studioId: StudioId
-  conditionId: ComponentId
-  variableId: ComponentId
+  conditionId: ElementId
+  variableId: ElementId
 }> = ({ studioId, conditionId, variableId }) => {
   const condition = useRouteCondition(studioId, conditionId, [
       studioId,
@@ -119,8 +119,8 @@ const RouteConditionRow: React.FC<{
 
 const RouteEffectRow: React.FC<{
   studioId: StudioId
-  effectId: ComponentId
-  variableId: ComponentId
+  effectId: ElementId
+  variableId: ElementId
 }> = ({ studioId, effectId, variableId }) => {
   const effect = useRouteEffect(studioId, effectId, [studioId, effectId]),
     variable = useVariable(studioId, variableId, [studioId, variableId])
@@ -196,8 +196,8 @@ const RouteEffectRow: React.FC<{
 
 const RouteDetails: React.FC<{
   studioId: StudioId
-  gameId: GameId
-  routeId: ComponentId
+  gameId: WorldId
+  routeId: ElementId
 }> = ({ studioId, gameId, routeId }) => {
   const route = useRoute(studioId, routeId, [studioId, routeId]),
     conditions = useRouteConditionsByRouteRef(studioId, routeId, [
@@ -207,7 +207,7 @@ const RouteDetails: React.FC<{
     effects = useRouteEffectsByRouteRef(studioId, routeId, [studioId, routeId]),
     variables = useVariables(studioId, gameId, [studioId, gameId, effects])
 
-  async function onNewCondition(variableId: ComponentId) {
+  async function onNewCondition(variableId: ElementId) {
     const foundVariable = variables?.find(
       (variable) => variable.id === variableId
     )
@@ -229,7 +229,7 @@ const RouteDetails: React.FC<{
       }))
   }
 
-  async function onNewEffect(variableId: ComponentId) {
+  async function onNewEffect(variableId: ElementId) {
     const foundVariable = variables?.find(
       (variable) => variable.id === variableId
     )

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useHistory } from 'react-router'
 
-import { COMPONENT_TYPE, Game, GameId, StudioId } from '../../data/types'
+import { COMPONENT_TYPE, Game, WorldId, StudioId } from '../../data/types'
 import { OnAddComponent } from '.'
 
 import { APP_LOCATION } from '../../contexts/AppContext'
@@ -69,8 +69,8 @@ const TitleBar: React.FC<{
           </ExportGameMenu>
 
           <AddComponentMenu
-            gameId={game.id as GameId}
-            onAdd={(gameId: GameId, type: COMPONENT_TYPE) =>
+            gameId={game.id as WorldId}
+            onAdd={(gameId: WorldId, type: COMPONENT_TYPE) =>
               onAdd(gameId, type)
             }
           >

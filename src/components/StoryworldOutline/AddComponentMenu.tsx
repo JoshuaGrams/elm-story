@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { COMPONENT_TYPE, GameId } from '../../data/types'
+import { COMPONENT_TYPE, WorldId } from '../../data/types'
 import { OnAddComponent } from '.'
 
 import { EditorContext } from '../../contexts/EditorContext'
@@ -13,7 +13,7 @@ import {
 } from '@ant-design/icons'
 
 const AddComponentMenu: React.FC<{
-  gameId: GameId
+  gameId: WorldId
   onAdd: OnAddComponent
 }> = ({ children, gameId, onAdd }) => {
   const { editor } = useContext(EditorContext)

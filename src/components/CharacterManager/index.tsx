@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { Character, GameId, StudioId } from '../../data/types'
+import { Character, WorldId, StudioId } from '../../data/types'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
@@ -34,7 +34,7 @@ RemoveCharacterButton.displayName = 'RemoveCharacterButton'
 
 const CharacterManager: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  gameId: WorldId
   character: Character
 }> = ({ studioId, gameId, character }) => {
   const { editorDispatch } = useContext(EditorContext)

@@ -1,11 +1,11 @@
 import { LibraryDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import { ComponentId, Effect, GameId, StudioId } from '../data/types'
+import { ElementId, Effect, WorldId, StudioId } from '../data/types'
 
 const useRouteEffects = (
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   deps?: any[]
 ): Effect[] | undefined => {
   const effects = useLiveQuery(
@@ -19,7 +19,7 @@ const useRouteEffects = (
 
 const useRouteEffect = (
   studioId: StudioId,
-  effectId: ComponentId,
+  effectId: ElementId,
   deps?: any[]
 ): Effect | undefined =>
   useLiveQuery(
@@ -30,7 +30,7 @@ const useRouteEffect = (
 
 const useRouteEffectsByRouteRef = (
   studioId: StudioId,
-  routeId: ComponentId,
+  routeId: ElementId,
   deps?: any[]
 ): Effect[] | undefined =>
   useLiveQuery(
@@ -41,7 +41,7 @@ const useRouteEffectsByRouteRef = (
 
 const useRouteEffectsCountByRouteRef = (
   studioId: StudioId,
-  routeId: ComponentId,
+  routeId: ElementId,
   deps?: any[]
 ): number | undefined =>
   useLiveQuery(

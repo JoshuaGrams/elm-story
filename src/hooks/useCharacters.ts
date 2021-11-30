@@ -1,17 +1,11 @@
 import { LibraryDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import {
-  GameId,
-  StudioId,
-  Character,
-  ComponentId,
-  Passage
-} from '../data/types'
+import { WorldId, StudioId, Character, ElementId, Passage } from '../data/types'
 
 const useCharacters = (
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   deps?: any[]
 ): Character[] | undefined => {
   const characters = useLiveQuery(
@@ -27,7 +21,7 @@ const useCharacters = (
 
 const useCharacter = (
   studioId: StudioId,
-  characterId: ComponentId | undefined | null,
+  characterId: ElementId | undefined | null,
   deps?: any[]
 ): Character | undefined =>
   useLiveQuery(
@@ -38,7 +32,7 @@ const useCharacter = (
 
 const useCharacterEvents = (
   studioId: StudioId,
-  characterId: ComponentId | undefined | null,
+  characterId: ElementId | undefined | null,
   deps?: any[]
 ): Passage[] | undefined =>
   useLiveQuery(

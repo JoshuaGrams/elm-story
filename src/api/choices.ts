@@ -2,9 +2,9 @@ import { v4 as uuid } from 'uuid'
 
 import { LibraryDatabase } from '../db'
 
-import { Choice, ComponentId, GameId, StudioId } from '../data/types'
+import { Choice, ElementId, WorldId, StudioId } from '../data/types'
 
-export async function getChoice(studioId: StudioId, choiceId: ComponentId) {
+export async function getChoice(studioId: StudioId, choiceId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getChoice(choiceId)
   } catch (error) {
@@ -14,7 +14,7 @@ export async function getChoice(studioId: StudioId, choiceId: ComponentId) {
 
 export async function getChoicesByGameRef(
   studioId: StudioId,
-  gameId: GameId
+  gameId: WorldId
 ): Promise<Choice[]> {
   try {
     return await new LibraryDatabase(studioId).getChoicesByGameRef(gameId)
@@ -33,7 +33,7 @@ export async function saveChoice(studioId: StudioId, choice: Choice) {
   }
 }
 
-export async function removeChoice(studioId: StudioId, choiceId: ComponentId) {
+export async function removeChoice(studioId: StudioId, choiceId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removeChoice(choiceId)
   } catch (error) {

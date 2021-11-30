@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react'
 
-import { EventPersona, GameId, StudioId } from '../../../data/types'
+import { EventPersona, WorldId, StudioId } from '../../../data/types'
 
 import { useCharacter } from '../../../hooks'
 
@@ -15,7 +15,7 @@ import styles from './styles.module.less'
 
 const EventPersonaPane: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  gameId: WorldId
   persona?: EventPersona
 }> = ({ studioId, gameId, persona }) => {
   const character = useCharacter(studioId, persona?.[0], [persona?.[0]])

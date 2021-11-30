@@ -4,7 +4,7 @@ import Dexie from 'dexie'
 
 import {
   COMPONENT_TYPE,
-  ComponentId,
+  ElementId,
   FolderChildRefs,
   SceneChildRefs,
   GameChildRefs
@@ -27,7 +27,7 @@ export default (database: Dexie) => {
           const gamesTable = tx.table(LIBRARY_TABLE.GAMES)
 
           await gamesTable.toCollection().modify((game) => {
-            const chapterIds: ComponentId[] = game.chapters,
+            const chapterIds: ElementId[] = game.chapters,
               gameChildren: GameChildRefs = []
 
             chapterIds.map((chapterId) =>
@@ -45,7 +45,7 @@ export default (database: Dexie) => {
           await folderTable.toCollection().modify((folder) => {
             folder.parent = [COMPONENT_TYPE.GAME, null]
 
-            const sceneIds: ComponentId[] = folder.scenes,
+            const sceneIds: ElementId[] = folder.scenes,
               folderChildren: FolderChildRefs = []
 
             sceneIds.map((sceneId) =>
@@ -66,7 +66,7 @@ export default (database: Dexie) => {
             scene.parent = [COMPONENT_TYPE.FOLDER, scene.chapterId]
             delete scene.chapterId
 
-            const passageIds: ComponentId[] = scene.passages,
+            const passageIds: ElementId[] = scene.passages,
               sceneChildren: SceneChildRefs = []
 
             passageIds.map((passageId) =>

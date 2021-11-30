@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ComponentId, COMPONENT_TYPE, StudioId } from '../../data/types'
+import { ElementId, COMPONENT_TYPE, StudioId } from '../../data/types'
 
 import {
   AlignLeftOutlined,
@@ -20,7 +20,7 @@ import styles from './styles.module.less'
 const ComponentDetailView: React.FC<{
   studioId: StudioId
   component: {
-    id: ComponentId
+    id: ElementId
     type: COMPONENT_TYPE
   }
 }> = ({ studioId, component }) => {

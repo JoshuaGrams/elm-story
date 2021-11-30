@@ -9,7 +9,7 @@ import {
   CharacterRefs,
   CHARACTER_MASK_TYPE,
   CHARACTER_PRONOUN_TYPES,
-  GameId,
+  WorldId,
   StudioId
 } from '../../data/types'
 
@@ -286,7 +286,7 @@ ReferencesSelect.displayName = 'ReferencesSelect'
 
 const CharacterInfo: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  gameId: WorldId
   character: Character
 }> = ({ studioId, gameId, character }) => {
   const titleInputRef = useRef<Input>(null)

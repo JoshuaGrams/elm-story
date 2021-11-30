@@ -2,7 +2,7 @@ import React from 'react'
 
 import { useCharacter } from '../../hooks'
 
-import { StudioId, GameId, ComponentId } from '../../data/types'
+import { StudioId, WorldId, ElementId } from '../../data/types'
 
 import { Modal, ModalProps } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
@@ -13,8 +13,8 @@ import styles from './styles.module.less'
 
 interface CharacterModalProps extends ModalProps {
   studioId: StudioId
-  gameId: GameId
-  characterId?: ComponentId
+  gameId: WorldId
+  characterId?: ElementId
   visible?: boolean
 }
 

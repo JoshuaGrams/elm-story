@@ -1,11 +1,11 @@
 import { LibraryDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import { StudioId, GameId, ComponentId, Folder } from '../data/types'
+import { StudioId, WorldId, ElementId, Folder } from '../data/types'
 
 const useFolders = (
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   deps?: any[]
 ): Folder[] | undefined => {
   const chapters = useLiveQuery(
@@ -23,7 +23,7 @@ const useFolders = (
 
 const useFolder = (
   studioId: StudioId,
-  folderId: ComponentId,
+  folderId: ElementId,
   deps?: any[]
 ): Folder | undefined =>
   useLiveQuery(

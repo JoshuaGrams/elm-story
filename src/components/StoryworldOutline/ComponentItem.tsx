@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { ComponentId, COMPONENT_TYPE } from '../../data/types'
+import { ElementId, COMPONENT_TYPE } from '../../data/types'
 import {
   OnAddComponent,
   OnEditComponentTitle,
@@ -88,7 +88,7 @@ const ComponentItem = ({
       className={`${styles.itemRow} ${compositeSelectionStyles.join(' ')}`}
       onClick={(event) => {
         event.stopPropagation()
-        if (!item.data.renaming) onSelect(item.id as ComponentId)
+        if (!item.data.renaming) onSelect(item.id as ElementId)
       }}
       onContextMenu={(event) => event.stopPropagation()}
     >

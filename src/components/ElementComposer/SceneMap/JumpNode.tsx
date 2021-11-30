@@ -1,6 +1,6 @@
 import React, { memo, useContext } from 'react'
 
-import { ComponentId, COMPONENT_TYPE } from '../../../data/types'
+import { ElementId, COMPONENT_TYPE } from '../../../data/types'
 
 import { useJump } from '../../../hooks'
 
@@ -26,7 +26,7 @@ import styles from './styles.module.less'
 
 import { cloneDeep } from 'lodash'
 
-const JumpHandle: React.FC<{ jumpId: ComponentId }> = ({ jumpId }) => {
+const JumpHandle: React.FC<{ jumpId: ElementId }> = ({ jumpId }) => {
   return (
     <Handle
       type="target"

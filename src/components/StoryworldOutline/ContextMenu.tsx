@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ComponentId, COMPONENT_TYPE } from '../../data/types'
+import { ElementId, COMPONENT_TYPE } from '../../data/types'
 import { OnAddComponent } from '.'
 import { OnEditComponentTitle, OnRemoveComponent } from '.'
 
@@ -8,7 +8,7 @@ import { Dropdown, Menu } from 'antd'
 
 const ContextMenu: React.FC<{
   component: {
-    id: ComponentId
+    id: ElementId
     type: COMPONENT_TYPE
     title: string
     disabled: boolean

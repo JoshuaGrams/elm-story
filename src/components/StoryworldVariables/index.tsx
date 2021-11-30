@@ -5,8 +5,8 @@ import { debounce } from 'lodash-es'
 
 import {
   COMPARE_OPERATOR_TYPE,
-  ComponentId,
-  GameId,
+  ElementId,
+  WorldId,
   SET_OPERATOR_TYPE,
   StudioId,
   VARIABLE_TYPE
@@ -31,7 +31,7 @@ const { Option } = Select
 
 export const VariableRow: React.FC<{
   studioId: StudioId
-  variableId: ComponentId
+  variableId: ElementId
   rowType?: VARIABLE_ROW_TYPE
   allowRename?: boolean
   allowTypeChange?: boolean
@@ -45,7 +45,7 @@ export const VariableRow: React.FC<{
     newCompareOperatorType: COMPARE_OPERATOR_TYPE
   ) => void
   onSetOperatorTypeChange?: (newSetOperatorType: SET_OPERATOR_TYPE) => void
-  onDelete?: (variableId: ComponentId) => void
+  onDelete?: (variableId: ElementId) => void
 }> = ({
   studioId,
   variableId,
@@ -453,10 +453,10 @@ export const VariableRow: React.FC<{
   )
 }
 
-const StoryworldVariables: React.FC<{ studioId: StudioId; gameId: GameId }> = ({
-  studioId,
-  gameId
-}) => {
+const StoryworldVariables: React.FC<{
+  studioId: StudioId
+  gameId: WorldId
+}> = ({ studioId, gameId }) => {
   const variables = useVariables(studioId, gameId, [studioId, gameId])
 
   return (

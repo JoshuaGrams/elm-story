@@ -3,9 +3,9 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import {
   Character,
   CHARACTER_MASK_TYPE,
-  ComponentId,
+  ElementId,
   EventPersona,
-  GameId,
+  WorldId,
   Passage,
   PASSAGE_TYPE,
   StudioId
@@ -101,7 +101,7 @@ PassageType.displayName = 'PassageType'
 
 const Persona: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  gameId: WorldId
   passage: Passage
 }> = React.memo(({ studioId, gameId, passage }) => {
   const characters = useCharacters(studioId, gameId, [passage.id])
@@ -114,7 +114,7 @@ const Persona: React.FC<{
     )
 
   const savePersonaCharacter = useCallback(
-    async (characterId: ComponentId | undefined) => {
+    async (characterId: ElementId | undefined) => {
       const newPersona: EventPersona | undefined = characterId
         ? [characterId, CHARACTER_MASK_TYPE.NEUTRAL, undefined]
         : undefined
@@ -342,7 +342,7 @@ PassageEndToggle.displayName = 'PassageEndToggle'
 
 const EventProperties: React.FC<{
   studioId: StudioId
-  passageId: ComponentId
+  passageId: ElementId
 }> = React.memo(({ studioId, passageId }) => {
   const event = usePassage(studioId, passageId, [passageId])
 

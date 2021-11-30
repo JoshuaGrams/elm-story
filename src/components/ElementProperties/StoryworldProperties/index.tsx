@@ -2,11 +2,14 @@ import semver from 'semver'
 
 import React, { useEffect, useState, useContext } from 'react'
 
-import { GameId, StudioId } from '../../../data/types'
+import { WorldId, StudioId } from '../../../data/types'
 
 import { useGame, useScenes } from '../../../hooks'
 
-import { EditorContext, EDITOR_ACTION_TYPE } from '../../../contexts/EditorContext'
+import {
+  EditorContext,
+  EDITOR_ACTION_TYPE
+} from '../../../contexts/EditorContext'
 
 import { Button, Collapse, Form, Input } from 'antd'
 
@@ -20,7 +23,7 @@ import api from '../../../api'
 
 const GameDetails: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  gameId: WorldId
 }> = ({ studioId, gameId }) => {
   const game = useGame(studioId, gameId, [studioId, gameId]),
     scenes = useScenes(studioId, gameId, [studioId, gameId])
@@ -28,7 +31,6 @@ const GameDetails: React.FC<{
   const [metadataForm] = Form.useForm()
 
   const { editorDispatch } = useContext(EditorContext)
-
 
   const [unsavedMetadataChanges, setUnsavedMetadataChanges] = useState(false)
 

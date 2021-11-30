@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { GameId, StudioId } from '../../data/types'
+import { WorldId, StudioId } from '../../data/types'
 
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 
@@ -10,7 +10,7 @@ import styles from './styles.module.less'
 
 const ElementInspector: React.FC<{
   studioId: StudioId
-  gameId: GameId | undefined
+  gameId: WorldId | undefined
 }> = ({ studioId, gameId = undefined }) => {
   const [defaultLayout] = useState<LayoutData>({
     dockbox: {

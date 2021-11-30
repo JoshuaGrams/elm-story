@@ -1,9 +1,9 @@
 import { LibraryDatabase } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { ComponentId, GameId, Jump, JumpRoute, StudioId } from '../data/types'
+import { ElementId, WorldId, Jump, JumpRoute, StudioId } from '../data/types'
 
-export async function getJump(studioId: StudioId, jumpId: ComponentId) {
+export async function getJump(studioId: StudioId, jumpId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getJump(jumpId)
   } catch (error) {
@@ -13,7 +13,7 @@ export async function getJump(studioId: StudioId, jumpId: ComponentId) {
 
 export async function getJumpsByGameRef(
   studioId: StudioId,
-  gameId: GameId
+  gameId: WorldId
 ): Promise<Jump[]> {
   try {
     return await new LibraryDatabase(studioId).getJumpsByGameRef(gameId)
@@ -24,7 +24,7 @@ export async function getJumpsByGameRef(
 
 export async function getJumpsBySceneRef(
   studioId: StudioId,
-  sceneId: ComponentId
+  sceneId: ElementId
 ): Promise<Jump[]> {
   try {
     return await new LibraryDatabase(studioId).getJumpsBySceneRef(sceneId)
@@ -35,7 +35,7 @@ export async function getJumpsBySceneRef(
 
 export async function getJumpsByPassageRef(
   studioId: StudioId,
-  passageId: ComponentId
+  passageId: ElementId
 ): Promise<Jump[]> {
   try {
     return await new LibraryDatabase(studioId).getJumpsByPassageRef(passageId)
@@ -56,7 +56,7 @@ export async function saveJump(studioId: StudioId, jump: Jump): Promise<Jump> {
 
 export async function saveJumpRoute(
   studioId: StudioId,
-  jumpId: ComponentId,
+  jumpId: ElementId,
   jumpRoute: JumpRoute
 ): Promise<void> {
   try {
@@ -66,7 +66,7 @@ export async function saveJumpRoute(
   }
 }
 
-export async function removeJump(studioId: StudioId, jumpId: ComponentId) {
+export async function removeJump(studioId: StudioId, jumpId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removeJump(jumpId)
   } catch (error) {

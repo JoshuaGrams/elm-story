@@ -1,6 +1,6 @@
 import {
-  ComponentId,
-  GameId,
+  ElementId,
+  WorldId,
   StudioId,
   GameDataJSON,
   GameChildRefs,
@@ -16,7 +16,7 @@ import api from '../api'
 
 export default async (
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   schemaVersion: string
 ): Promise<string> => {
   try {
@@ -44,7 +44,7 @@ export default async (
         description: game.description,
         designer: game.designer,
         engine: schemaVersion,
-        id: game.id as ComponentId,
+        id: game.id as ElementId,
         jump: game.jump,
         schema: `https://elmstory.com/schema/elm-story-${schemaVersion}.json`,
         studioId: studioId,

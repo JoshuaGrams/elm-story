@@ -4,7 +4,7 @@ import React, { useContext } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import {
-  ComponentId,
+  ElementId,
   PASSAGE_TYPE,
   EngineEventData,
   EngineEventStateCollection,
@@ -42,11 +42,11 @@ export type NextEventProcessor = ({
   routeId,
   state
 }: {
-  destinationId: ComponentId
+  destinationId: ElementId
   eventResult: EngineEventResult
-  originId?: ComponentId
+  originId?: ElementId
   passageType: PASSAGE_TYPE
-  routeId?: ComponentId
+  routeId?: ElementId
   state?: EngineEventStateCollection // override of event state for input type
 }) => Promise<void>
 

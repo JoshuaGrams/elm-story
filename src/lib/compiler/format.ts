@@ -9,10 +9,10 @@ import {
 } from '../transport/types/0.5.1'
 
 function filterCollectionChildProps<T extends object, U extends keyof T>(
-  collectionToFilter: { [ComponentId: string]: T },
+  collectionToFilter: { [ElementId: string]: T },
   props: Many<U>
 ) {
-  const filteredCollection: { [ComponentId: string]: Pick<T, U> } = {}
+  const filteredCollection: { [ElementId: string]: Pick<T, U> } = {}
 
   Object.keys(collectionToFilter).map(
     (objectId) =>

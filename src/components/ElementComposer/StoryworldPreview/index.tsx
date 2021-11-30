@@ -2,7 +2,7 @@ import logger from '../../../lib/logger'
 
 import React, { useEffect, useState } from 'react'
 
-import { GameId, StudioId } from '../../../data/types'
+import { WorldId, StudioId } from '../../../data/types'
 import {
   EngineDevToolsEvent,
   ENGINE_DEVTOOLS_EVENTS,
@@ -17,7 +17,7 @@ import GameEngine from '../../GameEngine'
 
 export const StoryworldPreviewTools: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  gameId: WorldId
 }> = () => {
   const [highlightExpressions, setHighlightExpressions] = useState(false),
     [blockedChoicesVisible, setBlockedChoicesVisible] = useState(false),
@@ -93,7 +93,7 @@ export const StoryworldPreviewTools: React.FC<{
 
 const StoryworldPreview: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  gameId: WorldId
 }> = ({ studioId, gameId }) => {
   const game = useGame(studioId, gameId)
 

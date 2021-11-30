@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import {
   Character,
   COMPONENT_TYPE,
-  GameId,
+  WorldId,
   Passage,
   Scene,
   StudioId
@@ -181,7 +181,7 @@ SceneGroup.displayName = 'SceneGroup'
 
 const CharacterEvents: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  gameId: WorldId
   character: Character
 }> = ({ studioId, character }) => {
   const events = useCharacterEvents(studioId, character.id, [character.id])

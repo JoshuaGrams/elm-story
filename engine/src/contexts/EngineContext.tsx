@@ -2,10 +2,10 @@ import { cloneDeep } from 'lodash'
 
 import React, { createContext, useMemo, useReducer } from 'react'
 
-import { ComponentId, EngineEventData, GameId, StudioId } from '../types'
+import { ElementId, EngineEventData, WorldId, StudioId } from '../types'
 
 interface EngineState {
-  currentEvent: ComponentId | undefined
+  currentEvent: ElementId | undefined
   devTools: {
     highlightExpressions: boolean
     blockedChoicesVisible: boolean
@@ -19,7 +19,7 @@ interface EngineState {
     copyright?: string
     description?: string
     designer: string
-    id: GameId
+    id: WorldId
     studioId: StudioId
     studioTitle: string
     title: string
@@ -60,7 +60,7 @@ type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.SET_IS_EDITOR }
   | {
       type: ENGINE_ACTION_TYPE.SET_CURRENT_EVENT
-      id?: ComponentId
+      id?: ElementId
     }
   | { type: ENGINE_ACTION_TYPE.CLEAR_EVENT_STREAM }
   | {
@@ -78,7 +78,7 @@ type EngineActionType =
         copyright?: string
         description?: string
         designer: string
-        id: GameId
+        id: WorldId
         studioId: StudioId
         studioTitle: string
         title: string
@@ -88,7 +88,7 @@ type EngineActionType =
       }
     }
   | { type: ENGINE_ACTION_TYPE.SET_UPDATE_GAME; updating: boolean }
-  | { type: ENGINE_ACTION_TYPE.PLAY; fromEvent: ComponentId | undefined }
+  | { type: ENGINE_ACTION_TYPE.PLAY; fromEvent: ElementId | undefined }
   | { type: ENGINE_ACTION_TYPE.STOP }
   | { type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION }
   | { type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION; message: string }

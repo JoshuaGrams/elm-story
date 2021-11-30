@@ -4,9 +4,9 @@ import { v4 as uuid } from 'uuid'
 import { Descendant } from 'slate'
 import {
   Passage,
-  ComponentId,
+  ElementId,
   StudioId,
-  GameId,
+  WorldId,
   PASSAGE_TYPE,
   CharacterRefs,
   CharacterMask,
@@ -15,7 +15,7 @@ import {
 
 import api from '.'
 
-export async function getPassage(studioId: StudioId, passageId: ComponentId) {
+export async function getPassage(studioId: StudioId, passageId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getPassage(passageId)
   } catch (error) {
@@ -36,10 +36,7 @@ export async function savePassage(
   }
 }
 
-export async function removePassage(
-  studioId: StudioId,
-  passageId: ComponentId
-) {
+export async function removePassage(studioId: StudioId, passageId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removePassage(passageId)
   } catch (error) {
@@ -49,7 +46,7 @@ export async function removePassage(
 
 export async function getPassagesByGameRef(
   studioId: StudioId,
-  gameId: GameId
+  gameId: WorldId
 ): Promise<Passage[]> {
   try {
     return await new LibraryDatabase(studioId).getPassagesByGameRef(gameId)
@@ -60,7 +57,7 @@ export async function getPassagesByGameRef(
 
 export async function savePassageTitle(
   studioId: StudioId,
-  passageId: ComponentId,
+  passageId: ElementId,
   title: string
 ) {
   try {
@@ -76,7 +73,7 @@ export async function savePassageTitle(
 
 export async function savePassageType(
   studioId: StudioId,
-  passageId: ComponentId,
+  passageId: ElementId,
   type: PASSAGE_TYPE
 ) {
   try {
@@ -88,8 +85,8 @@ export async function savePassageType(
 
 export async function savePassageInput(
   studioId: StudioId,
-  passageId: ComponentId,
-  inputId?: ComponentId
+  passageId: ElementId,
+  inputId?: ElementId
 ) {
   try {
     await new LibraryDatabase(studioId).savePassageInput(passageId, inputId)
@@ -100,7 +97,7 @@ export async function savePassageInput(
 
 export async function savePassageContent(
   studioId: StudioId,
-  passageId: ComponentId,
+  passageId: ElementId,
   contentObject: Descendant[]
 ) {
   try {
@@ -115,8 +112,8 @@ export async function savePassageContent(
 
 export async function saveSceneRefToPassage(
   studioId: StudioId,
-  sceneId: ComponentId,
-  passageId: ComponentId
+  sceneId: ElementId,
+  passageId: ElementId
 ) {
   try {
     await new LibraryDatabase(studioId).saveSceneRefToPassage(
@@ -130,8 +127,8 @@ export async function saveSceneRefToPassage(
 
 export async function saveChoiceRefsToPassage(
   studioId: StudioId,
-  passageId: ComponentId,
-  choices: ComponentId[]
+  passageId: ElementId,
+  choices: ElementId[]
 ) {
   try {
     await new LibraryDatabase(studioId).saveChoiceRefsToPassage(
@@ -215,7 +212,7 @@ export async function switchPassageFromInputToChoiceType(
 
 export async function setPassageGameEnd(
   studioId: StudioId,
-  passageId: ComponentId,
+  passageId: ElementId,
   gameOver: boolean
 ) {
   try {
@@ -228,7 +225,7 @@ export async function setPassageGameEnd(
 // receive new references and remove dead
 export async function removeDeadPersonaRefsFromEvent(
   studioId: StudioId,
-  characterId: ComponentId,
+  characterId: ElementId,
   newRefs: CharacterRefs
 ) {
   const db = new LibraryDatabase(studioId)
@@ -273,7 +270,7 @@ export async function removeDeadPersonaRefsFromEvent(
 // when characters are removed
 export async function removeDeadPersonasFromEvent(
   studioId: StudioId,
-  characterId: ComponentId
+  characterId: ElementId
 ) {
   const db = new LibraryDatabase(studioId)
 
@@ -305,7 +302,7 @@ export async function removeDeadPersonasFromEvent(
 // when mask is disabled, reset to NEUTRAL
 export async function resetPersonaMaskFromEvent(
   studioId: StudioId,
-  characterId: ComponentId,
+  characterId: ElementId,
   newMasks: CharacterMask[]
 ) {
   const db = new LibraryDatabase(studioId)

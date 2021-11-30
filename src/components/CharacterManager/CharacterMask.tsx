@@ -5,8 +5,8 @@ import React, { useEffect, useState } from 'react'
 import {
   CHARACTER_MASK_TYPE,
   CHARACTER_MASK_VALUES,
-  ComponentId,
-  GameId,
+  ElementId,
+  WorldId,
   StudioId
 } from '../../data/types'
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
@@ -19,8 +19,8 @@ import api from '../../api'
 
 const CharacterMask: React.FC<{
   studioId: StudioId
-  gameId: GameId
-  characterId: ComponentId
+  gameId: WorldId
+  characterId: ElementId
   type: CHARACTER_MASK_TYPE
   assetId?: string
   active?: boolean

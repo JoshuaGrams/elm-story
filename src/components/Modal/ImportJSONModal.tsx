@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState } from 'react'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
-import { ComponentId, StudioId } from '../../data/types'
+import { ElementId, StudioId } from '../../data/types'
 import { GameDataJSON as GameDataJSON_013 } from '../../lib/transport/types/0.1.3'
 import { GameDataJSON as GameDataJSON_020 } from '../../lib/transport/types/0.2.0'
 
@@ -38,10 +38,10 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
       []
     ),
     [studioNotFound, setStudioNotFound] = useState<
-      { id: ComponentId; title: string } | boolean
+      { id: ElementId; title: string } | boolean
     >(false),
     [gameExists, setGameExists] = useState<
-      { id: ComponentId; title: string; newer: boolean } | boolean
+      { id: ElementId; title: string; newer: boolean } | boolean
     >(false)
 
   function onCancelImport() {

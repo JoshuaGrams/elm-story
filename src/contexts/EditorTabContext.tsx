@@ -1,6 +1,6 @@
 import React, { createContext, useMemo, useReducer } from 'react'
 
-import { ComponentId } from '../data/types'
+import { ElementId } from '../data/types'
 
 export enum SCENE_VIEW_CONTEXT {
   SCENE_SELECTION_NONE = 'SCENE_SELECTION_NONE',
@@ -11,7 +11,7 @@ export enum SCENE_VIEW_CONTEXT {
 }
 
 interface EditorTabState {
-  passageForEditing: { id?: ComponentId; visible: boolean }
+  passageForEditing: { id?: ElementId; visible: boolean }
   sceneViewContext: SCENE_VIEW_CONTEXT
 }
 
@@ -23,7 +23,7 @@ export enum EDITOR_TAB_ACTION_TYPE {
 type EditorTabActionType =
   | {
       type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE
-      passageForEditing: { id?: ComponentId; visible: boolean }
+      passageForEditing: { id?: ElementId; visible: boolean }
     }
   | {
       type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT

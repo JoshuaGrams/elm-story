@@ -14,7 +14,7 @@ import React, {
 } from 'react'
 
 import {
-  ComponentId,
+  ElementId,
   COMPONENT_TYPE,
   DEFAULT_PASSAGE_CONTENT,
   Scene,
@@ -78,7 +78,7 @@ declare module 'slate' {
 
 export const PassageViewTools: React.FC<{
   studioId: StudioId
-  passageId: ComponentId
+  passageId: ElementId
 }> = ({ studioId, passageId }) => {
   const passage = usePassage(studioId, passageId, [studioId, passageId])
 
@@ -168,7 +168,7 @@ const Leaf = (props: RenderLeafProps) => {
 const PassageView: React.FC<{
   studioId: StudioId
   scene: Scene
-  passageId: ComponentId
+  passageId: ElementId
   onClose: () => void
 }> = ({ studioId, scene, passageId, onClose }) => {
   const passage = usePassage(studioId, passageId, [studioId, passageId])
@@ -255,7 +255,7 @@ const PassageView: React.FC<{
   )
 
   const saveContent = debounce(
-    async (studioId: StudioId, passageId: ComponentId, content) => {
+    async (studioId: StudioId, passageId: ElementId, content) => {
       await api().passages.savePassageContent(studioId, passageId, content)
     },
     100

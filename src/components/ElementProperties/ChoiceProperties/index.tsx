@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ComponentId, StudioId } from '../../../data/types'
+import { ElementId, StudioId } from '../../../data/types'
 
 import { useChoice } from '../../../hooks'
 
@@ -12,7 +12,7 @@ import api from '../../../api'
 
 const ChoiceDetails: React.FC<{
   studioId: StudioId
-  choiceId: ComponentId
+  choiceId: ElementId
 }> = ({ studioId, choiceId }) => {
   const choice = useChoice(studioId, choiceId, [choiceId])
 

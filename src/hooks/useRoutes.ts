@@ -1,11 +1,11 @@
 import { LibraryDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import { ComponentId, GameId, Route, StudioId } from '../data/types'
+import { ElementId, WorldId, Route, StudioId } from '../data/types'
 
 const useRoutes = (
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   deps?: any[]
 ): Route[] | undefined => {
   const routes = useLiveQuery(
@@ -19,7 +19,7 @@ const useRoutes = (
 
 const useRoute = (
   studioId: StudioId,
-  routeId: ComponentId,
+  routeId: ElementId,
   deps?: any[]
 ): Route | undefined =>
   useLiveQuery(
@@ -30,7 +30,7 @@ const useRoute = (
 
 const useRoutesBySceneRef = (
   studioId: StudioId,
-  sceneId: ComponentId,
+  sceneId: ElementId,
   deps?: any[]
 ): Route[] | undefined => {
   const routes = useLiveQuery(
@@ -44,7 +44,7 @@ const useRoutesBySceneRef = (
 
 const useRoutesByPassageRef = (
   studioId: StudioId,
-  passageId: ComponentId,
+  passageId: ElementId,
   deps?: any[]
 ): Route[] | undefined => {
   const routes = useLiveQuery(
@@ -61,7 +61,7 @@ const useRoutesByPassageRef = (
 
 const useRoutePassthroughsByPassageRef = (
   studioId: StudioId,
-  passageId?: ComponentId,
+  passageId?: ElementId,
   deps?: any[]
 ): Route[] | undefined => {
   const routes = useLiveQuery(
@@ -83,7 +83,7 @@ const useRoutePassthroughsByPassageRef = (
 
 const useRoutesByChoiceRef = (
   studioId: StudioId,
-  choiceId: ComponentId,
+  choiceId: ElementId,
   deps?: any[]
 ): Route[] | undefined => {
   const routes = useLiveQuery(
@@ -97,7 +97,7 @@ const useRoutesByChoiceRef = (
 
 const useRoutesByInputRef = (
   studioId: StudioId,
-  inputId: ComponentId,
+  inputId: ElementId,
   deps?: any[]
 ): Route[] | undefined => {
   const routes = useLiveQuery(

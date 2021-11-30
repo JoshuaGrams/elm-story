@@ -1,7 +1,7 @@
 import logger from '../lib/logger'
 
 import { AppDatabase, LibraryDatabase } from '../db'
-import { GameId, Studio, StudioId } from '../data/types'
+import { WorldId, Studio, StudioId } from '../data/types'
 import { v4 as uuid } from 'uuid'
 
 export async function getStudio(
@@ -10,13 +10,13 @@ export async function getStudio(
   try {
     return new AppDatabase().getStudio(studioId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
-export async function getGameRefs(studioId: StudioId): Promise<GameId[]> {
+export async function getGameRefs(studioId: StudioId): Promise<WorldId[]> {
   const studio = await getStudio(studioId)
 
-  return studio ? studio.games : []
+  return studio ? studio.worlds : []
 }
 
 /**
@@ -40,44 +40,44 @@ export async function removeStudio(studioId: StudioId) {
 
     await new AppDatabase().removeStudio(studioId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function saveGameRef(studioId: StudioId, gameId: GameId) {
+export async function saveGameRef(studioId: StudioId, gameId: WorldId) {
   try {
     const studio = await getStudio(studioId),
-      exists = studio ? studio.games.indexOf(gameId) !== -1 : false
+      exists = studio ? studio.worlds.indexOf(gameId) !== -1 : false
 
     if (!exists) {
       if (studio) {
-        studio.games = [...studio.games, gameId]
+        studio.worlds = [...studio.worlds, gameId]
 
         saveStudio(studio)
       } else {
         throw new Error(
-          `Unable to save game with ID: ${gameId}. Studio with ID ${studioId} does not exist.`
+          `Unable to save world with ID: ${gameId}. Studio with ID ${studioId} does not exist.`
         )
       }
     } else {
       logger.info(
-        `Unable to add game ref ${gameId} to studio ${studioId}. Already exists. Likely game is being updated.`
+        `Unable to add world ref ${gameId} to studio ${studioId}. Already exists. Likely world is being updated.`
       )
     }
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function removeGameRef(studioId: StudioId, gameId: GameId) {
+export async function removeGameRef(studioId: StudioId, gameId: WorldId) {
   try {
     const studio = await getStudio(studioId)
 
     if (studio) {
-      const index = studio.games.indexOf(gameId)
+      const index = studio.worlds.indexOf(gameId)
 
       if (index !== -1) {
-        studio.games.splice(index, 1)
+        studio.worlds.splice(index, 1)
       }
 
       await saveStudio(studio)
@@ -87,6 +87,6 @@ export async function removeGameRef(studioId: StudioId, gameId: GameId) {
       )
     }
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

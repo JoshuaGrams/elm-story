@@ -5,7 +5,7 @@ import createGameOutlineTreeData from '../../lib/createGameOutlineTreeData'
 import React, { useContext, useEffect, useState } from 'react'
 
 import {
-  ComponentId,
+  ElementId,
   COMPONENT_TYPE,
   DEFAULT_PASSAGE_CONTENT,
   Game,
@@ -39,21 +39,21 @@ import api from '../../api'
 // TODO: build type for item.data
 // { title, type, selected, parentId, renaming }
 
-export type OnSelectComponent = (componentId: ComponentId) => void
+export type OnSelectComponent = (componentId: ElementId) => void
 export type OnAddComponent = (
-  parentComponentId: ComponentId,
+  parentComponentId: ElementId,
   childType: COMPONENT_TYPE
 ) => void
-export type OnRemoveComponent = (componentId: ComponentId) => void
+export type OnRemoveComponent = (componentId: ElementId) => void
 export type OnEditComponentTitle = (
-  componentId: ComponentId,
+  componentId: ElementId,
   title: string | undefined,
   complete: boolean | false
 ) => void
 
 const addItemToTree = (
   treeData: TreeData,
-  parentId: ComponentId,
+  parentId: ElementId,
   item: TreeItem
 ): TreeData => {
   const clonedTree = cloneDeep(treeData),
@@ -74,7 +74,7 @@ const addItemToTree = (
 
 const removeItemFromTree = (
   treeData: TreeData,
-  itemId: ComponentId
+  itemId: ElementId
 ): TreeData => {
   const clonedTree = cloneDeep(treeData),
     itemToRemove = clonedTree.items[itemId],
@@ -230,7 +230,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                     game.id,
                     newTreeData.items[game.id].children.map((childId) => [
                       newTreeData.items[childId].data.type,
-                      childId as ComponentId
+                      childId as ElementId
                     ])
                   )
                 )
@@ -240,12 +240,12 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 folderPromises.push(
                   api().folders.saveChildRefsToFolder(
                     studioId,
-                    sourceParent.id as ComponentId,
+                    sourceParent.id as ElementId,
                     newTreeData.items[
                       sourceParent.id
                     ].children.map((childId) => [
                       newTreeData.items[childId].data.type,
-                      childId as ComponentId
+                      childId as ElementId
                     ])
                   )
                 )
@@ -255,12 +255,12 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 folderPromises.push(
                   api().folders.saveChildRefsToFolder(
                     studioId,
-                    destinationParent.id as ComponentId,
+                    destinationParent.id as ElementId,
                     newTreeData.items[
                       destinationParent.id
                     ].children.map((childId) => [
                       newTreeData.items[childId].data.type,
-                      childId as ComponentId
+                      childId as ElementId
                     ])
                   )
                 )
@@ -274,9 +274,9 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                     newTreeData.items[destinationParent.id].data.type ===
                     COMPONENT_TYPE.GAME
                       ? null
-                      : (destinationParent.id as ComponentId)
+                      : (destinationParent.id as ElementId)
                   ],
-                  movingComponent.id as ComponentId
+                  movingComponent.id as ElementId
                 )
               )
 
@@ -296,7 +296,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                     game.id,
                     newTreeData.items[game.id].children.map((childId) => [
                       newTreeData.items[childId].data.type,
-                      childId as ComponentId
+                      childId as ElementId
                     ])
                   )
                 )
@@ -306,12 +306,12 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 scenePromises.push(
                   api().folders.saveChildRefsToFolder(
                     studioId,
-                    sourceParent.id as ComponentId,
+                    sourceParent.id as ElementId,
                     newTreeData.items[
                       sourceParent.id
                     ].children.map((childId) => [
                       newTreeData.items[childId].data.type,
-                      childId as ComponentId
+                      childId as ElementId
                     ])
                   )
                 )
@@ -321,12 +321,12 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 scenePromises.push(
                   api().folders.saveChildRefsToFolder(
                     studioId,
-                    destinationParent.id as ComponentId,
+                    destinationParent.id as ElementId,
                     newTreeData.items[
                       destinationParent.id
                     ].children.map((childId) => [
                       newTreeData.items[childId].data.type,
-                      childId as ComponentId
+                      childId as ElementId
                     ])
                   )
                 )
@@ -340,9 +340,9 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                     newTreeData.items[destinationParent.id].data.type ===
                     COMPONENT_TYPE.GAME
                       ? null
-                      : (destinationParent.id as ComponentId)
+                      : (destinationParent.id as ElementId)
                   ],
-                  movingComponent.id as ComponentId
+                  movingComponent.id as ElementId
                 )
               )
 
@@ -369,32 +369,32 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
                 await api().routes.removeRoutesByPassageRef(
                   studioId,
-                  movingComponent.id as ComponentId
+                  movingComponent.id as ElementId
                 )
               }
 
               await Promise.all([
                 api().passages.saveSceneRefToPassage(
                   studioId,
-                  destinationParent.id as ComponentId,
-                  movingComponent.id as ComponentId
+                  destinationParent.id as ElementId,
+                  movingComponent.id as ElementId
                 ),
                 api().scenes.saveChildRefsToScene(
                   studioId,
-                  sourceParent.id as ComponentId,
+                  sourceParent.id as ElementId,
                   newTreeData.items[sourceParent.id].children.map((childId) => [
                     COMPONENT_TYPE.PASSAGE,
-                    childId as ComponentId
+                    childId as ElementId
                   ])
                 ),
                 api().scenes.saveChildRefsToScene(
                   studioId,
-                  destinationParent.id as ComponentId,
+                  destinationParent.id as ElementId,
                   newTreeData.items[
                     destinationParent.id
                   ].children.map((childId) => [
                     COMPONENT_TYPE.PASSAGE,
-                    childId as ComponentId
+                    childId as ElementId
                   ])
                 )
               ])
@@ -414,7 +414,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   }
 
-  function onSelect(componentId: ComponentId) {
+  function onSelect(componentId: ElementId) {
     if (treeData) {
       const {
         id,
@@ -428,7 +428,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           editorDispatch({
             type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
             selectedGameOutlineComponent: {
-              id: parentItem.id as ComponentId,
+              id: parentItem.id as ElementId,
               type: parentItem.data.type,
               expanded: true,
               title: parentItem.data.title
@@ -443,7 +443,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               editorDispatch({
                 type:
                   EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                selectedComponentEditorSceneViewPassage: id as ComponentId
+                selectedComponentEditorSceneViewPassage: id as ElementId
               }),
             1
           )
@@ -468,7 +468,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
         editorDispatch({
           type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
           selectedGameOutlineComponent: {
-            id: id as ComponentId,
+            id: id as ElementId,
             type,
             expanded: true,
             title
@@ -479,7 +479,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   }
 
   async function onAdd(
-    parentComponentId: ComponentId,
+    parentComponentId: ElementId,
     childType: COMPONENT_TYPE
   ) {
     const parentItem = treeData?.items[parentComponentId]
@@ -500,7 +500,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
             childType === COMPONENT_TYPE.SCENE ||
             childType === COMPONENT_TYPE.FOLDER
           ) {
-            let childId: ComponentId,
+            let childId: ElementId,
               childTitle: string =
                 childType === COMPONENT_TYPE.SCENE
                   ? 'Untitled Scene'
@@ -531,24 +531,20 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
 
             parentItem.hasChildren = true
 
-            newTreeData = addItemToTree(
-              treeData,
-              parentItem.id as ComponentId,
-              {
-                id: childId,
-                children: [],
-                isExpanded: false,
-                hasChildren: false,
-                isChildrenLoading: false,
-                data: {
-                  title: childTitle,
-                  type: childType,
-                  selected: false,
-                  parentId: parentItem.id,
-                  renaming: true
-                }
+            newTreeData = addItemToTree(treeData, parentItem.id as ElementId, {
+              id: childId,
+              children: [],
+              isExpanded: false,
+              hasChildren: false,
+              isChildrenLoading: false,
+              data: {
+                title: childTitle,
+                type: childType,
+                selected: false,
+                parentId: parentItem.id,
+                renaming: true
               }
-            )
+            })
 
             try {
               await api().games.saveChildRefsToGame(
@@ -556,7 +552,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 game.id,
                 newTreeData.items[parentItem.id].children.map((childId) => [
                   newTreeData.items[childId].data.type,
-                  childId as ComponentId
+                  childId as ElementId
                 ])
               )
             } catch (error) {
@@ -583,7 +579,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           break
         // add scene
         case COMPONENT_TYPE.FOLDER:
-          let childId: ComponentId | undefined = undefined,
+          let childId: ElementId | undefined = undefined,
             childTitle: string | undefined = undefined
 
           try {
@@ -593,7 +589,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
               childId = await api().folders.saveFolder(studioId, {
                 children: [],
                 gameId: game.id,
-                parent: [parentItem.data.type, parentItem.id as ComponentId],
+                parent: [parentItem.data.type, parentItem.id as ElementId],
                 tags: [],
                 title: childTitle
               })
@@ -607,7 +603,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 gameId: game.id,
                 jumps: [],
                 title: childTitle,
-                parent: [parentItem.data.type, parentItem.id as ComponentId],
+                parent: [parentItem.data.type, parentItem.id as ElementId],
                 tags: []
               })
             }
@@ -618,32 +614,28 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
           parentItem.hasChildren = true
 
           if (childId && childTitle) {
-            newTreeData = addItemToTree(
-              treeData,
-              parentItem.id as ComponentId,
-              {
-                id: childId,
-                children: [],
-                isExpanded: false,
-                hasChildren: false,
-                isChildrenLoading: false,
-                data: {
-                  title: childTitle,
-                  type: childType,
-                  selected: false,
-                  parentId: parentItem.id,
-                  renaming: true
-                }
+            newTreeData = addItemToTree(treeData, parentItem.id as ElementId, {
+              id: childId,
+              children: [],
+              isExpanded: false,
+              hasChildren: false,
+              isChildrenLoading: false,
+              data: {
+                title: childTitle,
+                type: childType,
+                selected: false,
+                parentId: parentItem.id,
+                renaming: true
               }
-            )
+            })
 
             try {
               await api().folders.saveChildRefsToFolder(
                 studioId,
-                parentItem.id as ComponentId,
+                parentItem.id as ElementId,
                 newTreeData.items[parentItem.id].children.map((childId) => [
                   newTreeData.items[childId].data.type,
-                  childId as ComponentId
+                  childId as ElementId
                 ])
               )
             } catch (error) {
@@ -700,12 +692,12 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 parentItem.id
               ].children.map((childId) => [
                 COMPONENT_TYPE.PASSAGE,
-                childId as ComponentId
+                childId as ElementId
               ])
 
               await api().scenes.saveChildRefsToScene(
                 studioId,
-                parentItem.id as ComponentId,
+                parentItem.id as ElementId,
                 [...sceneChildren, [COMPONENT_TYPE.PASSAGE, passage.id]]
               )
             } catch (error) {
@@ -736,14 +728,14 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
     }
   }
 
-  async function onRemove(componentId: ComponentId) {
+  async function onRemove(componentId: ElementId) {
     logger.info(`StoryworldOutline->onRemove->${componentId}`)
 
     const item = treeData?.items[componentId],
       data = item?.data
 
     if (game.id && item && treeData) {
-      const newTreeData = removeItemFromTree(treeData, item.id as ComponentId),
+      const newTreeData = removeItemFromTree(treeData, item.id as ElementId),
         parent = newTreeData.items[item.data.parentId]
 
       if (
@@ -781,7 +773,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 game.id,
                 parent.children.map((childId) => [
                   newTreeData.items[childId].data.type,
-                  childId as ComponentId
+                  childId as ElementId
                 ])
               ),
               await api().folders.removeFolder(studioId, componentId)
@@ -797,7 +789,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                   game.id,
                   parent.children.map((childId) => [
                     newTreeData.items[childId].data.type,
-                    childId as ComponentId
+                    childId as ElementId
                   ])
                 )
               )
@@ -810,7 +802,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                   item.data.parentId,
                   parent.children.map((childId) => [
                     newTreeData.items[childId].data.type,
-                    childId as ComponentId
+                    childId as ElementId
                   ])
                 )
               )
@@ -830,10 +822,10 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 item.data.parentId,
                 parent.children.map((childId) => [
                   COMPONENT_TYPE.PASSAGE,
-                  childId as ComponentId
+                  childId as ElementId
                 ])
               ),
-              api().passages.removePassage(studioId, item?.id as ComponentId)
+              api().passages.removePassage(studioId, item?.id as ElementId)
             ])
             break
           default:
@@ -846,7 +838,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
   }
 
   async function OnEditComponentTitle(
-    componentId: ComponentId,
+    componentId: ElementId,
     title: string | undefined,
     complete: boolean
   ) {
@@ -1019,7 +1011,7 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; game: Game }> = ({
                 editorDispatch({
                   type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
                   selectedGameOutlineComponent: {
-                    id: parentScene.id as ComponentId,
+                    id: parentScene.id as ElementId,
                     expanded: true,
                     type: COMPONENT_TYPE.SCENE,
                     title: parentScene.data.title

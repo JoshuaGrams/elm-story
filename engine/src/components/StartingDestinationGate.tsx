@@ -5,13 +5,13 @@ import { useQuery } from 'react-query'
 import { LibraryDatabase } from '../lib/db'
 import { findStartingDestinationPassage } from '../lib/api'
 
-import { GameId, StudioId } from '../types'
+import { WorldId, StudioId } from '../types'
 
 import { EngineContext } from '../contexts/EngineContext'
 
 const StartingDestinationGate: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  gameId: WorldId
 }> = React.memo(({ children, studioId, gameId }) => {
   const { engine } = useContext(EngineContext)
 

@@ -12,14 +12,14 @@ import {
   saveEngineDefaultGameCollectionData
 } from '../lib/api'
 
-import { GameId, StudioId, ESGEngineCollectionData } from '../types'
+import { WorldId, StudioId, ESGEngineCollectionData } from '../types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 import { INITIAL_ENGINE_EVENT_ORIGIN_KEY } from '../lib'
 
 const Installer: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  gameId: WorldId
   data?: ESGEngineCollectionData
   isEditor: boolean
 }> = React.memo(({ children, studioId, gameId, data, isEditor }) => {

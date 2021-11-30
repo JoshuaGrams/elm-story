@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 
+import { Studio } from '../../data/types'
+
 import { useStudios } from '../../hooks'
 
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
@@ -10,7 +12,6 @@ import { EditOutlined } from '@ant-design/icons'
 import { SaveStudioModal } from '../Modal'
 
 import styles from './styles.module.less'
-import { Studio } from '../../data/types'
 
 type StudioSelectProps = {
   className?: string
@@ -107,8 +108,8 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
                 >
                   {studio.title}{' '}
                   <span style={{ color: `hsl(0, 0%, 40%)` }}>|</span>{' '}
-                  {`${studio.games.length} ${
-                    studio.games.length === 1 ? 'world' : 'worlds'
+                  {`${studio.worlds.length} ${
+                    studio.worlds.length === 1 ? 'world' : 'worlds'
                   }`}
                 </Option>
               ))}

@@ -1,11 +1,11 @@
 import { LibraryDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import { ComponentId, GameId, StudioId, Jump } from '../data/types'
+import { ElementId, WorldId, StudioId, Jump } from '../data/types'
 
 const useJumps = (
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   deps?: any[]
 ): Jump[] | undefined => {
   const jumps = useLiveQuery(
@@ -19,7 +19,7 @@ const useJumps = (
 
 const useJump = (
   studioId: StudioId,
-  jumpId: ComponentId,
+  jumpId: ElementId,
   deps?: any[]
 ): Jump | undefined =>
   useLiveQuery(
@@ -30,7 +30,7 @@ const useJump = (
 
 const useJumpsBySceneRef = (
   studioId: StudioId,
-  sceneId: ComponentId,
+  sceneId: ElementId,
   deps?: any[]
 ): Jump[] | undefined =>
   useLiveQuery(

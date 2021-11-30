@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ComponentId, StudioId } from '../../../data/types'
+import { ElementId, StudioId } from '../../../data/types'
 
 import { useJump } from '../../../hooks'
 
@@ -12,7 +12,7 @@ import api from '../../../api'
 
 const JumpDetails: React.FC<{
   studioId: StudioId
-  jumpId: ComponentId
+  jumpId: ElementId
 }> = ({ studioId, jumpId }) => {
   const jump = useJump(studioId, jumpId, [jumpId])
 

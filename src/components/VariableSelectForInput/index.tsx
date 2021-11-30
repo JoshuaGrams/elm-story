@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 
-import { ComponentId, GameId, StudioId } from '../../data/types'
+import { ElementId, WorldId, StudioId } from '../../data/types'
 
 import { useInput, useVariables } from '../../hooks'
 
@@ -12,14 +12,14 @@ import api from '../../api'
 
 const VariableSelectForInput: React.FC<{
   studioId: StudioId
-  gameId: GameId
-  inputId: ComponentId
+  gameId: WorldId
+  inputId: ElementId
 }> = ({ studioId, gameId, inputId }) => {
   const input = useInput(studioId, inputId, [studioId, inputId]),
     variables = useVariables(studioId, gameId, [studioId, gameId])
 
   const changeInput = useCallback(
-    async (variableId: ComponentId) => {
+    async (variableId: ElementId) => {
       if (input?.id)
         await api().inputs.saveVariableRefToInput(
           studioId,

@@ -4,8 +4,8 @@ import { v4 as uuid } from 'uuid'
 import {
   StudioId,
   Game,
-  GameId,
-  ComponentId,
+  WorldId,
+  ElementId,
   GameChildRefs
 } from '../data/types'
 
@@ -13,7 +13,7 @@ import api from '.'
 
 export async function getGame(
   studioId: StudioId,
-  gameId: GameId
+  gameId: WorldId
 ): Promise<Game> {
   try {
     return await new LibraryDatabase(studioId).getGame(gameId)
@@ -24,7 +24,7 @@ export async function getGame(
 
 export async function getGames(
   studioId: StudioId,
-  gameRefs: GameId[]
+  gameRefs: WorldId[]
 ): Promise<(Game | undefined)[]> {
   return await new LibraryDatabase(studioId).games.bulkGet(gameRefs)
 }
@@ -43,7 +43,7 @@ export async function saveGame(studioId: StudioId, game: Game): Promise<Game> {
 
 export async function saveChildRefsToGame(
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   children: GameChildRefs
 ) {
   try {
@@ -55,8 +55,8 @@ export async function saveChildRefsToGame(
 
 export async function saveJumpRefToGame(
   studioId: StudioId,
-  gameId: GameId,
-  jumpId: ComponentId | null
+  gameId: WorldId,
+  jumpId: ElementId | null
 ) {
   try {
     await new LibraryDatabase(studioId).saveJumpRefToGame(gameId, jumpId)
@@ -65,7 +65,7 @@ export async function saveJumpRefToGame(
   }
 }
 
-export async function removeGame(studioId: StudioId, gameId: GameId) {
+export async function removeGame(studioId: StudioId, gameId: WorldId) {
   try {
     await api().studios.removeGameRef(studioId, gameId)
 

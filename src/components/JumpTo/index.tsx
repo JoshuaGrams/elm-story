@@ -3,9 +3,9 @@ import logger from '../../lib/logger'
 import React, { useContext, useEffect, useState } from 'react'
 
 import {
-  ComponentId,
+  ElementId,
   COMPONENT_TYPE,
-  GameId,
+  WorldId,
   Passage,
   Scene,
   StudioId
@@ -24,12 +24,12 @@ import api from '../../api'
 
 const JumpSelect: React.FC<{
   studioId: StudioId
-  gameId?: GameId
-  sceneId?: ComponentId
-  selectedId: ComponentId | undefined
+  gameId?: WorldId
+  sceneId?: ElementId
+  selectedId: ElementId | undefined
   onChangeRoutePart: (
     componentType: COMPONENT_TYPE,
-    componentId: ComponentId | null
+    componentId: ElementId | null
   ) => Promise<void>
 }> = ({ studioId, gameId, sceneId, selectedId, onChangeRoutePart }) => {
   let scenes: Scene[] | undefined = gameId
@@ -39,12 +39,12 @@ const JumpSelect: React.FC<{
       ? usePassagesBySceneRef(studioId, sceneId, [sceneId])
       : undefined
 
-  const [selectedSceneId, setSelectedSceneId] = useState<
-      ComponentId | undefined
-    >(undefined),
-    [selectedPassageId, setSelectedPassageId] = useState<
-      ComponentId | undefined
-    >(undefined)
+  const [selectedSceneId, setSelectedSceneId] = useState<ElementId | undefined>(
+      undefined
+    ),
+    [selectedPassageId, setSelectedPassageId] = useState<ElementId | undefined>(
+      undefined
+    )
 
   async function onChange(componentId: string) {
     gameId && (await onChangeRoutePart(COMPONENT_TYPE.SCENE, componentId))
@@ -160,8 +160,8 @@ const JumpSelect: React.FC<{
 
 const JumpTo: React.FC<{
   studioId: StudioId
-  jumpId: ComponentId
-  onRemove?: (jumpId: ComponentId) => Promise<void>
+  jumpId: ElementId
+  onRemove?: (jumpId: ElementId) => Promise<void>
 }> = ({ studioId, jumpId, onRemove }) => {
   const jump = useJump(studioId, jumpId, [studioId, jumpId])
 
@@ -169,7 +169,7 @@ const JumpTo: React.FC<{
 
   async function onChangeRoutePart(
     componentType: COMPONENT_TYPE,
-    componentId: ComponentId | null
+    componentId: ElementId | null
   ) {
     if (jump?.id) {
       switch (componentType) {

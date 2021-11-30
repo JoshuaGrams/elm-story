@@ -2,12 +2,9 @@ import { v4 as uuid } from 'uuid'
 
 import { LibraryDatabase } from '../db'
 
-import { Character, ComponentId, StudioId } from '../data/types'
+import { Character, ElementId, StudioId } from '../data/types'
 
-export async function getCharacter(
-  studioId: StudioId,
-  characterId: ComponentId
-) {
+export async function getCharacter(studioId: StudioId, characterId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getCharacter(characterId)
   } catch (error) {
@@ -27,7 +24,7 @@ export async function saveCharacter(studioId: StudioId, character: Character) {
 
 export async function removeCharacter(
   studioId: StudioId,
-  characterId: ComponentId
+  characterId: ElementId
 ) {
   try {
     await new LibraryDatabase(studioId).removeCharacter(studioId, characterId)

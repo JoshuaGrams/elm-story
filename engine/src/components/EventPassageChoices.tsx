@@ -12,7 +12,7 @@ import {
   INITIAL_ENGINE_EVENT_ORIGIN_KEY
 } from '../lib'
 import {
-  ComponentId,
+  ElementId,
   EngineChoiceData,
   EngineEventData,
   EnginePassageData,
@@ -29,7 +29,7 @@ const EventPassagePassthroughChoice: React.FC<{
   routes: EngineRouteData[]
   event: EngineEventData
   onSubmitRoute: RouteProcessor
-  originId?: ComponentId
+  originId?: ElementId
 }> = React.memo(({ routes, event, onSubmitRoute, originId }) => {
   const { engine } = useContext(EngineContext)
 
@@ -108,7 +108,7 @@ const EventPassageChoice: React.FC<{
   eventResult?: EngineEventResult
   onSubmitRoute: RouteProcessor
   openRoute: EngineRouteData
-  originId?: ComponentId
+  originId?: ElementId
 }> = React.memo(({ data, eventResult, onSubmitRoute, openRoute, originId }) => {
   const submitChoice = useCallback(
     async () =>

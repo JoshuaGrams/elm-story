@@ -1,6 +1,6 @@
 import {
   COMPARE_OPERATOR_TYPE,
-  ComponentId,
+  ElementId,
   COMPONENT_TYPE,
   SET_OPERATOR_TYPE,
   StudioId,
@@ -8,7 +8,7 @@ import {
 } from '../../../data/types'
 
 export interface RootData {
-  chapters: ComponentId[]
+  chapters: ElementId[]
   designer: string
   id: string
   engine: string
@@ -23,8 +23,8 @@ export interface RootData {
 }
 
 export interface ChapterData {
-  id: ComponentId
-  scenes: ComponentId[]
+  id: ElementId
+  scenes: ElementId[]
   tags: string[]
   title: string
   updated: number
@@ -35,8 +35,8 @@ export interface ChapterCollection {
 }
 
 export interface ChoiceData {
-  id: ComponentId
-  passageId: ComponentId
+  id: ElementId
+  passageId: ElementId
   tags: string[]
   title: string
   updated: number
@@ -47,13 +47,13 @@ export interface ChoiceCollection {
 }
 
 export interface ConditionData {
-  compare: [ComponentId, COMPARE_OPERATOR_TYPE, string]
-  id: ComponentId
-  routeId: ComponentId
+  compare: [ElementId, COMPARE_OPERATOR_TYPE, string]
+  id: ElementId
+  routeId: ElementId
   tags: string[]
   title: string
   updated: number
-  variableId: ComponentId
+  variableId: ElementId
 }
 
 export interface ConditionCollection {
@@ -61,9 +61,9 @@ export interface ConditionCollection {
 }
 
 export interface EffectData {
-  id: ComponentId
-  routeId: ComponentId
-  set: [ComponentId, SET_OPERATOR_TYPE, string]
+  id: ElementId
+  routeId: ElementId
+  set: [ElementId, SET_OPERATOR_TYPE, string]
   tags: string[]
   title: string
   updated: number
@@ -79,9 +79,9 @@ export interface JumpData {
     componentEditorPosX?: number
     componentEditorPosY?: number
   }
-  id: ComponentId
-  route: [ComponentId?, ComponentId?, ComponentId?]
-  sceneId?: ComponentId
+  id: ElementId
+  route: [ElementId?, ElementId?, ElementId?]
+  sceneId?: ElementId
   tags: string[]
   title: string
   updated: number
@@ -92,14 +92,14 @@ export interface JumpCollection {
 }
 
 export interface PassageData {
-  choices: ComponentId[]
+  choices: ElementId[]
   content: string
   editor?: {
     componentEditorPosX?: number
     componentEditorPosY?: number
   }
-  id: ComponentId
-  sceneId: ComponentId
+  id: ElementId
+  sceneId: ElementId
   tags: string[]
   title: string
   updated: number
@@ -110,13 +110,13 @@ export interface PassageCollection {
 }
 
 export interface RouteData {
-  choiceId?: ComponentId
-  destinationId: ComponentId
+  choiceId?: ElementId
+  destinationId: ElementId
   destinationType: COMPONENT_TYPE
-  id: ComponentId
-  originId: ComponentId
+  id: ElementId
+  originId: ElementId
   originType: COMPONENT_TYPE
-  sceneId: ComponentId
+  sceneId: ElementId
   tags: string[]
   title: string
   updated: number
@@ -127,15 +127,15 @@ export interface RouteCollection {
 }
 
 export interface SceneData {
-  chapterId: ComponentId
+  chapterId: ElementId
   editor?: {
     componentEditorTransformX?: number
     componentEditorTransformY?: number
     componentEditorTransformZoom?: number
   }
-  id: ComponentId
-  jumps: ComponentId[]
-  passages: ComponentId[]
+  id: ElementId
+  jumps: ElementId[]
+  passages: ElementId[]
   tags: string[]
   title: string
   updated: number
@@ -146,7 +146,7 @@ export interface SceneCollection {
 }
 
 export interface VariableData {
-  id: ComponentId
+  id: ElementId
   initialValue: string
   tags: string[]
   title: string

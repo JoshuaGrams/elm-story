@@ -5,7 +5,7 @@ import { useCharacters } from '../../hooks'
 import {
   Character,
   CHARACTER_MASK_TYPE,
-  GameId,
+  WorldId,
   StudioId
 } from '../../data/types'
 
@@ -66,7 +66,7 @@ CharacterRow.displayName = 'CharacterRow'
 
 const StoryworldCharacters: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  gameId: WorldId
 }> = ({ studioId, gameId }) => {
   const characters = useCharacters(studioId, gameId, [])
 

@@ -1,52 +1,52 @@
 import React, { createContext, useMemo, useReducer } from 'react'
 
-import { ComponentId, COMPONENT_TYPE } from '../data/types'
+import { ElementId, COMPONENT_TYPE } from '../data/types'
 
 interface EditorState {
   savedComponent: {
-    id?: ComponentId
+    id?: ElementId
     type?: COMPONENT_TYPE
   }
   renamedComponent: {
-    id?: ComponentId
+    id?: ElementId
     type?: COMPONENT_TYPE
     newTitle?: string
   }
   removedComponent: {
-    id?: ComponentId
+    id?: ElementId
     type?: COMPONENT_TYPE
   }
   selectedGameOutlineComponent: {
-    id?: ComponentId
+    id?: ElementId
     expanded?: boolean
     type?: COMPONENT_TYPE
     title?: string
   }
   renamingGameOutlineComponent: {
-    id?: ComponentId
+    id?: ElementId
     renaming: boolean
   }
-  expandedGameOutlineComponents: ComponentId[]
+  expandedGameOutlineComponents: ElementId[]
   totalComponentEditorSceneViewSelectedJumps: number
   totalComponentEditorSceneViewSelectedPassages: number
   totalComponentEditorSceneViewSelectedRoutes: number
   selectedComponentEditorSceneViewCenter: { x: number; y: number; zoom: number }
-  selectedComponentEditorSceneViewJump: ComponentId | null
-  selectedComponentEditorSceneViewPassage: ComponentId | null
-  selectedComponentEditorSceneViewRoute: ComponentId | null
-  selectedComponentEditorSceneViewChoice: ComponentId | null
+  selectedComponentEditorSceneViewJump: ElementId | null
+  selectedComponentEditorSceneViewPassage: ElementId | null
+  selectedComponentEditorSceneViewRoute: ElementId | null
+  selectedComponentEditorSceneViewChoice: ElementId | null
   centeredComponentEditorSceneViewSelection: boolean
   selectedComponentEditorComponents: {
-    id?: ComponentId
+    id?: ElementId
     type?: COMPONENT_TYPE
   }[]
   closedEditorTab: {
-    id?: ComponentId
+    id?: ElementId
     type?: COMPONENT_TYPE
   }
   characterModal: {
     visible: boolean
-    id: ComponentId | undefined
+    id: ElementId | undefined
   }
 }
 
@@ -76,14 +76,14 @@ type EditorActionType =
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_SAVE
       savedComponent: {
-        id?: ComponentId
+        id?: ElementId
         type?: COMPONENT_TYPE
       }
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_RENAME
       renamedComponent: {
-        id?: ComponentId
+        id?: ElementId
         type?: COMPONENT_TYPE
         newTitle?: string
       }
@@ -91,14 +91,14 @@ type EditorActionType =
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE
       removedComponent: {
-        id?: ComponentId
+        id?: ElementId
         type?: COMPONENT_TYPE
       }
     }
   | {
       type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT
       selectedGameOutlineComponent: {
-        id?: ComponentId
+        id?: ElementId
         expanded?: boolean
         type?: COMPONENT_TYPE
         title?: string
@@ -107,13 +107,13 @@ type EditorActionType =
   | {
       type: EDITOR_ACTION_TYPE.GAME_OUTLINE_RENAME
       renamingGameOutlineComponent: {
-        id?: ComponentId
+        id?: ElementId
         renaming: boolean
       }
     }
   | {
       type: EDITOR_ACTION_TYPE.GAME_OUTLINE_EXPAND
-      expandedGameOutlineComponents: ComponentId[]
+      expandedGameOutlineComponents: ElementId[]
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS
@@ -137,19 +137,19 @@ type EditorActionType =
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP
-      selectedComponentEditorSceneViewJump: ComponentId | null
+      selectedComponentEditorSceneViewJump: ElementId | null
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE
-      selectedComponentEditorSceneViewPassage: ComponentId | null
+      selectedComponentEditorSceneViewPassage: ElementId | null
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE
-      selectedComponentEditorSceneViewRoute: ComponentId | null
+      selectedComponentEditorSceneViewRoute: ElementId | null
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE
-      selectedComponentEditorSceneViewChoice: ComponentId | null
+      selectedComponentEditorSceneViewChoice: ElementId | null
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION
@@ -158,20 +158,20 @@ type EditorActionType =
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SELECT
       selectedComponentEditorComponents: {
-        id?: ComponentId
+        id?: ElementId
         type?: COMPONENT_TYPE
       }[]
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_CLOSE_TAB
       closedEditorTab: {
-        id?: ComponentId
+        id?: ElementId
         type?: COMPONENT_TYPE
       }
     }
   | {
       type: EDITOR_ACTION_TYPE.OPEN_CHARACTER_MODAL
-      characterId: ComponentId
+      characterId: ElementId
     }
   | {
       type: EDITOR_ACTION_TYPE.CLOSE_CHARACTER_MODAL

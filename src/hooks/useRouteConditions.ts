@@ -1,11 +1,11 @@
 import { LibraryDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import { ComponentId, Condition, GameId, StudioId } from '../data/types'
+import { ElementId, Condition, WorldId, StudioId } from '../data/types'
 
 const useRouteConditions = (
   studioId: StudioId,
-  gameId: GameId,
+  gameId: WorldId,
   deps?: any[]
 ): Condition[] | undefined => {
   const conditions = useLiveQuery(
@@ -19,7 +19,7 @@ const useRouteConditions = (
 
 const useRouteCondition = (
   studioId: StudioId,
-  conditionId: ComponentId,
+  conditionId: ElementId,
   deps?: any[]
 ): Condition | undefined =>
   useLiveQuery(
@@ -33,7 +33,7 @@ const useRouteCondition = (
 
 const useRouteConditionsByRouteRef = (
   studioId: StudioId,
-  routeId: ComponentId,
+  routeId: ElementId,
   deps?: any[]
 ): Condition[] | undefined =>
   useLiveQuery(
@@ -44,7 +44,7 @@ const useRouteConditionsByRouteRef = (
 
 const useRouteConditionsByRouteRefs = (
   studioId: StudioId,
-  routeIds: ComponentId[],
+  routeIds: ElementId[],
   deps?: any[]
 ): Condition[] | undefined =>
   useLiveQuery(
@@ -59,7 +59,7 @@ const useRouteConditionsByRouteRefs = (
 
 const useRouteConditionsCountByRouteRef = (
   studioId: StudioId,
-  routeId: ComponentId,
+  routeId: ElementId,
   deps?: any[]
 ): number | undefined =>
   useLiveQuery(
