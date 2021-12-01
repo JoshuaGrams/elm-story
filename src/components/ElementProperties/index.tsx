@@ -6,7 +6,7 @@ import { ELEMENT_TYPE, World, WorldId, StudioId } from '../../data/types'
 
 import { useWorld } from '../../hooks'
 
-import { EditorContext } from '../../contexts/EditorContext'
+import { ComposerContext } from '../../contexts/ComposerContext'
 
 import ComponentDetailView from './ElementPropertiesView'
 
@@ -16,28 +16,28 @@ const ElementProperties: React.FC<{
   studioId: StudioId
   worldId: WorldId | undefined
 }> = ({ studioId, worldId = undefined }) => {
-  const { editor } = useContext(EditorContext)
+  const { composer: editor } = useContext(ComposerContext)
 
-  const selectedGame: World | undefined = worldId
+  const selectedWorld: World | undefined = worldId
     ? useWorld(studioId, worldId)
     : undefined
 
   useEffect(() => {
     logger.info(
-      `ComponentProperties->editor.selectedGameOutlineComponent->
+      `ElementProperties->editor.selectedWorldOutlineElement->
        useEffect:${editor.selectedWorldOutlineElement.type}`
     )
   }, [editor.selectedWorldOutlineElement])
 
   return (
     <div className={styles.componentProperties}>
-      {selectedGame?.id &&
+      {selectedWorld?.id &&
         (!editor.selectedWorldOutlineElement.id ||
           !editor.selectedWorldOutlineElement.type) && (
           <ComponentDetailView
             studioId={studioId}
-            component={{
-              id: selectedGame.id,
+            element={{
+              id: selectedWorld.id,
               type: ELEMENT_TYPE.WORLD
             }}
           />
@@ -47,7 +47,7 @@ const ElementProperties: React.FC<{
         editor.selectedWorldOutlineElement.type && (
           <ComponentDetailView
             studioId={studioId}
-            component={{
+            element={{
               id: editor.selectedWorldOutlineElement.id,
               type: editor.selectedWorldOutlineElement.type
             }}

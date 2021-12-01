@@ -5,9 +5,9 @@ import { EventPersona, WorldId, StudioId } from '../../../data/types'
 import { useCharacter } from '../../../hooks'
 
 import {
-  EditorContext,
-  EDITOR_ACTION_TYPE
-} from '../../../contexts/EditorContext'
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../../contexts/ComposerContext'
 
 import CharacterMask from '../../CharacterManager/CharacterMask'
 
@@ -20,7 +20,7 @@ const EventPersonaPane: React.FC<{
 }> = ({ studioId, worldId, persona }) => {
   const character = useCharacter(studioId, persona?.[0], [persona?.[0]])
 
-  const { editorDispatch } = useContext(EditorContext)
+  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   const [maskAssetId, setMaskAssetId] = useState<string | undefined>(undefined),
     [refValue, setRefValue] = useState<string | undefined>(undefined)
@@ -67,7 +67,7 @@ const EventPersonaPane: React.FC<{
                   onClick={() =>
                     character.id &&
                     editorDispatch({
-                      type: EDITOR_ACTION_TYPE.OPEN_CHARACTER_MODAL,
+                      type: COMPOSER_ACTION_TYPE.OPEN_CHARACTER_MODAL,
                       characterId: character.id
                     })
                   }

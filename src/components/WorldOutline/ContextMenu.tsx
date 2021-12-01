@@ -2,7 +2,7 @@ import React from 'react'
 
 import { ElementId, ELEMENT_TYPE } from '../../data/types'
 import { OnAddElement } from '.'
-import { OnEditComponentTitle, OnRemoveComponent } from '.'
+import { OnEditElementTitle, OnRemoveElement } from '.'
 
 import { Dropdown, Menu } from 'antd'
 
@@ -13,8 +13,8 @@ const ContextMenu: React.FC<{
     title: string
     disabled: boolean
     onAdd: OnAddElement
-    onRemove: OnRemoveComponent
-    OnEditComponentTitle: OnEditComponentTitle
+    onRemove: OnRemoveElement
+    OnEditComponentTitle: OnEditElementTitle
   }
 }> = ({
   children,

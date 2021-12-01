@@ -10,12 +10,12 @@ import { ELEMENT_TYPE } from '../../data/types'
 import { useWorld } from '../../hooks'
 
 import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
-import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
+import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
 
 import { DividerBox } from 'rc-dock'
 
 import WorldInspector from '../../components/WorldInspector'
-import ElementComposer from '../../components/ElementComposer'
+import ElementEditor from '../../components/ElementEditor'
 import ElementInspector from '../../components/ElementInspector'
 
 import styles from './styles.module.less'
@@ -24,7 +24,7 @@ const Editor: React.FC = () => {
   const history = useHistory()
 
   const { app } = useContext(AppContext),
-    { editor, editorDispatch } = useContext(EditorContext)
+    { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   const selectedWorld =
     app.selectedStudioId && app.selectedWorldId
@@ -34,7 +34,7 @@ const Editor: React.FC = () => {
   function closeActiveTab() {
     if (editor.selectedWorldOutlineElement.type !== ELEMENT_TYPE.WORLD) {
       editorDispatch({
-        type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_CLOSE_TAB,
+        type: COMPOSER_ACTION_TYPE.ELEMENT_EDITOR_CLOSE_TAB,
         closedEditorTab: {
           id: editor.selectedWorldOutlineElement.id,
           type: editor.selectedWorldOutlineElement.type
@@ -50,12 +50,12 @@ const Editor: React.FC = () => {
   }, [editor.selectedWorldOutlineElement])
 
   useEffect(() => {
-    logger.info(`Editor->selectedGame->useEffect`)
+    logger.info(`Editor->selectedWorld->useEffect`)
 
     selectedWorld?.id &&
       !editor.selectedWorldOutlineElement.id &&
       editorDispatch({
-        type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+        type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
         selectedWorldOutlineElement: {
           id: selectedWorld.id,
           title: selectedWorld.title,
@@ -88,7 +88,7 @@ const Editor: React.FC = () => {
             />
           </DividerBox>
 
-          <ElementComposer
+          <ElementEditor
             studioId={app.selectedStudioId}
             world={selectedWorld}
           />

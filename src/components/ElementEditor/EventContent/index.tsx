@@ -16,15 +16,15 @@ import React, {
 import {
   ElementId,
   ELEMENT_TYPE,
-  DEFAULT_PASSAGE_CONTENT,
+  DEFAULT_EVENT_CONTENT,
   Scene,
   StudioId
 } from '../../../data/types'
 
 import {
-  EditorContext,
-  EDITOR_ACTION_TYPE
-} from '../../../contexts/EditorContext'
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../../contexts/ComposerContext'
 
 import { useEvent } from '../../../hooks'
 
@@ -78,28 +78,28 @@ declare module 'slate' {
 
 export const PassageViewTools: React.FC<{
   studioId: StudioId
-  passageId: ElementId
-}> = ({ studioId, passageId }) => {
-  const passage = useEvent(studioId, passageId, [studioId, passageId])
+  eventId: ElementId
+}> = ({ studioId, eventId }) => {
+  const event = useEvent(studioId, eventId, [studioId, eventId])
 
-  const { editorDispatch } = useContext(EditorContext)
+  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   return (
     <div>
-      {passage && (
+      {event && (
         <Button
           danger
           onClick={async () => {
             editorDispatch({
-              type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
-              removedComponent: { type: ELEMENT_TYPE.EVENT, id: passageId }
+              type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
+              removedElement: { type: ELEMENT_TYPE.EVENT, id: eventId }
             })
 
             const updatedSceneChildren = (
-                await api().scenes.getScene(studioId, passage.sceneId)
+                await api().scenes.getScene(studioId, event.sceneId)
               ).children,
               foundPassageIndex = updatedSceneChildren.findIndex(
-                (child) => child[1] === passage.id
+                (child) => child[1] === event.id
               )
 
             updatedSceneChildren.splice(foundPassageIndex, 1)
@@ -107,10 +107,10 @@ export const PassageViewTools: React.FC<{
             await Promise.all([
               api().scenes.saveChildRefsToScene(
                 studioId,
-                passage.sceneId,
+                event.sceneId,
                 updatedSceneChildren
               ),
-              api().events.removeEvent(studioId, passageId)
+              api().events.removeEvent(studioId, eventId)
             ])
           }}
         >
@@ -121,7 +121,7 @@ export const PassageViewTools: React.FC<{
   )
 }
 
-export const initialPassageContent: Descendant[] = [...DEFAULT_PASSAGE_CONTENT]
+export const initialPassageContent: Descendant[] = [...DEFAULT_EVENT_CONTENT]
 
 const ParagraphElement: React.FC<RenderElementProps> = (props) => {
   return (
@@ -165,13 +165,13 @@ const Leaf = (props: RenderLeafProps) => {
   return leaf || <span {...props.attributes}>{props.children}</span>
 }
 
-const PassageView: React.FC<{
+const EventView: React.FC<{
   studioId: StudioId
   scene: Scene
-  passageId: ElementId
+  eventId: ElementId
   onClose: () => void
-}> = ({ studioId, scene, passageId, onClose }) => {
-  const passage = useEvent(studioId, passageId, [studioId, passageId])
+}> = ({ studioId, scene, eventId, onClose }) => {
+  const event = useEvent(studioId, eventId, [studioId, eventId])
 
   const slateEditor = useMemo<ReactEditor>(
     () => withHistory(withReact(createEditor())),
@@ -180,7 +180,7 @@ const PassageView: React.FC<{
 
   const isFocused = useFocused()
 
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   const [passageContent, setPassageContent] = useState<Descendant[]>(
       initialPassageContent
@@ -255,15 +255,15 @@ const PassageView: React.FC<{
   )
 
   const saveContent = debounce(
-    async (studioId: StudioId, passageId: ElementId, content) => {
-      await api().events.saveEventContent(studioId, passageId, content)
+    async (studioId: StudioId, eventId: ElementId, content) => {
+      await api().events.saveEventContent(studioId, eventId, content)
     },
     100
   )
 
   const debounceSaveContent = useCallback(
-    (content) => saveContent(studioId, passageId, content),
-    [studioId, passageId]
+    (content) => saveContent(studioId, eventId, content),
+    [studioId, eventId]
   )
 
   useEventListener('keydown', onKeyDown, document)
@@ -273,13 +273,13 @@ const PassageView: React.FC<{
   }, [isFocused])
 
   useEffect(() => {
-    if (ready && passage && passage.id !== passageId) setReady(false)
+    if (ready && event && event.id !== eventId) setReady(false)
 
-    if (!ready && slateEditor && passage && passage.id === passageId) {
+    if (!ready && slateEditor && event && event.id === eventId) {
       ReactEditor.deselect(slateEditor)
 
       setPassageContent(
-        passage.content ? JSON.parse(passage.content) : initialPassageContent
+        event.content ? JSON.parse(event.content) : initialPassageContent
       )
 
       // TODO: stack hack
@@ -288,7 +288,7 @@ const PassageView: React.FC<{
         ReactEditor.focus(slateEditor)
       }, 1)
     }
-  }, [ready, slateEditor, passage, passageId])
+  }, [ready, slateEditor, event, eventId])
 
   useEffect(() => {
     const { selection } = slateEditor
@@ -328,7 +328,7 @@ const PassageView: React.FC<{
 
   return (
     <>
-      {passage && (
+      {event && (
         <Slate
           editor={slateEditor}
           value={passageContent}
@@ -348,7 +348,7 @@ const PassageView: React.FC<{
             onClick={() =>
               editor.selectedWorldOutlineElement.id !== scene.id &&
               editorDispatch({
-                type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+                type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
                 selectedWorldOutlineElement: {
                   expanded: true,
                   id: scene.id,
@@ -359,7 +359,7 @@ const PassageView: React.FC<{
             }
           >
             <div className={styles.contentContainer}>
-              <h1 className={styles.passageTitle}>{passage.title}</h1>
+              <h1 className={styles.passageTitle}>{event.title}</h1>
 
               <div className={styles.editableContainer}>
                 <Editable
@@ -423,4 +423,4 @@ const PassageView: React.FC<{
   )
 }
 
-export default PassageView
+export default EventView

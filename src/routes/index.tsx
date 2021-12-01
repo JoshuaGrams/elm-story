@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Switch, Route } from 'react-router-dom'
 
-import EditorProvider from '../contexts/EditorContext'
+import ComposerProvider from '../contexts/ComposerContext'
 
 import Dashboard from './Dashboard'
 import Editor from './Editor'
@@ -14,9 +14,9 @@ const Routes: React.FC = () => (
     <div className={styles.routes}>
       <Switch>
         <Route path="/editor">
-          <EditorProvider>
+          <ComposerProvider>
             <Editor />
-          </EditorProvider>
+          </ComposerProvider>
         </Route>
         <Route path="/">
           <Dashboard />

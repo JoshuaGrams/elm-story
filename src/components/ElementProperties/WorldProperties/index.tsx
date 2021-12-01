@@ -8,7 +8,7 @@ import { useWorld, useScenes } from '../../../hooks'
 
 import { Button, Collapse, Form, Input } from 'antd'
 
-import ComponentTitle from '../ElementTitle'
+import ElementTitle from '../ElementTitle'
 import JumpTo from '../../JumpTo'
 
 import parentStyles from '../styles.module.less'
@@ -84,7 +84,7 @@ const WorldProperties: React.FC<{
           className={`${parentStyles.componentDetailViewWrapper} ${styles.WorldProperties}`}
         >
           <div className={parentStyles.content}>
-            <ComponentTitle
+            <ElementTitle
               title={world.title}
               onUpdate={async (title) => {
                 if (world.id) {
@@ -95,7 +95,7 @@ const WorldProperties: React.FC<{
 
                   // editorDispatch({
                   //   type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
-                  //   renamedComponent: {
+                  //   renamedElement: {
                   //     id: game.id,
                   //     newTitle: title
                   //   }

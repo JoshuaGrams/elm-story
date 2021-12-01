@@ -814,15 +814,15 @@ export class LibraryDatabase extends Dexie {
 
   public async getJumpsBySceneRef(sceneId: ElementId): Promise<Jump[]> {
     try {
-      return await this.jumps.where({ path: sceneId }).toArray()
+      return await this.jumps.where({ sceneId }).toArray()
     } catch (error) {
       throw error
     }
   }
 
-  public async getJumpsByEventRef(passageId: ElementId): Promise<Jump[]> {
+  public async getJumpsByEventRef(eventId: ElementId): Promise<Jump[]> {
     try {
-      return await this.jumps.where({ path: passageId }).toArray()
+      return await this.jumps.where({ eventId }).toArray()
     } catch (error) {
       throw error
     }

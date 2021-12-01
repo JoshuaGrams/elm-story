@@ -24,7 +24,7 @@ export default (database: Dexie) => {
       })
       .upgrade(async (tx) => {
         try {
-          const gamesTable = tx.table(LIBRARY_TABLE.GAMES)
+          const gamesTable = tx.table('games')
 
           await gamesTable.toCollection().modify((game) => {
             const chapterIds: ElementId[] = game.chapters,
@@ -43,7 +43,7 @@ export default (database: Dexie) => {
           await folderTable.bulkAdd(await tx.table('chapters').toArray())
 
           await folderTable.toCollection().modify((folder) => {
-            folder.parent = [ELEMENT_TYPE.WORLD, null]
+            folder.parent = ['GAME', null]
 
             const sceneIds: ElementId[] = folder.scenes,
               folderChildren: FolderChildRefs = []
@@ -70,7 +70,8 @@ export default (database: Dexie) => {
               sceneChildren: SceneChildRefs = []
 
             passageIds.map((passageId) =>
-              sceneChildren.push([ELEMENT_TYPE.PASSAGE, passageId])
+              // @ts-ignore
+              sceneChildren.push(['PASSAGE', passageId])
             )
 
             scene.children = sceneChildren

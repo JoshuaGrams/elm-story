@@ -3,7 +3,7 @@ import React, { useContext } from 'react'
 import { ELEMENT_TYPE, WorldId } from '../../data/types'
 import { OnAddElement } from '.'
 
-import { EditorContext } from '../../contexts/EditorContext'
+import { ComposerContext } from '../../contexts/ComposerContext'
 
 import { Dropdown, Menu } from 'antd'
 import {
@@ -16,7 +16,7 @@ const AddElementMenu: React.FC<{
   worldId: WorldId
   onAdd: OnAddElement
 }> = ({ children, worldId, onAdd }) => {
-  const { editor } = useContext(EditorContext)
+  const { composer: editor } = useContext(ComposerContext)
 
   return (
     <Dropdown

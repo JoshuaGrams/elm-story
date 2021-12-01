@@ -11,7 +11,7 @@ import {
 
 import { useCharacterEvents, useScene } from '../../hooks'
 
-import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
+import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
 
 import { Table } from 'antd'
 import { PartitionOutlined } from '@ant-design/icons'
@@ -20,18 +20,18 @@ import styles from './styles.module.less'
 import CharacterMask from './CharacterMask'
 
 const SceneRow: React.FC<{ scene: Scene }> = ({ scene }) => {
-  const { editorDispatch } = useContext(EditorContext)
+  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   return (
     <div className={styles.SceneRow}>
       <PartitionOutlined className={styles.icon} />
       <h1
         onClick={() => {
-          editorDispatch({ type: EDITOR_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
+          editorDispatch({ type: COMPOSER_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
 
           scene?.id &&
             editorDispatch({
-              type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+              type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
               selectedWorldOutlineElement: {
                 expanded: true,
                 id: scene.id,
@@ -54,13 +54,13 @@ const EventRow: React.FC<{
   character: Character
   event: Event
 }> = ({ studioId, character, event }) => {
-  const { editorDispatch } = useContext(EditorContext)
+  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   const ref = character.refs.find((ref) => ref[0] === event.persona?.[2])?.[1]
 
   const openScene = () => {
     editorDispatch({
-      type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+      type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
       selectedWorldOutlineElement: {
         expanded: true,
         id: event.sceneId,
@@ -71,7 +71,7 @@ const EventRow: React.FC<{
   }
 
   const openEvent = () => {
-    editorDispatch({ type: EDITOR_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
+    editorDispatch({ type: COMPOSER_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
 
     openScene()
 
@@ -80,8 +80,8 @@ const EventRow: React.FC<{
       () =>
         event.id &&
         editorDispatch({
-          type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
-          selectedElementEditorSceneViewEvent: event.id
+          type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+          selectedSceneMapEvent: event.id
         }),
       1
     )

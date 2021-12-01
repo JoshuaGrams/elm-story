@@ -9,7 +9,7 @@ import {
   StudioId
 } from '../../data/types'
 
-import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
+import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
 
 import { CharacterModal } from '../Modal'
 import CharacterMask from '../CharacterManager/CharacterMask'
@@ -20,7 +20,7 @@ const CharacterRow: React.FC<{ studioId: StudioId; character: Character }> = ({
   studioId,
   character
 }) => {
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   const [selected, setSelected] = useState(false)
 
@@ -34,7 +34,7 @@ const CharacterRow: React.FC<{ studioId: StudioId; character: Character }> = ({
       onClick={() =>
         character.id &&
         editorDispatch({
-          type: EDITOR_ACTION_TYPE.OPEN_CHARACTER_MODAL,
+          type: COMPOSER_ACTION_TYPE.OPEN_CHARACTER_MODAL,
           characterId: character.id
         })
       }
@@ -70,7 +70,7 @@ const WorldCharacters: React.FC<{
 }> = ({ studioId, worldId }) => {
   const characters = useCharacters(studioId, worldId, [])
 
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   return (
     <>
@@ -80,7 +80,7 @@ const WorldCharacters: React.FC<{
         characterId={editor.characterModal.id}
         visible={editor.characterModal.visible}
         onCancel={() =>
-          editorDispatch({ type: EDITOR_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
+          editorDispatch({ type: COMPOSER_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
         }
       />
 

@@ -11,6 +11,7 @@ export default (database: Dexie) => {
     .stores({
       bookmarks: '&id,worldId,event,updated,version',
       characters: '&id,worldId,title,*tags,updated',
+      choices: '&id,worldId,eventId,title,*tags,updated',
       conditions: '&id,worldId,routeId,variableId,title,*tags,updated',
       effects: '&id,worldId,routeId,variableId,title,*tags,updated',
       events: '&id,ending,worldId,*persona,sceneId,title,*tags,updated',

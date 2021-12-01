@@ -4,7 +4,7 @@ import { ElementId, StudioId } from '../../../data/types'
 
 import { useChoice } from '../../../hooks'
 
-import ComponentTitle from '../ElementTitle'
+import ElementTitle from '../ElementTitle'
 
 import styles from '../styles.module.less'
 
@@ -21,7 +21,7 @@ const ChoiceDetails: React.FC<{
       {choice && (
         <div className={styles.componentDetailViewWrapper}>
           <div className={styles.content}>
-            <ComponentTitle
+            <ElementTitle
               title={choice.title}
               onUpdate={async (title) =>
                 choice.id &&

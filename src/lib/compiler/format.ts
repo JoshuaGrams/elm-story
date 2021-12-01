@@ -58,7 +58,7 @@ function format(gameData: GameDataJSON): string {
         'website'
       ])
     },
-    choices: filterCollectionChildProps(choices, ['id', 'passageId', 'title']),
+    choices: filterCollectionChildProps(choices, ['id', 'eventId', 'title']),
     conditions: filterCollectionChildProps(conditions, [
       'compare',
       'id',
@@ -72,11 +72,7 @@ function format(gameData: GameDataJSON): string {
       'variableId'
     ]),
     games: {},
-    inputs: filterCollectionChildProps(inputs, [
-      'id',
-      'passageId',
-      'variableId'
-    ]),
+    inputs: filterCollectionChildProps(inputs, ['id', 'eventId', 'variableId']),
     jumps: filterCollectionChildProps(jumps, ['id', 'path', 'sceneId']),
     passages: filterCollectionChildProps(passages, [
       'choices',

@@ -5,7 +5,7 @@ import { ELEMENT_TYPE, World, WorldId, StudioId } from '../../data/types'
 import { OnAddElement } from '.'
 
 import { APP_LOCATION } from '../../contexts/AppContext'
-import { EditorContext } from '../../contexts/EditorContext'
+import { ComposerContext } from '../../contexts/ComposerContext'
 
 import { Button, Tooltip } from 'antd'
 import { ExportOutlined, LeftOutlined, PlusOutlined } from '@ant-design/icons'
@@ -23,7 +23,7 @@ const TitleBar: React.FC<{
 }> = ({ studioId, world, onAdd, onWorldSelect }) => {
   const history = useHistory()
 
-  const { editor } = useContext(EditorContext)
+  const { composer: editor } = useContext(ComposerContext)
 
   return (
     <>
@@ -57,7 +57,7 @@ const TitleBar: React.FC<{
         <div className={styles.worldButtons}>
           <ExportWorldMenu studioId={studioId} world={world}>
             <Tooltip
-              title="Export Game..."
+              title="Export World..."
               placement="right"
               align={{ offset: [-6, 0] }}
               mouseEnterDelay={1}

@@ -4,20 +4,20 @@ import React, { useEffect } from 'react'
 
 import { Form, Input } from 'antd'
 
-const ComponentTitle: React.FC<{
+const ElementTitle: React.FC<{
   title: string
   onUpdate: (title: string) => void
 }> = ({ title, onUpdate }) => {
-  const [editComponentTitleForm] = Form.useForm()
+  const [editElementTitleForm] = Form.useForm()
 
   useEffect(() => {
-    logger.info(`ComponentTitle->title,editorComponentTitleForm useEffect`)
-    editComponentTitleForm.resetFields()
-  }, [title, editComponentTitleForm])
+    logger.info(`ElementTitle->title,editorElementTitleForm useEffect`)
+    editElementTitleForm.resetFields()
+  }, [title, editElementTitleForm])
 
   return (
     <Form
-      form={editComponentTitleForm}
+      form={editElementTitleForm}
       initialValues={{
         title
       }}
@@ -36,4 +36,4 @@ const ComponentTitle: React.FC<{
   )
 }
 
-export default ComponentTitle
+export default ElementTitle

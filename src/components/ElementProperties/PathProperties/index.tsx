@@ -24,7 +24,7 @@ import {
 
 import { Select } from 'antd'
 
-import ComponentTitle from '../ElementTitle'
+import ElementTitle from '../ElementTitle'
 import ElementHelpButton from '../../ElementHelpButton'
 import { VariableRow, VARIABLE_ROW_TYPE } from '../../WorldVariables'
 
@@ -265,7 +265,7 @@ const PathDetails: React.FC<{
           className={`${parentStyles.componentDetailViewWrapper} ${styles.RouteDetails}`}
         >
           <div className={parentStyles.content}>
-            <ComponentTitle
+            <ElementTitle
               title={path.title}
               onUpdate={async (title) =>
                 path.id &&

@@ -19,52 +19,52 @@ import styles from './styles.module.less'
 
 const ComponentDetailView: React.FC<{
   studioId: StudioId
-  component: {
+  element: {
     id: ElementId
     type: ELEMENT_TYPE
   }
-}> = ({ studioId, component }) => {
+}> = ({ studioId, element }) => {
   return (
     <div className={styles.ComponentDetailView}>
-      {component.type === ELEMENT_TYPE.WORLD && (
+      {element.type === ELEMENT_TYPE.WORLD && (
         <>
           <div className={styles.componentDetailViewHeader}>
             <DeploymentUnitOutlined className={styles.headerIcon} /> Selected
             Storyworld
             <ElementHelpButton type={ELEMENT_TYPE.WORLD} />
           </div>
-          <StoryworldProperties studioId={studioId} worldId={component.id} />
+          <StoryworldProperties studioId={studioId} worldId={element.id} />
         </>
       )}
 
-      {component.type === ELEMENT_TYPE.FOLDER && (
+      {element.type === ELEMENT_TYPE.FOLDER && (
         <>
           <div className={styles.componentDetailViewHeader}>
             <FolderOutlined className={styles.headerIcon} /> Selected Folder
             <ElementHelpButton type={ELEMENT_TYPE.FOLDER} />
           </div>
-          <FolderProperties studioId={studioId} folderId={component.id} />
+          <FolderProperties studioId={studioId} folderId={element.id} />
         </>
       )}
 
-      {component.type === ELEMENT_TYPE.SCENE && (
+      {element.type === ELEMENT_TYPE.SCENE && (
         <>
           <div className={styles.componentDetailViewHeader}>
             <PartitionOutlined className={styles.headerIcon} /> Selected Scene
             <ElementHelpButton type={ELEMENT_TYPE.SCENE} />
           </div>
-          <SceneProperties studioId={studioId} sceneId={component.id} />
+          <SceneProperties studioId={studioId} sceneId={element.id} />
         </>
       )}
 
       {/* TODO: is this dead code? */}
-      {component.type === ELEMENT_TYPE.EVENT && (
+      {element.type === ELEMENT_TYPE.EVENT && (
         <>
           <div className={styles.componentDetailViewHeader}>
             <AlignLeftOutlined className={styles.headerIcon} /> Selected Event
             <ElementHelpButton type={ELEMENT_TYPE.EVENT} />
           </div>
-          <EventProperties studioId={studioId} passageId={component.id} />
+          <EventProperties studioId={studioId} eventId={element.id} />
         </>
       )}
     </div>

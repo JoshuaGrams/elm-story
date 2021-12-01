@@ -5,11 +5,11 @@ import { ElementId, StudioId } from '../../../data/types'
 import { useFolder } from '../../../hooks'
 
 import {
-  EditorContext,
-  EDITOR_ACTION_TYPE
-} from '../../../contexts/EditorContext'
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../../contexts/ComposerContext'
 
-import ComponentTitle from '../ElementTitle'
+import ElementTitle from '../ElementTitle'
 
 import styles from '../styles.module.less'
 
@@ -21,14 +21,14 @@ const FolderDetails: React.FC<{
 }> = ({ studioId, folderId }) => {
   const folder = useFolder(studioId, folderId, [folderId])
 
-  const { editorDispatch } = useContext(EditorContext)
+  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   return (
     <>
       {folder && (
         <div className={styles.componentDetailViewWrapper}>
           <div className={styles.content}>
-            <ComponentTitle
+            <ElementTitle
               title={folder.title}
               onUpdate={async (title) => {
                 if (folder.id) {
@@ -38,8 +38,8 @@ const FolderDetails: React.FC<{
                   })
 
                   editorDispatch({
-                    type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
-                    renamedComponent: {
+                    type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
+                    renamedElement: {
                       id: folder.id,
                       newTitle: title
                     }

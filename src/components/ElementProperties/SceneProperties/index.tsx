@@ -5,9 +5,9 @@ import { ElementId, ELEMENT_TYPE, StudioId } from '../../../data/types'
 import { useScene } from '../../../hooks'
 
 import {
-  EditorContext,
-  EDITOR_ACTION_TYPE
-} from '../../../contexts/EditorContext'
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../../contexts/ComposerContext'
 
 import { Collapse } from 'antd'
 import {
@@ -17,7 +17,7 @@ import {
   NodeIndexOutlined
 } from '@ant-design/icons'
 
-import ComponentTitle from '../ElementTitle'
+import ElementTitle from '../ElementTitle'
 import JumpDetails from '../JumpProperties'
 import EventProperties from '../EventProperties'
 import PathDetails from '../PathProperties'
@@ -34,7 +34,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
 }) => {
   const scene = useScene(studioId, sceneId, [sceneId])
 
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   return (
     <>
@@ -42,7 +42,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
         <>
           <div className={styles.componentDetailViewWrapper}>
             <div className={styles.content}>
-              <ComponentTitle
+              <ElementTitle
                 title={scene.title}
                 onUpdate={async (title) => {
                   if (scene.id) {
@@ -52,8 +52,8 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                     })
 
                     editorDispatch({
-                      type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
-                      renamedComponent: {
+                      type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
+                      renamedElement: {
                         id: scene.id,
                         newTitle: title
                       }
@@ -61,7 +61,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
 
                     // TODO: Is this necessary?
                     editorDispatch({
-                      type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+                      type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
                       selectedWorldOutlineElement: {
                         ...editor.selectedWorldOutlineElement,
                         title
@@ -72,29 +72,29 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
               />
               <div className={styles.componentId}>{scene.id}</div>
 
-              {!editor.selectedComponentEditorSceneViewEvent &&
-                !editor.selectedComponentEditorSceneViewJump &&
-                !editor.selectedComponentEditorSceneViewRoute && (
+              {!editor.selectedSceneMapEvent &&
+                !editor.selectedSceneMapJump &&
+                !editor.selectedSceneMapPath && (
                   <div className={styles.multiSelection}>
-                    {editor.totalComponentEditorSceneViewSelectedPassages >
+                    {editor.totalSceneMapSelectedEvents >
                       0 && (
                       <div>
                         Selected Events:{' '}
-                        {editor.totalComponentEditorSceneViewSelectedPassages}
+                        {editor.totalSceneMapSelectedEvents}
                       </div>
                     )}
 
-                    {editor.totalComponentEditorSceneViewSelectedJumps > 0 && (
+                    {editor.totalSceneMapSelectedJumps > 0 && (
                       <div>
                         Selected Jumps:{' '}
-                        {editor.totalComponentEditorSceneViewSelectedJumps}
+                        {editor.totalSceneMapSelectedJumps}
                       </div>
                     )}
 
-                    {editor.totalComponentEditorSceneViewSelectedRoutes > 0 && (
+                    {editor.totalSceneMapSelectedPaths > 0 && (
                       <div>
                         Selected Paths:{' '}
-                        {editor.totalComponentEditorSceneViewSelectedRoutes}
+                        {editor.totalSceneMapSelectedPaths}
                       </div>
                     )}
                   </div>
@@ -102,7 +102,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
             </div>
 
             {/* Jump Panel */}
-            {editor.selectedComponentEditorSceneViewJump && (
+            {editor.selectedSceneMapJump && (
               <Collapse defaultActiveKey={['jump-details-panel']}>
                 <Collapse.Panel
                   header={
@@ -116,14 +116,14 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                 >
                   <JumpDetails
                     studioId={studioId}
-                    jumpId={editor.selectedComponentEditorSceneViewJump}
+                    jumpId={editor.selectedSceneMapJump}
                   />
                 </Collapse.Panel>
               </Collapse>
             )}
 
             {/* Path Panel */}
-            {editor.selectedComponentEditorSceneViewRoute && (
+            {editor.selectedSceneMapPath && (
               <Collapse defaultActiveKey={['path-details-panel']}>
                 <Collapse.Panel
                   header={
@@ -138,13 +138,13 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                   <PathDetails
                     studioId={studioId}
                     worldId={scene.worldId}
-                    pathId={editor.selectedComponentEditorSceneViewRoute}
+                    pathId={editor.selectedSceneMapPath}
                   />
                 </Collapse.Panel>
               </Collapse>
             )}
 
-            {editor.selectedComponentEditorSceneViewEvent && (
+            {editor.selectedSceneMapEvent && (
               <Collapse
                 defaultActiveKey={[
                   'passage-details-panel',
@@ -152,7 +152,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                 ]}
               >
                 {/* Passage Panel */}
-                {editor.selectedComponentEditorSceneViewEvent && (
+                {editor.selectedSceneMapEvent && (
                   <Collapse.Panel
                     header={
                       <>
@@ -165,13 +165,13 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                   >
                     <EventProperties
                       studioId={studioId}
-                      passageId={editor.selectedComponentEditorSceneViewEvent}
+                      eventId={editor.selectedSceneMapEvent}
                     />
                   </Collapse.Panel>
                 )}
 
                 {/* Choice Panel */}
-                {editor.selectedComponentEditorSceneViewChoice && (
+                {editor.selectedSceneMapChoice && (
                   <Collapse.Panel
                     header={
                       <>
@@ -184,7 +184,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                   >
                     <ChoiceDetails
                       studioId={studioId}
-                      choiceId={editor.selectedComponentEditorSceneViewChoice}
+                      choiceId={editor.selectedSceneMapChoice}
                     />
                   </Collapse.Panel>
                 )}

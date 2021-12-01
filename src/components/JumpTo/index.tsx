@@ -13,7 +13,7 @@ import {
 
 import { useJump, useEventsBySceneRef, useScenes } from '../../hooks'
 
-import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
+import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
 
 import { Button, Divider, Select } from 'antd'
 import { RollbackOutlined } from '@ant-design/icons'
@@ -161,7 +161,7 @@ const JumpTo: React.FC<{
 }> = ({ studioId, jumpId, onRemove }) => {
   const jump = useJump(studioId, jumpId, [studioId, jumpId])
 
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   async function onChangeRoutePart(
     componentType: ELEMENT_TYPE,
@@ -174,17 +174,17 @@ const JumpTo: React.FC<{
             (await api().jumps.saveJumpRoute(studioId, jump.id, [componentId]))
 
           if (!componentId) {
-            if (editor.selectedComponentEditorSceneViewJump) {
+            if (editor.selectedSceneMapJump) {
               editorDispatch({
                 type:
-                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS,
-                totalComponentEditorSceneViewSelectedJumps: 0
+                  COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
+                totalSceneMapSelectedJumps: 0
               })
 
               editorDispatch({
                 type:
-                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
-                selectedComponentEditorSceneViewJump: null
+                  COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+                selectedSceneMapJump: null
               })
             }
 

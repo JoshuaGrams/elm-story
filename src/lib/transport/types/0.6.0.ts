@@ -1,16 +1,17 @@
-export enum COMPONENT_TYPE {
+export enum ELEMENT_TYPE {
   STUDIO = 'STUDIO',
   GAME = 'GAME',
   JUMP = 'JUMP',
   FOLDER = 'FOLDER',
   SCENE = 'SCENE',
-  ROUTE = 'ROUTE',
-  PASSAGE = 'PASSAGE',
+  PATH = 'PATH',
+  EVENT = 'EVENT',
   CHOICE = 'CHOICE',
   INPUT = 'INPUT',
   CONDITION = 'CONDITION',
   EFFECT = 'EFFECT',
-  VARIABLE = 'VARIABLE'
+  VARIABLE = 'VARIABLE',
+  WORLD = 'WORLD'
 }
 
 export enum COMPARE_OPERATOR_TYPE {
@@ -48,24 +49,24 @@ export type GameId = string
 export type ElementId = string
 
 export type GameChildRefs = Array<
-  [COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ElementId]
+  [ELEMENT_TYPE.FOLDER | ELEMENT_TYPE.SCENE, ElementId]
 >
 
 export type FolderParentRef = [
-  COMPONENT_TYPE.GAME | COMPONENT_TYPE.FOLDER,
+  ELEMENT_TYPE.GAME | ELEMENT_TYPE.FOLDER,
   ElementId | null
 ]
 
 export type FolderChildRefs = Array<
-  [COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ElementId]
+  [ELEMENT_TYPE.FOLDER | ELEMENT_TYPE.SCENE, ElementId]
 >
 
 export type SceneParentRef = [
-  COMPONENT_TYPE.GAME | COMPONENT_TYPE.FOLDER,
+  ELEMENT_TYPE.GAME | ELEMENT_TYPE.FOLDER,
   ElementId | null
 ]
 
-export type SceneChildRefs = Array<[COMPONENT_TYPE.PASSAGE, ElementId]>
+export type SceneChildRefs = Array<[ELEMENT_TYPE.EVENT, ElementId]>
 
 export interface RootData {
   children: GameChildRefs
@@ -87,7 +88,7 @@ export interface RootData {
 
 export interface ChoiceData {
   id: ElementId
-  passageId: ElementId
+  eventId: ElementId
   tags: string[]
   title: string
   updated: number
@@ -140,7 +141,7 @@ export interface FolderCollection {
 
 export interface InputData {
   id: ElementId
-  passageId: ElementId
+  eventId: ElementId
   tags: string[]
   title: string
   updated: number
@@ -186,17 +187,17 @@ export interface PassageData {
 }
 
 export interface PassageCollection {
-  [passageId: string]: PassageData
+  [eventId: string]: PassageData
 }
 
 export interface PathData {
   choiceId?: ElementId
   destinationId: ElementId
-  destinationType: COMPONENT_TYPE
+  destinationType: ELEMENT_TYPE
   id: ElementId
   inputId?: ElementId
   originId: ElementId
-  originType: COMPONENT_TYPE | EVENT_TYPE
+  originType: ELEMENT_TYPE | EVENT_TYPE
   sceneId: ElementId
   tags: string[]
   title: string
@@ -273,7 +274,7 @@ export enum ENGINE_DEVTOOLS_EVENTS {
 
 export interface EngineDevToolsEvent {
   eventType: ENGINE_DEVTOOLS_EVENT_TYPE
-  passageId?: ElementId
+  eventId?: ElementId
 }
 
 export interface EngineBookmarkData {
@@ -292,7 +293,7 @@ export interface EngineBookmarkCollection {
 export interface EngineChoiceData {
   gameId: GameId
   id: ElementId
-  passageId: ElementId
+  eventId: ElementId
   title: string
 }
 
@@ -401,7 +402,7 @@ export interface EngineGameCollection {
 export interface EngineInputData {
   gameId: GameId
   id: ElementId
-  passageId: ElementId
+  eventId: ElementId
   variableId?: ElementId
 }
 
@@ -432,18 +433,18 @@ export interface EnginePassageData {
 }
 
 export interface EnginePassageCollection {
-  [passageId: ElementId]: EnginePassageData
+  [eventId: ElementId]: EnginePassageData
 }
 
 export interface EngineRouteData {
   choiceId?: ElementId
   destinationId: ElementId
-  destinationType: COMPONENT_TYPE
+  destinationType: ELEMENT_TYPE
   gameId: GameId
   id: ElementId
   inputId?: ElementId
   originId: ElementId
-  originType: COMPONENT_TYPE | EVENT_TYPE
+  originType: ELEMENT_TYPE | EVENT_TYPE
   sceneId: ElementId
 }
 

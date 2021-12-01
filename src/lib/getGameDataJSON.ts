@@ -68,10 +68,10 @@ export default async (
     }
 
     choices.map(
-      ({ id, passageId, tags, title, updated }) =>
+      ({ id, eventId, tags, title, updated }) =>
         (gameData.choices[id as string] = {
           id: id as string,
-          passageId,
+          eventId,
           tags,
           title,
           updated: updated as number
@@ -117,10 +117,10 @@ export default async (
     )
 
     inputs.map(
-      ({ id, passageId, tags, title, updated, variableId }) =>
+      ({ id, eventId, tags, title, updated, variableId }) =>
         (gameData.inputs[id as string] = {
           id: id as string,
-          passageId,
+          eventId,
           tags,
           title,
           updated: updated as number,

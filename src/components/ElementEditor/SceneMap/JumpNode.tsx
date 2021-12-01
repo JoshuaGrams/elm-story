@@ -5,9 +5,9 @@ import { ElementId, ELEMENT_TYPE } from '../../../data/types'
 import { useJump } from '../../../hooks'
 
 import {
-  EditorContext,
-  EDITOR_ACTION_TYPE
-} from '../../../contexts/EditorContext'
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../../contexts/ComposerContext'
 
 import {
   Handle,
@@ -51,7 +51,7 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
       (actions) => actions.setSelectedElements
     )
 
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   return (
     <div className={styles.jumpNode} key={jump?.id}>
@@ -72,7 +72,7 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
               onMouseDown={() => {
                 if (
                   jump.id &&
-                  editor.selectedComponentEditorSceneViewJump !== jump.id
+                  editor.selectedSceneMapJump !== jump.id
                 ) {
                   setSelectedElement([
                     cloneDeep(jumps.find((jumpNode) => jumpNode.id === jump.id))
@@ -80,26 +80,26 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
 
                   editorDispatch({
                     type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS,
-                    totalComponentEditorSceneViewSelectedJumps: 1
+                      COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
+                    totalSceneMapSelectedJumps: 1
                   })
 
                   editorDispatch({
                     type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
-                    selectedComponentEditorSceneViewJump: jump.id
+                      COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+                    selectedSceneMapJump: jump.id
                   })
 
                   editorDispatch({
                     type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
-                    selectedElementEditorSceneViewEvent: null
+                      COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+                    selectedSceneMapEvent: null
                   })
 
                   editorDispatch({
                     type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-                    selectedComponentEditorSceneViewChoice: null
+                      COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
+                    selectedSceneMapChoice: null
                   })
                 }
               }}

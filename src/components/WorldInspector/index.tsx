@@ -16,12 +16,12 @@ import {
   VARIABLE_TYPE
 } from '../../data/types'
 
-import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
+import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
 
 import { PlusOutlined } from '@ant-design/icons'
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 
-import StoryworldOutline from '../StoryworldOutline'
+import WorldOutline from '../WorldOutline'
 import WorldCharacters from '../WorldCharacters'
 import WorldVariables from '../WorldVariables'
 import ElementHelpButton from '../ElementHelpButton'
@@ -39,7 +39,7 @@ const WorldInspector: React.FC<{ studioId: StudioId; world: World }> = ({
   studioId,
   world
 }) => {
-  const { editorDispatch } = useContext(EditorContext)
+  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   const [defaultLayout] = useState<LayoutData>({
     dockbox: {
@@ -83,7 +83,7 @@ const WorldInspector: React.FC<{ studioId: StudioId; world: World }> = ({
 
                               character.id &&
                                 editorDispatch({
-                                  type: EDITOR_ACTION_TYPE.OPEN_CHARACTER_MODAL,
+                                  type: COMPOSER_ACTION_TYPE.OPEN_CHARACTER_MODAL,
                                   characterId: character.id
                                 })
                             }
@@ -190,7 +190,7 @@ const WorldInspector: React.FC<{ studioId: StudioId; world: World }> = ({
   return (
     <DividerBox className={styles.WorldInspector} mode="vertical">
       <DividerBox className={styles.outline}>
-        <StoryworldOutline studioId={studioId} world={world} />
+        <WorldOutline studioId={studioId} world={world} />
       </DividerBox>
 
       <DockLayout

@@ -3,12 +3,12 @@ import React, { useContext } from 'react'
 import { ElementId, ELEMENT_TYPE } from '../../data/types'
 import {
   OnAddElement,
-  OnEditComponentTitle as OnEditElementTitle,
-  OnRemoveComponent,
-  OnSelectComponent
+  OnEditElementTitle,
+  OnRemoveElement,
+  OnSelectElement
 } from '.'
 
-import { EditorContext } from '../../contexts/EditorContext'
+import { ComposerContext } from '../../contexts/ComposerContext'
 
 import { RenderItemParams } from '@atlaskit/tree'
 
@@ -37,12 +37,12 @@ const ElementItem = ({
   OnEditElementTitle
 }: {
   item: RenderItemParams
-  onSelect: OnSelectComponent
+  onSelect: OnSelectElement
   onAdd: OnAddElement
-  onRemove: OnRemoveComponent
+  onRemove: OnRemoveElement
   OnEditElementTitle: OnEditElementTitle
 }) => {
-  const { editor } = useContext(EditorContext)
+  const { composer: editor } = useContext(ComposerContext)
 
   const elementType: ELEMENT_TYPE = item.data.type,
     elementTitle: string = item.data.title
@@ -77,7 +77,7 @@ const ElementItem = ({
 
   if (item.data.selected && !snapshot.isDragging)
     compositeSelectionStyles.push(styles.selected)
-  if (item.id === editor.selectedComponentEditorSceneViewEvent)
+  if (item.id === editor.selectedSceneMapEvent)
     compositeSelectionStyles.push(styles.sceneComponentSelected)
 
   return (

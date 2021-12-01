@@ -26,7 +26,7 @@ export default (database: Dexie) => {
         variables: '&id,gameId,title,type,*tags,updated'
       })
       .upgrade((tx) => {
-        tx.table(LIBRARY_TABLE.GAMES)
+        tx.table('games')
           .toCollection()
           .modify((game) => {
             game.designer = game.director

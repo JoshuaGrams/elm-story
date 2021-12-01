@@ -52,7 +52,7 @@ export enum SET_OPERATOR_TYPE {
   DIVIDE = '/'
 }
 
-export const DEFAULT_PASSAGE_CONTENT: Descendant[] = [
+export const DEFAULT_EVENT_CONTENT: Descendant[] = [
   {
     type: 'paragraph',
     children: [{ text: '' }]

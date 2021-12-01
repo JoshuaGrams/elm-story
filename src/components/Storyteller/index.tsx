@@ -10,7 +10,7 @@ import {
   ENGINE_DEVTOOLS_EVENT_TYPE
 } from '../../lib/transport/types/0.5.1'
 
-import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
+import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
 
 import Runtime from './embeded/Runtime'
 
@@ -18,7 +18,7 @@ const Storyteller: React.FC<{
   studioId: StudioId
   worldId: WorldId
 }> = React.memo(({ studioId, worldId }) => {
-  const { editorDispatch } = useContext(EditorContext)
+  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   const runtimeWrapperRef = useRef<HTMLDivElement>(null)
 
@@ -29,18 +29,15 @@ const Storyteller: React.FC<{
 
     switch (detail.eventType) {
       case ENGINE_DEVTOOLS_EVENT_TYPE.OPEN_PASSAGE:
-        if (detail.passageId) {
-          const passage = await api().events.getEvent(
-            studioId,
-            detail.passageId
-          )
+        if (detail.eventId) {
+          const passage = await api().events.getEvent(studioId, detail.eventId)
 
           if (passage) {
             const scene = await api().scenes.getScene(studioId, passage.sceneId)
 
             if (scene?.id) {
               editorDispatch({
-                type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+                type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
                 selectedWorldOutlineElement: {
                   expanded: true,
                   id: scene.id,
@@ -52,11 +49,11 @@ const Storyteller: React.FC<{
               // #313: stack hack
               setTimeout(
                 () =>
-                  detail.passageId &&
+                  detail.eventId &&
                   editorDispatch({
                     type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
-                    selectedElementEditorSceneViewEvent: detail.passageId
+                      COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+                    selectedSceneMapEvent: detail.eventId
                   }),
                 1
               )

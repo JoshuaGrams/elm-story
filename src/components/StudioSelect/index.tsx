@@ -53,10 +53,14 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
         studio={selectedStudio}
         edit={saveStudioModal.edit}
         onSave={(studioId) =>
-          appDispatch({
-            type: APP_ACTION_TYPE.STUDIO_SELECT,
-            selectedStudioId: studioId
-          })
+          setTimeout(
+            () =>
+              appDispatch({
+                type: APP_ACTION_TYPE.STUDIO_SELECT,
+                selectedStudioId: studioId
+              }),
+            100
+          )
         }
         onRemove={() => {
           appDispatch({
@@ -74,7 +78,7 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
             <Select
               style={{ width: '100%', textAlign: 'center' }}
               placeholder="Select studio..."
-              value={app.selectedStudioId || undefined}
+              value={app.selectedStudioId}
               dropdownRender={(menu) => (
                 <div>
                   {menu}
@@ -100,19 +104,23 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
                 })
               }}
             >
-              {studios.map((studio) => (
-                <Option
-                  style={{ textAlign: 'center' }}
-                  value={`${studio.id}`}
-                  key={studio.id}
-                >
-                  {studio.title}{' '}
-                  <span style={{ color: `hsl(0, 0%, 40%)` }}>|</span>{' '}
-                  {`${studio.worlds.length} ${
-                    studio.worlds.length === 1 ? 'world' : 'worlds'
-                  }`}
-                </Option>
-              ))}
+              {studios.map(
+                (studio) =>
+                  studio.id &&
+                  studio.title && (
+                    <Option
+                      style={{ textAlign: 'center' }}
+                      value={studio.id}
+                      key={studio.id}
+                    >
+                      {studio.title}{' '}
+                      <span style={{ color: `hsl(0, 0%, 40%)` }}>|</span>{' '}
+                      {`${studio.worlds.length} ${
+                        studio.worlds.length === 1 ? 'world' : 'worlds'
+                      }`}
+                    </Option>
+                  )
+              )}
             </Select>
             {app.selectedStudioId && (
               <Button

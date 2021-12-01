@@ -81,10 +81,13 @@ const WorldBox: React.FC<WorldBoxProps> = ({ studioId, world }) => {
         }
         onClick={async () => {
           if (world?.id) {
-            const selectedGame = await api().worlds.getWorld(studioId, world.id)
+            const selectedWorld = await api().worlds.getWorld(
+              studioId,
+              world.id
+            )
 
             await api().worlds.saveWorld(studioId, {
-              ...selectedGame
+              ...selectedWorld
             })
 
             appDispatch({

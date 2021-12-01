@@ -4,7 +4,7 @@ import { ElementId, StudioId } from '../../../data/types'
 
 import { useJump } from '../../../hooks'
 
-import ComponentTitle from '../ElementTitle'
+import ElementTitle from '../ElementTitle'
 
 import styles from '../styles.module.less'
 
@@ -21,7 +21,7 @@ const JumpDetails: React.FC<{
       {jump && (
         <div className={styles.componentDetailViewWrapper}>
           <div className={styles.content}>
-            <ComponentTitle
+            <ElementTitle
               title={jump.title}
               onUpdate={async (title) => {
                 if (jump.id) {
@@ -33,7 +33,7 @@ const JumpDetails: React.FC<{
                   // TODO: This is not yet needed.
                   // editorDispatch({
                   //   type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
-                  //   renamedComponent: {
+                  //   renamedElement: {
                   //     id: jump.id,
                   //     newTitle: title
                   //   }

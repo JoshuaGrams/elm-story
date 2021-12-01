@@ -19,15 +19,15 @@ import {
 } from '../../../hooks'
 
 import {
-  EditorContext,
-  EDITOR_ACTION_TYPE
-} from '../../../contexts/EditorContext'
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../../contexts/ComposerContext'
 
 import { Checkbox, Select, Divider, Button } from 'antd'
 import { RollbackOutlined } from '@ant-design/icons'
 import { CheckboxChangeEvent } from 'antd/lib/checkbox'
 
-import ComponentTitle from '../ElementTitle'
+import ElementTitle from '../ElementTitle'
 
 import parentStyles from '../styles.module.less'
 import styles from './styles.module.less'
@@ -38,7 +38,7 @@ const EventType: React.FC<{
   studioId: StudioId
   event: Event
 }> = React.memo(({ studioId, event }) => {
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   const changeType = useCallback(
     async (type: EVENT_TYPE) => {
@@ -48,8 +48,8 @@ const EventType: React.FC<{
           editor.selectedWorldOutlineElement.id === event.sceneId &&
             editorDispatch({
               type:
-                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
-              selectedComponentEditorSceneViewChoice: null
+                COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
+              selectedSceneMapChoice: null
             })
 
           await api().events.switchEventFromChoiceToInputType(studioId, event)
@@ -271,18 +271,18 @@ const Persona: React.FC<{
 
 Persona.displayName = 'EventPersona'
 
-const PassageEndToggle: React.FC<{
+const EventEndingToggle: React.FC<{
   studioId: StudioId
   event: Event
 }> = React.memo(({ studioId, event }) => {
-  const { editor } = useContext(EditorContext)
+  const { composer: editor } = useContext(ComposerContext)
 
   const choices = useChoicesByEventRef(studioId, event.id, [event]),
-    routePassthroughs = usePathPassthroughsByEventRef(studioId, event.id, [
+    pathPassthroughs = usePathPassthroughsByEventRef(studioId, event.id, [
       event
     ])
 
-  const toggleGameEnd = async (_event: CheckboxChangeEvent) => {
+  const toggleWorldEnding = async (_event: CheckboxChangeEvent) => {
     event.id &&
       (await api().events.setEventEnding(
         studioId,
@@ -300,39 +300,39 @@ const PassageEndToggle: React.FC<{
     if (
       ((choices && choices.length > 0) || event.type === EVENT_TYPE.INPUT) &&
       event.ending &&
-      editor.selectedComponentEditorSceneViewEvent === event.id
+      editor.selectedSceneMapEvent === event.id
     ) {
       disableGameEnd()
     }
   }, [choices, event.type])
 
   return (
-    <div className={styles.PassageEndToggle}>
+    <div className={styles.EventEndToggle}>
       <Checkbox
-        onChange={toggleGameEnd}
+        onChange={toggleWorldEnding}
         checked={event.ending}
         disabled={
-          (!choices && !routePassthroughs) ||
+          (!choices && !pathPassthroughs) ||
           (choices && choices.length > 0) ||
-          (routePassthroughs && routePassthroughs.length > 0) ||
+          (pathPassthroughs && pathPassthroughs.length > 0) ||
           event.type === EVENT_TYPE.INPUT
         }
       >
-        Storyworld Ending
+        Ending
       </Checkbox>
     </div>
   )
 })
 
-PassageEndToggle.displayName = 'PassageEndToggle'
+EventEndingToggle.displayName = 'EventEndingToggle'
 
 const EventProperties: React.FC<{
   studioId: StudioId
-  passageId: ElementId
-}> = React.memo(({ studioId, passageId }) => {
-  const event = useEvent(studioId, passageId, [passageId])
+  eventId: ElementId
+}> = React.memo(({ studioId, eventId }) => {
+  const event = useEvent(studioId, eventId, [eventId])
 
-  const { editorDispatch } = useContext(EditorContext)
+  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
 
   return (
     <>
@@ -341,7 +341,7 @@ const EventProperties: React.FC<{
           className={`${parentStyles.componentDetailViewWrapper} ${styles.PassageDetails}`}
         >
           <div className={parentStyles.content}>
-            <ComponentTitle
+            <ElementTitle
               title={event.title}
               onUpdate={async (title) => {
                 if (event.id) {
@@ -351,8 +351,8 @@ const EventProperties: React.FC<{
                   })
 
                   editorDispatch({
-                    type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
-                    renamedComponent: {
+                    type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
+                    renamedElement: {
                       id: event.id,
                       newTitle: title
                     }
@@ -362,7 +362,9 @@ const EventProperties: React.FC<{
             />
             <div className={parentStyles.componentId}>{event.id}</div>
 
-            {event.id && <PassageEndToggle studioId={studioId} event={event} />}
+            {event.id && (
+              <EventEndingToggle studioId={studioId} event={event} />
+            )}
 
             <EventType studioId={studioId} event={event} />
 
