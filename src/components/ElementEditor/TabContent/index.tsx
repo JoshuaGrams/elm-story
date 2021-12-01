@@ -12,7 +12,7 @@ import {
 
 import { useDebouncedResizeObserver, useWorld, useScene } from '../../../hooks'
 
-import EditorTabProvider from '../../../contexts/EditorTabContext'
+import ElementEditorTabProvider from '../../../contexts/ElementEditorTabContext'
 
 import TabContentToolbar from './TabContentToolbar'
 
@@ -52,7 +52,7 @@ const TabContent: React.FC<{
   }, [type, tabContentViewWidth, tabContentViewHeight])
 
   return (
-    <EditorTabProvider>
+    <ElementEditorTabProvider>
       <div className={styles.TabContent}>
         {/* #356 */}
         <TabContentToolbar component={component}>{tools}</TabContentToolbar>
@@ -66,7 +66,7 @@ const TabContent: React.FC<{
           {view}
         </div>
       </div>
-    </EditorTabProvider>
+    </ElementEditorTabProvider>
   )
 }
 

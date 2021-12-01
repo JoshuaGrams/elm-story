@@ -17,10 +17,10 @@ import {
   COMPOSER_ACTION_TYPE
 } from '../../../contexts/ComposerContext'
 import {
-  EditorTabContext,
-  EDITOR_TAB_ACTION_TYPE,
-  SCENE_VIEW_CONTEXT
-} from '../../../contexts/EditorTabContext'
+  ElementEditorTabContext,
+  ELEMENT_EDITOR_TAB_ACTION_TYPE,
+  SCENE_MAP_CONTEXT
+} from '../../../contexts/ElementEditorTabContext'
 
 import {
   useDebouncedResizeObserver,
@@ -88,14 +88,14 @@ export const SceneMapTools: React.FC<{
   const scene = useScene(studioId, sceneId, [sceneId])
 
   const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext),
-    { editorTab, editorTabDispatch } = useContext(EditorTabContext)
+    { elementEditorTab: editorTab, elementEditorTabDispatch: editorTabDispatch } = useContext(ElementEditorTabContext)
 
   return (
     <>
       {scene && (
         <Menu mode="horizontal">
-          {editorTab.sceneViewContext ===
-            SCENE_VIEW_CONTEXT.SCENE_SELECTION_NONE && (
+          {editorTab.sceneMapContext ===
+            SCENE_MAP_CONTEXT.SCENE_SELECTION_NONE && (
             <>
               {/* Add Event Menu Item */}
               <Menu.Item
@@ -168,12 +168,12 @@ export const SceneMapTools: React.FC<{
             </>
           )}
 
-          {(editorTab.sceneViewContext === SCENE_VIEW_CONTEXT.SCENE_SELECTION ||
-            editorTab.sceneViewContext ===
-              SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP ||
-            editorTab.sceneViewContext ===
-              SCENE_VIEW_CONTEXT.SCENE_SELECTION_PASSAGE) &&
-            !editorTab.passageForEditing.visible && (
+          {(editorTab.sceneMapContext === SCENE_MAP_CONTEXT.SCENE_SELECTION ||
+            editorTab.sceneMapContext ===
+              SCENE_MAP_CONTEXT.SCENE_SELECTION_JUMP ||
+            editorTab.sceneMapContext ===
+              SCENE_MAP_CONTEXT.SCENE_SELECTION_PASSAGE) &&
+            !editorTab.eventForEditing.visible && (
               <Menu.Item
                 onClick={() =>
                   !editor.centeredSceneMapSelection &&
@@ -188,12 +188,12 @@ export const SceneMapTools: React.FC<{
               </Menu.Item>
             )}
 
-          {editorTab.passageForEditing.visible && (
+          {editorTab.eventForEditing.visible && (
             <Menu.Item
               onClick={() =>
                 editorTabDispatch({
-                  type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
-                  passageForEditing: { id: undefined, visible: false }
+                  type: ELEMENT_EDITOR_TAB_ACTION_TYPE.EDIT_EVENT,
+                  eventForEditing: { id: undefined, visible: false }
                 })
               }
             >
@@ -337,7 +337,7 @@ const SceneMap: React.FC<{
   } = useDebouncedResizeObserver(500)
 
   const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext),
-    { editorTab, editorTabDispatch } = useContext(EditorTabContext)
+    { elementEditorTab: editorTab, elementEditorTabDispatch: editorTabDispatch } = useContext(ElementEditorTabContext)
 
   const jumps = useJumpsBySceneRef(studioId, sceneId),
     scene = useScene(studioId, sceneId),
@@ -842,41 +842,41 @@ const SceneMap: React.FC<{
     if (
       totalSelectedJumps === 0 &&
       totalSelectedPassages === 0 &&
-      editorTab.sceneViewContext !== SCENE_VIEW_CONTEXT.SCENE_SELECTION_NONE
+      editorTab.sceneMapContext !== SCENE_MAP_CONTEXT.SCENE_SELECTION_NONE
     )
       editorTabDispatch({
-        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
-        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_NONE
+        type: ELEMENT_EDITOR_TAB_ACTION_TYPE.SCENE_MAP_CONTEXT,
+        sceneMapContext: SCENE_MAP_CONTEXT.SCENE_SELECTION_NONE
       })
 
     if (
       totalSelectedJumps > 1 ||
       (totalSelectedPassages > 1 &&
-        editorTab.sceneViewContext !== SCENE_VIEW_CONTEXT.SCENE_SELECTION)
+        editorTab.sceneMapContext !== SCENE_MAP_CONTEXT.SCENE_SELECTION)
     )
       editorTabDispatch({
-        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
-        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION
+        type: ELEMENT_EDITOR_TAB_ACTION_TYPE.SCENE_MAP_CONTEXT,
+        sceneMapContext: SCENE_MAP_CONTEXT.SCENE_SELECTION
       })
 
     if (
       totalSelectedJumps === 1 &&
       totalSelectedPassages === 0 &&
-      editorTab.sceneViewContext !== SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP
+      editorTab.sceneMapContext !== SCENE_MAP_CONTEXT.SCENE_SELECTION_JUMP
     )
       editorTabDispatch({
-        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
-        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_JUMP
+        type: ELEMENT_EDITOR_TAB_ACTION_TYPE.SCENE_MAP_CONTEXT,
+        sceneMapContext: SCENE_MAP_CONTEXT.SCENE_SELECTION_JUMP
       })
 
     if (
       totalSelectedJumps === 0 &&
       totalSelectedPassages === 1 &&
-      editorTab.sceneViewContext !== SCENE_VIEW_CONTEXT.SCENE_SELECTION_PASSAGE
+      editorTab.sceneMapContext !== SCENE_MAP_CONTEXT.SCENE_SELECTION_PASSAGE
     )
       editorTabDispatch({
-        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
-        sceneViewContext: SCENE_VIEW_CONTEXT.SCENE_SELECTION_PASSAGE
+        type: ELEMENT_EDITOR_TAB_ACTION_TYPE.SCENE_MAP_CONTEXT,
+        sceneMapContext: SCENE_MAP_CONTEXT.SCENE_SELECTION_PASSAGE
       })
   }
 
@@ -915,8 +915,8 @@ const SceneMap: React.FC<{
             sceneId: scene.id,
             onEditEvent: (id: ElementId) =>
               editorTabDispatch({
-                type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
-                passageForEditing: { id, visible: true }
+                type: ELEMENT_EDITOR_TAB_ACTION_TYPE.EDIT_EVENT,
+                eventForEditing: { id, visible: true }
               }),
             eventId: passage.id,
             eventType: passage.type,
@@ -1140,33 +1140,33 @@ const SceneMap: React.FC<{
 
   useEffect(() => {
     logger.info(
-      `SceneMap->editorTab.passageForEditing->useEffect: ${editorTab.passageForEditing.visible}`
+      `SceneMap->editorTab.passageForEditing->useEffect: ${editorTab.eventForEditing.visible}`
     )
 
     if (
       editor.selectedWorldOutlineElement.id === sceneId &&
-      editorTab.passageForEditing.visible
+      editorTab.eventForEditing.visible
     ) {
       editor.selectedSceneMapEvent &&
         editor.selectedSceneMapEvent !==
-          editorTab.passageForEditing.id &&
+          editorTab.eventForEditing.id &&
         editorTabDispatch({
-          type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
-          passageForEditing: {
+          type: ELEMENT_EDITOR_TAB_ACTION_TYPE.EDIT_EVENT,
+          eventForEditing: {
             id: editor.selectedSceneMapEvent,
             visible: true
           }
         })
 
       editorTabDispatch({
-        type: EDITOR_TAB_ACTION_TYPE.SCENE_VIEW_CONTEXT,
-        sceneViewContext: SCENE_VIEW_CONTEXT.PASSAGE
+        type: ELEMENT_EDITOR_TAB_ACTION_TYPE.SCENE_MAP_CONTEXT,
+        sceneMapContext: SCENE_MAP_CONTEXT.EVENT
       })
     }
 
-    !editorTab.passageForEditing.visible && setContext()
+    !editorTab.eventForEditing.visible && setContext()
   }, [
-    editorTab.passageForEditing,
+    editorTab.eventForEditing,
     editor.selectedWorldOutlineElement,
     editor.selectedSceneMapEvent
   ])
@@ -1197,15 +1197,15 @@ const SceneMap: React.FC<{
             }
           }}
         >
-          {scene && editorTab.passageForEditing.id && (
+          {scene && editorTab.eventForEditing.id && (
             <EventView
               studioId={studioId}
               scene={scene}
-              eventId={editorTab.passageForEditing.id}
+              eventId={editorTab.eventForEditing.id}
               onClose={() =>
                 editorTabDispatch({
-                  type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
-                  passageForEditing: { id: undefined, visible: false }
+                  type: ELEMENT_EDITOR_TAB_ACTION_TYPE.EDIT_EVENT,
+                  eventForEditing: { id: undefined, visible: false }
                 })
               }
             />
@@ -1289,8 +1289,8 @@ const SceneMap: React.FC<{
                         }
 
                         editorTabDispatch({
-                          type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
-                          passageForEditing: {
+                          type: ELEMENT_EDITOR_TAB_ACTION_TYPE.EDIT_EVENT,
+                          eventForEditing: {
                             id: componentId,
                             visible: true
                           }
