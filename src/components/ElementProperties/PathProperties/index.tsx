@@ -13,13 +13,13 @@ import {
 } from '../../../data/types'
 
 import {
-  useRouteEffectsByRouteRef,
-  useRoute,
+  usePathEffectsByPathRef,
+  usePath,
   useVariables,
-  useRouteEffect,
+  usePathEffect,
   useVariable,
-  useRouteConditionsByRouteRef,
-  useRouteCondition
+  usePathConditionsByPathRef,
+  usePathCondition
 } from '../../../hooks'
 
 import { Select } from 'antd'
@@ -39,7 +39,7 @@ const RouteConditionRow: React.FC<{
   conditionId: ElementId
   variableId: ElementId
 }> = ({ studioId, conditionId, variableId }) => {
-  const condition = useRouteCondition(studioId, conditionId, [
+  const condition = usePathCondition(studioId, conditionId, [
       studioId,
       conditionId
     ]),
@@ -122,7 +122,7 @@ const RouteEffectRow: React.FC<{
   effectId: ElementId
   variableId: ElementId
 }> = ({ studioId, effectId, variableId }) => {
-  const effect = useRouteEffect(studioId, effectId, [studioId, effectId]),
+  const effect = usePathEffect(studioId, effectId, [studioId, effectId]),
     variable = useVariable(studioId, variableId, [studioId, variableId])
 
   const [ready, setReady] = useState(false),
@@ -194,17 +194,17 @@ const RouteEffectRow: React.FC<{
   )
 }
 
-const RouteDetails: React.FC<{
+const PathDetails: React.FC<{
   studioId: StudioId
   worldId: WorldId
-  routeId: ElementId
-}> = ({ studioId, worldId, routeId }) => {
-  const route = useRoute(studioId, routeId, [studioId, routeId]),
-    conditions = useRouteConditionsByRouteRef(studioId, routeId, [
+  pathId: ElementId
+}> = ({ studioId, worldId, pathId }) => {
+  const path = usePath(studioId, pathId, [studioId, pathId]),
+    conditions = usePathConditionsByPathRef(studioId, pathId, [
       studioId,
-      routeId
+      pathId
     ]),
-    effects = useRouteEffectsByRouteRef(studioId, routeId, [studioId, routeId]),
+    effects = usePathEffectsByPathRef(studioId, pathId, [studioId, pathId]),
     variables = useVariables(studioId, worldId, [studioId, worldId, effects])
 
   async function onNewCondition(variableId: ElementId) {
@@ -212,11 +212,11 @@ const RouteDetails: React.FC<{
       (variable) => variable.id === variableId
     )
 
-    route?.worldId &&
+    path?.worldId &&
       foundVariable?.id &&
       (await api().conditions.saveCondition(studioId, {
-        worldId: route.worldId,
-        routeId,
+        worldId: path.worldId,
+        pathId,
         variableId: foundVariable.id,
         title: 'Untitled Condition',
         compare: [
@@ -234,11 +234,11 @@ const RouteDetails: React.FC<{
       (variable) => variable.id === variableId
     )
 
-    route?.worldId &&
+    path?.worldId &&
       foundVariable?.id &&
       (await api().effects.saveEffect(studioId, {
-        worldId: route.worldId,
-        routeId,
+        worldId: path.worldId,
+        pathId,
         variableId: foundVariable.id,
         title: 'Untitled Effect',
         set: [
@@ -260,22 +260,22 @@ const RouteDetails: React.FC<{
 
   return (
     <>
-      {route && (
+      {path && (
         <div
           className={`${parentStyles.componentDetailViewWrapper} ${styles.RouteDetails}`}
         >
           <div className={parentStyles.content}>
             <ComponentTitle
-              title={route.title}
+              title={path.title}
               onUpdate={async (title) =>
-                route.id &&
-                (await api().routes.saveRoute(studioId, {
-                  ...(await api().routes.getRoute(studioId, route.id)),
+                path.id &&
+                (await api().paths.savePath(studioId, {
+                  ...(await api().paths.getPath(studioId, path.id)),
                   title
                 }))
               }
             />
-            <div className={parentStyles.componentId}>{route.id}</div>
+            <div className={parentStyles.componentId}>{path.id}</div>
 
             {/* ROUTE CONDITIONS */}
             <div className={styles.routeFeature}>
@@ -411,4 +411,4 @@ const RouteDetails: React.FC<{
   )
 }
 
-export default RouteDetails
+export default PathDetails

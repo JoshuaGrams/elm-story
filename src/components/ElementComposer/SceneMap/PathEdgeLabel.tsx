@@ -2,7 +2,7 @@ import React, { memo, useRef, useState, useEffect, HTMLAttributes } from 'react'
 
 import { Rect } from 'react-flow-renderer'
 
-export interface RouteEdgeLabelProps extends HTMLAttributes<SVGElement> {
+export interface PathEdgeLabelProps extends HTMLAttributes<SVGElement> {
   x: number
   y: number
   totalConditions: number
@@ -11,7 +11,7 @@ export interface RouteEdgeLabelProps extends HTMLAttributes<SVGElement> {
 
 import styles from './styles.module.less'
 
-const EdgeText: React.FC<RouteEdgeLabelProps> = ({
+const PathEdgeLabel: React.FC<PathEdgeLabelProps> = ({
   x,
   y,
   totalConditions = 0,
@@ -168,4 +168,7 @@ const EdgeText: React.FC<RouteEdgeLabelProps> = ({
     </>
   )
 }
-export default memo(EdgeText)
+
+PathEdgeLabel.displayName = 'PathEdgeLabel'
+
+export default memo(PathEdgeLabel)

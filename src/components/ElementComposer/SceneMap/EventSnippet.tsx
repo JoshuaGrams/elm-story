@@ -78,7 +78,7 @@ const decorate = (template: string, state: WorldState) => {
   })
 }
 
-const PassageSnippet: React.FC<{
+const EventSnippet: React.FC<{
   studioId: StudioId
   worldId: WorldId
   content: string
@@ -114,7 +114,7 @@ const PassageSnippet: React.FC<{
   }, [variables])
 
   return (
-    <div className={styles.PassageSnippet} onDoubleClick={onEditPassage}>
+    <div className={styles.EventSnippet} onDoubleClick={onEditPassage}>
       {initialGameState && parsedContent[0].children[0].text && (
         <>
           <p>
@@ -129,6 +129,6 @@ const PassageSnippet: React.FC<{
   )
 }
 
-PassageSnippet.displayName = 'PassageSnippet'
+EventSnippet.displayName = 'EventSnippet'
 
-export default PassageSnippet
+export default EventSnippet

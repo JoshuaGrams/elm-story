@@ -26,7 +26,7 @@ import {
   useDebouncedResizeObserver,
   useJumpsBySceneRef,
   useEventsBySceneRef,
-  useRoutesBySceneRef,
+  usePathsBySceneRef,
   useScene
 } from '../../../hooks'
 
@@ -50,7 +50,7 @@ import { Menu } from 'antd'
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 
 import ContextMenu from './ContextMenu'
-import RouteEdge, { RouteEdgeData } from './RouteEdge'
+import PathEdge, { PathEdgeData } from './PathEdge'
 import EventNode from './EventNode'
 import JumpNode from './JumpNode'
 import PassageView from '../EventComposer'
@@ -245,7 +245,7 @@ async function addElementToScene(
           worldId: scene.worldId,
           sceneId: scene.id,
           title: 'Untitled Jump',
-          route: [scene.id],
+          path: [scene.id],
           tags: [],
           editor: {
             componentEditorPosX: position.x,
@@ -341,7 +341,7 @@ const SceneMap: React.FC<{
 
   const jumps = useJumpsBySceneRef(studioId, sceneId),
     scene = useScene(studioId, sceneId),
-    routes = useRoutesBySceneRef(studioId, sceneId),
+    paths = usePathsBySceneRef(studioId, sceneId),
     events = useEventsBySceneRef(studioId, sceneId)
 
   const currentZoom = useStoreState((state) => state.transform[2]),
@@ -396,7 +396,7 @@ const SceneMap: React.FC<{
         ),
         clonedRoutes = clonedElements.filter(
           (clonedElement): clonedElement is Edge =>
-            clonedElement.data.type === ELEMENT_TYPE.ROUTE
+            clonedElement.data.type === ELEMENT_TYPE.PATH
         )
 
       if (elementsToHighlight) {
@@ -567,7 +567,7 @@ const SceneMap: React.FC<{
           }
         }
 
-        await api().routes.saveRoute(studioId, {
+        await api().paths.saveRoute(studioId, {
           title: 'Untitled Path',
           worldId: scene.worldId,
           sceneId,
@@ -604,7 +604,7 @@ const SceneMap: React.FC<{
           // case ELEMENT_TYPE.JUMP:
           //   jumpRefs.push(element.id)
           //   break
-          case ELEMENT_TYPE.ROUTE:
+          case ELEMENT_TYPE.PATH:
             routeRefs.push(element.id)
             break
           // TODO: #45
@@ -619,13 +619,13 @@ const SceneMap: React.FC<{
 
       await Promise.all(
         routeRefs.map(async (routeRef) => {
-          await api().routes.removeRoute(studioId, routeRef)
+          await api().paths.removeRoute(studioId, routeRef)
         })
       )
     }
 
     if (editor.selectedComponentEditorSceneViewChoice) {
-      await api().routes.removeRoutesByChoiceRef(
+      await api().paths.removeRoutesByChoiceRef(
         studioId,
         editor.selectedComponentEditorSceneViewChoice
       )
@@ -726,7 +726,7 @@ const SceneMap: React.FC<{
         case ELEMENT_TYPE.EVENT:
           _totalSelectedPassages++
           break
-        case ELEMENT_TYPE.ROUTE:
+        case ELEMENT_TYPE.PATH:
           _totalSelectedRoutes++
           break
         default:
@@ -755,7 +755,7 @@ const SceneMap: React.FC<{
       selectedElements[0].data.type === ELEMENT_TYPE.EVENT &&
         setSelectedPassage(selectedElements[0].id)
 
-      selectedElements[0].data.type === ELEMENT_TYPE.ROUTE &&
+      selectedElements[0].data.type === ELEMENT_TYPE.PATH &&
         setSelectedRoute(selectedElements[0].id)
 
       setSelectedChoice(null)
@@ -883,7 +883,7 @@ const SceneMap: React.FC<{
   useEffect(() => {
     logger.info(`SceneMap->scene,passages,routes->useEffect`)
 
-    if (jumps && scene && events && routes) {
+    if (jumps && scene && events && paths) {
       logger.info(
         `SceneMap->scene,passages,routes->useEffect->have scene, passages and routes`
       )
@@ -957,22 +957,22 @@ const SceneMap: React.FC<{
         }
       })
 
-      const edges: Edge<RouteEdgeData>[] = routes.map((route) => {
-        if (!route.id)
-          throw new Error('Unable to generate edge. Missing route ID.')
+      const edges: Edge<PathEdgeData>[] = paths.map((path) => {
+        if (!path.id)
+          throw new Error('Unable to generate edge. Missing path ID.')
 
         return {
-          id: route.id,
-          source: route.originId,
-          sourceHandle: route.choiceId,
-          target: route.destinationId,
-          targetHandle: route.destinationId,
+          id: path.id,
+          source: path.originId,
+          sourceHandle: path.choiceId,
+          target: path.destinationId,
+          targetHandle: path.destinationId,
           type: 'routeEdge',
           animated: true,
           data: {
-            type: ELEMENT_TYPE.ROUTE,
+            type: ELEMENT_TYPE.PATH,
             studioId,
-            routeId: route.id
+            pathId: path.id
           }
         }
       })
@@ -980,7 +980,7 @@ const SceneMap: React.FC<{
       // BUG: Unable to create edges on initial node render because choices aren't ready
       setElements([...nodes, ...edges])
     }
-  }, [jumps, scene, events, routes, ready])
+  }, [jumps, scene, events, paths, ready])
 
   useEffect(() => {
     logger.info(`SceneMap->sceneReady->useEffect`)
@@ -1433,7 +1433,7 @@ const SceneMap: React.FC<{
               jumpNode: JumpNode
             }}
             edgeTypes={{
-              routeEdge: RouteEdge
+              routeEdge: PathEdge
             }}
             snapGrid={[4, 4]}
             onlyRenderVisibleElements={false}

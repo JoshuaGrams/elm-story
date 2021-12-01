@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 
 import { ElementId, WorldId, Path, StudioId } from '../data/types'
 
-const useRoutes = (
+const usePaths = (
   studioId: StudioId,
   worldId: WorldId,
   deps?: any[]
@@ -17,18 +17,18 @@ const useRoutes = (
   return routes
 }
 
-const useRoute = (
+const usePath = (
   studioId: StudioId,
-  routeId: ElementId,
+  pathId: ElementId,
   deps?: any[]
 ): Path | undefined =>
   useLiveQuery(
-    () => new LibraryDatabase(studioId).paths.where({ id: routeId }).first(),
+    () => new LibraryDatabase(studioId).paths.where({ id: pathId }).first(),
     deps || [],
     undefined
   )
 
-const useRoutesBySceneRef = (
+const usePathsBySceneRef = (
   studioId: StudioId,
   sceneId: ElementId,
   deps?: any[]
@@ -42,7 +42,7 @@ const useRoutesBySceneRef = (
   return routes
 }
 
-const useRoutesByEventRef = (
+const usePathsByEventRef = (
   studioId: StudioId,
   eventId: ElementId,
   deps?: any[]
@@ -59,7 +59,7 @@ const useRoutesByEventRef = (
   return routes
 }
 
-const useRoutePassthroughsByEventRef = (
+const usePathPassthroughsByEventRef = (
   studioId: StudioId,
   eventId?: ElementId,
   deps?: any[]
@@ -81,7 +81,7 @@ const useRoutePassthroughsByEventRef = (
   return routes
 }
 
-const useRoutesByChoiceRef = (
+const usePathsByChoiceRef = (
   studioId: StudioId,
   choiceId: ElementId,
   deps?: any[]
@@ -95,7 +95,7 @@ const useRoutesByChoiceRef = (
   return routes
 }
 
-const useRoutesByInputRef = (
+const usePathsByInputRef = (
   studioId: StudioId,
   inputId: ElementId,
   deps?: any[]
@@ -110,12 +110,12 @@ const useRoutesByInputRef = (
 }
 
 export {
-  useRoutePassthroughsByEventRef,
-  useRoute,
-  useRoutesBySceneRef,
-  useRoutesByEventRef,
-  useRoutesByChoiceRef,
-  useRoutesByInputRef
+  usePathPassthroughsByEventRef,
+  usePath,
+  usePathsBySceneRef,
+  usePathsByEventRef,
+  usePathsByChoiceRef,
+  usePathsByInputRef
 }
 
-export default useRoutes
+export default usePaths

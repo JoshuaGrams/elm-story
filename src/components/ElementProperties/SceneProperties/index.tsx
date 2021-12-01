@@ -20,7 +20,7 @@ import {
 import ComponentTitle from '../ElementTitle'
 import JumpDetails from '../JumpProperties'
 import EventProperties from '../EventProperties'
-import RouteDetails from '../PathProperties'
+import PathDetails from '../PathProperties'
 import ChoiceDetails from '../ChoiceProperties'
 import ElementHelpButton from '../../ElementHelpButton'
 
@@ -122,23 +122,23 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
               </Collapse>
             )}
 
-            {/* Route Panel */}
+            {/* Path Panel */}
             {editor.selectedComponentEditorSceneViewRoute && (
-              <Collapse defaultActiveKey={['route-details-panel']}>
+              <Collapse defaultActiveKey={['path-details-panel']}>
                 <Collapse.Panel
                   header={
                     <>
                       <NodeIndexOutlined className={styles.headerIcon} />{' '}
                       Selected Path
-                      <ElementHelpButton type={ELEMENT_TYPE.ROUTE} />
+                      <ElementHelpButton type={ELEMENT_TYPE.PATH} />
                     </>
                   }
-                  key="route-details-panel"
+                  key="path-details-panel"
                 >
-                  <RouteDetails
+                  <PathDetails
                     studioId={studioId}
                     worldId={scene.worldId}
-                    routeId={editor.selectedComponentEditorSceneViewRoute}
+                    pathId={editor.selectedComponentEditorSceneViewRoute}
                   />
                 </Collapse.Panel>
               </Collapse>

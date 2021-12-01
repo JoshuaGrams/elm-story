@@ -32,7 +32,7 @@ const WorldProperties: React.FC<{
       const { id: jumpId } = await api().jumps.saveJump(studioId, {
         worldId: world.id,
         title: 'On Game Start Jump',
-        route: [scenes[0].id],
+        path: [scenes[0].id],
         tags: []
       })
 

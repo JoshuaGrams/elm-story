@@ -100,7 +100,7 @@ export interface ChoiceCollection {
 export interface ConditionData {
   compare: [ElementId, COMPARE_OPERATOR_TYPE, string]
   id: ElementId
-  routeId: ElementId
+  pathId: ElementId
   tags: string[]
   title: string
   updated: number
@@ -113,7 +113,7 @@ export interface ConditionCollection {
 
 export interface EffectData {
   id: ElementId
-  routeId: ElementId
+  pathId: ElementId
   set: [ElementId, SET_OPERATOR_TYPE, string]
   tags: string[]
   title: string
@@ -157,7 +157,7 @@ export interface JumpData {
     componentEditorPosY?: number
   }
   id: ElementId
-  route: [ElementId?, ElementId?]
+  path: [ElementId?, ElementId?]
   sceneId?: ElementId
   tags: string[]
   title: string
@@ -189,7 +189,7 @@ export interface PassageCollection {
   [passageId: string]: PassageData
 }
 
-export interface RouteData {
+export interface PathData {
   choiceId?: ElementId
   destinationId: ElementId
   destinationType: COMPONENT_TYPE
@@ -203,8 +203,8 @@ export interface RouteData {
   updated: number
 }
 
-export interface RouteCollection {
-  [routeId: string]: RouteData
+export interface PathCollection {
+  [pathId: string]: PathData
 }
 
 export interface SceneData {
@@ -248,7 +248,7 @@ export interface GameDataJSON {
   inputs: InputCollection
   jumps: JumpCollection
   passages: PassageCollection
-  routes: RouteCollection
+  paths: PathCollection
   scenes: SceneCollection
   variables: VariableCollection
 }
@@ -304,7 +304,7 @@ export interface EngineConditionData {
   compare: [ElementId, COMPARE_OPERATOR_TYPE, string]
   gameId: GameId
   id: ElementId
-  routeId: ElementId
+  pathId: ElementId
   variableId: ElementId
 }
 
@@ -315,7 +315,7 @@ export interface EngineConditionCollection {
 export interface EngineEffectData {
   gameId: GameId
   id: ElementId
-  routeId: ElementId
+  pathId: ElementId
   set: [ElementId, SET_OPERATOR_TYPE, string]
   variableId: ElementId
 }
@@ -412,7 +412,7 @@ export interface EngineInputCollection {
 export interface EngineJumpData {
   gameId: GameId
   id: ElementId
-  route: [ElementId?, ElementId?]
+  path: [ElementId?, ElementId?]
   sceneId?: ElementId
 }
 
@@ -448,7 +448,7 @@ export interface EngineRouteData {
 }
 
 export interface EngineRouteCollection {
-  [routeId: string]: EngineRouteData
+  [pathId: string]: EngineRouteData
 }
 
 export interface EngineSceneData {
@@ -493,7 +493,7 @@ export interface ESGEngineCollectionData {
   inputs: EngineInputCollection
   jumps: EngineJumpCollection
   passages: EnginePassageCollection
-  routes: EngineRouteCollection
+  paths: EngineRouteCollection
   scenes: EngineSceneCollection
   variables: EngineVariableCollection
 }

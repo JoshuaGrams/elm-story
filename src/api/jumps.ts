@@ -1,7 +1,7 @@
 import { LibraryDatabase } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { ElementId, WorldId, Jump, JumpRoute, StudioId } from '../data/types'
+import { ElementId, WorldId, Jump, JumpPath, StudioId } from '../data/types'
 
 export async function getJump(studioId: StudioId, jumpId: ElementId) {
   try {
@@ -57,10 +57,10 @@ export async function saveJump(studioId: StudioId, jump: Jump): Promise<Jump> {
 export async function saveJumpRoute(
   studioId: StudioId,
   jumpId: ElementId,
-  jumpRoute: JumpRoute
+  jumpRoute: JumpPath
 ): Promise<void> {
   try {
-    await new LibraryDatabase(studioId).saveJumpRoute(jumpId, jumpRoute)
+    await new LibraryDatabase(studioId).saveJumpPath(jumpId, jumpRoute)
   } catch (error) {
     throw error
   }

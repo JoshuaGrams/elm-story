@@ -16,7 +16,7 @@ export default (database: Dexie) => {
       events: '&id,ending,worldId,*persona,sceneId,title,*tags,updated',
       folders: '&id,children,worldId,parent,title,*tags,updated',
       inputs: '&id,worldId,eventId,variableId,title,*tags,updated',
-      jumps: '&id,worldId,sceneId,title,*tags,updated,*route',
+      jumps: '&id,worldId,sceneId,title,*tags,updated,*path',
       live_events:
         '&id,worldId,destination,origin,prev,next,type,updated,[gameId+updated],version',
       paths:
@@ -66,6 +66,9 @@ export default (database: Dexie) => {
           .modify((condition) => {
             condition.worldId = condition.gameId
             delete condition.gameId
+
+            condition.pathId = condition.routeId
+            delete condition.routeId
           }),
         tx
           .table(LIBRARY_TABLE.EFFECTS)
@@ -73,6 +76,9 @@ export default (database: Dexie) => {
           .modify((effect) => {
             effect.worldId = effect.gameId
             delete effect.gameId
+
+            effect.pathId = effect.routeId
+            delete effect.routeId
           }),
         tx
           .table(LIBRARY_TABLE.EVENTS)
@@ -109,6 +115,8 @@ export default (database: Dexie) => {
           .table(LIBRARY_TABLE.JUMPS)
           .toCollection()
           .modify((jump) => {
+            jump.path = [...jump.route]
+
             jump.worldId = jump.gameId
             delete jump.gameId
           }),

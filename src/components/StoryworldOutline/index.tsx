@@ -361,13 +361,13 @@ const StoryworldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                     async (jump) =>
                       jump.id &&
                       (await api().jumps.saveJumpRoute(studioId, jump.id, [
-                        jump.route[0],
-                        jump.route[1]
+                        jump.path[0],
+                        jump.path[1]
                       ]))
                   )
                 )
 
-                await api().routes.removeRoutesByPassageRef(
+                await api().paths.removeRoutesByPassageRef(
                   studioId,
                   movingComponent.id as ElementId
                 )

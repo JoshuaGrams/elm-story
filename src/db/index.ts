@@ -19,7 +19,7 @@ import {
   Variable,
   VARIABLE_TYPE,
   Jump,
-  JumpRoute,
+  JumpPath,
   SET_OPERATOR_TYPE,
   COMPARE_OPERATOR_TYPE,
   FolderChildRefs,
@@ -623,7 +623,7 @@ export class LibraryDatabase extends Dexie {
       logger.info(
         `removeFolder->Removing ${
           children.filter((child) => child[0] === ELEMENT_TYPE.EVENT).length
-        } nested passage(s) from folder with ID: ${folderId}`
+        } nested event(s) from folder with ID: ${folderId}`
       )
 
       await Promise.all(
@@ -738,9 +738,9 @@ export class LibraryDatabase extends Dexie {
     return jump
   }
 
-  public async saveJumpRoute(jumpId: ElementId, route: JumpRoute) {
+  public async saveJumpPath(jumpId: ElementId, path: JumpPath) {
     logger.info(
-      `LibraryDatabase->saveJumpRoute->jumpId: ${jumpId} route: ${route}`
+      `LibraryDatabase->saveJumpPath->jumpId: ${jumpId} path: ${path}`
     )
 
     try {
@@ -749,9 +749,9 @@ export class LibraryDatabase extends Dexie {
           const jump = await this.getElement(LIBRARY_TABLE.JUMPS, jumpId)
 
           if (jump) {
-            this.jumps.update(jumpId, { ...jump, route, updated: Date.now() })
+            this.jumps.update(jumpId, { ...jump, path, updated: Date.now() })
           } else {
-            throw new Error('Unable to save jump route. Jump missing.')
+            throw new Error('Unable to save jump path. Jump missing.')
           }
         }
       })
@@ -763,18 +763,16 @@ export class LibraryDatabase extends Dexie {
   public async removeJump(jumpId: ElementId) {
     logger.info(`LibraryDatabase->removeJump:${jumpId}`)
 
-    const routes = await this.paths.where({ destinationId: jumpId }).toArray()
+    const paths = await this.paths.where({ destinationId: jumpId }).toArray()
 
-    if (routes.length > 0) {
+    if (paths.length > 0) {
       logger.info(
-        `removeJump->Removing ${routes.length} route(s) from jump with ID: ${jumpId}`
+        `removeJump->Removing ${paths.length} path(s) from jump with ID: ${jumpId}`
       )
     }
 
     await Promise.all(
-      routes.map(
-        async (route) => route.id && (await this.removeRoute(route.id))
-      )
+      paths.map(async (path) => path.id && (await this.removePath(path.id)))
     )
 
     try {
@@ -816,7 +814,7 @@ export class LibraryDatabase extends Dexie {
 
   public async getJumpsBySceneRef(sceneId: ElementId): Promise<Jump[]> {
     try {
-      return await this.jumps.where({ route: sceneId }).toArray()
+      return await this.jumps.where({ path: sceneId }).toArray()
     } catch (error) {
       throw error
     }
@@ -824,7 +822,7 @@ export class LibraryDatabase extends Dexie {
 
   public async getJumpsByEventRef(passageId: ElementId): Promise<Jump[]> {
     try {
-      return await this.jumps.where({ route: passageId }).toArray()
+      return await this.jumps.where({ path: passageId }).toArray()
     } catch (error) {
       throw error
     }
@@ -914,7 +912,7 @@ export class LibraryDatabase extends Dexie {
               updated: Date.now()
             })
           } else {
-            throw new Error('Unable to save passage refs. Scene missing.')
+            throw new Error('Unable to save event refs. Scene missing.')
           }
         }
       })
@@ -991,9 +989,7 @@ export class LibraryDatabase extends Dexie {
           scene.jumps.map(async (jumpId) => await this.removeJump(jumpId))
         ))
 
-      const jumpsRefScene = await this.jumps
-          .where({ route: sceneId })
-          .toArray(),
+      const jumpsRefScene = await this.jumps.where({ path: sceneId }).toArray(),
         passages = await this.events.where({ sceneId }).toArray()
 
       if (jumpsRefScene.length > 0) {
@@ -1014,13 +1010,13 @@ export class LibraryDatabase extends Dexie {
 
       if (passages.length > 0) {
         logger.info(
-          `LibraryDatabase->removeScene->Removing ${passages.length} passage(s) from scene with ID: ${sceneId}`
+          `LibraryDatabase->removeScene->Removing ${passages.length} event(s) from scene with ID: ${sceneId}`
         )
       }
 
       await Promise.all(
         passages.map(
-          async (passage) => passage.id && (await this.removeEvent(passage.id))
+          async (event) => event.id && (await this.removeEvent(event.id))
         )
       )
 
@@ -1066,15 +1062,15 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getRoute(routeId: ElementId): Promise<Route> {
+  public async getPath(pathId: ElementId): Promise<Path> {
     try {
-      const route = await this.paths.get(routeId)
+      const path = await this.paths.get(pathId)
 
-      if (route) {
-        return route
+      if (path) {
+        return path
       } else {
         throw new Error(
-          `Unable to get route with ID: ${routeId}. Does not exist.`
+          `Unable to get path with ID: ${pathId}. Does not exist.`
         )
       }
     } catch (error) {
@@ -1082,7 +1078,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getRoutesByWorldRef(worldId: WorldId): Promise<Route[]> {
+  public async getPathsByWorldRef(worldId: WorldId): Promise<Path[]> {
     try {
       return await this.paths.where({ worldId }).toArray()
     } catch (error) {
@@ -1090,43 +1086,43 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveRoute(route: Route): Promise<ElementId> {
-    if (!route.sceneId)
-      throw new Error('Unable to save route to database. Missing scene ID.')
-    if (!route.id)
-      throw new Error('Unable to save route to database. Missing ID.')
+  public async savePath(path: Path): Promise<ElementId> {
+    if (!path.sceneId)
+      throw new Error('Unable to save path to database. Missing scene ID.')
+    if (!path.id)
+      throw new Error('Unable to save path to database. Missing ID.')
 
     try {
       await this.transaction('rw', this.paths, async () => {
-        if (route.id) {
-          if (await this.getElement(LIBRARY_TABLE.PATHS, route.id)) {
-            await this.paths.update(route.id, {
-              ...route,
+        if (path.id) {
+          if (await this.getElement(LIBRARY_TABLE.PATHS, path.id)) {
+            await this.paths.update(path.id, {
+              ...path,
               updated: Date.now()
             })
           } else {
             await this.paths.add({
-              ...route,
-              updated: route.updated || Date.now()
+              ...path,
+              updated: path.updated || Date.now()
             })
           }
         } else {
-          throw new Error('Unable to save route to database. Missing ID.')
+          throw new Error('Unable to save path to database. Missing ID.')
         }
       })
     } catch (error) {
       throw error
     }
 
-    return route.id
+    return path.id
   }
 
-  public async removeRoute(routeId: ElementId) {
-    logger.info(`LibraryDatabase->removeRoute`)
+  public async removePath(pathId: ElementId) {
+    logger.info(`LibraryDatabase->removePath`)
 
     try {
-      const conditions = await this.conditions.where({ routeId }).toArray(),
-        effects = await this.effects.where({ routeId }).toArray()
+      const conditions = await this.conditions.where({ pathId }).toArray(),
+        effects = await this.effects.where({ pathId }).toArray()
 
       await Promise.all([
         conditions.map(
@@ -1139,16 +1135,16 @@ export class LibraryDatabase extends Dexie {
       ])
 
       await this.transaction('rw', this.paths, async () => {
-        if (await this.getElement(LIBRARY_TABLE.PATHS, routeId)) {
+        if (await this.getElement(LIBRARY_TABLE.PATHS, pathId)) {
           logger.info(
-            `LibraryDatabase->removeRoute->Removing route with ID: ${routeId}`
+            `LibraryDatabase->removePath->Removing path with ID: ${pathId}`
           )
 
-          await this.paths.delete(routeId)
+          await this.paths.delete(pathId)
         } else {
-          // TODO: #70; async issue - we can do things in order, but this is likely more efficent
+          // TODO: #70; async issue - we can do things in order, but this is likely more efficient
           logger.error(
-            `LibraryDatabase->removeRoute->Unable to remove route with ID: '${routeId}'. Does not exist.`
+            `LibraryDatabase->removePath->Unable to remove path with ID: '${pathId}'. Does not exist.`
           )
         }
       })
@@ -1157,25 +1153,25 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeRoutesByEventRef(passageId: ElementId) {
-    logger.info(`LibraryDatabase->removeRoutesByPassageRef`)
+  public async removePathsByEventRef(eventId: ElementId) {
+    logger.info(`LibraryDatabase->removeRoutesByEventRef`)
 
     try {
       const originRoutes = await this.paths
-          .where({ originId: passageId })
+          .where({ originId: eventId })
           .toArray(),
         destinationRoutes = await this.paths
-          .where({ destinationId: passageId })
+          .where({ destinationId: eventId })
           .toArray()
 
       await Promise.all([
         originRoutes.map(
           async (originRoute) =>
-            originRoute.id && (await this.removeRoute(originRoute.id))
+            originRoute.id && (await this.removePath(originRoute.id))
         ),
         destinationRoutes.map(
           async (destinationRoute) =>
-            destinationRoute.id && (await this.removeRoute(destinationRoute.id))
+            destinationRoute.id && (await this.removePath(destinationRoute.id))
         )
       ])
     } catch (error) {
@@ -1183,14 +1179,12 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeRoutesByChoiceRef(choiceId: ElementId) {
+  public async removePathsByChoiceRef(choiceId: ElementId) {
     try {
-      const routes = await this.paths.where({ choiceId }).toArray()
+      const paths = await this.paths.where({ choiceId }).toArray()
 
       await Promise.all(
-        routes.map(
-          async (route) => route.id && (await this.removeRoute(route.id))
-        )
+        paths.map(async (path) => path.id && (await this.removePath(path.id)))
       )
     } catch (error) {
       throw error
@@ -1213,7 +1207,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getConditionsByGameRef(worldId: WorldId): Promise<Condition[]> {
+  public async getConditionsByWorldRef(worldId: WorldId): Promise<Condition[]> {
     try {
       return await this.conditions.where({ worldId }).toArray()
     } catch (error) {
@@ -1221,14 +1215,14 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getConditionsByRouteRef(
-    routeId: ElementId,
+  public async getConditionsByPathRef(
+    pathId: ElementId,
     countOnly?: boolean
   ): Promise<number | Condition[]> {
     try {
       return countOnly
-        ? await this.conditions.where({ routeId }).count()
-        : await this.conditions.where({ routeId }).toArray()
+        ? await this.conditions.where({ pathId }).count()
+        : await this.conditions.where({ pathId }).toArray()
     } catch (error) {
       throw error
     }
@@ -1245,8 +1239,8 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveCondition(condition: Condition): Promise<ElementId> {
-    if (!condition.routeId)
-      throw new Error('Unable to save condition to databse. Missing route ID.')
+    if (!condition.pathId)
+      throw new Error('Unable to save condition to database. Missing path ID.')
     if (!condition.id)
       throw new Error('Unable to save condition to database. Missing ID.')
 
@@ -1391,14 +1385,14 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getEffectsByRouteRef(
-    routeId: ElementId,
+  public async getEffectsByPathRef(
+    pathId: ElementId,
     countOnly?: boolean
   ): Promise<number | Effect[]> {
     try {
       return countOnly
-        ? await this.effects.where({ routeId }).count()
-        : await this.effects.where({ routeId }).toArray()
+        ? await this.effects.where({ pathId }).count()
+        : await this.effects.where({ pathId }).toArray()
     } catch (error) {
       throw error
     }
@@ -1415,8 +1409,8 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveEffect(effect: Effect): Promise<ElementId> {
-    if (!effect.routeId)
-      throw new Error('Unable to save effect to databse. Missing route ID.')
+    if (!effect.pathId)
+      throw new Error('Unable to save effect to database. Missing path ID.')
     if (!effect.id)
       throw new Error('Unable to save effect to database. Missing ID.')
 
@@ -1684,7 +1678,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async setEventEnding(eventId: ElementId, gameOver: boolean) {
+  public async setEventEnding(eventId: ElementId, ending: boolean) {
     try {
       await this.transaction('rw', this.events, async () => {
         if (eventId) {
@@ -1711,7 +1705,7 @@ export class LibraryDatabase extends Dexie {
       logger.info('LibraryDatabase->removePassage')
 
       await this.transaction('rw', this.events, async () => {
-        if (await this.getElement(LIBRARY_TABLE.PASSAGES, eventId)) {
+        if (await this.getElement(LIBRARY_TABLE.EVENTS, eventId)) {
           logger.info(
             `LibraryDatabase->removePassage->Removing event with ID: ${eventId}`
           )
@@ -1724,7 +1718,7 @@ export class LibraryDatabase extends Dexie {
         }
       })
 
-      const jumps = await this.jumps.where({ route: eventId }).toArray(),
+      const jumps = await this.jumps.where({ path: eventId }).toArray(),
         routes = await this.paths.where({ destinationId: eventId }).toArray(),
         choices = await this.choices.where({ eventId }).toArray(),
         inputs = await this.inputs.where({ eventId }).toArray()
@@ -1736,7 +1730,7 @@ export class LibraryDatabase extends Dexie {
 
       routes.length > 0 &&
         logger.info(
-          `LibraryDatabase->removePassage->Removing ${routes.length} route(s) from event with ID: ${eventId}`
+          `LibraryDatabase->removePassage->Removing ${routes.length} path(s) from event with ID: ${eventId}`
         )
 
       choices.length > 0 &&
@@ -1752,11 +1746,9 @@ export class LibraryDatabase extends Dexie {
       await Promise.all([
         jumps.map(
           async (jump) =>
-            jump.id && (await this.saveJumpRoute(jump.id, [jump.route[0]]))
+            jump.id && (await this.saveJumpPath(jump.id, [jump.path[0]]))
         ),
-        routes.map(
-          async (route) => route.id && (await this.removeRoute(route.id))
-        ),
+        routes.map(async (path) => path.id && (await this.removePath(path.id))),
         choices.map(
           async (choice) => choice.id && (await this.removeChoice(choice.id))
         ),
@@ -1806,8 +1798,8 @@ export class LibraryDatabase extends Dexie {
   public async saveChoice(choice: Choice): Promise<Choice> {
     if (!choice.worldId)
       throw new Error('Unable to save choice to database. Missing game ID.')
-    if (!choice.passageId)
-      throw new Error('Unable to save choice to database. Missing passage ID.')
+    if (!choice.eventId)
+      throw new Error('Unable to save choice to database. Missing event ID.')
     if (!choice.id)
       throw new Error('Unable to save choice to database. Missing ID.')
 
@@ -1842,14 +1834,12 @@ export class LibraryDatabase extends Dexie {
 
       if (routes.length > 0) {
         logger.info(
-          `removeChoice->Removing ${routes.length} route(s) from choice with ID: ${choiceId}`
+          `removeChoice->Removing ${routes.length} path(s) from choice with ID: ${choiceId}`
         )
       }
 
       await Promise.all(
-        routes.map(
-          async (route) => route.id && (await this.removeRoute(route.id))
-        )
+        routes.map(async (path) => path.id && (await this.removePath(path.id)))
       )
 
       await this.transaction('rw', this.choices, async () => {
@@ -1897,8 +1887,8 @@ export class LibraryDatabase extends Dexie {
   public async saveInput(input: Input): Promise<Input> {
     if (!input.worldId)
       throw new Error('Unable to save input to database. Missing game ID.')
-    if (!input.passageId)
-      throw new Error('Unable to save input to database. Missing passage ID.')
+    if (!input.eventId)
+      throw new Error('Unable to save input to database. Missing event ID.')
     if (!input.id)
       throw new Error('Unable to save input to database. Missing ID.')
 
@@ -1954,18 +1944,16 @@ export class LibraryDatabase extends Dexie {
 
   public async removeInput(inputId: ElementId) {
     try {
-      const routes = await this.paths.where({ inputId }).toArray()
+      const paths = await this.paths.where({ inputId }).toArray()
 
-      if (routes.length > 0) {
+      if (paths.length > 0) {
         logger.info(
-          `removeInput->Removing ${routes.length} route(s) from input with ID: ${inputId}`
+          `removeInput->Removing ${paths.length} path(s) from input with ID: ${inputId}`
         )
       }
 
       await Promise.all(
-        routes.map(
-          async (route) => route.id && (await this.removeRoute(route.id))
-        )
+        paths.map(async (path) => path.id && (await this.removePath(path.id)))
       )
 
       await this.transaction('rw', this.inputs, async () => {

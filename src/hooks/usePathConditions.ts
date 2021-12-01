@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 
 import { ElementId, Condition, WorldId, StudioId } from '../data/types'
 
-const useRouteConditions = (
+const usePathConditions = (
   studioId: StudioId,
   worldId: WorldId,
   deps?: any[]
@@ -17,7 +17,7 @@ const useRouteConditions = (
   return conditions
 }
 
-const useRouteCondition = (
+const usePathCondition = (
   studioId: StudioId,
   conditionId: ElementId,
   deps?: any[]
@@ -31,18 +31,18 @@ const useRouteCondition = (
     undefined
   )
 
-const useRouteConditionsByRouteRef = (
+const usePathConditionsByPathRef = (
   studioId: StudioId,
-  routeId: ElementId,
+  pathId: ElementId,
   deps?: any[]
 ): Condition[] | undefined =>
   useLiveQuery(
-    () => new LibraryDatabase(studioId).conditions.where({ routeId }).toArray(),
+    () => new LibraryDatabase(studioId).conditions.where({ pathId }).toArray(),
     deps || [],
     undefined
   )
 
-const useRouteConditionsByRouteRefs = (
+const usePathConditionsByPathRefs = (
   studioId: StudioId,
   routeIds: ElementId[],
   deps?: any[]
@@ -57,22 +57,22 @@ const useRouteConditionsByRouteRefs = (
     undefined
   )
 
-const useRouteConditionsCountByRouteRef = (
+const usePathConditionsCountByPathRef = (
   studioId: StudioId,
-  routeId: ElementId,
+  pathId: ElementId,
   deps?: any[]
 ): number | undefined =>
   useLiveQuery(
-    () => new LibraryDatabase(studioId).conditions.where({ routeId }).count(),
+    () => new LibraryDatabase(studioId).conditions.where({ pathId }).count(),
     deps || [],
     undefined
   )
 
 export {
-  useRouteCondition,
-  useRouteConditionsByRouteRef,
-  useRouteConditionsByRouteRefs,
-  useRouteConditionsCountByRouteRef
+  usePathCondition,
+  usePathConditionsByPathRef,
+  usePathConditionsByPathRefs,
+  usePathConditionsCountByPathRef
 }
 
-export default useRouteConditions
+export default usePathConditions

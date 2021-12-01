@@ -22,7 +22,7 @@ export async function getConditionsByWorldRef(
   worldId: WorldId
 ): Promise<Condition[]> {
   try {
-    return await new LibraryDatabase(studioId).getConditionsByGameRef(worldId)
+    return await new LibraryDatabase(studioId).getConditionsByWorldRef(worldId)
   } catch (error) {
     throw error
   }
@@ -30,12 +30,12 @@ export async function getConditionsByWorldRef(
 
 export async function getConditionsByRouteRef(
   studioId: StudioId,
-  routeId: ElementId,
+  pathId: ElementId,
   countOnly?: boolean
 ): Promise<number | Condition[]> {
   try {
-    return await new LibraryDatabase(studioId).getConditionsByRouteRef(
-      routeId,
+    return await new LibraryDatabase(studioId).getConditionsByPathRef(
+      pathId,
       countOnly || false
     )
   } catch (error) {

@@ -25,8 +25,8 @@ import {
   useChoice,
   useChoicesByEventRef,
   useEvent,
-  useRoutesByChoiceRef,
-  useRoutesBySceneRef
+  usePathsByChoiceRef,
+  usePathsBySceneRef
 } from '../../../hooks'
 
 import { Handle, Position, NodeProps, Connection } from 'react-flow-renderer'
@@ -58,8 +58,8 @@ const ChoiceSourceHandle: React.FC<{
   sceneId: ElementId
   choiceId: ElementId
 }> = ({ studioId, sceneId, choiceId }) => {
-  // TODO: do we really need to get access to routes on every choice?
-  const routes = useRoutesBySceneRef(studioId, sceneId)
+  // TODO: do we really need to get access to paths on every choice?
+  const paths = usePathsBySceneRef(studioId, sceneId)
 
   return (
     <Handle
@@ -73,19 +73,19 @@ const ChoiceSourceHandle: React.FC<{
         logger.info('isValidConnection')
 
         if (
-          routes &&
-          !routes.find(
-            (route) =>
-              route.choiceId === connection.sourceHandle &&
-              route.destinationId === connection.target
+          paths &&
+          !paths.find(
+            (path) =>
+              path.choiceId === connection.sourceHandle &&
+              path.destinationId === connection.target
           )
         ) {
           logger.info(
-            `Route possible from choice: ${connection.sourceHandle} to passage: ${connection.target}`
+            `Path possible from choice: ${connection.sourceHandle} to passage: ${connection.target}`
           )
           return true
         } else {
-          logger.info('Duplicate route not possible.')
+          logger.info('Duplicate path not possible.')
           return false
         }
       }}
@@ -123,7 +123,7 @@ const ChoiceRow: React.FC<{
   onDelete
 }) => {
   const choice = useChoice(studioId, choiceId),
-    outgoingRoutes = useRoutesByChoiceRef(studioId, choiceId)
+    outgoingPaths = usePathsByChoiceRef(studioId, choiceId)
 
   const { editor } = useContext(EditorContext)
 
@@ -132,9 +132,9 @@ const ChoiceRow: React.FC<{
   function _onReorder(event: MenuInfo, newPosition: number) {
     event.domEvent.stopPropagation()
 
-    choice?.passageId &&
+    choice?.eventId &&
       choice?.id &&
-      onReorder(choice?.passageId, choice.id, newPosition)
+      onReorder(choice?.eventId, choice.id, newPosition)
   }
 
   useEffect(() => {
@@ -155,9 +155,9 @@ const ChoiceRow: React.FC<{
       }}
       onMouseDown={() =>
         !renamingChoice &&
-        choice?.passageId &&
+        choice?.eventId &&
         choice?.id &&
-        onSelect(choice.passageId, choice.id)
+        onSelect(choice.eventId, choice.id)
       }
       onDoubleClick={() => {
         !renamingChoice && setRenamingChoice(true)
@@ -192,7 +192,7 @@ const ChoiceRow: React.FC<{
               onClick={(event) => {
                 event.domEvent.stopPropagation()
 
-                onDelete(choiceId, outgoingRoutes || [])
+                onDelete(choiceId, outgoingPaths || [])
               }}
             >
               Remove Choice...
@@ -232,12 +232,14 @@ const ChoiceRow: React.FC<{
   )
 }
 
-const InputSoureHandle: React.FC<{
+ChoiceRow.displayName = 'ChoiceRow'
+
+const InputSourceHandle: React.FC<{
   studioId: StudioId
   sceneId: ElementId
   inputId: ElementId
 }> = ({ studioId, sceneId, inputId }) => {
-  const routes = useRoutesBySceneRef(studioId, sceneId)
+  const paths = usePathsBySceneRef(studioId, sceneId)
 
   return (
     <Handle
@@ -251,25 +253,27 @@ const InputSoureHandle: React.FC<{
         logger.info('isValidConnection')
 
         if (
-          routes &&
-          !routes.find(
-            (route) =>
-              route.inputId === connection.sourceHandle &&
-              route.destinationId === connection.target
+          paths &&
+          !paths.find(
+            (path) =>
+              path.inputId === connection.sourceHandle &&
+              path.destinationId === connection.target
           )
         ) {
           logger.info(
-            `Route possible from input: ${connection.sourceHandle} to passage: ${connection.target}`
+            `Path possible from input: ${connection.sourceHandle} to event: ${connection.target}`
           )
           return true
         } else {
-          logger.info('Duplicate route not possible.')
+          logger.info('Duplicate path not possible.')
           return false
         }
       }}
     />
   )
 }
+
+InputSourceHandle.displayName = 'InputSourceHandle'
 
 const InputRow: React.FC<{
   studioId: StudioId
@@ -289,18 +293,20 @@ const InputRow: React.FC<{
   )
 }
 
-const PassageTargetHandle: React.FC<{
+InputRow.displayName = 'InputRow'
+
+const EventTargetHandle: React.FC<{
   studioId: StudioId
   sceneId: ElementId
-  passageId: ElementId
-}> = ({ studioId, sceneId, passageId }) => {
-  // TODO: do we really need to get access to routes on every passage?
-  const routes = useRoutesBySceneRef(studioId, sceneId)
+  eventId: ElementId
+}> = ({ studioId, sceneId, eventId }) => {
+  // TODO: do we really need to get access to paths on every passage?
+  const paths = usePathsBySceneRef(studioId, sceneId)
 
   return (
     <Handle
       type="target"
-      id={passageId}
+      id={eventId}
       className={styles.passageTargetHandle}
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Left}
@@ -308,19 +314,19 @@ const PassageTargetHandle: React.FC<{
         logger.info('isValidConnection')
 
         if (
-          routes &&
-          !routes.find(
-            (route) =>
-              route.choiceId === connection.sourceHandle &&
-              route.destinationId === connection.target
+          paths &&
+          !paths.find(
+            (path) =>
+              path.choiceId === connection.sourceHandle &&
+              path.destinationId === connection.target
           )
         ) {
           logger.info(
-            `Route possible from choice: ${connection.sourceHandle} to passage: ${connection.target}`
+            `Path possible from choice: ${connection.sourceHandle} to passage: ${connection.target}`
           )
           return true
         } else {
-          logger.info('Duplicate route not possible.')
+          logger.info('Duplicate path not possible.')
           return false
         }
       }}
@@ -328,38 +334,40 @@ const PassageTargetHandle: React.FC<{
   )
 }
 
-const PassageSoureHandle: React.FC<{
+EventTargetHandle.displayName = 'EventTargetHandle'
+
+const EventSourceHandle: React.FC<{
   studioId: StudioId
   sceneId: ElementId
-  passageId: ElementId
-}> = ({ studioId, sceneId, passageId }) => {
-  const routes = useRoutesBySceneRef(studioId, sceneId)
+  eventId: ElementId
+}> = ({ studioId, sceneId, eventId }) => {
+  const events = usePathsBySceneRef(studioId, sceneId)
 
   return (
     <Handle
-      key={passageId}
+      key={eventId}
       type="source"
       className={styles.passageSourceHandle}
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Right}
-      id={passageId}
+      id={eventId}
       isValidConnection={(connection: Connection): boolean => {
         logger.info('isValidConnection')
 
         if (
-          routes &&
-          !routes.find(
-            (route) =>
-              route.originId === connection.sourceHandle &&
-              route.destinationId === connection.target
+          events &&
+          !events.find(
+            (path) =>
+              path.originId === connection.sourceHandle &&
+              path.destinationId === connection.target
           )
         ) {
           logger.info(
-            `Route possible from input: ${connection.sourceHandle} to passage: ${connection.target}`
+            `Path possible from input: ${connection.sourceHandle} to event: ${connection.target}`
           )
           return true
         } else {
-          logger.info('Duplicate route not possible.')
+          logger.info('Duplicate path not possible.')
           return false
         }
       }}
@@ -367,17 +375,19 @@ const PassageSoureHandle: React.FC<{
   )
 }
 
+EventSourceHandle.displayName = 'EventSourceHandle'
+
 const EventNode: React.FC<NodeProps<{
   studioId: StudioId
   sceneId: ElementId
-  passageId: ElementId
+  eventId: ElementId
   selectedChoice: ElementId | null
-  onEditPassage: (passageId: ElementId) => void
-  onChoiceSelect: (passageId: ElementId, choiceId: ElementId | null) => void
+  onEditEvent: (eventId: ElementId) => void
+  onChoiceSelect: (eventId: ElementId, choiceId: ElementId | null) => void
   type: ELEMENT_TYPE
 }>> = ({ data }) => {
-  const event = useEvent(data.studioId, data.passageId),
-    choicesByEventRef = useChoicesByEventRef(data.studioId, data.passageId)
+  const event = useEvent(data.studioId, data.eventId),
+    choicesByEventRef = useChoicesByEventRef(data.studioId, data.eventId)
 
   const updateNodeInternals = useUpdateNodeInternals()
 
@@ -430,20 +440,20 @@ const EventNode: React.FC<NodeProps<{
   useEffect(() => {
     async function removePassthroughNode() {
       if (event?.id && choices.length > 0) {
-        const foundRoutes = await api().routes.getPassthroughRoutesByPassageRef(
+        const foundPaths = await api().paths.getPassthroughPathsByEventRef(
           data.studioId,
-          data.passageId
+          data.eventId
         )
 
         await Promise.all([
-          foundRoutes.map(async (foundRoute) => {
-            foundRoute?.id &&
-              (await api().routes.removeRoute(data.studioId, foundRoute.id))
+          foundPaths.map(async (foundPath) => {
+            foundPath?.id &&
+              (await api().paths.removePath(data.studioId, foundPath.id))
           })
         ])
       }
 
-      updateNodeInternals(data.passageId)
+      updateNodeInternals(data.eventId)
     }
 
     removePassthroughNode()
@@ -460,14 +470,14 @@ const EventNode: React.FC<NodeProps<{
   }, [data.selectedChoice])
 
   return (
-    <div className={styles.EventNode} key={data.passageId} id={data.passageId}>
+    <div className={styles.EventNode} key={data.eventId} id={data.eventId}>
       {event?.id && (
         <>
           <div>
-            <PassageTargetHandle
+            <EventTargetHandle
               studioId={data.studioId}
               sceneId={data.sceneId}
-              passageId={event.id}
+              eventId={event.id}
             />
 
             <div
@@ -493,7 +503,7 @@ const EventNode: React.FC<NodeProps<{
                 // TODO: make class list work in ContextMenu
                 className="nodeEventHeader"
                 data-component-id={event.id}
-                onDoubleClick={() => event.id && data.onEditPassage(event.id)}
+                onDoubleClick={() => event.id && data.onEditEvent(event.id)}
               >
                 {/* #395 */}
                 {event.ending ? (
@@ -515,10 +525,10 @@ const EventNode: React.FC<NodeProps<{
             </div>
 
             {choices.length === 0 && event.type !== EVENT_TYPE.INPUT && (
-              <PassageSoureHandle
+              <EventSourceHandle
                 studioId={data.studioId}
                 sceneId={data.sceneId}
-                passageId={event.id}
+                eventId={event.id}
               />
             )}
           </div>
@@ -552,30 +562,30 @@ const EventNode: React.FC<NodeProps<{
                           showDivider={choices.length - 1 !== index}
                           handle={choice.handle}
                           selected={data.selectedChoice === choice.id}
-                          onSelect={(passageId, choiceId) => {
+                          onSelect={(eventId, choiceId) => {
                             logger.info(
                               `EventNode->onClick: choice: ${choiceId}`
                             )
 
                             editor.selectedComponentEditorSceneViewEvent !==
-                              passageId &&
+                              eventId &&
                               setSelectedElement([
                                 cloneDeep(
                                   events.find(
-                                    (passageNode) =>
-                                      passageNode.id === passageId
+                                    (eventNode) =>
+                                      eventNode.id === eventId
                                   )
                                 )
                               ]) &&
                               editorDispatch({
                                 type:
                                   EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
-                                selectedElementEditorSceneViewEvent: passageId
+                                selectedElementEditorSceneViewEvent: eventId
                               })
 
                             editor.selectedComponentEditorSceneViewEvent ===
-                              passageId &&
-                              data.onChoiceSelect(passageId, choiceId)
+                              eventId &&
+                              data.onChoiceSelect(eventId, choiceId)
                           }}
                           onReorder={async (
                             passageId,
@@ -596,13 +606,13 @@ const EventNode: React.FC<NodeProps<{
                             clonedChoiceRefs.splice(foundChoiceRefIndex, 1)
                             clonedChoiceRefs.splice(newPosition, 0, choiceId)
 
-                            await api().events.saveChoiceRefsToPassage(
+                            await api().events.saveChoiceRefsToEvent(
                               data.studioId,
-                              data.passageId,
+                              data.eventId,
                               clonedChoiceRefs
                             )
                           }}
-                          onDelete={async (choiceId, outgoingRoutes) => {
+                          onDelete={async (choiceId, outgoingPaths) => {
                             editor.selectedComponentEditorSceneViewChoice ===
                               choice.id &&
                               editorDispatch({
@@ -619,15 +629,15 @@ const EventNode: React.FC<NodeProps<{
                             if (foundChoiceIndex !== -1) {
                               try {
                                 await Promise.all(
-                                  outgoingRoutes.map(async (outgoingRoute) => {
-                                    if (!outgoingRoute.id)
+                                  outgoingPaths.map(async (outgoingPath) => {
+                                    if (!outgoingPath.id)
                                       throw new Error(
-                                        'Unable to remove route. Missing ID'
+                                        'Unable to remove path. Missing ID'
                                       )
 
-                                    await api().routes.removeRoute(
+                                    await api().paths.removePath(
                                       data.studioId,
-                                      outgoingRoute.id
+                                      outgoingPath.id
                                     )
                                   })
                                 )
@@ -639,9 +649,9 @@ const EventNode: React.FC<NodeProps<{
 
                                 clonedChoices.splice(foundChoiceIndex, 1)
 
-                                await api().events.saveChoiceRefsToPassage(
+                                await api().events.saveChoiceRefsToEvent(
                                   data.studioId,
-                                  data.passageId,
+                                  data.eventId,
                                   clonedChoices.map(
                                     (clonedChoice) => clonedChoice.id
                                   )
@@ -672,16 +682,16 @@ const EventNode: React.FC<NodeProps<{
                         const choiceId = uuid()
 
                         try {
-                          await api().events.saveChoiceRefsToPassage(
+                          await api().events.saveChoiceRefsToEvent(
                             data.studioId,
-                            data.passageId,
+                            data.eventId,
                             [...event.choices, choiceId]
                           )
 
                           await api().choices.saveChoice(data.studioId, {
                             id: choiceId,
                             worldId: event.worldId,
-                            passageId: data.passageId,
+                            eventId: data.eventId,
                             title: 'Untitled Choice',
                             tags: []
                           })
@@ -731,7 +741,7 @@ const EventNode: React.FC<NodeProps<{
                 worldId={event.worldId}
                 inputId={event.input}
                 handle={
-                  <InputSoureHandle
+                  <InputSourceHandle
                     studioId={data.studioId}
                     sceneId={data.sceneId}
                     inputId={event.input}

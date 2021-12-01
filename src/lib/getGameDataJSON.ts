@@ -32,7 +32,7 @@ export default async (
       folders = await api().folders.getFoldersByWorldRef(studioId, gameId),
       inputs = await api().inputs.getInputsByGameRef(studioId, gameId),
       jumps = await api().jumps.getJumpsByGameRef(studioId, gameId),
-      routes = await api().routes.getRoutesByGameRef(studioId, gameId),
+      routes = await api().paths.getRoutesByGameRef(studioId, gameId),
       passages = await api().events.getPassagesByGameRef(studioId, gameId),
       scenes = await api().scenes.getScenesByGameRef(studioId, gameId),
       variables = await api().variables.getVariablesByGameRef(studioId, gameId)
@@ -129,11 +129,11 @@ export default async (
     )
 
     jumps.map(
-      ({ editor, id, route, sceneId, tags, title, updated }) =>
+      ({ editor, id, path, sceneId, tags, title, updated }) =>
         (gameData.jumps[id as string] = {
           editor,
           id: id as string,
-          route,
+          path,
           sceneId,
           tags,
           title,

@@ -3,8 +3,8 @@ import React, { memo } from 'react'
 import { ElementId, ELEMENT_TYPE, StudioId } from '../../../data/types'
 
 import {
-  useRouteConditionsCountByRouteRef,
-  useRouteEffectsCountByRouteRef
+  usePathConditionsCountByPathRef,
+  usePathEffectsCountByPathRef
 } from '../../../hooks'
 
 import {
@@ -14,7 +14,7 @@ import {
   getEdgeCenter
 } from 'react-flow-renderer'
 
-import RouteEdgeLabel from './RouteEdgeLabel'
+import PathEdgeLabel from './PathEdgeLabel'
 
 interface GetBezierPathParams {
   sourceX: number
@@ -27,10 +27,10 @@ interface GetBezierPathParams {
   centerY?: number
 }
 
-export interface RouteEdgeData {
-  type: ELEMENT_TYPE.ROUTE
+export interface PathEdgeData {
+  type: ELEMENT_TYPE.PATH
   studioId: StudioId
-  routeId: ElementId
+  pathId: ElementId
 }
 
 export function getBezierPath({
@@ -81,19 +81,19 @@ export default memo(
     arrowHeadType,
     markerEndId,
     data
-  }: EdgeProps<RouteEdgeData>) => {
+  }: EdgeProps<PathEdgeData>) => {
     const conditionsCount =
         (data &&
-          useRouteConditionsCountByRouteRef(data.studioId, data.routeId, [
+          usePathConditionsCountByPathRef(data.studioId, data.pathId, [
             data.studioId,
-            data.routeId
+            data.pathId
           ])) ||
         undefined,
       effectsCount =
         (data &&
-          useRouteEffectsCountByRouteRef(data.studioId, data.routeId, [
+          usePathEffectsCountByPathRef(data.studioId, data.pathId, [
             data.studioId,
-            data.routeId
+            data.pathId
           ])) ||
         undefined
 
@@ -124,7 +124,7 @@ export default memo(
           className="react-flow__edge-path"
           markerEnd={markerEnd}
         />
-        <RouteEdgeLabel
+        <PathEdgeLabel
           x={centerX}
           y={centerY}
           totalConditions={conditionsCount || 0}

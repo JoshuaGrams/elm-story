@@ -129,7 +129,7 @@ export default (
               compare: [...compare, variables[variableId].type],
               worldId: _.id,
               id,
-              routeId,
+              pathId: routeId,
               tags,
               title,
               updated,
@@ -145,7 +145,7 @@ export default (
             await api().effects.saveEffect(_.studioId, {
               worldId: _.id,
               id,
-              routeId,
+              pathId: routeId,
               tags,
               set,
               title,
@@ -189,13 +189,13 @@ export default (
           // Save jumps
           for await (const [
             __,
-            { editor, id, route, sceneId, tags, title, updated }
+            { editor, id, path, sceneId, tags, title, updated }
           ] of Object.entries(jumps)) {
             await api().jumps.saveJump(_.studioId, {
               editor,
               worldId: _.id,
               id,
-              route,
+              path,
               sceneId,
               tags,
               title,
@@ -210,7 +210,7 @@ export default (
               choices,
               content,
               editor,
-              gameOver,
+              ending,
               id,
               sceneId,
               tags,
@@ -220,7 +220,7 @@ export default (
               updated
             }
           ] of Object.entries(passages)) {
-            await api().events.savePassage(_.studioId, {
+            await api().events.saveEvent(_.studioId, {
               choices,
               content,
               editor,
@@ -253,7 +253,7 @@ export default (
               updated
             }
           ] of Object.entries(routes)) {
-            await api().routes.saveRoute(_.studioId, {
+            await api().paths.saveRoute(_.studioId, {
               choiceId,
               destinationId,
               destinationType,

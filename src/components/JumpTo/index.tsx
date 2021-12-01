@@ -199,7 +199,7 @@ const JumpTo: React.FC<{
           await api().jumps.saveJumpRoute(
             studioId,
             jump.id,
-            componentId ? [jump.route[0], componentId] : [jump.route[0]]
+            componentId ? [jump.path[0], componentId] : [jump.path[0]]
           )
           break
         default:
@@ -213,21 +213,21 @@ const JumpTo: React.FC<{
       {jump && (
         <>
           {/* Scene */}
-          {jump.route[0] && (
+          {jump.path[0] && (
             <JumpSelect
               studioId={studioId}
               worldId={jump.worldId}
-              selectedId={jump.route[0]}
+              selectedId={jump.path[0]}
               onChangeRoutePart={onChangeRoutePart}
             />
           )}
 
           {/* Passage */}
-          {jump.route[0] && (
+          {jump.path[0] && (
             <JumpSelect
               studioId={studioId}
-              sceneId={jump.route[0]}
-              selectedId={jump.route[1]}
+              sceneId={jump.path[0]}
+              selectedId={jump.path[1]}
               onChangeRoutePart={onChangeRoutePart}
             />
           )}

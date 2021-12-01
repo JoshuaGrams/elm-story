@@ -9,24 +9,24 @@ import useWorlds, { useWorld } from './useWorlds'
 import useFolders, { useFolder } from './useFolders'
 import useJumps, { useJump, useJumpsBySceneRef } from './useJumps'
 import useScenes, { useScene } from './useScenes'
-import useRoutes, {
-  useRoute,
-  useRoutesBySceneRef,
-  useRoutesByEventRef,
-  useRoutesByChoiceRef,
-  useRoutesByInputRef,
-  useRoutePassthroughsByEventRef
+import usePaths, {
+  usePath,
+  usePathsBySceneRef,
+  usePathsByEventRef,
+  usePathsByChoiceRef,
+  usePathsByInputRef,
+  usePathPassthroughsByEventRef
 } from './usePaths'
-import useRouteConditions, {
-  useRouteCondition,
-  useRouteConditionsByRouteRef,
-  useRouteConditionsByRouteRefs,
-  useRouteConditionsCountByRouteRef
+import usePathConditions, {
+  usePathCondition,
+  usePathConditionsByPathRef,
+  usePathConditionsByPathRefs,
+  usePathConditionsCountByPathRef
 } from './usePathConditions'
-import useRouteEffects, {
-  useRouteEffect,
-  useRouteEffectsByRouteRef,
-  useRouteEffectsCountByRouteRef
+import usePathEffects, {
+  usePathEffect,
+  usePathEffectsByPathRef,
+  usePathEffectsCountByPathRef
 } from './usePathEffects'
 import useEvents, { useEventsBySceneRef, useEvent } from './useEvents'
 import useChoices, { useChoice, useChoicesByEventRef } from './useChoices'
@@ -49,22 +49,22 @@ export {
   useJumpsBySceneRef,
   useScenes,
   useScene,
-  useRoutes,
-  useRoute,
-  useRouteConditions,
-  useRouteCondition,
-  useRouteConditionsByRouteRef,
-  useRouteConditionsByRouteRefs,
-  useRouteConditionsCountByRouteRef,
-  useRouteEffects,
-  useRouteEffect,
-  useRouteEffectsByRouteRef,
-  useRouteEffectsCountByRouteRef,
-  useRoutesBySceneRef,
-  useRoutesByEventRef,
-  useRoutesByChoiceRef,
-  useRoutesByInputRef,
-  useRoutePassthroughsByEventRef,
+  usePaths,
+  usePath,
+  usePathConditions,
+  usePathCondition,
+  usePathConditionsByPathRef,
+  usePathConditionsByPathRefs,
+  usePathConditionsCountByPathRef,
+  usePathEffects,
+  usePathEffect,
+  usePathEffectsByPathRef,
+  usePathEffectsCountByPathRef,
+  usePathsBySceneRef,
+  usePathsByEventRef,
+  usePathsByChoiceRef,
+  usePathsByInputRef,
+  usePathPassthroughsByEventRef,
   useEvents,
   useEvent,
   useEventsBySceneRef,

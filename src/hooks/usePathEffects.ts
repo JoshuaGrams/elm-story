@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 
 import { ElementId, Effect, WorldId, StudioId } from '../data/types'
 
-const useRouteEffects = (
+const usePathEffects = (
   studioId: StudioId,
   worldId: WorldId,
   deps?: any[]
@@ -17,7 +17,7 @@ const useRouteEffects = (
   return effects
 }
 
-const useRouteEffect = (
+const usePathEffect = (
   studioId: StudioId,
   effectId: ElementId,
   deps?: any[]
@@ -28,32 +28,28 @@ const useRouteEffect = (
     undefined
   )
 
-const useRouteEffectsByRouteRef = (
+const usePathEffectsByPathRef = (
   studioId: StudioId,
-  routeId: ElementId,
+  pathId: ElementId,
   deps?: any[]
 ): Effect[] | undefined =>
   useLiveQuery(
-    () => new LibraryDatabase(studioId).effects.where({ routeId }).toArray(),
+    () => new LibraryDatabase(studioId).effects.where({ pathId }).toArray(),
     deps || [],
     undefined
   )
 
-const useRouteEffectsCountByRouteRef = (
+const usePathEffectsCountByPathRef = (
   studioId: StudioId,
-  routeId: ElementId,
+  pathId: ElementId,
   deps?: any[]
 ): number | undefined =>
   useLiveQuery(
-    () => new LibraryDatabase(studioId).effects.where({ routeId }).count(),
+    () => new LibraryDatabase(studioId).effects.where({ pathId }).count(),
     deps || [],
     undefined
   )
 
-export {
-  useRouteEffect,
-  useRouteEffectsByRouteRef,
-  useRouteEffectsCountByRouteRef
-}
+export { usePathEffect, usePathEffectsByPathRef, usePathEffectsCountByPathRef }
 
-export default useRouteEffects
+export default usePathEffects

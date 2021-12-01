@@ -41,7 +41,7 @@ const ElementHelpButton: React.FC<{ type: ELEMENT_TYPE }> = ({ type }) => {
       case ELEMENT_TYPE.EVENT:
         helpUrl = `${helpUrl}/passage-component/`
         break
-      case ELEMENT_TYPE.ROUTE:
+      case ELEMENT_TYPE.PATH:
         helpUrl = `${helpUrl}/route-component/`
         break
       case ELEMENT_TYPE.SCENE:

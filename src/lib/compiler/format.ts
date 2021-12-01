@@ -6,7 +6,7 @@ import {
   ELEMENT_TYPE,
   GameDataJSON,
   ESGEngineCollectionData
-} from '../transport/types/0.5.1'
+} from '../transport/types/0.6.0'
 
 function filterCollectionChildProps<T extends object, U extends keyof T>(
   collectionToFilter: { [ElementId: string]: T },
@@ -31,7 +31,7 @@ function format(gameData: GameDataJSON): string {
     inputs,
     jumps,
     passages,
-    routes,
+    paths,
     scenes,
     variables
   }: GameDataJSON = cloneDeep(gameData)
@@ -77,7 +77,7 @@ function format(gameData: GameDataJSON): string {
       'passageId',
       'variableId'
     ]),
-    jumps: filterCollectionChildProps(jumps, ['id', 'route', 'sceneId']),
+    jumps: filterCollectionChildProps(jumps, ['id', 'path', 'sceneId']),
     passages: filterCollectionChildProps(passages, [
       'choices',
       'content',
@@ -87,7 +87,7 @@ function format(gameData: GameDataJSON): string {
       'sceneId',
       'type'
     ]),
-    routes: filterCollectionChildProps(routes, [
+    paths: filterCollectionChildProps(paths, [
       'choiceId',
       'destinationId',
       'destinationType',

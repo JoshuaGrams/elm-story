@@ -15,7 +15,7 @@ import {
   useCharacters,
   useChoicesByEventRef,
   useEvent,
-  useRoutePassthroughsByEventRef
+  usePathPassthroughsByEventRef
 } from '../../../hooks'
 
 import {
@@ -278,7 +278,7 @@ const PassageEndToggle: React.FC<{
   const { editor } = useContext(EditorContext)
 
   const choices = useChoicesByEventRef(studioId, event.id, [event]),
-    routePassthroughs = useRoutePassthroughsByEventRef(studioId, event.id, [
+    routePassthroughs = usePathPassthroughsByEventRef(studioId, event.id, [
       event
     ])
 

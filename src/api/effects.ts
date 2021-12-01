@@ -28,14 +28,14 @@ export async function getEffectsByWorldRef(
   }
 }
 
-export async function getEffectsByRouteRef(
+export async function getEffectsByPathRef(
   studioId: StudioId,
-  routeId: ElementId,
+  pathId: ElementId,
   countOnly?: boolean
 ): Promise<number | Effect[]> {
   try {
-    return await new LibraryDatabase(studioId).getEffectsByRouteRef(
-      routeId,
+    return await new LibraryDatabase(studioId).getEffectsByPathRef(
+      pathId,
       countOnly || false
     )
   } catch (error) {

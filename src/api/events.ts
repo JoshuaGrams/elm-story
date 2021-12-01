@@ -140,7 +140,7 @@ export async function switchEventFromChoiceToInputType(
 ) {
   if (event && event.id) {
     try {
-      const foundPassthroughRoutes = await api().routes.getPassthroughRoutesByEventsRef(
+      const foundPassthroughRoutes = await api().paths.getPassthroughRoutesByEventsRef(
         studioId,
         event.id
       )
@@ -149,7 +149,7 @@ export async function switchEventFromChoiceToInputType(
         foundPassthroughRoutes.map(async (foundRoute) => {
           foundRoute.id &&
             foundRoute.choiceId === undefined &&
-            api().routes.removeRoute(studioId, foundRoute.id)
+            api().paths.removeRoute(studioId, foundRoute.id)
         }),
         event.choices.map(
           async (choiceId) =>

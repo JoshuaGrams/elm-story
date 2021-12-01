@@ -15,7 +15,7 @@ export enum ELEMENT_TYPE {
   FOLDER = 'FOLDER',
   INPUT = 'INPUT',
   JUMP = 'JUMP',
-  ROUTE = 'ROUTE',
+  PATH = 'PATH',
   SCENE = 'SCENE',
   STUDIO = 'STUDIO',
   VARIABLE = 'VARIABLE',
@@ -228,12 +228,12 @@ export interface Folder extends Element {
   parent: FolderParentRef
 }
 
-export type JumpRoute = [ElementId?, ElementId?] // [sceneId, eventId]
+export type JumpPath = [ElementId?, ElementId?] // [sceneId, eventId]
 
 export interface Jump extends Element {
   worldId: WorldId
   sceneId?: ElementId
-  route: JumpRoute
+  path: JumpPath
 }
 
 // To reduce dupe, set null when parent is of type GAME
@@ -262,18 +262,18 @@ export interface Path extends Element {
   destinationType: ELEMENT_TYPE
 }
 
-// Route Condition
+// Path Condition
 export interface Condition extends Element {
   worldId: WorldId
-  routeId: ElementId
+  pathId: ElementId
   variableId: ElementId
   compare: [ElementId, COMPARE_OPERATOR_TYPE, string, VARIABLE_TYPE] // variable ref
 }
 
-// Route Condition
+// Path Condition
 export interface Effect extends Element {
   worldId: WorldId
-  routeId: ElementId
+  pathId: ElementId
   variableId: ElementId
   set: [ElementId, SET_OPERATOR_TYPE, string] // variable ref
 }
