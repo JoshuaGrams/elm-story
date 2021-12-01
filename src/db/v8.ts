@@ -29,12 +29,13 @@ export default (database: Dexie) => {
     })
     .upgrade(async (tx) => {
       const worldsTable = tx.table(LIBRARY_TABLE.WORLDS),
+        pathsTable = tx.table(LIBRARY_TABLE.PATHS),
         liveEventsTable = tx.table(LIBRARY_TABLE.LIVE_EVENTS),
-        eventsTable = tx.table(LIBRARY_TABLE.EVENTS),
-        pathsTable = tx.table(LIBRARY_TABLE.PATHS)
+        eventsTable = tx.table(LIBRARY_TABLE.EVENTS)
 
       await Promise.all([
         worldsTable.bulkAdd(await tx.table('games').toArray()),
+        pathsTable.bulkAdd(await tx.table('route').toArray()),
         liveEventsTable.bulkAdd(await tx.table('events').toArray()),
         eventsTable.clear()
       ])
@@ -114,29 +115,21 @@ export default (database: Dexie) => {
         tx
           .table(LIBRARY_TABLE.PATHS)
           .toCollection()
-          .modify((route) => {
-            if (route.destinationType === ELEMENT_TYPE.PASSAGE) {
-              route.destinationType = ELEMENT_TYPE.EVENT
+          .modify((path) => {
+            if (path.destinationType === 'PASSAGE') {
+              path.destinationType = ELEMENT_TYPE.EVENT
             }
 
-            route.worldId = route.gameId
-            delete route.gameId
+            path.worldId = path.gameId
+            delete path.gameId
           }),
         tx
           .table(LIBRARY_TABLE.SCENES)
           .toCollection()
           .modify((scene) => {
-            const newChildren: [ELEMENT_TYPE, string][] = []
-
-            scene.children.map((child: [ELEMENT_TYPE, string]) => {
-              if (child[0] === ELEMENT_TYPE.PASSAGE) {
-                newChildren.push([ELEMENT_TYPE.EVENT, child[1]])
-              } else {
-                newChildren.push(child)
-              }
-            })
-
-            scene.children = newChildren
+            scene.children = scene.children.map(
+              (child: [ELEMENT_TYPE, string]) => [ELEMENT_TYPE.EVENT, child[1]]
+            )
 
             scene.worldId = scene.gameId
             delete scene.gameId

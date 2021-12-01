@@ -241,7 +241,8 @@ export type SceneParentRef = [
   ELEMENT_TYPE.WORLD | ELEMENT_TYPE.FOLDER,
   ElementId | null
 ]
-export type SceneChildRefs = Array<[ELEMENT_TYPE.EVENT, ElementId]>
+export type SceneChildRef = [ELEMENT_TYPE.EVENT, ElementId]
+export type SceneChildRefs = Array<SceneChildRef>
 
 export interface Scene extends Element {
   children: SceneChildRefs
