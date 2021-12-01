@@ -13,10 +13,8 @@ export enum ELEMENT_TYPE {
   EFFECT = 'EFFECT',
   EVENT = 'EVENT',
   FOLDER = 'FOLDER',
-  GAME = 'GAME',
   INPUT = 'INPUT',
   JUMP = 'JUMP',
-  PASSAGE = 'PASSAGE',
   ROUTE = 'ROUTE',
   SCENE = 'SCENE',
   STUDIO = 'STUDIO',
@@ -30,7 +28,6 @@ export enum GAME_TEMPLATE {
 }
 
 export enum VARIABLE_TYPE {
-  CHARACTER = 'CHARACTER',
   STRING = 'STRING',
   NUMBER = 'NUMBER',
   BOOLEAN = 'BOOLEAN',
@@ -218,7 +215,7 @@ export interface World extends Element {
 
 // To reduce dupe, set null when parent is of type GAME
 export type FolderParentRef = [
-  ELEMENT_TYPE.GAME | ELEMENT_TYPE.FOLDER,
+  ELEMENT_TYPE.WORLD | ELEMENT_TYPE.FOLDER,
   ElementId | null
 ]
 export type FolderChildRefs = Array<
@@ -231,7 +228,7 @@ export interface Folder extends Element {
   parent: FolderParentRef
 }
 
-export type JumpRoute = [ElementId?, ElementId?] // [sceneId, passageId]
+export type JumpRoute = [ElementId?, ElementId?] // [sceneId, eventId]
 
 export interface Jump extends Element {
   worldId: WorldId
@@ -241,10 +238,10 @@ export interface Jump extends Element {
 
 // To reduce dupe, set null when parent is of type GAME
 export type SceneParentRef = [
-  ELEMENT_TYPE.GAME | ELEMENT_TYPE.FOLDER,
+  ELEMENT_TYPE.WORLD | ELEMENT_TYPE.FOLDER,
   ElementId | null
 ]
-export type SceneChildRefs = Array<[ELEMENT_TYPE.PASSAGE, ElementId]>
+export type SceneChildRefs = Array<[ELEMENT_TYPE.EVENT, ElementId]>
 
 export interface Scene extends Element {
   children: SceneChildRefs
@@ -253,7 +250,7 @@ export interface Scene extends Element {
   jumps: ElementId[]
 }
 
-export interface Route extends Element {
+export interface Path extends Element {
   worldId: WorldId
   sceneId: ElementId
   originId: ElementId
@@ -300,12 +297,12 @@ export interface Event extends Element {
 
 export interface Choice extends Element {
   worldId: WorldId
-  passageId: ElementId
+  eventId: ElementId
 }
 
 export interface Input extends Element {
   worldId: WorldId
-  passageId: ElementId
+  eventId: ElementId
   variableId?: ElementId
 }
 

@@ -9,7 +9,7 @@ import {
   PartitionOutlined
 } from '@ant-design/icons'
 
-import StoryworldProperties from './StoryworldProperties'
+import StoryworldProperties from './WorldProperties'
 import FolderProperties from './FolderProperties'
 import SceneProperties from './SceneProperties'
 import EventProperties from './EventProperties'
@@ -26,14 +26,14 @@ const ComponentDetailView: React.FC<{
 }> = ({ studioId, component }) => {
   return (
     <div className={styles.ComponentDetailView}>
-      {component.type === ELEMENT_TYPE.GAME && (
+      {component.type === ELEMENT_TYPE.WORLD && (
         <>
           <div className={styles.componentDetailViewHeader}>
             <DeploymentUnitOutlined className={styles.headerIcon} /> Selected
             Storyworld
-            <ElementHelpButton type={ELEMENT_TYPE.GAME} />
+            <ElementHelpButton type={ELEMENT_TYPE.WORLD} />
           </div>
-          <StoryworldProperties studioId={studioId} gameId={component.id} />
+          <StoryworldProperties studioId={studioId} worldId={component.id} />
         </>
       )}
 
@@ -58,11 +58,11 @@ const ComponentDetailView: React.FC<{
       )}
 
       {/* TODO: is this dead code? */}
-      {component.type === ELEMENT_TYPE.PASSAGE && (
+      {component.type === ELEMENT_TYPE.EVENT && (
         <>
           <div className={styles.componentDetailViewHeader}>
             <AlignLeftOutlined className={styles.headerIcon} /> Selected Event
-            <ElementHelpButton type={ELEMENT_TYPE.PASSAGE} />
+            <ElementHelpButton type={ELEMENT_TYPE.EVENT} />
           </div>
           <EventProperties studioId={studioId} passageId={component.id} />
         </>

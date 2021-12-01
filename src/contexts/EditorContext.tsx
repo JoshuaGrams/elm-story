@@ -16,7 +16,7 @@ interface EditorState {
     id?: ElementId
     type?: ELEMENT_TYPE
   }
-  selectedGameOutlineComponent: {
+  selectedWorldOutlineElement: {
     id?: ElementId
     expanded?: boolean
     type?: ELEMENT_TYPE
@@ -32,7 +32,7 @@ interface EditorState {
   totalComponentEditorSceneViewSelectedRoutes: number
   selectedComponentEditorSceneViewCenter: { x: number; y: number; zoom: number }
   selectedComponentEditorSceneViewJump: ElementId | null
-  selectedComponentEditorSceneViewPassage: ElementId | null
+  selectedComponentEditorSceneViewEvent: ElementId | null
   selectedComponentEditorSceneViewRoute: ElementId | null
   selectedComponentEditorSceneViewChoice: ElementId | null
   centeredComponentEditorSceneViewSelection: boolean
@@ -54,7 +54,7 @@ export enum EDITOR_ACTION_TYPE {
   COMPONENT_SAVE = 'EDITOR_COMPONENT_SAVE',
   COMPONENT_RENAME = 'EDITOR_COMPONENT_RENAME',
   COMPONENT_REMOVE = 'EDITOR_COMPONENT_REMOVE',
-  GAME_OUTLINE_SELECT = 'GAME_OUTLINE_SELECT',
+  WORLD_OUTLINE_SELECT = 'GAME_OUTLINE_SELECT',
   GAME_OUTLINE_RENAME = 'GAME_OUTLINE_RENAME',
   GAME_OUTLINE_EXPAND = 'GAME_OUTLINE_EXPAND',
   COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS',
@@ -62,7 +62,7 @@ export enum EDITOR_ACTION_TYPE {
   COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES = 'COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_ROUTES',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_CENTER = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_CENTER',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP',
-  COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE',
+  COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE',
   COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE = 'COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE',
   COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION = 'COMPONENT_EDITOR_SCENE_VIEW_CENTERED_SELECTION',
@@ -96,8 +96,8 @@ type EditorActionType =
       }
     }
   | {
-      type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT
-      selectedGameOutlineComponent: {
+      type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT
+      selectedWorldOutlineElement: {
         id?: ElementId
         expanded?: boolean
         type?: ELEMENT_TYPE
@@ -140,8 +140,8 @@ type EditorActionType =
       selectedComponentEditorSceneViewJump: ElementId | null
     }
   | {
-      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE
-      selectedComponentEditorSceneViewPassage: ElementId | null
+      type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT
+      selectedElementEditorSceneViewEvent: ElementId | null
     }
   | {
       type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE
@@ -197,10 +197,10 @@ const editorReducer = (
         ...state,
         removedComponent: action.removedComponent
       }
-    case EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT:
+    case EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT:
       return {
         ...state,
-        selectedGameOutlineComponent: action.selectedGameOutlineComponent || {}
+        selectedWorldOutlineElement: action.selectedWorldOutlineElement || {}
       }
     case EDITOR_ACTION_TYPE.GAME_OUTLINE_RENAME:
       return {
@@ -242,11 +242,11 @@ const editorReducer = (
         selectedComponentEditorSceneViewJump:
           action.selectedComponentEditorSceneViewJump
       }
-    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE:
+    case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT:
       return {
         ...state,
-        selectedComponentEditorSceneViewPassage:
-          action.selectedComponentEditorSceneViewPassage
+        selectedComponentEditorSceneViewEvent:
+          action.selectedElementEditorSceneViewEvent
       }
     case EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_ROUTE:
       return {
@@ -317,7 +317,7 @@ const defaultEditorState: EditorState = {
     id: undefined,
     type: undefined
   },
-  selectedGameOutlineComponent: {
+  selectedWorldOutlineElement: {
     id: undefined,
     expanded: false,
     type: undefined,
@@ -333,7 +333,7 @@ const defaultEditorState: EditorState = {
   totalComponentEditorSceneViewSelectedRoutes: 0,
   selectedComponentEditorSceneViewCenter: { x: 0, y: 0, zoom: 0 },
   selectedComponentEditorSceneViewJump: null,
-  selectedComponentEditorSceneViewPassage: null,
+  selectedComponentEditorSceneViewEvent: null,
   selectedComponentEditorSceneViewRoute: null,
   selectedComponentEditorSceneViewChoice: null,
   centeredComponentEditorSceneViewSelection: false,

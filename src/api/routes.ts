@@ -1,7 +1,7 @@
 import { LibraryDatabase } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { ElementId, WorldId, Route, StudioId } from '../data/types'
+import { ElementId, WorldId, Path, StudioId } from '../data/types'
 
 export async function getRoute(studioId: StudioId, routeId: ElementId) {
   try {
@@ -11,23 +11,23 @@ export async function getRoute(studioId: StudioId, routeId: ElementId) {
   }
 }
 
-export async function getRoutesByGameRef(
+export async function getRoutesByWorldRef(
   studioId: StudioId,
-  gameId: WorldId
-): Promise<Route[]> {
+  worldId: WorldId
+): Promise<Path[]> {
   try {
-    return await new LibraryDatabase(studioId).getRoutesByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getRoutesByWorldRef(worldId)
   } catch (error) {
     throw error
   }
 }
 
-export async function getPassthroughRoutesByPassageRef(
+export async function getPassthroughRoutesByEventsRef(
   studioId: StudioId,
   passageId: ElementId
 ) {
   try {
-    const foundRoutes = await new LibraryDatabase(studioId).routes
+    const foundRoutes = await new LibraryDatabase(studioId).paths
       .where({ originId: passageId })
       .toArray()
 
@@ -39,7 +39,7 @@ export async function getPassthroughRoutesByPassageRef(
 
 export async function saveRoute(
   studioId: StudioId,
-  route: Route
+  route: Path
 ): Promise<ElementId> {
   if (!route.id) route.id = uuid()
 
@@ -58,12 +58,12 @@ export async function removeRoute(studioId: StudioId, routeId: ElementId) {
   }
 }
 
-export async function removeRoutesByPassageRef(
+export async function removeRoutesByEventRef(
   studioId: StudioId,
-  passageId: ElementId
+  eventId: ElementId
 ) {
   try {
-    await new LibraryDatabase(studioId).removeRoutesByPassageRef(passageId)
+    await new LibraryDatabase(studioId).removeRoutesByEventRef(eventId)
   } catch (error) {
     throw error
   }

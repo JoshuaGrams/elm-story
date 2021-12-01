@@ -61,9 +61,9 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
 
                     // TODO: Is this necessary?
                     editorDispatch({
-                      type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-                      selectedGameOutlineComponent: {
-                        ...editor.selectedGameOutlineComponent,
+                      type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+                      selectedWorldOutlineElement: {
+                        ...editor.selectedWorldOutlineElement,
                         title
                       }
                     })
@@ -72,7 +72,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
               />
               <div className={styles.componentId}>{scene.id}</div>
 
-              {!editor.selectedComponentEditorSceneViewPassage &&
+              {!editor.selectedComponentEditorSceneViewEvent &&
                 !editor.selectedComponentEditorSceneViewJump &&
                 !editor.selectedComponentEditorSceneViewRoute && (
                   <div className={styles.multiSelection}>
@@ -137,14 +137,14 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                 >
                   <RouteDetails
                     studioId={studioId}
-                    gameId={scene.gameId}
+                    worldId={scene.worldId}
                     routeId={editor.selectedComponentEditorSceneViewRoute}
                   />
                 </Collapse.Panel>
               </Collapse>
             )}
 
-            {editor.selectedComponentEditorSceneViewPassage && (
+            {editor.selectedComponentEditorSceneViewEvent && (
               <Collapse
                 defaultActiveKey={[
                   'passage-details-panel',
@@ -152,20 +152,20 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                 ]}
               >
                 {/* Passage Panel */}
-                {editor.selectedComponentEditorSceneViewPassage && (
+                {editor.selectedComponentEditorSceneViewEvent && (
                   <Collapse.Panel
                     header={
                       <>
                         <AlignLeftOutlined className={styles.headerIcon} />{' '}
                         Selected Event
-                        <ElementHelpButton type={ELEMENT_TYPE.PASSAGE} />
+                        <ElementHelpButton type={ELEMENT_TYPE.EVENT} />
                       </>
                     }
                     key="passage-details-panel"
                   >
                     <EventProperties
                       studioId={studioId}
-                      passageId={editor.selectedComponentEditorSceneViewPassage}
+                      passageId={editor.selectedComponentEditorSceneViewEvent}
                     />
                   </Collapse.Panel>
                 )}

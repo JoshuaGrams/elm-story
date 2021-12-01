@@ -17,7 +17,6 @@ import {
   Condition,
   Effect,
   Variable,
-  Route,
   VARIABLE_TYPE,
   Jump,
   JumpRoute,
@@ -31,7 +30,8 @@ import {
   FolderParentRef,
   EVENT_TYPE,
   Input,
-  Character
+  Character,
+  Path
 } from '../data/types'
 import {
   EngineBookmarkData,
@@ -69,12 +69,10 @@ export enum LIBRARY_TABLE {
   EFFECTS = 'effects',
   EVENTS = 'events',
   FOLDERS = 'folders',
-  GAMES = 'games',
   INPUTS = 'inputs',
   JUMPS = 'jumps',
   LIVE_EVENTS = 'live_events',
-  PASSAGES = 'passages',
-  ROUTES = 'routes',
+  PATHS = 'paths',
   SCENES = 'scenes',
   SETTINGS = 'settings',
   VARIABLES = 'variables',
@@ -170,19 +168,19 @@ export class AppDatabase extends Dexie {
 
 export class LibraryDatabase extends Dexie {
   public bookmarks: Dexie.Table<EngineBookmarkData, string>
+  public characters: Dexie.Table<Character, string>
   public choices: Dexie.Table<Choice, string>
   public conditions: Dexie.Table<Condition, string>
   public effects: Dexie.Table<Effect, string>
-  public events: Dexie.Table<EngineEventData, string>
+  public events: Dexie.Table<Event, string>
   public folders: Dexie.Table<Folder, string>
   public jumps: Dexie.Table<Jump, string>
   public inputs: Dexie.Table<Input, string>
-  public routes: Dexie.Table<Route, string>
+  public live_events: Dexie.Table<EngineEventData, string>
+  public paths: Dexie.Table<Path, string>
   public scenes: Dexie.Table<Scene, string>
   public settings: Dexie.Table<EngineSettingsData, string>
   public variables: Dexie.Table<Variable, string>
-  public characters: Dexie.Table<Character, string>
-  public live_events: Dexie.Table<LiveEvent, string>
   public worlds: Dexie.Table<World, string>
 
   public constructor(studioId: string) {
@@ -201,6 +199,7 @@ export class LibraryDatabase extends Dexie {
     this.tables.map((table) => table.name)
 
     this.bookmarks = this.table(LIBRARY_TABLE.BOOKMARKS)
+    this.characters = this.table(LIBRARY_TABLE.CHARACTERS)
     this.choices = this.table(LIBRARY_TABLE.CHOICES)
     this.conditions = this.table(LIBRARY_TABLE.CONDITIONS)
     this.effects = this.table(LIBRARY_TABLE.EFFECTS)
@@ -208,56 +207,55 @@ export class LibraryDatabase extends Dexie {
     this.folders = this.table(LIBRARY_TABLE.FOLDERS)
     this.inputs = this.table(LIBRARY_TABLE.INPUTS)
     this.jumps = this.table(LIBRARY_TABLE.JUMPS)
-    this.routes = this.table(LIBRARY_TABLE.ROUTES)
+    this.live_events = this.table(LIBRARY_TABLE.LIVE_EVENTS)
+    this.paths = this.table(LIBRARY_TABLE.PATHS)
     this.scenes = this.table(LIBRARY_TABLE.SCENES)
     this.settings = this.table(LIBRARY_TABLE.SETTINGS)
     this.variables = this.table(LIBRARY_TABLE.VARIABLES)
-    this.live_events = this.table(LIBRARY_TABLE.LIVE_EVENTS)
-    this.characters = this.table(LIBRARY_TABLE.CHARACTERS)
     this.worlds = this.table(LIBRARY_TABLE.WORLDS)
   }
 
   public async getElement(table: LIBRARY_TABLE, id: ElementId) {
-    let component = undefined
+    let element = undefined
 
     try {
-      component = (await this[table].where({ id }).first()) || undefined
+      element = (await this[table].where({ id }).first()) || undefined
     } catch (error) {
       throw error
     }
 
-    return component
+    return element
   }
 
-  public async getComponentsByGameRef(gameId: WorldId, table: LIBRARY_TABLE) {
+  public async getElementsByWorldRef(worldId: WorldId, table: LIBRARY_TABLE) {
     try {
-      return await this[table].where({ gameId }).toArray()
+      return await this[table].where({ worldId }).toArray()
     } catch (error) {
       throw error
     }
   }
 
-  public async saveComponentTitle(
-    componentId: ElementId,
+  public async saveElementTitle(
+    elementId: ElementId,
     table: LIBRARY_TABLE,
     title: string
   ) {
     try {
       await this.transaction('rw', this[table], async () => {
-        if (componentId) {
-          const component = await this.getElement(table, componentId)
+        if (elementId) {
+          const element = await this.getElement(table, elementId)
 
-          if (component) {
-            await this[table].update(componentId, {
-              ...component,
+          if (element) {
+            await this[table].update(elementId, {
+              ...element,
               title,
               updated: Date.now()
             })
           } else {
-            throw new Error('Unable to rename component. Component missing.')
+            throw new Error('Unable to rename element. Component missing.')
           }
         } else {
-          throw new Error('Unable to rename component. Missing ID.')
+          throw new Error('Unable to rename element. Missing ID.')
         }
       })
     } catch (error) {
@@ -453,7 +451,7 @@ export class LibraryDatabase extends Dexie {
       await Promise.all([
         ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSETS, {
           studioId,
-          gameId: worldId,
+          worldId,
           type: 'GAME'
         }),
         this.bookmarks.where({ worldId }).delete(),
@@ -465,8 +463,8 @@ export class LibraryDatabase extends Dexie {
         this.folders.where({ worldId }).delete(),
         this.inputs.where({ worldId }).delete(),
         this.jumps.where({ worldId }).delete(),
-        this.passages.where({ worldId }).delete(),
-        this.routes.where({ worldId }).delete(),
+        this.live_events.where({ worldId }).delete(),
+        this.paths.where({ worldId }).delete(),
         this.settings.where({ worldId }).delete(),
         this.scenes.where({ worldId }).delete(),
         this.variables.where({ worldId }).delete()
@@ -624,7 +622,7 @@ export class LibraryDatabase extends Dexie {
 
       logger.info(
         `removeFolder->Removing ${
-          children.filter((child) => child[0] === ELEMENT_TYPE.PASSAGE).length
+          children.filter((child) => child[0] === ELEMENT_TYPE.EVENT).length
         } nested passage(s) from folder with ID: ${folderId}`
       )
 
@@ -637,8 +635,8 @@ export class LibraryDatabase extends Dexie {
             case ELEMENT_TYPE.SCENE:
               await this.removeScene(child[1])
               break
-            case ELEMENT_TYPE.PASSAGE:
-              await this.removePassage(child[1])
+            case ELEMENT_TYPE.EVENT:
+              await this.removeEvent(child[1])
               break
             default:
               break
@@ -664,9 +662,9 @@ export class LibraryDatabase extends Dexie {
     return
   }
 
-  public async getFoldersByGameRef(gameId: WorldId): Promise<Folder[]> {
+  public async getFoldersByWorldRef(worldId: WorldId): Promise<Folder[]> {
     try {
-      return await this.folders.where({ gameId }).toArray()
+      return await this.folders.where({ worldId }).toArray()
     } catch (error) {
       throw error
     }
@@ -704,9 +702,9 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getJumpsByGameRef(gameId: WorldId): Promise<Jump[]> {
+  public async getJumpsByWorldRef(worldId: WorldId): Promise<Jump[]> {
     try {
-      return await this.jumps.where({ gameId }).toArray()
+      return await this.jumps.where({ worldId }).toArray()
     } catch (error) {
       throw error
     }
@@ -765,7 +763,7 @@ export class LibraryDatabase extends Dexie {
   public async removeJump(jumpId: ElementId) {
     logger.info(`LibraryDatabase->removeJump:${jumpId}`)
 
-    const routes = await this.routes.where({ destinationId: jumpId }).toArray()
+    const routes = await this.paths.where({ destinationId: jumpId }).toArray()
 
     if (routes.length > 0) {
       logger.info(
@@ -824,7 +822,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getJumpsByPassageRef(passageId: ElementId): Promise<Jump[]> {
+  public async getJumpsByEventRef(passageId: ElementId): Promise<Jump[]> {
     try {
       return await this.jumps.where({ route: passageId }).toArray()
     } catch (error) {
@@ -983,7 +981,7 @@ export class LibraryDatabase extends Dexie {
 
     try {
       const scene = await this.scenes.get(sceneId),
-        game = scene?.id ? await this.games.get(scene.worldId) : undefined
+        game = scene?.id ? await this.worlds.get(scene.worldId) : undefined
 
       scene?.jumps &&
         logger.info(
@@ -996,7 +994,7 @@ export class LibraryDatabase extends Dexie {
       const jumpsRefScene = await this.jumps
           .where({ route: sceneId })
           .toArray(),
-        passages = await this.passages.where({ sceneId }).toArray()
+        passages = await this.events.where({ sceneId }).toArray()
 
       if (jumpsRefScene.length > 0) {
         logger.info(
@@ -1022,8 +1020,7 @@ export class LibraryDatabase extends Dexie {
 
       await Promise.all(
         passages.map(
-          async (passage) =>
-            passage.id && (await this.removePassage(passage.id))
+          async (passage) => passage.id && (await this.removeEvent(passage.id))
         )
       )
 
@@ -1045,9 +1042,9 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getScenesByGameRef(gameId: WorldId): Promise<Scene[]> {
+  public async getScenesByWorldRef(worldId: WorldId): Promise<Scene[]> {
     try {
-      return await this.scenes.where({ gameId }).toArray()
+      return await this.scenes.where({ worldId }).toArray()
     } catch (error) {
       throw error
     }
@@ -1071,7 +1068,7 @@ export class LibraryDatabase extends Dexie {
 
   public async getRoute(routeId: ElementId): Promise<Route> {
     try {
-      const route = await this.routes.get(routeId)
+      const route = await this.paths.get(routeId)
 
       if (route) {
         return route
@@ -1085,9 +1082,9 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getRoutesByGameRef(gameId: WorldId): Promise<Route[]> {
+  public async getRoutesByWorldRef(worldId: WorldId): Promise<Route[]> {
     try {
-      return await this.routes.where({ gameId }).toArray()
+      return await this.paths.where({ worldId }).toArray()
     } catch (error) {
       throw error
     }
@@ -1095,20 +1092,20 @@ export class LibraryDatabase extends Dexie {
 
   public async saveRoute(route: Route): Promise<ElementId> {
     if (!route.sceneId)
-      throw new Error('Unable to save route to databse. Missing scene ID.')
+      throw new Error('Unable to save route to database. Missing scene ID.')
     if (!route.id)
       throw new Error('Unable to save route to database. Missing ID.')
 
     try {
-      await this.transaction('rw', this.routes, async () => {
+      await this.transaction('rw', this.paths, async () => {
         if (route.id) {
-          if (await this.getElement(LIBRARY_TABLE.ROUTES, route.id)) {
-            await this.routes.update(route.id, {
+          if (await this.getElement(LIBRARY_TABLE.PATHS, route.id)) {
+            await this.paths.update(route.id, {
               ...route,
               updated: Date.now()
             })
           } else {
-            await this.routes.add({
+            await this.paths.add({
               ...route,
               updated: route.updated || Date.now()
             })
@@ -1141,13 +1138,13 @@ export class LibraryDatabase extends Dexie {
         )
       ])
 
-      await this.transaction('rw', this.routes, async () => {
-        if (await this.getElement(LIBRARY_TABLE.ROUTES, routeId)) {
+      await this.transaction('rw', this.paths, async () => {
+        if (await this.getElement(LIBRARY_TABLE.PATHS, routeId)) {
           logger.info(
             `LibraryDatabase->removeRoute->Removing route with ID: ${routeId}`
           )
 
-          await this.routes.delete(routeId)
+          await this.paths.delete(routeId)
         } else {
           // TODO: #70; async issue - we can do things in order, but this is likely more efficent
           logger.error(
@@ -1160,14 +1157,14 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeRoutesByPassageRef(passageId: ElementId) {
+  public async removeRoutesByEventRef(passageId: ElementId) {
     logger.info(`LibraryDatabase->removeRoutesByPassageRef`)
 
     try {
-      const originRoutes = await this.routes
+      const originRoutes = await this.paths
           .where({ originId: passageId })
           .toArray(),
-        destinationRoutes = await this.routes
+        destinationRoutes = await this.paths
           .where({ destinationId: passageId })
           .toArray()
 
@@ -1188,7 +1185,7 @@ export class LibraryDatabase extends Dexie {
 
   public async removeRoutesByChoiceRef(choiceId: ElementId) {
     try {
-      const routes = await this.routes.where({ choiceId }).toArray()
+      const routes = await this.paths.where({ choiceId }).toArray()
 
       await Promise.all(
         routes.map(
@@ -1216,9 +1213,9 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getConditionsByGameRef(gameId: WorldId): Promise<Condition[]> {
+  public async getConditionsByGameRef(worldId: WorldId): Promise<Condition[]> {
     try {
-      return await this.conditions.where({ gameId }).toArray()
+      return await this.conditions.where({ worldId }).toArray()
     } catch (error) {
       throw error
     }
@@ -1386,9 +1383,9 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getEffectsByGameRef(gameId: WorldId): Promise<Effect[]> {
+  public async getEffectsByWorldRef(worldId: WorldId): Promise<Effect[]> {
     try {
-      return await this.effects.where({ gameId }).toArray()
+      return await this.effects.where({ worldId }).toArray()
     } catch (error) {
       throw error
     }
@@ -1513,7 +1510,7 @@ export class LibraryDatabase extends Dexie {
 
           await this.effects.delete(effectId)
         } else {
-          // TODO: #70; async issue - we can do things in order, but this is likely more efficent
+          // TODO: #70; async issue - we can do things in order, but this is likely more efficient
           logger.error(
             `LibraryDatabase->removeEffect->Unable to remove effect with ID: '${effectId}'. Does not exist.`
           )
@@ -1524,15 +1521,15 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getPassage(passageId: ElementId): Promise<Event> {
+  public async getEvent(eventId: ElementId): Promise<Event> {
     try {
-      const passage = await this.passages.get(passageId)
+      const event = await this.events.get(eventId)
 
-      if (passage) {
-        return passage
+      if (event) {
+        return event
       } else {
         throw new Error(
-          `Unable to get passage with ID: ${passageId}. Does not exist.`
+          `Unable to get event with ID: ${eventId}. Does not exist.`
         )
       }
     } catch (error) {
@@ -1540,57 +1537,54 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async savePassage(passage: Event): Promise<Event> {
-    if (!passage.sceneId)
-      throw new Error('Unable to save passage to databse. Missing scene ID.')
-    if (!passage.id)
-      throw new Error('Unable to save passage to database. Missing ID.')
+  public async saveEvent(event: Event): Promise<Event> {
+    if (!event.sceneId)
+      throw new Error('Unable to save event to database. Missing scene ID.')
+    if (!event.id)
+      throw new Error('Unable to save event to database. Missing ID.')
 
     try {
-      await this.transaction('rw', this.passages, async () => {
-        if (passage.id) {
-          if (await this.getElement(LIBRARY_TABLE.PASSAGES, passage.id)) {
-            await this.passages.update(passage.id, {
-              ...passage,
+      await this.transaction('rw', this.events, async () => {
+        if (event.id) {
+          if (await this.getElement(LIBRARY_TABLE.EVENTS, event.id)) {
+            await this.events.update(event.id, {
+              ...event,
               updated: Date.now()
             })
           } else {
-            await this.passages.add({
-              ...passage,
-              updated: passage.updated || Date.now()
+            await this.events.add({
+              ...event,
+              updated: event.updated || Date.now()
             })
           }
         } else {
-          throw new Error('Unable to save passage to database. Missing ID.')
+          throw new Error('Unable to save event to database. Missing ID.')
         }
       })
     } catch (error) {
       throw error
     }
 
-    return passage
+    return event
   }
 
-  public async savePassageType(passageId: ElementId, type: EVENT_TYPE) {
+  public async saveEventType(eventId: ElementId, type: EVENT_TYPE) {
     try {
-      await this.transaction('rw', this.passages, async () => {
-        if (passageId) {
-          const component = await this.getElement(
-            LIBRARY_TABLE.PASSAGES,
-            passageId
-          )
+      await this.transaction('rw', this.events, async () => {
+        if (eventId) {
+          const event = await this.getElement(LIBRARY_TABLE.EVENTS, eventId)
 
-          if (component) {
-            await this.passages.update(passageId, {
-              ...component,
+          if (event) {
+            await this.events.update(eventId, {
+              ...event,
               type,
               updated: Date.now()
             })
           } else {
-            throw new Error('Unable to save type to passage. Passage missing.')
+            throw new Error('Unable to save type to event. Passage missing.')
           }
         } else {
-          throw new Error('Unable to save type to passage. Missing ID.')
+          throw new Error('Unable to save type to event. Missing ID.')
         }
       })
     } catch (error) {
@@ -1598,26 +1592,23 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async savePassageInput(passageId: ElementId, inputId?: ElementId) {
+  public async saveEventInput(eventId: ElementId, inputId?: ElementId) {
     try {
-      await this.transaction('rw', this.passages, async () => {
-        if (passageId) {
-          const component = await this.getElement(
-            LIBRARY_TABLE.PASSAGES,
-            passageId
-          )
+      await this.transaction('rw', this.events, async () => {
+        if (eventId) {
+          const event = await this.getElement(LIBRARY_TABLE.EVENTS, eventId)
 
-          if (component) {
-            await this.passages.update(passageId, {
-              ...component,
+          if (event) {
+            await this.events.update(eventId, {
+              ...event,
               input: inputId,
               updated: Date.now()
             })
           } else {
-            throw new Error('Unable to save input to passage. Passage missing.')
+            throw new Error('Unable to save input to event. Passage missing.')
           }
         } else {
-          throw new Error('Unable to save input to passage. Missing ID.')
+          throw new Error('Unable to save input to event. Missing ID.')
         }
       })
     } catch (error) {
@@ -1625,28 +1616,23 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async savePassageContent(passageId: ElementId, content: string) {
+  public async saveEventContent(eventId: ElementId, content: string) {
     try {
-      await this.transaction('rw', this.passages, async () => {
-        if (passageId) {
-          const component = await this.getElement(
-            LIBRARY_TABLE.PASSAGES,
-            passageId
-          )
+      await this.transaction('rw', this.events, async () => {
+        if (eventId) {
+          const event = await this.getElement(LIBRARY_TABLE.EVENTS, eventId)
 
-          if (component) {
-            await this.passages.update(passageId, {
-              ...component,
+          if (event) {
+            await this.events.update(eventId, {
+              ...event,
               content,
               updated: Date.now()
             })
           } else {
-            throw new Error(
-              'Unable to save content to passage. Passage missing.'
-            )
+            throw new Error('Unable to save content to event. Passage missing.')
           }
         } else {
-          throw new Error('Unable to save content to passage. Missing ID.')
+          throw new Error('Unable to save content to event. Missing ID.')
         }
       })
     } catch (error) {
@@ -1654,48 +1640,42 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveSceneRefToPassage(sceneId: ElementId, passageId: ElementId) {
+  public async saveSceneRefToEvent(sceneId: ElementId, eventId: ElementId) {
     logger.info(
-      `LibraryDatabase->saveSceneRefToPassage->scene: ${sceneId}->passage: ${passageId}`
+      `LibraryDatabase->saveSceneRefToEvent->scene: ${sceneId}->event: ${eventId}`
     )
 
     try {
-      const passage = await this.getElement(LIBRARY_TABLE.PASSAGES, passageId)
+      const event = await this.getElement(LIBRARY_TABLE.EVENTS, eventId)
 
-      if (passage && passage.id) {
-        await this.passages.update(passage.id, {
-          ...passage,
+      if (event && event.id) {
+        await this.events.update(event.id, {
+          ...event,
           sceneId,
           updated: Date.now()
         })
       } else {
-        throw new Error('Unable to save scene ID. Missing passage.')
+        throw new Error('Unable to save scene ID. Missing event.')
       }
     } catch (error) {
       throw error
     }
   }
 
-  public async saveChoiceRefsToPassage(
-    passageId: ElementId,
-    choices: ElementId[]
-  ) {
+  public async saveChoiceRefsToEvent(eventId: ElementId, choices: ElementId[]) {
     try {
-      await this.transaction('rw', this.passages, async () => {
-        if (passageId) {
-          const passage = await this.getElement(
-            LIBRARY_TABLE.PASSAGES,
-            passageId
-          )
+      await this.transaction('rw', this.events, async () => {
+        if (eventId) {
+          const event = await this.getElement(LIBRARY_TABLE.EVENTS, eventId)
 
-          if (passage) {
-            this.passages.update(passageId, {
-              ...passage,
+          if (event) {
+            this.events.update(eventId, {
+              ...event,
               choices,
               updated: Date.now()
             })
           } else {
-            throw new Error('Unable to save choice refs. Passage missing.')
+            throw new Error('Unable to save choice refs. Event missing.')
           }
         }
       })
@@ -1704,23 +1684,20 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async setPassageGameEnd(passageId: ElementId, gameOver: boolean) {
+  public async setEventEnding(eventId: ElementId, gameOver: boolean) {
     try {
-      await this.transaction('rw', this.passages, async () => {
-        if (passageId) {
-          const passage = await this.getElement(
-            LIBRARY_TABLE.PASSAGES,
-            passageId
-          )
+      await this.transaction('rw', this.events, async () => {
+        if (eventId) {
+          const event = await this.getElement(LIBRARY_TABLE.EVENTS, eventId)
 
-          if (passage) {
-            this.passages.update(passageId, {
-              ...passage,
-              gameOver,
+          if (event) {
+            this.events.update(eventId, {
+              ...event,
+              ending,
               updated: Date.now()
             })
           } else {
-            throw new Error('Unable to save game end. Passage missing.')
+            throw new Error('Unable to save event ending. Event missing.')
           }
         }
       })
@@ -1729,49 +1706,47 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removePassage(passageId: ElementId) {
+  public async removeEvent(eventId: ElementId) {
     try {
       logger.info('LibraryDatabase->removePassage')
 
-      await this.transaction('rw', this.passages, async () => {
-        if (await this.getElement(LIBRARY_TABLE.PASSAGES, passageId)) {
+      await this.transaction('rw', this.events, async () => {
+        if (await this.getElement(LIBRARY_TABLE.PASSAGES, eventId)) {
           logger.info(
-            `LibraryDatabase->removePassage->Removing passage with ID: ${passageId}`
+            `LibraryDatabase->removePassage->Removing event with ID: ${eventId}`
           )
 
-          await this.passages.delete(passageId)
+          await this.events.delete(eventId)
         } else {
           logger.error(
-            `LibraryDatabase->removePassage->Unable to remove passage with ID: '${passageId}'. Does not exist.`
+            `LibraryDatabase->removePassage->Unable to remove event with ID: '${eventId}'. Does not exist.`
           )
         }
       })
 
-      const jumps = await this.jumps.where({ route: passageId }).toArray(),
-        routes = await this.routes
-          .where({ destinationId: passageId })
-          .toArray(),
-        choices = await this.choices.where({ passageId }).toArray(),
-        inputs = await this.inputs.where({ passageId }).toArray()
+      const jumps = await this.jumps.where({ route: eventId }).toArray(),
+        routes = await this.paths.where({ destinationId: eventId }).toArray(),
+        choices = await this.choices.where({ eventId }).toArray(),
+        inputs = await this.inputs.where({ eventId }).toArray()
 
       jumps.length > 0 &&
         logger.info(
-          `LibraryDatabase->removePassage->Updating ${jumps.length} jump(s) from passage with ID: ${passageId}`
+          `LibraryDatabase->removePassage->Updating ${jumps.length} jump(s) from event with ID: ${eventId}`
         )
 
       routes.length > 0 &&
         logger.info(
-          `LibraryDatabase->removePassage->Removing ${routes.length} route(s) from passage with ID: ${passageId}`
+          `LibraryDatabase->removePassage->Removing ${routes.length} route(s) from event with ID: ${eventId}`
         )
 
       choices.length > 0 &&
         logger.info(
-          `LibraryDatabase->removePassage->Removing ${choices.length} choice(s) from passage with ID: ${passageId}`
+          `LibraryDatabase->removePassage->Removing ${choices.length} choice(s) from event with ID: ${eventId}`
         )
 
       inputs.length > 0 &&
         logger.info(
-          `LibraryDatabase->removePassage->Removing ${inputs.length} input(s) from passage with ID: ${passageId}`
+          `LibraryDatabase->removePassage->Removing ${inputs.length} input(s) from event with ID: ${eventId}`
         )
 
       await Promise.all([
@@ -1794,9 +1769,9 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getPassagesByGameRef(gameId: WorldId): Promise<Event[]> {
+  public async getEventsByWorldRef(worldId: WorldId): Promise<Event[]> {
     try {
-      return await this.passages.where({ gameId }).toArray()
+      return await this.events.where({ worldId }).toArray()
     } catch (error) {
       throw error
     }
@@ -1820,9 +1795,9 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getChoicesByGameRef(gameId: WorldId): Promise<Choice[]> {
+  public async getChoicesByWorldRef(worldId: WorldId): Promise<Choice[]> {
     try {
-      return await this.choices.where({ gameId }).toArray()
+      return await this.choices.where({ worldId }).toArray()
     } catch (error) {
       throw error
     }
@@ -1863,7 +1838,7 @@ export class LibraryDatabase extends Dexie {
 
   public async removeChoice(choiceId: ElementId) {
     try {
-      const routes = await this.routes.where({ choiceId }).toArray()
+      const routes = await this.paths.where({ choiceId }).toArray()
 
       if (routes.length > 0) {
         logger.info(
@@ -1911,9 +1886,9 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getInputsByGameRef(gameId: WorldId): Promise<Input[]> {
+  public async getInputsByWorldRef(worldId: WorldId): Promise<Input[]> {
     try {
-      return await this.inputs.where({ gameId }).toArray()
+      return await this.inputs.where({ worldId }).toArray()
     } catch (error) {
       throw error
     }
@@ -1979,7 +1954,7 @@ export class LibraryDatabase extends Dexie {
 
   public async removeInput(inputId: ElementId) {
     try {
-      const routes = await this.routes.where({ inputId }).toArray()
+      const routes = await this.paths.where({ inputId }).toArray()
 
       if (routes.length > 0) {
         logger.info(
@@ -2025,9 +2000,9 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getVariablesByGameRef(gameId: WorldId): Promise<Variable[]> {
+  public async getVariablesByWorldRef(worldId: WorldId): Promise<Variable[]> {
     try {
-      return await this.variables.where({ gameId }).toArray()
+      return await this.variables.where({ worldId }).toArray()
     } catch (error) {
       throw error
     }
@@ -2035,7 +2010,7 @@ export class LibraryDatabase extends Dexie {
 
   public async saveVariable(variable: Variable): Promise<ElementId> {
     if (!variable.worldId)
-      throw new Error('Unable to save variable to databse. Missing game ID.')
+      throw new Error('Unable to save variable to database. Missing world ID.')
     if (!variable.id)
       throw new Error('Unable to save variable to database. Missing ID.')
 

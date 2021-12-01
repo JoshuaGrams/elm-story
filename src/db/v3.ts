@@ -43,7 +43,7 @@ export default (database: Dexie) => {
           await folderTable.bulkAdd(await tx.table('chapters').toArray())
 
           await folderTable.toCollection().modify((folder) => {
-            folder.parent = [ELEMENT_TYPE.GAME, null]
+            folder.parent = [ELEMENT_TYPE.WORLD, null]
 
             const sceneIds: ElementId[] = folder.scenes,
               folderChildren: FolderChildRefs = []

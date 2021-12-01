@@ -25,7 +25,7 @@ import {
 import {
   useDebouncedResizeObserver,
   useJumpsBySceneRef,
-  usePassagesBySceneRef,
+  useEventsBySceneRef,
   useRoutesBySceneRef,
   useScene
 } from '../../../hooks'
@@ -104,7 +104,7 @@ export const SceneMapTools: React.FC<{
                     const passageId = await addElementToScene(
                       studioId,
                       scene,
-                      ELEMENT_TYPE.PASSAGE,
+                      ELEMENT_TYPE.EVENT,
                       {
                         x:
                           editor.selectedComponentEditorSceneViewCenter.x -
@@ -120,7 +120,7 @@ export const SceneMapTools: React.FC<{
                         type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
                         savedComponent: {
                           id: passageId,
-                          type: ELEMENT_TYPE.PASSAGE
+                          type: ELEMENT_TYPE.EVENT
                         }
                       })
                   } catch (error) {
@@ -217,10 +217,10 @@ async function addElementToScene(
 ): Promise<ElementId | undefined> {
   if (scene.id) {
     switch (type) {
-      case ELEMENT_TYPE.PASSAGE:
-        const passage = await api().passages.savePassage(studioId, {
-          gameOver: false,
-          gameId: scene.gameId,
+      case ELEMENT_TYPE.EVENT:
+        const event = await api().events.saveEvent(studioId, {
+          ending: false,
+          worldId: scene.worldId,
           sceneId: scene.id,
           title: 'Untitled Event',
           choices: [],
@@ -233,16 +233,16 @@ async function addElementToScene(
           }
         })
 
-        passage.id &&
+        event.id &&
           (await api().scenes.saveChildRefsToScene(studioId, scene.id, [
             ...scene.children,
-            [ELEMENT_TYPE.PASSAGE, passage.id]
+            [ELEMENT_TYPE.EVENT, event.id]
           ]))
 
-        return passage.id
+        return event.id
       case ELEMENT_TYPE.JUMP:
         const jump = await api().jumps.saveJump(studioId, {
-          gameId: scene.gameId,
+          worldId: scene.worldId,
           sceneId: scene.id,
           title: 'Untitled Jump',
           route: [scene.id],
@@ -276,7 +276,7 @@ async function removeElementFromScene(
 ): Promise<void> {
   if (scene.id) {
     switch (type) {
-      case ELEMENT_TYPE.PASSAGE:
+      case ELEMENT_TYPE.EVENT:
         const clonedChildRefs = [...scene.children],
           passageRefIndex = clonedChildRefs.findIndex(
             (clonedPassageRef) => clonedPassageRef[1] === id
@@ -292,7 +292,7 @@ async function removeElementFromScene(
           )
         }
 
-        await api().passages.removePassage(studioId, id)
+        await api().events.removeEvent(studioId, id)
 
         break
       case ELEMENT_TYPE.JUMP:
@@ -342,7 +342,7 @@ const SceneMap: React.FC<{
   const jumps = useJumpsBySceneRef(studioId, sceneId),
     scene = useScene(studioId, sceneId),
     routes = useRoutesBySceneRef(studioId, sceneId),
-    passages = usePassagesBySceneRef(studioId, sceneId)
+    events = useEventsBySceneRef(studioId, sceneId)
 
   const currentZoom = useStoreState((state) => state.transform[2]),
     nodes = useStoreState((state) => state.nodes),
@@ -360,7 +360,7 @@ const SceneMap: React.FC<{
     [totalSelectedRoutes, setTotalSelectedRoutes] = useState<number>(0),
     [selectedJump, setSelectedJump] = useState<ElementId | null>(null),
     [selectedPassage, setSelectedPassage] = useState<ElementId | null>(
-      editor.selectedComponentEditorSceneViewPassage
+      editor.selectedComponentEditorSceneViewEvent
     ),
     [selectedRoute, setSelectedRoute] = useState<ElementId | null>(null),
     [selectedChoice, setSelectedChoice] = useState<ElementId | null>(null),
@@ -384,7 +384,7 @@ const SceneMap: React.FC<{
   function highlightElements(elementsToHighlight: Elements<any> | null) {
     logger.info(`SceneMap->highlightElements`)
 
-    if (editor.selectedGameOutlineComponent.id === sceneId) {
+    if (editor.selectedWorldOutlineElement.id === sceneId) {
       const clonedElements = cloneDeep(elements),
         clonedJumps = clonedElements.filter(
           (clonedElement): clonedElement is Node =>
@@ -392,7 +392,7 @@ const SceneMap: React.FC<{
         ),
         clonedPassages = clonedElements.filter(
           (clonedElement): clonedElement is Node =>
-            clonedElement.data.type === ELEMENT_TYPE.PASSAGE
+            clonedElement.data.type === ELEMENT_TYPE.EVENT
         ),
         clonedRoutes = clonedElements.filter(
           (clonedElement): clonedElement is Edge =>
@@ -447,15 +447,15 @@ const SceneMap: React.FC<{
                   edge.source === selectedPassage.id ||
                   edge.target === selectedPassage.id
                 ) {
-                  if (passages) {
-                    const foundPassage = passages.find(
+                  if (events) {
+                    const foundPassage = events.find(
                       (passage) => selectedPassage.id === passage.id
                     )
 
                     edge.className =
-                      foundPassage && foundPassage.gameOver
-                        ? 'selected gameOver'
-                        : 'selected passage'
+                      foundPassage && foundPassage.ending
+                        ? 'selected ending'
+                        : 'selected event'
                   }
                 }
               })
@@ -510,14 +510,14 @@ const SceneMap: React.FC<{
             }))
         }
         break
-      case ELEMENT_TYPE.PASSAGE:
-        if (passages) {
+      case ELEMENT_TYPE.EVENT:
+        if (events) {
           const clonedPassage = cloneDeep(
-            passages.find((passage) => passage.id === id)
+            events.find((passage) => passage.id === id)
           )
 
           clonedPassage &&
-            (await api().passages.savePassage(studioId, {
+            (await api().events.saveEvent(studioId, {
               ...clonedPassage,
               editor: {
                 componentEditorPosX: position.x,
@@ -557,23 +557,19 @@ const SceneMap: React.FC<{
         // #398, #397: as effect may fire before routePassthroughs is updated,
         // need to do a check on originId as may be referencing previously
         // selected passage node
-        if (passages) {
-          const foundPassage = passages.find(
+        if (events) {
+          const foundEvent = events.find(
             (passage) => passage.id === connection.source
           )
 
-          if (foundPassage?.id && foundPassage.gameOver) {
-            await api().passages.setPassageGameEnd(
-              studioId,
-              foundPassage.id,
-              false
-            )
+          if (foundEvent?.id && foundEvent.ending) {
+            await api().events.setPassageGameEnd(studioId, foundEvent.id, false)
           }
         }
 
         await api().routes.saveRoute(studioId, {
           title: 'Untitled Path',
-          gameId: scene.gameId,
+          worldId: scene.worldId,
           sceneId,
           originId: connection.source,
           choiceId:
@@ -612,7 +608,7 @@ const SceneMap: React.FC<{
             routeRefs.push(element.id)
             break
           // TODO: #45
-          // case ELEMENT_TYPE.PASSAGE:
+          // case ELEMENT_TYPE.EVENT:
           //   passageRefs.push(element.id)
           //   break
           default:
@@ -650,7 +646,7 @@ const SceneMap: React.FC<{
     //       )
     //     ),
     //     passageRefs.map(async (passageRef) => {
-    //       await api().passages.removePassage(studioId, passageRef)
+    //       await api().passages.removeEvent(studioId, passageRef)
     //     })
     //   ])
     // }
@@ -669,7 +665,7 @@ const SceneMap: React.FC<{
     event: React.MouseEvent<Element, MouseEvent>,
     nodes: Node<{ type: ELEMENT_TYPE }>[]
   ) {
-    if (jumps && passages) {
+    if (jumps && events) {
       const clonedJumps =
           cloneDeep(
             jumps.filter(
@@ -678,7 +674,7 @@ const SceneMap: React.FC<{
           ) || [],
         clonedPassages =
           cloneDeep(
-            passages.filter(
+            events.filter(
               (passage) =>
                 nodes.find((node) => node.id === passage.id) !== undefined
             )
@@ -703,7 +699,7 @@ const SceneMap: React.FC<{
           const foundNode = nodes.find((node) => node.id === clonedPassage.id)
 
           foundNode &&
-            (await api().passages.savePassage(studioId, {
+            (await api().events.saveEvent(studioId, {
               ...clonedPassage,
               editor: {
                 componentEditorPosX: foundNode.position.x,
@@ -727,7 +723,7 @@ const SceneMap: React.FC<{
         case ELEMENT_TYPE.JUMP:
           _totalSelectedJumps++
           break
-        case ELEMENT_TYPE.PASSAGE:
+        case ELEMENT_TYPE.EVENT:
           _totalSelectedPassages++
           break
         case ELEMENT_TYPE.ROUTE:
@@ -756,7 +752,7 @@ const SceneMap: React.FC<{
       selectedElements[0].data.type === ELEMENT_TYPE.JUMP &&
         setSelectedJump(selectedElements[0].id)
 
-      selectedElements[0].data.type === ELEMENT_TYPE.PASSAGE &&
+      selectedElements[0].data.type === ELEMENT_TYPE.EVENT &&
         setSelectedPassage(selectedElements[0].id)
 
       selectedElements[0].data.type === ELEMENT_TYPE.ROUTE &&
@@ -887,7 +883,7 @@ const SceneMap: React.FC<{
   useEffect(() => {
     logger.info(`SceneMap->scene,passages,routes->useEffect`)
 
-    if (jumps && scene && passages && routes) {
+    if (jumps && scene && events && routes) {
       logger.info(
         `SceneMap->scene,passages,routes->useEffect->have scene, passages and routes`
       )
@@ -912,7 +908,7 @@ const SceneMap: React.FC<{
           })
       })
 
-      passages.map((passage) => {
+      events.map((passage) => {
         if (scene.id && passage.id) {
           let passageNodeData: NodeData = {
             studioId,
@@ -925,7 +921,7 @@ const SceneMap: React.FC<{
             passageId: passage.id,
             passageType: passage.type,
             totalChoices: passage.choices.length,
-            type: ELEMENT_TYPE.PASSAGE
+            type: ELEMENT_TYPE.EVENT
           }
 
           switch (passage.type) {
@@ -984,7 +980,7 @@ const SceneMap: React.FC<{
       // BUG: Unable to create edges on initial node render because choices aren't ready
       setElements([...nodes, ...edges])
     }
-  }, [jumps, scene, passages, routes, ready])
+  }, [jumps, scene, events, routes, ready])
 
   useEffect(() => {
     logger.info(`SceneMap->sceneReady->useEffect`)
@@ -1008,7 +1004,7 @@ const SceneMap: React.FC<{
        ->useEffect`
     )
 
-    if (editor.selectedGameOutlineComponent.id === sceneId) {
+    if (editor.selectedWorldOutlineElement.id === sceneId) {
       setContext()
 
       totalSelectedJumps !==
@@ -1041,10 +1037,10 @@ const SceneMap: React.FC<{
           selectedComponentEditorSceneViewJump: selectedJump
         })
 
-      selectedPassage !== editor.selectedComponentEditorSceneViewPassage &&
+      selectedPassage !== editor.selectedComponentEditorSceneViewEvent &&
         editorDispatch({
-          type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-          selectedComponentEditorSceneViewPassage: selectedPassage
+          type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
+          selectedElementEditorSceneViewEvent: selectedPassage
         })
 
       selectedRoute !== editor.selectedComponentEditorSceneViewRoute &&
@@ -1061,7 +1057,7 @@ const SceneMap: React.FC<{
       highlightElements(selectedElements)
     }
   }, [
-    editor.selectedGameOutlineComponent,
+    editor.selectedWorldOutlineElement,
     totalSelectedJumps,
     totalSelectedPassages,
     selectedJump,
@@ -1071,10 +1067,10 @@ const SceneMap: React.FC<{
   ])
 
   useEffect(() => {
-    editor.selectedGameOutlineComponent.id === sceneId &&
+    editor.selectedWorldOutlineElement.id === sceneId &&
       setSelectedSceneViewCenter()
   }, [
-    editor.selectedGameOutlineComponent,
+    editor.selectedWorldOutlineElement,
     flowWrapperRefWidth,
     flowWrapperRefHeight,
     currentZoom
@@ -1086,11 +1082,11 @@ const SceneMap: React.FC<{
     )
 
     selectElement(
-      editor.selectedComponentEditorSceneViewPassage ||
+      editor.selectedComponentEditorSceneViewEvent ||
         editor.selectedComponentEditorSceneViewJump
     )
   }, [
-    editor.selectedComponentEditorSceneViewPassage,
+    editor.selectedComponentEditorSceneViewEvent,
     editor.selectedComponentEditorSceneViewJump
   ])
 
@@ -1122,7 +1118,7 @@ const SceneMap: React.FC<{
   useEffect(() => {
     if (
       editor.centeredComponentEditorSceneViewSelection &&
-      editor.selectedGameOutlineComponent.id === sceneId
+      editor.selectedWorldOutlineElement.id === sceneId
     ) {
       logger.info(
         `SceneMap->editor.centeredComponentEditorSceneViewSelection-useEffect`
@@ -1148,16 +1144,16 @@ const SceneMap: React.FC<{
     )
 
     if (
-      editor.selectedGameOutlineComponent.id === sceneId &&
+      editor.selectedWorldOutlineElement.id === sceneId &&
       editorTab.passageForEditing.visible
     ) {
-      editor.selectedComponentEditorSceneViewPassage &&
-        editor.selectedComponentEditorSceneViewPassage !==
+      editor.selectedComponentEditorSceneViewEvent &&
+        editor.selectedComponentEditorSceneViewEvent !==
           editorTab.passageForEditing.id &&
         editorTabDispatch({
           type: EDITOR_TAB_ACTION_TYPE.EDIT_PASSAGE,
           passageForEditing: {
-            id: editor.selectedComponentEditorSceneViewPassage,
+            id: editor.selectedComponentEditorSceneViewEvent,
             visible: true
           }
         })
@@ -1171,13 +1167,13 @@ const SceneMap: React.FC<{
     !editorTab.passageForEditing.visible && setContext()
   }, [
     editorTab.passageForEditing,
-    editor.selectedGameOutlineComponent,
-    editor.selectedComponentEditorSceneViewPassage
+    editor.selectedWorldOutlineElement,
+    editor.selectedComponentEditorSceneViewEvent
   ])
 
   return (
     <>
-      {passages && (
+      {events && (
         <div
           id={`scene-view-${sceneId}`}
           className={styles.SceneMap}
@@ -1187,11 +1183,11 @@ const SceneMap: React.FC<{
           onClick={() => {
             if (
               scene?.id &&
-              scene.id !== editor.selectedGameOutlineComponent.id
+              scene.id !== editor.selectedWorldOutlineElement.id
             ) {
               editorDispatch({
-                type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-                selectedGameOutlineComponent: {
+                type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+                selectedWorldOutlineElement: {
                   id: scene.id,
                   title: scene.title,
                   type: ELEMENT_TYPE.SCENE,
@@ -1229,7 +1225,7 @@ const SceneMap: React.FC<{
                           const passageId = await addElementToScene(
                             studioId,
                             scene,
-                            ELEMENT_TYPE.PASSAGE,
+                            ELEMENT_TYPE.EVENT,
                             project(clickPosition)
                           )
 
@@ -1238,11 +1234,11 @@ const SceneMap: React.FC<{
                               type: EDITOR_ACTION_TYPE.COMPONENT_SAVE,
                               savedComponent: {
                                 id: passageId,
-                                type: ELEMENT_TYPE.PASSAGE
+                                type: ELEMENT_TYPE.EVENT
                               }
                             })
                         } catch (error) {
-                          throw new Error(error)
+                          throw error
                         }
                       }
                     }
@@ -1284,12 +1280,12 @@ const SceneMap: React.FC<{
                       if (componentId) {
                         if (
                           componentId !==
-                          editor.selectedComponentEditorSceneViewPassage
+                          editor.selectedComponentEditorSceneViewEvent
                         ) {
                           editorDispatch({
                             type:
-                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                            selectedComponentEditorSceneViewPassage: componentId
+                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
+                            selectedElementEditorSceneViewEvent: componentId
                           })
                         }
 
@@ -1306,7 +1302,7 @@ const SceneMap: React.FC<{
                   [
                     // #292
                     (componentId) => {
-                      const foundPassage = passages.find(
+                      const foundPassage = events.find(
                         (passage) => passage.id === componentId
                       )
 
@@ -1323,13 +1319,13 @@ const SceneMap: React.FC<{
                       return 'Unknown Passage Type'
                     },
                     async ({ componentId }) => {
-                      const foundPassage = passages.find(
+                      const foundPassage = events.find(
                         (passage) => passage.id === componentId
                       )
 
                       if (foundPassage && foundPassage.id) {
                         if (foundPassage.type === EVENT_TYPE.CHOICE) {
-                          editor.selectedComponentEditorSceneViewPassage ===
+                          editor.selectedComponentEditorSceneViewEvent ===
                             foundPassage.id &&
                             editorDispatch({
                               type:
@@ -1337,7 +1333,7 @@ const SceneMap: React.FC<{
                               selectedComponentEditorSceneViewChoice: null
                             })
 
-                          await api().passages.switchPassageFromChoiceToInputType(
+                          await api().events.switchPassageFromChoiceToInputType(
                             studioId,
                             foundPassage
                           )
@@ -1345,7 +1341,7 @@ const SceneMap: React.FC<{
 
                         foundPassage.type === EVENT_TYPE.INPUT &&
                           foundPassage.input &&
-                          (await api().passages.switchPassageFromInputToChoiceType(
+                          (await api().events.switchPassageFromInputToChoiceType(
                             studioId,
                             foundPassage
                           ))
@@ -1360,32 +1356,32 @@ const SceneMap: React.FC<{
                           await removeElementFromScene(
                             studioId,
                             scene,
-                            ELEMENT_TYPE.PASSAGE,
+                            ELEMENT_TYPE.EVENT,
                             componentId
                           )
 
                           if (
                             componentId ===
-                            editor.selectedComponentEditorSceneViewPassage
+                            editor.selectedComponentEditorSceneViewEvent
                           ) {
                             setTotalSelectedPassages(0)
 
                             editorDispatch({
                               type:
-                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                              selectedComponentEditorSceneViewPassage: null
+                                EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
+                              selectedElementEditorSceneViewEvent: null
                             })
                           }
 
                           editorDispatch({
                             type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
                             removedComponent: {
-                              type: ELEMENT_TYPE.PASSAGE,
+                              type: ELEMENT_TYPE.EVENT,
                               id: componentId
                             }
                           })
                         } catch (error) {
-                          throw new Error(error)
+                          throw error
                         }
                     }
                   ]
@@ -1419,7 +1415,7 @@ const SceneMap: React.FC<{
                             })
                           }
                         } catch (error) {
-                          throw new Error(error)
+                          throw error
                         }
                       }
                     }
@@ -1445,13 +1441,13 @@ const SceneMap: React.FC<{
               logger.info('SceneMap->ReactFlow->onLoad')
 
               selectElement(
-                editor.selectedComponentEditorSceneViewPassage ||
+                editor.selectedComponentEditorSceneViewEvent ||
                   editor.selectedComponentEditorSceneViewJump
               )
             }}
             elements={elements}
             onElementsRemove={
-              editor.selectedGameOutlineComponent.id === scene?.id
+              editor.selectedWorldOutlineElement.id === scene?.id
                 ? onElementsRemove
                 : undefined
             }
@@ -1484,12 +1480,12 @@ const SceneMap: React.FC<{
               nodeColor={(node) => {
                 switch (node.type) {
                   case 'passageNode':
-                    if (passages) {
-                      const foundPassage = passages.find(
+                    if (events) {
+                      const foundPassage = events.find(
                         (passage) => node.id === passage.id
                       )
 
-                      if (foundPassage && foundPassage.gameOver) {
+                      if (foundPassage && foundPassage.ending) {
                         return `hsl(350, 100%, 65%)`
                       }
                     }

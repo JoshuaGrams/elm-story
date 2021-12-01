@@ -6,18 +6,18 @@ export async function getInput(studioId: StudioId, inputId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getInput(inputId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getInputsByGameRef(
+export async function getInputsByWorldRef(
   studioId: StudioId,
-  gameId: WorldId
+  worldId: WorldId
 ): Promise<Input[]> {
   try {
-    return await new LibraryDatabase(studioId).getInputsByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getInputsByWorldRef(worldId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -27,7 +27,7 @@ export async function saveInput(studioId: StudioId, input: Input) {
   try {
     return await new LibraryDatabase(studioId).saveInput(input)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -42,7 +42,7 @@ export async function saveVariableRefToInput(
       variableId
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -50,6 +50,6 @@ export async function removeInput(studioId: StudioId, inputId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removeInput(inputId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

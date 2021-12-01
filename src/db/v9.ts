@@ -8,7 +8,8 @@ export default (database: Dexie) => {
   if (database.name.includes(DB_NAME.LIBRARY)) {
     database.version(9).stores({
       games: null,
-      passages: null
+      passages: null,
+      routes: null
     })
   }
 }

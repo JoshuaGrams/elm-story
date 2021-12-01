@@ -7,14 +7,14 @@ import { ImportOutlined } from '@ant-design/icons'
 
 import { ImportJSONModal } from '../../components/Modal'
 import StudioSelect from '../../components/StudioSelect'
-import StoryworldLibrary from '../../components/StoryworldLibrary'
+import WorldLibrary from '../../components/WorldLibrary'
 
 import styles from './styles.module.less'
 
 const Dashboard = () => {
   const { app } = useContext(AppContext)
 
-  const importGameDataJSONInput = useRef<HTMLInputElement>(null)
+  const importWorldDataJSONInput = useRef<HTMLInputElement>(null)
 
   const [importJSONModal, setImportJSONModal] = useState<{
     visible: boolean
@@ -22,19 +22,19 @@ const Dashboard = () => {
   }>({ visible: false, file: null })
 
   function onImportGameDataJSON() {
-    if (importGameDataJSONInput.current?.files) {
+    if (importWorldDataJSONInput.current?.files) {
       setImportJSONModal({
         visible: true,
-        file: importGameDataJSONInput.current?.files[0]
+        file: importWorldDataJSONInput.current?.files[0]
       })
     }
   }
 
-  function onImportGameDataJSONFinished() {
+  function onImportWorldDataJSONFinished() {
     setImportJSONModal({ visible: false, file: null })
 
-    if (importGameDataJSONInput.current) {
-      importGameDataJSONInput.current.value = ''
+    if (importWorldDataJSONInput.current) {
+      importWorldDataJSONInput.current.value = ''
     }
   }
 
@@ -42,13 +42,13 @@ const Dashboard = () => {
     <>
       <ImportJSONModal
         visible={importJSONModal.visible}
-        afterClose={onImportGameDataJSONFinished}
+        afterClose={onImportWorldDataJSONFinished}
         studioId={app.selectedStudioId}
         file={importJSONModal.file}
       />
 
       <input
-        ref={importGameDataJSONInput}
+        ref={importWorldDataJSONInput}
         type="file"
         accept=".json"
         style={{ display: 'none' }}
@@ -58,13 +58,13 @@ const Dashboard = () => {
       <div className={styles.Dashboard}>
         <div className={styles.studioSelectWrapper}>
           <StudioSelect />
-          <Button onClick={() => importGameDataJSONInput.current?.click()}>
+          <Button onClick={() => importWorldDataJSONInput.current?.click()}>
             <ImportOutlined />
           </Button>
         </div>
 
         {app.selectedStudioId && (
-          <StoryworldLibrary studioId={app.selectedStudioId} />
+          <WorldLibrary studioId={app.selectedStudioId} />
         )}
       </div>
     </>

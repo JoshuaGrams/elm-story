@@ -33,16 +33,16 @@ import {
 } from '@ant-design/icons'
 
 import TabContent from './TabContent'
-import StoryworldPreview, { StoryworldPreviewTools } from './StoryworldPreview'
+import WorldPreview, { StoryworldPreviewTools } from './WorldPreview'
 import SceneMap, { SceneMapTools } from './SceneMap'
 
 import styles from './styles.module.less'
 
 import api from '../../api'
 
-function createBaseLayoutData(studioId: StudioId, game: World): LayoutData {
-  if (!game.id)
-    throw new Error('Unable to create base layout. Missing game ID.')
+function createBaseLayoutData(studioId: StudioId, world: World): LayoutData {
+  if (!world.id)
+    throw new Error('Unable to create base layout. Missing world ID.')
 
   return {
     dockbox: {
@@ -53,26 +53,24 @@ function createBaseLayoutData(studioId: StudioId, game: World): LayoutData {
           tabs: [
             {
               title: getTabTitle({
-                id: game.id,
-                title: game.title,
-                type: ELEMENT_TYPE.GAME,
+                id: world.id,
+                title: world.title,
+                type: ELEMENT_TYPE.WORLD,
                 expanded: true
               }),
-              id: game.id,
+              id: world.id,
               content: (
                 <TabContent
                   studioId={studioId}
-                  id={game.id}
-                  type={ELEMENT_TYPE.GAME}
+                  id={world.id}
+                  type={ELEMENT_TYPE.WORLD}
                   tools={
                     <StoryworldPreviewTools
                       studioId={studioId}
-                      gameId={game.id}
+                      worldId={world.id}
                     />
                   }
-                  view={
-                    <StoryworldPreview studioId={studioId} gameId={game.id} />
-                  }
+                  view={<WorldPreview studioId={studioId} worldId={world.id} />}
                 />
               ),
               group: 'default',
@@ -112,7 +110,7 @@ function getTabContent(
 
 function getTabIcon(type: ELEMENT_TYPE | undefined): JSX.Element {
   switch (type) {
-    case ELEMENT_TYPE.GAME:
+    case ELEMENT_TYPE.WORLD:
       return <DeploymentUnitOutlined className={styles.tabIcon} />
     case ELEMENT_TYPE.SCENE:
       return <PartitionOutlined className={styles.tabIcon} />
@@ -133,16 +131,16 @@ function getTabTitle(
   return (
     <div className={styles.tabTitle}>
       {getTabIcon(component.type)}
-      {component.type === ELEMENT_TYPE.GAME && (
+      {component.type === ELEMENT_TYPE.WORLD && (
         <span className={styles.title}>Preview</span>
       )}
 
-      {component.type !== ELEMENT_TYPE.GAME && (
+      {component.type !== ELEMENT_TYPE.WORLD && (
         <span className={styles.title}>
           {component.title || 'Unknown Title'}
         </span>
       )}
-      {component.type !== ELEMENT_TYPE.GAME && (
+      {component.type !== ELEMENT_TYPE.WORLD && (
         <CloseOutlined
           className={styles.tabCloseButton}
           onClick={(event) => {
@@ -155,9 +153,9 @@ function getTabTitle(
   )
 }
 
-const ElementComposer: React.FC<{ studioId: StudioId; game: World }> = ({
+const ElementComposer: React.FC<{ studioId: StudioId; world: World }> = ({
   studioId,
-  game
+  world
 }) => {
   const dockLayout = useRef<DockLayout>(null)
 
@@ -172,9 +170,9 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: World }> = ({
       }[]
     >([
       {
-        id: game.id,
-        title: game.title,
-        type: ELEMENT_TYPE.GAME,
+        id: world.id,
+        title: world.title,
+        type: ELEMENT_TYPE.WORLD,
         expanded: true
       }
     ])
@@ -239,7 +237,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: World }> = ({
       // Removing tab
       if (
         direction === 'remove' &&
-        changingTabId === editor.selectedGameOutlineComponent.id
+        changingTabId === editor.selectedWorldOutlineElement.id
       ) {
         logger.info(`Removing tab`)
 
@@ -249,10 +247,10 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: World }> = ({
 
         setTabs(clonedTabs)
 
-        editor.selectedComponentEditorSceneViewPassage &&
+        editor.selectedComponentEditorSceneViewEvent &&
           editorDispatch({
-            type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-            selectedComponentEditorSceneViewPassage: null
+            type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
+            selectedElementEditorSceneViewEvent: null
           })
 
         editor.selectedComponentEditorSceneViewJump &&
@@ -275,12 +273,12 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: World }> = ({
             undefined
 
         editorDispatch({
-          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-          selectedGameOutlineComponent: {
-            id: tabToSelect?.id || game.id,
+          type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+          selectedWorldOutlineElement: {
+            id: tabToSelect?.id || world.id,
             expanded: true,
-            title: tabToSelect?.title || game.title,
-            type: tabToSelect?.type || ELEMENT_TYPE.GAME
+            title: tabToSelect?.title || world.title,
+            type: tabToSelect?.type || ELEMENT_TYPE.WORLD
           }
         })
       }
@@ -288,28 +286,28 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: World }> = ({
       // Not removing tab
       if (
         direction !== 'remove' &&
-        changingTabId !== editor.selectedGameOutlineComponent.id &&
+        changingTabId !== editor.selectedWorldOutlineElement.id &&
         !editor.renamedComponent.id
       ) {
         logger.info(`Not removing tab`)
 
         // Keep the passage selected in StoryworldOutline
-        // if (editor.selectedGameOutlineComponent.type !== ELEMENT_TYPE.PASSAGE)
+        // if (editor.selectedGameOutlineComponent.type !== ELEMENT_TYPE.EVENT)
         editorDispatch({
-          type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-          selectedGameOutlineComponent:
+          type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+          selectedWorldOutlineElement:
             clonedTabIndex !== -1 ? cloneDeep(tabs[clonedTabIndex]) : {}
         })
 
         // #305
         if (
           clonedTabIndex !== -1 &&
-          tabs[clonedTabIndex].type === ELEMENT_TYPE.GAME &&
-          editor.selectedComponentEditorSceneViewPassage
+          tabs[clonedTabIndex].type === ELEMENT_TYPE.WORLD &&
+          editor.selectedComponentEditorSceneViewEvent
         )
           editorDispatch({
-            type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-            selectedComponentEditorSceneViewPassage: null
+            type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
+            selectedElementEditorSceneViewEvent: null
           })
       }
 
@@ -323,13 +321,13 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: World }> = ({
   }
 
   useEffect(() => {
-    const selectedComponent = editor.selectedGameOutlineComponent
+    const selectedComponent = editor.selectedWorldOutlineElement
 
     async function findTabAndOpen() {
       if (dockLayout.current && selectedComponent.id && activePanelId) {
         const passage: Event | null =
-            selectedComponent.type === ELEMENT_TYPE.PASSAGE
-              ? await api().passages.getPassage(studioId, selectedComponent.id)
+            selectedComponent.type === ELEMENT_TYPE.EVENT
+              ? await api().events.getPassage(studioId, selectedComponent.id)
               : null,
           sceneFromPassage: Scene | null = passage
             ? await api().scenes.getScene(studioId, passage.sceneId)
@@ -402,7 +400,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: World }> = ({
     )
 
     findTabAndOpen()
-  }, [editor.selectedGameOutlineComponent.id])
+  }, [editor.selectedWorldOutlineElement.id])
 
   useEffect(() => {
     if (
@@ -580,7 +578,7 @@ const ElementComposer: React.FC<{ studioId: StudioId; game: World }> = ({
     <>
       <DockLayout
         ref={dockLayout}
-        defaultLayout={createBaseLayoutData(studioId, game)}
+        defaultLayout={createBaseLayoutData(studioId, world)}
         groups={{
           default: { floatable: false, animated: false }
         }}

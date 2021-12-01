@@ -12,12 +12,12 @@ export async function getChoice(studioId: StudioId, choiceId: ElementId) {
   }
 }
 
-export async function getChoicesByGameRef(
+export async function getChoicesByWorldRef(
   studioId: StudioId,
-  gameId: WorldId
+  worldId: WorldId
 ): Promise<Choice[]> {
   try {
-    return await new LibraryDatabase(studioId).getChoicesByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getChoicesByWorldRef(worldId)
   } catch (error) {
     throw error
   }

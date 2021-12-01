@@ -13,9 +13,9 @@ import {
 
 import {
   useCharacters,
-  useChoicesByPassageRef,
-  usePassage,
-  useRoutePassthroughsByPassageRef
+  useChoicesByEventRef,
+  useEvent,
+  useRoutePassthroughsByEventRef
 } from '../../../hooks'
 
 import {
@@ -34,49 +34,43 @@ import styles from './styles.module.less'
 
 import api from '../../../api'
 
-const PassageType: React.FC<{
+const EventType: React.FC<{
   studioId: StudioId
-  passage: Event
-}> = React.memo(({ studioId, passage }) => {
+  event: Event
+}> = React.memo(({ studioId, event }) => {
   const { editor, editorDispatch } = useContext(EditorContext)
 
   const changeType = useCallback(
     async (type: EVENT_TYPE) => {
-      if (passage.id) {
+      if (event.id) {
         // Change to input
-        if (passage.type === EVENT_TYPE.CHOICE && type === EVENT_TYPE.INPUT) {
-          editor.selectedGameOutlineComponent.id === passage.sceneId &&
+        if (event.type === EVENT_TYPE.CHOICE && type === EVENT_TYPE.INPUT) {
+          editor.selectedWorldOutlineElement.id === event.sceneId &&
             editorDispatch({
               type:
                 EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_CHOICE,
               selectedComponentEditorSceneViewChoice: null
             })
 
-          await api().passages.switchPassageFromChoiceToInputType(
-            studioId,
-            passage
-          )
+          await api().events.switchEventFromChoiceToInputType(studioId, event)
         }
 
         // Change to choice
-        if (passage.type === EVENT_TYPE.INPUT && type === EVENT_TYPE.CHOICE) {
+        if (event.type === EVENT_TYPE.INPUT && type === EVENT_TYPE.CHOICE) {
           // It will be necessary to remove input and associated routes
-          if (passage.input)
-            await api().passages.switchPassageFromInputToChoiceType(
-              studioId,
-              passage
-            )
+          if (event.input)
+            await api().events.switchEventFromInputToChoiceType(studioId, event)
         }
       }
     },
-    [studioId, passage.type, passage.choices]
+    [studioId, event.type, event.choices]
   )
 
   return (
-    <div className={styles.PassageType}>
+    <div className={styles.EventType}>
       <div className={styles.header}>Type</div>
       <Select
-        value={passage.type}
+        value={event.type}
         onChange={changeType}
         className={styles.select}
       >
@@ -91,17 +85,17 @@ const PassageType: React.FC<{
   )
 })
 
-PassageType.displayName = 'PassageType'
+EventType.displayName = 'EventType'
 
 const Persona: React.FC<{
   studioId: StudioId
-  gameId: WorldId
-  passage: Event
-}> = React.memo(({ studioId, gameId, passage }) => {
-  const characters = useCharacters(studioId, gameId, [passage.id])
+  worldId: WorldId
+  event: Event
+}> = React.memo(({ studioId, worldId, event }) => {
+  const characters = useCharacters(studioId, worldId, [event.id])
 
   const [persona, setPersona] = useState<EventPersona | undefined>(
-      passage.persona
+      event.persona
     ),
     [selectedCharacter, setSelectedCharacter] = useState<Character | undefined>(
       undefined
@@ -113,14 +107,14 @@ const Persona: React.FC<{
         ? [characterId, CHARACTER_MASK_TYPE.NEUTRAL, undefined]
         : undefined
 
-      await api().passages.savePassage(studioId, {
-        ...passage,
+      await api().events.saveEvent(studioId, {
+        ...event,
         persona: newPersona
       })
 
       setPersona(newPersona)
     },
-    [passage, persona]
+    [event, persona]
   )
 
   const savePersonaMask = useCallback(
@@ -128,14 +122,14 @@ const Persona: React.FC<{
       const newPersona: EventPersona | undefined =
         maskType && persona ? [persona[0], maskType, persona[2]] : undefined
 
-      await api().passages.savePassage(studioId, {
-        ...passage,
+      await api().events.saveEvent(studioId, {
+        ...event,
         persona: newPersona
       })
 
       setPersona(newPersona)
     },
-    [passage, persona]
+    [event, persona]
   )
 
   const savePersonaReference = useCallback(
@@ -144,17 +138,17 @@ const Persona: React.FC<{
         ? [persona[0], persona[1], reference]
         : undefined
 
-      await api().passages.savePassage(studioId, {
-        ...passage,
+      await api().events.saveEvent(studioId, {
+        ...event,
         persona: newPersona
       })
 
       setPersona(newPersona)
     },
-    [passage, persona]
+    [event, persona]
   )
 
-  useEffect(() => setPersona(passage.persona), [passage, selectedCharacter])
+  useEffect(() => setPersona(event.persona), [event, selectedCharacter])
 
   useEffect(
     () =>
@@ -279,50 +273,49 @@ Persona.displayName = 'EventPersona'
 
 const PassageEndToggle: React.FC<{
   studioId: StudioId
-  passage: Event
-}> = React.memo(({ studioId, passage }) => {
+  event: Event
+}> = React.memo(({ studioId, event }) => {
   const { editor } = useContext(EditorContext)
 
-  const choices = useChoicesByPassageRef(studioId, passage.id, [passage]),
-    routePassthroughs = useRoutePassthroughsByPassageRef(studioId, passage.id, [
-      passage
+  const choices = useChoicesByEventRef(studioId, event.id, [event]),
+    routePassthroughs = useRoutePassthroughsByEventRef(studioId, event.id, [
+      event
     ])
 
-  const toggleGameEnd = async (event: CheckboxChangeEvent) => {
-    passage.id &&
-      (await api().passages.setPassageGameEnd(
+  const toggleGameEnd = async (_event: CheckboxChangeEvent) => {
+    event.id &&
+      (await api().events.setEventEnding(
         studioId,
-        passage.id,
-        event.target.checked
+        event.id,
+        _event.target.checked
       ))
   }
 
   useEffect(() => {
     async function disableGameEnd() {
-      passage.id &&
-        (await api().passages.setPassageGameEnd(studioId, passage.id, false))
+      event.id && (await api().events.setEventEnding(studioId, event.id, false))
     }
 
     // TODO: it might be necessary to check choices in the future #397
     if (
-      ((choices && choices.length > 0) || passage.type === EVENT_TYPE.INPUT) &&
-      passage.gameOver &&
-      editor.selectedComponentEditorSceneViewPassage === passage.id
+      ((choices && choices.length > 0) || event.type === EVENT_TYPE.INPUT) &&
+      event.ending &&
+      editor.selectedComponentEditorSceneViewEvent === event.id
     ) {
       disableGameEnd()
     }
-  }, [choices, passage.type])
+  }, [choices, event.type])
 
   return (
     <div className={styles.PassageEndToggle}>
       <Checkbox
         onChange={toggleGameEnd}
-        checked={passage.gameOver}
+        checked={event.ending}
         disabled={
           (!choices && !routePassthroughs) ||
           (choices && choices.length > 0) ||
           (routePassthroughs && routePassthroughs.length > 0) ||
-          passage.type === EVENT_TYPE.INPUT
+          event.type === EVENT_TYPE.INPUT
         }
       >
         Storyworld Ending
@@ -337,7 +330,7 @@ const EventProperties: React.FC<{
   studioId: StudioId
   passageId: ElementId
 }> = React.memo(({ studioId, passageId }) => {
-  const event = usePassage(studioId, passageId, [passageId])
+  const event = useEvent(studioId, passageId, [passageId])
 
   const { editorDispatch } = useContext(EditorContext)
 
@@ -352,8 +345,8 @@ const EventProperties: React.FC<{
               title={event.title}
               onUpdate={async (title) => {
                 if (event.id) {
-                  await api().passages.savePassage(studioId, {
-                    ...(await api().passages.getPassage(studioId, event.id)),
+                  await api().events.saveEvent(studioId, {
+                    ...(await api().events.getEvent(studioId, event.id)),
                     title
                   })
 
@@ -369,16 +362,14 @@ const EventProperties: React.FC<{
             />
             <div className={parentStyles.componentId}>{event.id}</div>
 
-            {event.id && (
-              <PassageEndToggle studioId={studioId} passage={event} />
-            )}
+            {event.id && <PassageEndToggle studioId={studioId} event={event} />}
 
-            <PassageType studioId={studioId} passage={event} />
+            <EventType studioId={studioId} event={event} />
 
             <Persona
               studioId={studioId}
-              gameId={event.gameId}
-              passage={event}
+              worldId={event.worldId}
+              event={event}
             />
           </div>
         </div>

@@ -13,18 +13,18 @@ export async function getVariable(studioId: StudioId, variableId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getVariable(variableId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getVariablesByGameRef(
+export async function getVariablesByWorldRef(
   studioId: StudioId,
-  gameId: WorldId
+  worldId: WorldId
 ): Promise<Variable[]> {
   try {
-    return await new LibraryDatabase(studioId).getVariablesByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getVariablesByWorldRef(worldId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -37,7 +37,7 @@ export async function saveVariable(
   try {
     return await new LibraryDatabase(studioId).saveVariable(variable)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -48,7 +48,7 @@ export async function removeVariable(
   try {
     await new LibraryDatabase(studioId).removeVariable(variableId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -58,13 +58,13 @@ export async function saveVariableTitle(
   title: string
 ) {
   try {
-    await new LibraryDatabase(studioId).saveComponentTitle(
+    await new LibraryDatabase(studioId).saveElementTitle(
       variableId,
       LIBRARY_TABLE.VARIABLES,
       title
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -79,7 +79,7 @@ export async function saveVariableType(
       type
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -94,6 +94,6 @@ export async function saveVariableInitialValue(
       initialValue
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

@@ -12,11 +12,11 @@ import api from '../../api'
 
 const VariableSelectForInput: React.FC<{
   studioId: StudioId
-  gameId: WorldId
+  worldId: WorldId
   inputId: ElementId
-}> = ({ studioId, gameId, inputId }) => {
+}> = ({ studioId, worldId, inputId }) => {
   const input = useInput(studioId, inputId, [studioId, inputId]),
-    variables = useVariables(studioId, gameId, [studioId, gameId])
+    variables = useVariables(studioId, worldId, [studioId, worldId])
 
   const changeInput = useCallback(
     async (variableId: ElementId) => {
@@ -65,7 +65,7 @@ const VariableSelectForInput: React.FC<{
 
       {variables && variables.length === 0 && (
         <div className="warningMessage">
-          At least 1 game variable is required for passage input.
+          At least 1 world variable is required for passage input.
         </div>
       )}
     </div>

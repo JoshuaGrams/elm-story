@@ -8,28 +8,28 @@ import useStudios, { useStudio } from './useStudios'
 import useWorlds, { useWorld } from './useWorlds'
 import useFolders, { useFolder } from './useFolders'
 import useJumps, { useJump, useJumpsBySceneRef } from './useJumps'
-import useScenes, { useScenesByChapterRef, useScene } from './useScenes'
+import useScenes, { useScene } from './useScenes'
 import useRoutes, {
   useRoute,
   useRoutesBySceneRef,
-  useRoutesByPassageRef,
+  useRoutesByEventRef,
   useRoutesByChoiceRef,
   useRoutesByInputRef,
-  useRoutePassthroughsByPassageRef
-} from './useRoutes'
+  useRoutePassthroughsByEventRef
+} from './usePaths'
 import useRouteConditions, {
   useRouteCondition,
   useRouteConditionsByRouteRef,
   useRouteConditionsByRouteRefs,
   useRouteConditionsCountByRouteRef
-} from './useRouteConditions'
+} from './usePathConditions'
 import useRouteEffects, {
   useRouteEffect,
   useRouteEffectsByRouteRef,
   useRouteEffectsCountByRouteRef
-} from './useRouteEffects'
-import usePassages, { usePassagesBySceneRef, usePassage } from './usePassages'
-import useChoices, { useChoice, useChoicesByPassageRef } from './useChoices'
+} from './usePathEffects'
+import useEvents, { useEventsBySceneRef, useEvent } from './useEvents'
+import useChoices, { useChoice, useChoicesByEventRef } from './useChoices'
 import useInputs, { useInput } from './useInputs'
 import useVariables, { useVariable } from './useVariables'
 
@@ -49,7 +49,6 @@ export {
   useJumpsBySceneRef,
   useScenes,
   useScene,
-  useScenesByChapterRef,
   useRoutes,
   useRoute,
   useRouteConditions,
@@ -62,16 +61,16 @@ export {
   useRouteEffectsByRouteRef,
   useRouteEffectsCountByRouteRef,
   useRoutesBySceneRef,
-  useRoutesByPassageRef,
+  useRoutesByEventRef,
   useRoutesByChoiceRef,
   useRoutesByInputRef,
-  useRoutePassthroughsByPassageRef,
-  usePassages,
-  usePassage,
-  usePassagesBySceneRef,
+  useRoutePassthroughsByEventRef,
+  useEvents,
+  useEvent,
+  useEventsBySceneRef,
   useChoices,
   useChoice,
-  useChoicesByPassageRef,
+  useChoicesByEventRef,
   useInputs,
   useInput,
   useVariables,

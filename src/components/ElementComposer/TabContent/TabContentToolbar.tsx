@@ -23,11 +23,11 @@ const TabToolbar: React.FC<{
           component.type === ELEMENT_TYPE.SCENE &&
           component.data &&
           component.data.id &&
-          component.data.id !== editor.selectedGameOutlineComponent.id
+          component.data.id !== editor.selectedWorldOutlineElement.id
         ) {
           editorDispatch({
-            type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-            selectedGameOutlineComponent: {
+            type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+            selectedWorldOutlineElement: {
               id: component.data.id,
               title: component.data.title,
               type: ELEMENT_TYPE.SCENE,

@@ -2,9 +2,9 @@ import CharacterModal from './CharacterModal'
 import ESGModal from './ESGModal'
 import SaveStudioModal from './SaveStudioModal'
 import RemoveStudioModal from './RemoveStudioModal'
-import SaveGameModal from './SaveGameModal'
-import RemoveGameModal from './RemoveGameModal'
-import ExportGameModal from './ExportGameModal'
+import SaveWorldModal from './SaveWorldModal'
+import RemoveWorldModal from './RemoveWorldModal'
+import ExportWorldModal from './ExportWorldModal'
 import ImportJSONModal from './ImportJSONModal'
 
 export {
@@ -12,8 +12,8 @@ export {
   ESGModal,
   SaveStudioModal,
   RemoveStudioModal,
-  SaveGameModal,
-  RemoveGameModal,
-  ExportGameModal,
+  SaveWorldModal,
+  RemoveWorldModal,
+  ExportWorldModal,
   ImportJSONModal
 }

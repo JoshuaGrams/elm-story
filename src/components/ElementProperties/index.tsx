@@ -14,42 +14,42 @@ import styles from './styles.module.less'
 
 const ElementProperties: React.FC<{
   studioId: StudioId
-  gameId: WorldId | undefined
-}> = ({ studioId, gameId = undefined }) => {
+  worldId: WorldId | undefined
+}> = ({ studioId, worldId = undefined }) => {
   const { editor } = useContext(EditorContext)
 
-  const selectedGame: World | undefined = gameId
-    ? useWorld(studioId, gameId)
+  const selectedGame: World | undefined = worldId
+    ? useWorld(studioId, worldId)
     : undefined
 
   useEffect(() => {
     logger.info(
       `ComponentProperties->editor.selectedGameOutlineComponent->
-       useEffect:${editor.selectedGameOutlineComponent.type}`
+       useEffect:${editor.selectedWorldOutlineElement.type}`
     )
-  }, [editor.selectedGameOutlineComponent])
+  }, [editor.selectedWorldOutlineElement])
 
   return (
     <div className={styles.componentProperties}>
       {selectedGame?.id &&
-        (!editor.selectedGameOutlineComponent.id ||
-          !editor.selectedGameOutlineComponent.type) && (
+        (!editor.selectedWorldOutlineElement.id ||
+          !editor.selectedWorldOutlineElement.type) && (
           <ComponentDetailView
             studioId={studioId}
             component={{
               id: selectedGame.id,
-              type: ELEMENT_TYPE.GAME
+              type: ELEMENT_TYPE.WORLD
             }}
           />
         )}
 
-      {editor.selectedGameOutlineComponent.id &&
-        editor.selectedGameOutlineComponent.type && (
+      {editor.selectedWorldOutlineElement.id &&
+        editor.selectedWorldOutlineElement.type && (
           <ComponentDetailView
             studioId={studioId}
             component={{
-              id: editor.selectedGameOutlineComponent.id,
-              type: editor.selectedGameOutlineComponent.type
+              id: editor.selectedWorldOutlineElement.id,
+              type: editor.selectedWorldOutlineElement.type
             }}
           />
         )}

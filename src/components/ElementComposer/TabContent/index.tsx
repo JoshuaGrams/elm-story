@@ -34,8 +34,8 @@ const TabContent: React.FC<{
   } = useDebouncedResizeObserver(1000)
 
   switch (type) {
-    case ELEMENT_TYPE.GAME:
-      component = { type: ELEMENT_TYPE.GAME, data: useWorld(studioId, id) }
+    case ELEMENT_TYPE.WORLD:
+      component = { type: ELEMENT_TYPE.WORLD, data: useWorld(studioId, id) }
       break
     case ELEMENT_TYPE.SCENE:
       component = { type: ELEMENT_TYPE.SCENE, data: useScene(studioId, id) }
@@ -60,7 +60,7 @@ const TabContent: React.FC<{
           ref={tabContentViewRef}
           className={styles.TabContentView}
           style={{
-            overflow: type === ELEMENT_TYPE.GAME ? 'hidden' : 'initial'
+            overflow: type === ELEMENT_TYPE.WORLD ? 'hidden' : 'initial'
           }}
         >
           {view}

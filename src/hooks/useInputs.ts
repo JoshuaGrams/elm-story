@@ -5,11 +5,11 @@ import { Input, ElementId, WorldId, StudioId } from '../data/types'
 
 const useInputs = (
   studioId: StudioId,
-  gameId: WorldId,
+  worldId: WorldId,
   deps?: any[]
 ): Input[] | undefined => {
   const inputs = useLiveQuery(
-    () => new LibraryDatabase(studioId).inputs.where({ gameId }).toArray(),
+    () => new LibraryDatabase(studioId).inputs.where({ worldId }).toArray(),
     deps || [],
     undefined
   )

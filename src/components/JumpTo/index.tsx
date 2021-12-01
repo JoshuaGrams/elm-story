@@ -11,7 +11,7 @@ import {
   StudioId
 } from '../../data/types'
 
-import { useJump, usePassagesBySceneRef, useScenes } from '../../hooks'
+import { useJump, useEventsBySceneRef, useScenes } from '../../hooks'
 
 import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
@@ -24,32 +24,32 @@ import api from '../../api'
 
 const JumpSelect: React.FC<{
   studioId: StudioId
-  gameId?: WorldId
+  worldId?: WorldId
   sceneId?: ElementId
   selectedId: ElementId | undefined
   onChangeRoutePart: (
     componentType: ELEMENT_TYPE,
     componentId: ElementId | null
   ) => Promise<void>
-}> = ({ studioId, gameId, sceneId, selectedId, onChangeRoutePart }) => {
-  let scenes: Scene[] | undefined = gameId
-      ? useScenes(studioId, gameId, [gameId])
+}> = ({ studioId, worldId, sceneId, selectedId, onChangeRoutePart }) => {
+  let scenes: Scene[] | undefined = worldId
+      ? useScenes(studioId, worldId, [worldId])
       : undefined,
-    passages: Event[] | undefined = sceneId
-      ? usePassagesBySceneRef(studioId, sceneId, [sceneId])
+    events: Event[] | undefined = sceneId
+      ? useEventsBySceneRef(studioId, sceneId, [sceneId])
       : undefined
 
   const [selectedSceneId, setSelectedSceneId] = useState<ElementId | undefined>(
       undefined
     ),
-    [selectedPassageId, setSelectedPassageId] = useState<ElementId | undefined>(
+    [selectedEventId, setSelectedEventId] = useState<ElementId | undefined>(
       undefined
     )
 
   async function onChange(componentId: string) {
-    gameId && (await onChangeRoutePart(ELEMENT_TYPE.SCENE, componentId))
+    worldId && (await onChangeRoutePart(ELEMENT_TYPE.SCENE, componentId))
 
-    sceneId && (await onChangeRoutePart(ELEMENT_TYPE.PASSAGE, componentId))
+    sceneId && (await onChangeRoutePart(ELEMENT_TYPE.EVENT, componentId))
   }
 
   useEffect(() => {
@@ -62,11 +62,11 @@ const JumpSelect: React.FC<{
   useEffect(() => {
     logger.info(`JumpSelect->passages->useEffect`)
 
-    passages &&
-      setSelectedPassageId(
-        passages.find((passage) => passage.id === selectedId)?.id
+    events &&
+      setSelectedEventId(
+        events.find((passage) => passage.id === selectedId)?.id
       )
-  }, [passages, selectedId])
+  }, [events, selectedId])
 
   // TODO: abstract
   return (
@@ -102,17 +102,17 @@ const JumpSelect: React.FC<{
         </>
       )}
 
-      {passages && passages.length > 0 && (
+      {events && events.length > 0 && (
         <>
           <Divider>
             <h2>Event</h2>
           </Divider>
 
           <div className={`${styles.selectWrapper} nodrag`}>
-            {selectedPassageId && (
+            {selectedEventId && (
               <>
-                <Select value={selectedPassageId} onChange={onChange}>
-                  {passages.map(
+                <Select value={selectedEventId} onChange={onChange}>
+                  {events.map(
                     (passage) =>
                       passage.id && (
                         <Select.Option value={passage.id} key={passage.id}>
@@ -124,21 +124,19 @@ const JumpSelect: React.FC<{
 
                 <Button className={styles.rollBackBtn}>
                   <RollbackOutlined
-                    onClick={() =>
-                      onChangeRoutePart(ELEMENT_TYPE.PASSAGE, null)
-                    }
+                    onClick={() => onChangeRoutePart(ELEMENT_TYPE.EVENT, null)}
                   />
                 </Button>
               </>
             )}
 
-            {!selectedPassageId && (
+            {!selectedEventId && (
               <Button
                 onClick={async () => {
-                  if (passages) {
+                  if (events) {
                     const scene = await api().scenes.getScene(
                       studioId,
-                      passages[0].sceneId
+                      events[0].sceneId
                     )
 
                     onChange(scene.children[0][1])
@@ -190,14 +188,14 @@ const JumpTo: React.FC<{
               })
             }
 
-            await api().worlds.saveJumpRefToGame(studioId, jump.gameId, null)
+            await api().worlds.saveJumpRefToWorld(studioId, jump.worldId, null)
 
             await api().jumps.removeJump(studioId, jump.id)
 
             onRemove && (await onRemove(jumpId))
           }
           break
-        case ELEMENT_TYPE.PASSAGE:
+        case ELEMENT_TYPE.EVENT:
           await api().jumps.saveJumpRoute(
             studioId,
             jump.id,
@@ -218,7 +216,7 @@ const JumpTo: React.FC<{
           {jump.route[0] && (
             <JumpSelect
               studioId={studioId}
-              gameId={jump.gameId}
+              worldId={jump.worldId}
               selectedId={jump.route[0]}
               onChangeRoutePart={onChangeRoutePart}
             />

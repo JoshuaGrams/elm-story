@@ -14,7 +14,7 @@ import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
 
 import { DividerBox } from 'rc-dock'
 
-import StoryworldInspector from '../../components/StoryworldInspector'
+import WorldInspector from '../../components/WorldInspector'
 import ElementComposer from '../../components/ElementComposer'
 import ElementInspector from '../../components/ElementInspector'
 
@@ -26,18 +26,18 @@ const Editor: React.FC = () => {
   const { app } = useContext(AppContext),
     { editor, editorDispatch } = useContext(EditorContext)
 
-  const selectedGame =
-    app.selectedStudioId && app.selectedGameId
-      ? useWorld(app.selectedStudioId, app.selectedGameId)
+  const selectedWorld =
+    app.selectedStudioId && app.selectedWorldId
+      ? useWorld(app.selectedStudioId, app.selectedWorldId)
       : undefined
 
   function closeActiveTab() {
-    if (editor.selectedGameOutlineComponent.type !== ELEMENT_TYPE.GAME) {
+    if (editor.selectedWorldOutlineElement.type !== ELEMENT_TYPE.WORLD) {
       editorDispatch({
         type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_CLOSE_TAB,
         closedEditorTab: {
-          id: editor.selectedGameOutlineComponent.id,
-          type: editor.selectedGameOutlineComponent.type
+          id: editor.selectedWorldOutlineElement.id,
+          type: editor.selectedWorldOutlineElement.type
         }
       })
     }
@@ -47,23 +47,23 @@ const Editor: React.FC = () => {
     ipcRenderer.removeAllListeners(WINDOW_EVENT_TYPE.CLOSE_TAB_OR_WINDOW)
 
     ipcRenderer.on(WINDOW_EVENT_TYPE.CLOSE_TAB_OR_WINDOW, closeActiveTab)
-  }, [editor.selectedGameOutlineComponent])
+  }, [editor.selectedWorldOutlineElement])
 
   useEffect(() => {
     logger.info(`Editor->selectedGame->useEffect`)
 
-    selectedGame?.id &&
-      !editor.selectedGameOutlineComponent.id &&
+    selectedWorld?.id &&
+      !editor.selectedWorldOutlineElement.id &&
       editorDispatch({
-        type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-        selectedGameOutlineComponent: {
-          id: selectedGame.id,
-          title: selectedGame.title,
-          type: ELEMENT_TYPE.GAME,
+        type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+        selectedWorldOutlineElement: {
+          id: selectedWorld.id,
+          title: selectedWorld.title,
+          type: ELEMENT_TYPE.WORLD,
           expanded: true
         }
       })
-  }, [selectedGame])
+  }, [selectedWorld])
 
   useEffect(() => {
     return function removeListeners() {
@@ -74,29 +74,29 @@ const Editor: React.FC = () => {
   return (
     <>
       {/* Route back to Dashboard */}
-      {!app.selectedStudioId || !app.selectedGameId
+      {!app.selectedStudioId || !app.selectedWorldId
         ? history.replace(APP_LOCATION.DASHBOARD)
         : null}
 
       {/* Editor */}
-      {app.selectedStudioId && selectedGame && (
+      {app.selectedStudioId && selectedWorld && (
         <DividerBox mode="horizontal" className={styles.editor}>
           <DividerBox mode="vertical" className={styles.gameOutlinePanel}>
-            <StoryworldInspector
+            <WorldInspector
               studioId={app.selectedStudioId}
-              game={selectedGame}
+              world={selectedWorld}
             />
           </DividerBox>
 
           <ElementComposer
             studioId={app.selectedStudioId}
-            game={selectedGame}
+            world={selectedWorld}
           />
 
           <DividerBox mode="vertical" className={styles.inspectorPanel}>
             <ElementInspector
               studioId={app.selectedStudioId}
-              gameId={app.selectedGameId}
+              worldId={app.selectedWorldId}
             />
           </DividerBox>
         </DividerBox>

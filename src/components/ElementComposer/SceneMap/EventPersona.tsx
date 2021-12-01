@@ -15,9 +15,9 @@ import styles from './styles.module.less'
 
 const EventPersonaPane: React.FC<{
   studioId: StudioId
-  gameId: WorldId
+  worldId: WorldId
   persona?: EventPersona
-}> = ({ studioId, gameId, persona }) => {
+}> = ({ studioId, worldId, persona }) => {
   const character = useCharacter(studioId, persona?.[0], [persona?.[0]])
 
   const { editorDispatch } = useContext(EditorContext)
@@ -49,7 +49,7 @@ const EventPersonaPane: React.FC<{
             <div>
               <CharacterMask
                 studioId={studioId}
-                gameId={gameId}
+                worldId={worldId}
                 characterId={character.id}
                 type={persona[1]}
                 width="100%"

@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { ElementId, ELEMENT_TYPE } from '../../data/types'
-import { OnAddComponent } from '.'
+import { OnAddElement } from '.'
 import { OnEditComponentTitle, OnRemoveComponent } from '.'
 
 import { Dropdown, Menu } from 'antd'
@@ -12,7 +12,7 @@ const ContextMenu: React.FC<{
     type: ELEMENT_TYPE
     title: string
     disabled: boolean
-    onAdd: OnAddComponent
+    onAdd: OnAddElement
     onRemove: OnRemoveComponent
     OnEditComponentTitle: OnEditComponentTitle
   }
@@ -31,7 +31,7 @@ const ContextMenu: React.FC<{
   const menuItems: React.ReactElement[] = []
 
   switch (type) {
-    case ELEMENT_TYPE.GAME:
+    case ELEMENT_TYPE.WORLD:
       menuItems.push(
         <Menu.Item
           key={`${id}-add-folder`}
@@ -66,20 +66,20 @@ const ContextMenu: React.FC<{
       menuItems.push(
         <Menu.Item
           key={`${id}-add`}
-          onClick={() => onAdd(id, ELEMENT_TYPE.PASSAGE)}
+          onClick={() => onAdd(id, ELEMENT_TYPE.EVENT)}
         >
           Add Event to '{title}'
         </Menu.Item>
       )
 
       break
-    case ELEMENT_TYPE.PASSAGE:
+    case ELEMENT_TYPE.EVENT:
       break
     default:
       break
   }
 
-  if (type !== ELEMENT_TYPE.GAME) {
+  if (type !== ELEMENT_TYPE.WORLD) {
     menuItems.push(
       <Menu.Item
         key={`${id}-rename`}

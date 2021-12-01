@@ -19,7 +19,7 @@ import api from '../../api'
 
 const CharacterMask: React.FC<{
   studioId: StudioId
-  gameId: WorldId
+  worldId: WorldId
   characterId: ElementId
   type: CHARACTER_MASK_TYPE
   assetId?: string
@@ -37,7 +37,7 @@ const CharacterMask: React.FC<{
 }> = React.memo(
   ({
     studioId,
-    gameId,
+    worldId,
     characterId,
     type,
     assetId,
@@ -108,7 +108,7 @@ const CharacterMask: React.FC<{
             WINDOW_EVENT_TYPE.GET_ASSET,
             {
               studioId,
-              gameId,
+              worldId,
               id: assetId,
               ext: 'jpeg'
             }

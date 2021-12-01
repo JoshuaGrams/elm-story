@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import reactStringReplace from 'react-string-replace'
 
-import { WorldState } from '../../../data/types'
 import {
   gameMethods,
   getProcessedTemplate,
   getTemplateExpressions,
   parseTemplateExpressions
 } from '../../../../engine/src/lib/templates'
-import { WorldId, StudioId, VARIABLE_TYPE } from '../../../../engine/src/types'
+import {
+  StudioId,
+  WorldId,
+  WorldState,
+  VARIABLE_TYPE
+} from '../../../data/types'
 
 import { useVariables } from '../../../hooks'
 
@@ -76,11 +80,11 @@ const decorate = (template: string, state: WorldState) => {
 
 const PassageSnippet: React.FC<{
   studioId: StudioId
-  gameId: WorldId
+  worldId: WorldId
   content: string
   onEditPassage: () => void
-}> = ({ studioId, gameId, content, onEditPassage }) => {
-  const variables = useVariables(studioId, gameId, [])
+}> = ({ studioId, worldId, content, onEditPassage }) => {
+  const variables = useVariables(studioId, worldId, [])
 
   const [initialGameState, setInitialGameState] = useState<
     WorldState | undefined

@@ -26,10 +26,10 @@ import { Select } from 'antd'
 
 import ComponentTitle from '../ElementTitle'
 import ElementHelpButton from '../../ElementHelpButton'
-import { VariableRow, VARIABLE_ROW_TYPE } from '../../StoryworldVariables'
+import { VariableRow, VARIABLE_ROW_TYPE } from '../../WorldVariables'
 
 import parentStyles from '../styles.module.less'
-import storyworldVariableStyles from '../../StoryworldVariables/styles.module.less'
+import storyworldVariableStyles from '../../WorldVariables/styles.module.less'
 import styles from './styles.module.less'
 
 import api from '../../../api'
@@ -196,26 +196,26 @@ const RouteEffectRow: React.FC<{
 
 const RouteDetails: React.FC<{
   studioId: StudioId
-  gameId: WorldId
+  worldId: WorldId
   routeId: ElementId
-}> = ({ studioId, gameId, routeId }) => {
+}> = ({ studioId, worldId, routeId }) => {
   const route = useRoute(studioId, routeId, [studioId, routeId]),
     conditions = useRouteConditionsByRouteRef(studioId, routeId, [
       studioId,
       routeId
     ]),
     effects = useRouteEffectsByRouteRef(studioId, routeId, [studioId, routeId]),
-    variables = useVariables(studioId, gameId, [studioId, gameId, effects])
+    variables = useVariables(studioId, worldId, [studioId, worldId, effects])
 
   async function onNewCondition(variableId: ElementId) {
     const foundVariable = variables?.find(
       (variable) => variable.id === variableId
     )
 
-    route?.gameId &&
+    route?.worldId &&
       foundVariable?.id &&
       (await api().conditions.saveCondition(studioId, {
-        gameId: route.gameId,
+        worldId: route.worldId,
         routeId,
         variableId: foundVariable.id,
         title: 'Untitled Condition',
@@ -234,10 +234,10 @@ const RouteDetails: React.FC<{
       (variable) => variable.id === variableId
     )
 
-    route?.gameId &&
+    route?.worldId &&
       foundVariable?.id &&
       (await api().effects.saveEffect(studioId, {
-        gameId: route.gameId,
+        worldId: route.worldId,
         routeId,
         variableId: foundVariable.id,
         title: 'Untitled Effect',
@@ -318,7 +318,7 @@ const RouteDetails: React.FC<{
 
                   {variables && variables.length === 0 && (
                     <div className={styles.noVariables}>
-                      At least 1 game variable is required to create a
+                      At least 1 world variable is required to create a
                       condition.
                     </div>
                   )}
@@ -382,7 +382,7 @@ const RouteDetails: React.FC<{
 
                   {variables && variables.length === 0 && (
                     <div className={styles.noVariables}>
-                      At least 1 game variable is required to create an effect.
+                      At least 1 world variable is required to create an effect.
                     </div>
                   )}
                 </>

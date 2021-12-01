@@ -220,7 +220,7 @@ export default (
               updated
             }
           ] of Object.entries(passages)) {
-            await api().passages.savePassage(_.studioId, {
+            await api().events.savePassage(_.studioId, {
               choices,
               content,
               editor,

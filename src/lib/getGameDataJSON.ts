@@ -10,7 +10,7 @@ import {
   EVENT_TYPE,
   SceneChildRefs,
   SceneParentRef
-} from './transport/types/0.5.1'
+} from './transport/types/0.6.0'
 
 import api from '../api'
 
@@ -21,7 +21,7 @@ export default async (
 ): Promise<string> => {
   try {
     const studio = await api().studios.getStudio(studioId),
-      game = await api().worlds.getGame(studioId, gameId)
+      game = await api().worlds.getWorld(studioId, gameId)
 
     const choices = await api().choices.getChoicesByGameRef(studioId, gameId),
       conditions = await api().conditions.getConditionsByGameRef(
@@ -29,11 +29,11 @@ export default async (
         gameId
       ),
       effects = await api().effects.getEffectsByGameRef(studioId, gameId),
-      folders = await api().folders.getFoldersByGameRef(studioId, gameId),
+      folders = await api().folders.getFoldersByWorldRef(studioId, gameId),
       inputs = await api().inputs.getInputsByGameRef(studioId, gameId),
       jumps = await api().jumps.getJumpsByGameRef(studioId, gameId),
       routes = await api().routes.getRoutesByGameRef(studioId, gameId),
-      passages = await api().passages.getPassagesByGameRef(studioId, gameId),
+      passages = await api().events.getPassagesByGameRef(studioId, gameId),
       scenes = await api().scenes.getScenesByGameRef(studioId, gameId),
       variables = await api().variables.getVariablesByGameRef(studioId, gameId)
 
@@ -146,7 +146,7 @@ export default async (
         choices,
         content,
         editor,
-        gameOver,
+        ending,
         id,
         input,
         sceneId,
@@ -159,7 +159,7 @@ export default async (
           choices,
           content,
           editor,
-          gameOver,
+          ending,
           id: id as string,
           input,
           sceneId,

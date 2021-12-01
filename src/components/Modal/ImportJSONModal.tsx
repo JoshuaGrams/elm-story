@@ -31,7 +31,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
   const { appDispatch } = useContext(AppContext)
 
   const [importingGameData, setImportingGameData] = useState(false),
-    [gameData, setGameData] = useState<
+    [worldData, setWorldData] = useState<
       GameDataJSON_013 | GameDataJSON_020 | undefined
     >(undefined),
     [importingGameDataErrors, setImportingGameDataErrors] = useState<string[]>(
@@ -49,7 +49,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
   }
 
   async function onCreateStudioAndFinish() {
-    if (studioNotFound && studioNotFound !== true && gameData) {
+    if (studioNotFound && studioNotFound !== true && worldData) {
       setImportingGameData(true)
 
       try {
@@ -62,11 +62,11 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
 
         // TODO: handle finish errors
         // TODO: ts errors
-        await importGameDataJSON(gameData, true).finish()
+        await importGameDataJSON(worldData, true).finish()
 
         appDispatch({
           type: APP_ACTION_TYPE.STUDIO_SELECT,
-          selectedStudioId: gameData._.studioId
+          selectedStudioId: worldData._.studioId
         })
       } catch (error) {
         throw error
@@ -77,20 +77,20 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
   }
 
   async function onReplaceGameAndFinish() {
-    if (gameExists && gameExists !== true && gameData) {
+    if (gameExists && gameExists !== true && worldData) {
       setImportingGameData(true)
 
       try {
         // Remove game first to prevent merging of existing data
-        await api().worlds.removeGame(gameData._.studioId, gameData._.id)
+        await api().worlds.removeWorld(worldData._.studioId, worldData._.id)
 
         // TODO: handle finish errors
         // TODO: ts errors
-        await importGameDataJSON(gameData, true).finish()
+        await importGameDataJSON(worldData, true).finish()
 
         appDispatch({
           type: APP_ACTION_TYPE.STUDIO_SELECT,
-          selectedStudioId: gameData._.studioId
+          selectedStudioId: worldData._.studioId
         })
       } catch (error) {
         throw error
@@ -104,7 +104,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
     async function processFile() {
       if (file) {
         setImportingGameData(true)
-        setGameData(undefined)
+        setWorldData(undefined)
         setImportingGameDataErrors([])
         setStudioNotFound(false)
         setGameExists(false)
@@ -113,7 +113,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
 
         reader.addEventListener('load', async () => {
           try {
-            setGameData(JSON.parse(reader.result as string))
+            setWorldData(JSON.parse(reader.result as string))
           } catch (error) {
             setImportingGameData(false)
 
@@ -132,9 +132,9 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
 
   useEffect(() => {
     async function importGameData() {
-      if (gameData) {
+      if (worldData) {
         // TODO: ts errors
-        const { errors, finish } = importGameDataJSON(gameData)
+        const { errors, finish } = importGameDataJSON(worldData)
 
         if (errors.length > 0) {
           setImportingGameData(false)
@@ -143,13 +143,15 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
 
         if (errors.length === 0) {
           // check if studio exists
-          const foundStudio = await api().studios.getStudio(gameData._.studioId)
+          const foundStudio = await api().studios.getStudio(
+            worldData._.studioId
+          )
 
           // studio doesn't exists; confirm with user to create
           if (!foundStudio) {
             setStudioNotFound({
-              id: gameData._.studioId,
-              title: gameData._.studioTitle
+              id: worldData._.studioId,
+              title: worldData._.studioTitle
             })
 
             setImportingGameData(false)
@@ -161,18 +163,18 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
           if (foundStudio) {
             // ...but game exists; confirm with user to overwrite
             if (
-              foundStudio.games.findIndex((id) => id === gameData._.id) !== -1
+              foundStudio.worlds.findIndex((id) => id === worldData._.id) !== -1
             ) {
-              const foundGame = await api().worlds.getGame(
-                gameData._.studioId,
-                gameData._.id
+              const foundGame = await api().worlds.getWorld(
+                worldData._.studioId,
+                worldData._.id
               )
 
               setGameExists({
-                id: gameData._.id,
-                title: gameData._.title,
+                id: worldData._.id,
+                title: worldData._.title,
                 newer:
-                  foundGame.updated && foundGame.updated > gameData._.updated
+                  foundGame.updated && foundGame.updated > worldData._.updated
                     ? true
                     : false
               })
@@ -184,14 +186,14 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
 
             // ...game does not exist, finish processing
             if (
-              foundStudio.games.findIndex((id) => id === gameData._.id) === -1
+              foundStudio.worlds.findIndex((id) => id === worldData._.id) === -1
             ) {
               // TODO: handle finish errors
               await finish()
 
               appDispatch({
                 type: APP_ACTION_TYPE.STUDIO_SELECT,
-                selectedStudioId: gameData._.studioId
+                selectedStudioId: worldData._.studioId
               })
 
               afterClose && afterClose()
@@ -202,7 +204,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
     }
 
     importGameData()
-  }, [gameData])
+  }, [worldData])
 
   return (
     <Modal

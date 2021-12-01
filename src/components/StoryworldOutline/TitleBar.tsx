@@ -2,28 +2,28 @@ import React, { useContext } from 'react'
 import { useHistory } from 'react-router'
 
 import { ELEMENT_TYPE, World, WorldId, StudioId } from '../../data/types'
-import { OnAddComponent } from '.'
+import { OnAddElement } from '.'
 
 import { APP_LOCATION } from '../../contexts/AppContext'
-import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
+import { EditorContext } from '../../contexts/EditorContext'
 
 import { Button, Tooltip } from 'antd'
 import { ExportOutlined, LeftOutlined, PlusOutlined } from '@ant-design/icons'
 
-import ExportGameMenu from './ExportGameMenu'
-import AddComponentMenu from './AddComponentMenu'
+import ExportWorldMenu from './ExportGameMenu'
+import AddElementMenu from './AddElementMenu'
 
 import styles from './styles.module.less'
 
 const TitleBar: React.FC<{
   studioId: StudioId
-  game: World
-  onAdd: OnAddComponent
-  onStoryworldSelect: () => void
-}> = ({ studioId, game, onAdd, onStoryworldSelect }) => {
+  world: World
+  onAdd: OnAddElement
+  onWorldSelect: () => void
+}> = ({ studioId, world, onAdd, onWorldSelect }) => {
   const history = useHistory()
 
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { editor } = useContext(EditorContext)
 
   return (
     <>
@@ -44,18 +44,18 @@ const TitleBar: React.FC<{
         </Tooltip>
 
         <span
-          className={`${styles.gameTitle} ${
-            editor.selectedGameOutlineComponent.id === game.id
+          className={`${styles.worldTitle} ${
+            editor.selectedWorldOutlineElement.id === world.id
               ? styles.selected
               : ''
           }`}
-          onClick={onStoryworldSelect}
+          onClick={onWorldSelect}
         >
-          {game.title}
+          {world.title}
         </span>
 
-        <div className={styles.gameButtons}>
-          <ExportGameMenu studioId={studioId} game={game}>
+        <div className={styles.worldButtons}>
+          <ExportWorldMenu studioId={studioId} world={world}>
             <Tooltip
               title="Export Game..."
               placement="right"
@@ -66,11 +66,13 @@ const TitleBar: React.FC<{
                 <ExportOutlined />
               </Button>
             </Tooltip>
-          </ExportGameMenu>
+          </ExportWorldMenu>
 
-          <AddComponentMenu
-            gameId={game.id as WorldId}
-            onAdd={(gameId: WorldId, type: ELEMENT_TYPE) => onAdd(gameId, type)}
+          <AddElementMenu
+            worldId={world.id as WorldId}
+            onAdd={(worldId: WorldId, type: ELEMENT_TYPE) =>
+              onAdd(worldId, type)
+            }
           >
             <Tooltip
               title="Add Element..."
@@ -82,7 +84,7 @@ const TitleBar: React.FC<{
                 <PlusOutlined />
               </Button>
             </Tooltip>
-          </AddComponentMenu>
+          </AddElementMenu>
         </div>
       </div>
     </>

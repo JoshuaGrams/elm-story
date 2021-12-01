@@ -44,24 +44,24 @@ export async function removeStudio(studioId: StudioId) {
   }
 }
 
-export async function saveWorldRef(studioId: StudioId, gameId: WorldId) {
+export async function saveWorldRef(studioId: StudioId, worldId: WorldId) {
   try {
     const studio = await getStudio(studioId),
-      exists = studio ? studio.worlds.indexOf(gameId) !== -1 : false
+      exists = studio ? studio.worlds.indexOf(worldId) !== -1 : false
 
     if (!exists) {
       if (studio) {
-        studio.worlds = [...studio.worlds, gameId]
+        studio.worlds = [...studio.worlds, worldId]
 
         saveStudio(studio)
       } else {
         throw new Error(
-          `Unable to save world with ID: ${gameId}. Studio with ID ${studioId} does not exist.`
+          `Unable to save world with ID: ${worldId}. Studio with ID ${studioId} does not exist.`
         )
       }
     } else {
       logger.info(
-        `Unable to add world ref ${gameId} to studio ${studioId}. Already exists. Likely world is being updated.`
+        `Unable to add world ref ${worldId} to studio ${studioId}. Already exists. Likely world is being updated.`
       )
     }
   } catch (error) {
@@ -69,12 +69,12 @@ export async function saveWorldRef(studioId: StudioId, gameId: WorldId) {
   }
 }
 
-export async function removeWorldRef(studioId: StudioId, gameId: WorldId) {
+export async function removeWorldRef(studioId: StudioId, worldId: WorldId) {
   try {
     const studio = await getStudio(studioId)
 
     if (studio) {
-      const index = studio.worlds.indexOf(gameId)
+      const index = studio.worlds.indexOf(worldId)
 
       if (index !== -1) {
         studio.worlds.splice(index, 1)
@@ -83,7 +83,7 @@ export async function removeWorldRef(studioId: StudioId, gameId: WorldId) {
       await saveStudio(studio)
     } else {
       throw new Error(
-        `Unable to remove storyworld with ID: ${gameId}. Studio with ID ${studioId} does not exist.`
+        `Unable to remove world with ID: ${worldId}. Studio with ID ${studioId} does not exist.`
       )
     }
   } catch (error) {

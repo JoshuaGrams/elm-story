@@ -17,14 +17,14 @@ import {
   ELEMENT_TYPE,
   WorldId,
   EVENT_TYPE,
-  Route,
+  Path,
   StudioId
 } from '../../../data/types'
 
 import {
   useChoice,
-  useChoicesByPassageRef,
-  usePassage,
+  useChoicesByEventRef,
+  useEvent,
   useRoutesByChoiceRef,
   useRoutesBySceneRef
 } from '../../../hooks'
@@ -108,7 +108,7 @@ const ChoiceRow: React.FC<{
     choiceId: ElementId,
     newPosition: number
   ) => void
-  onDelete: (choiceId: ElementId, outgoingRoutes: Route[]) => void
+  onDelete: (choiceId: ElementId, outgoingRoutes: Path[]) => void
 }> = ({
   studioId,
   sceneId,
@@ -146,7 +146,7 @@ const ChoiceRow: React.FC<{
       className={`${styles.ChoiceRow} nodrag ${
         selected && styles.choiceSelected
       } ${
-        sceneId !== editor.selectedGameOutlineComponent.id && !showDivider
+        sceneId !== editor.selectedWorldOutlineElement.id && !showDivider
           ? styles.bottomRadius
           : ''
       }`}
@@ -273,15 +273,15 @@ const InputSoureHandle: React.FC<{
 
 const InputRow: React.FC<{
   studioId: StudioId
-  gameId: WorldId
+  worldId: WorldId
   inputId: ElementId
   handle: JSX.Element
-}> = ({ studioId, gameId, inputId, handle }) => {
+}> = ({ studioId, worldId, inputId, handle }) => {
   return (
     <>
       <VariableSelectForInput
         studioId={studioId}
-        gameId={gameId}
+        worldId={worldId}
         inputId={inputId}
       />{' '}
       {handle}
@@ -376,15 +376,15 @@ const EventNode: React.FC<NodeProps<{
   onChoiceSelect: (passageId: ElementId, choiceId: ElementId | null) => void
   type: ELEMENT_TYPE
 }>> = ({ data }) => {
-  const event = usePassage(data.studioId, data.passageId),
-    choicesByEventRef = useChoicesByPassageRef(data.studioId, data.passageId)
+  const event = useEvent(data.studioId, data.passageId),
+    choicesByEventRef = useChoicesByEventRef(data.studioId, data.passageId)
 
   const updateNodeInternals = useUpdateNodeInternals()
 
   const events = useStoreState((state) =>
       state.nodes.filter(
         (node: Node<{ type: ELEMENT_TYPE }>) =>
-          node?.data?.type === ELEMENT_TYPE.PASSAGE
+          node?.data?.type === ELEMENT_TYPE.EVENT
       )
     ),
     setSelectedElement = useStoreActions(
@@ -474,17 +474,15 @@ const EventNode: React.FC<NodeProps<{
               style={{
                 overflow: 'hidden',
                 borderBottomLeftRadius:
-                  (editor.selectedComponentEditorSceneViewPassage ===
-                    event.id &&
-                    editor.selectedGameOutlineComponent.id === event.sceneId) ||
+                  (editor.selectedComponentEditorSceneViewEvent === event.id &&
+                    editor.selectedWorldOutlineElement.id === event.sceneId) ||
                   event.choices.length > 0 ||
                   event.type === EVENT_TYPE.INPUT
                     ? '0px'
                     : '5px',
                 borderBottomRightRadius:
-                  (editor.selectedComponentEditorSceneViewPassage ===
-                    event.id &&
-                    editor.selectedGameOutlineComponent.id === event.sceneId) ||
+                  (editor.selectedComponentEditorSceneViewEvent === event.id &&
+                    editor.selectedWorldOutlineElement.id === event.sceneId) ||
                   event.choices.length > 0 ||
                   event.type === EVENT_TYPE.INPUT
                     ? '0px'
@@ -498,7 +496,7 @@ const EventNode: React.FC<NodeProps<{
                 onDoubleClick={() => event.id && data.onEditPassage(event.id)}
               >
                 {/* #395 */}
-                {event.gameOver ? (
+                {event.ending ? (
                   <VerticalLeftOutlined
                     className={`${styles.headerIcon} ${styles.warning}`}
                   />
@@ -511,7 +509,7 @@ const EventNode: React.FC<NodeProps<{
 
               <EventPersonaPane
                 studioId={data.studioId}
-                gameId={event.gameId}
+                worldId={event.worldId}
                 persona={event.persona}
               />
             </div>
@@ -529,8 +527,8 @@ const EventNode: React.FC<NodeProps<{
             <>
               <div
                 className={`${styles.choices} ${
-                  editor.selectedComponentEditorSceneViewPassage === event.id &&
-                  event.sceneId === editor.selectedGameOutlineComponent.id
+                  editor.selectedComponentEditorSceneViewEvent === event.id &&
+                  event.sceneId === editor.selectedWorldOutlineElement.id
                     ? ''
                     : styles.bottomRadius
                 }`}
@@ -559,7 +557,7 @@ const EventNode: React.FC<NodeProps<{
                               `EventNode->onClick: choice: ${choiceId}`
                             )
 
-                            editor.selectedComponentEditorSceneViewPassage !==
+                            editor.selectedComponentEditorSceneViewEvent !==
                               passageId &&
                               setSelectedElement([
                                 cloneDeep(
@@ -571,11 +569,11 @@ const EventNode: React.FC<NodeProps<{
                               ]) &&
                               editorDispatch({
                                 type:
-                                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                                selectedComponentEditorSceneViewPassage: passageId
+                                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
+                                selectedElementEditorSceneViewEvent: passageId
                               })
 
-                            editor.selectedComponentEditorSceneViewPassage ===
+                            editor.selectedComponentEditorSceneViewEvent ===
                               passageId &&
                               data.onChoiceSelect(passageId, choiceId)
                           }}
@@ -598,7 +596,7 @@ const EventNode: React.FC<NodeProps<{
                             clonedChoiceRefs.splice(foundChoiceRefIndex, 1)
                             clonedChoiceRefs.splice(newPosition, 0, choiceId)
 
-                            await api().passages.saveChoiceRefsToPassage(
+                            await api().events.saveChoiceRefsToPassage(
                               data.studioId,
                               data.passageId,
                               clonedChoiceRefs
@@ -641,7 +639,7 @@ const EventNode: React.FC<NodeProps<{
 
                                 clonedChoices.splice(foundChoiceIndex, 1)
 
-                                await api().passages.saveChoiceRefsToPassage(
+                                await api().events.saveChoiceRefsToPassage(
                                   data.studioId,
                                   data.passageId,
                                   clonedChoices.map(
@@ -659,22 +657,22 @@ const EventNode: React.FC<NodeProps<{
                   )}
               </div>
 
-              {editor.selectedComponentEditorSceneViewPassage === event.id &&
-                event.sceneId === editor.selectedGameOutlineComponent.id && (
+              {editor.selectedComponentEditorSceneViewEvent === event.id &&
+                event.sceneId === editor.selectedWorldOutlineElement.id && (
                   <div
                     className={`${styles.addChoiceButton} nodrag`}
                     onClick={async () => {
                       logger.info('EventNode->addChoiceButton->onClick')
 
                       if (
-                        editor.selectedComponentEditorSceneViewPassage ===
+                        editor.selectedComponentEditorSceneViewEvent ===
                           event.id &&
                         event.choices
                       ) {
                         const choiceId = uuid()
 
                         try {
-                          await api().passages.saveChoiceRefsToPassage(
+                          await api().events.saveChoiceRefsToPassage(
                             data.studioId,
                             data.passageId,
                             [...event.choices, choiceId]
@@ -682,7 +680,7 @@ const EventNode: React.FC<NodeProps<{
 
                           await api().choices.saveChoice(data.studioId, {
                             id: choiceId,
-                            gameId: event.gameId,
+                            worldId: event.worldId,
                             passageId: data.passageId,
                             title: 'Untitled Choice',
                             tags: []
@@ -709,8 +707,8 @@ const EventNode: React.FC<NodeProps<{
                           }) &&
                           editorDispatch({
                             type:
-                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                            selectedComponentEditorSceneViewPassage: event.id
+                              EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
+                            selectedElementEditorSceneViewEvent: event.id
                           }) &&
                           editorDispatch({
                             type:
@@ -730,7 +728,7 @@ const EventNode: React.FC<NodeProps<{
             <div className={`${styles.input} ${styles.bottomRadius}`}>
               <InputRow
                 studioId={data.studioId}
-                gameId={event.gameId}
+                worldId={event.worldId}
                 inputId={event.input}
                 handle={
                   <InputSoureHandle

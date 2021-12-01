@@ -5,11 +5,11 @@ import { ElementId, WorldId, StudioId, Jump } from '../data/types'
 
 const useJumps = (
   studioId: StudioId,
-  gameId: WorldId,
+  worldId: WorldId,
   deps?: any[]
 ): Jump[] | undefined => {
   const jumps = useLiveQuery(
-    () => new LibraryDatabase(studioId).jumps.where({ gameId }).toArray(),
+    () => new LibraryDatabase(studioId).jumps.where({ worldId }).toArray(),
     deps || [],
     undefined
   )

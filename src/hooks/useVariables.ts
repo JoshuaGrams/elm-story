@@ -5,11 +5,11 @@ import { ElementId, WorldId, StudioId, Variable } from '../data/types'
 
 const useVariables = (
   studioId: StudioId,
-  gameId: WorldId,
+  worldId: WorldId,
   deps?: any[]
 ): Variable[] | undefined => {
   const variables = useLiveQuery(
-    () => new LibraryDatabase(studioId).variables.where({ gameId }).toArray(),
+    () => new LibraryDatabase(studioId).variables.where({ worldId }).toArray(),
     deps || [],
     undefined
   )

@@ -54,7 +54,7 @@ const MaskWrapper: React.FC<{
         <Mask
           {...maskDefaults}
           studioId={studioId}
-          gameId={character.gameId}
+          worldId={character.worldId}
           characterId={character.id}
           assetId={
             (foundMaskIndex !== -1 &&
@@ -88,11 +88,11 @@ const MaskWrapper: React.FC<{
                   await Promise.all([
                     ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
                       studioId,
-                      gameId: character.gameId,
+                      worldId: character.worldId,
                       id: assetId,
                       ext: 'jpeg'
                     }),
-                    api().passages.resetPersonaMaskFromEvent(
+                    api().events.resetPersonaMaskFromEvent(
                       studioId,
                       character.id,
                       newMasks
@@ -139,7 +139,7 @@ const MaskWrapper: React.FC<{
                   // update event personas
                   if (character.id) {
                     await Promise.all([
-                      api().passages.resetPersonaMaskFromEvent(
+                      api().events.resetPersonaMaskFromEvent(
                         studioId,
                         character.id,
                         newMasks
@@ -381,7 +381,7 @@ const CharacterPersonality: React.FC<{
               if (newMasks[foundMaskIndex].assetId) {
                 await ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
                   studioId,
-                  gameId: character.gameId,
+                  worldId: character.worldId,
                   id: newMasks[foundMaskIndex].assetId,
                   ext: 'jpeg'
                 })
@@ -394,7 +394,7 @@ const CharacterPersonality: React.FC<{
             if (assetId) {
               await ipcRenderer.invoke(WINDOW_EVENT_TYPE.SAVE_ASSET, {
                 studioId,
-                gameId: character.gameId,
+                worldId: character.worldId,
                 id: assetId,
                 data: await mask.data.arrayBuffer(),
                 ext: 'jpeg'

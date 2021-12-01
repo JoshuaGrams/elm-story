@@ -1,4 +1,4 @@
-export enum ELEMENT_TYPE {
+export enum COMPONENT_TYPE {
   STUDIO = 'STUDIO',
   GAME = 'GAME',
   JUMP = 'JUMP',
@@ -44,28 +44,28 @@ export enum VARIABLE_TYPE {
 }
 
 export type StudioId = string
-export type WorldId = string
+export type GameId = string
 export type ElementId = string
 
 export type GameChildRefs = Array<
-  [ELEMENT_TYPE.FOLDER | ELEMENT_TYPE.SCENE, ElementId]
+  [COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ElementId]
 >
 
 export type FolderParentRef = [
-  ELEMENT_TYPE.GAME | ELEMENT_TYPE.FOLDER,
+  COMPONENT_TYPE.GAME | COMPONENT_TYPE.FOLDER,
   ElementId | null
 ]
 
 export type FolderChildRefs = Array<
-  [ELEMENT_TYPE.FOLDER | ELEMENT_TYPE.SCENE, ElementId]
+  [COMPONENT_TYPE.FOLDER | COMPONENT_TYPE.SCENE, ElementId]
 >
 
 export type SceneParentRef = [
-  ELEMENT_TYPE.GAME | ELEMENT_TYPE.FOLDER,
+  COMPONENT_TYPE.GAME | COMPONENT_TYPE.FOLDER,
   ElementId | null
 ]
 
-export type SceneChildRefs = Array<[ELEMENT_TYPE.PASSAGE, ElementId]>
+export type SceneChildRefs = Array<[COMPONENT_TYPE.PASSAGE, ElementId]>
 
 export interface RootData {
   children: GameChildRefs
@@ -192,11 +192,11 @@ export interface PassageCollection {
 export interface RouteData {
   choiceId?: ElementId
   destinationId: ElementId
-  destinationType: ELEMENT_TYPE
+  destinationType: COMPONENT_TYPE
   id: ElementId
   inputId?: ElementId
   originId: ElementId
-  originType: ELEMENT_TYPE | EVENT_TYPE
+  originType: COMPONENT_TYPE | EVENT_TYPE
   sceneId: ElementId
   tags: string[]
   title: string
@@ -277,7 +277,7 @@ export interface EngineDevToolsEvent {
 }
 
 export interface EngineBookmarkData {
-  gameId: WorldId
+  gameId: GameId
   id: string // or AUTO_ENGINE_BOOKMARK_KEY
   title: string
   event: ElementId | undefined // event
@@ -289,7 +289,7 @@ export interface EngineBookmarkCollection {
 }
 
 export interface EngineChoiceData {
-  gameId: WorldId
+  gameId: GameId
   id: ElementId
   passageId: ElementId
   title: string
@@ -301,7 +301,7 @@ export interface EngineChoiceCollection {
 
 export interface EngineConditionData {
   compare: [ElementId, COMPARE_OPERATOR_TYPE, string]
-  gameId: WorldId
+  gameId: GameId
   id: ElementId
   routeId: ElementId
   variableId: ElementId
@@ -312,7 +312,7 @@ export interface EngineConditionCollection {
 }
 
 export interface EngineEffectData {
-  gameId: WorldId
+  gameId: GameId
   id: ElementId
   routeId: ElementId
   set: [ElementId, SET_OPERATOR_TYPE, string]
@@ -324,7 +324,7 @@ export interface EngineEffectCollection {
 }
 
 export interface EngineEventStateData {
-  gameId: WorldId
+  gameId: GameId
   title: string
   type: VARIABLE_TYPE
   value: string
@@ -352,7 +352,7 @@ export type EngineEventResult = {
 }
 
 export interface EngineEventData {
-  gameId: WorldId
+  gameId: GameId
   // TODO: may need to change to tuple with id and type
   id: ElementId // or INITIAL_ENGINE_EVENT_ORIGIN_KEY
   destination: ElementId // passage ID
@@ -371,7 +371,7 @@ export interface EngineEventCollection {
 
 export interface EngineGameMeta {
   studioId: StudioId
-  gameId: WorldId
+  gameId: GameId
 }
 
 export interface EngineGameData {
@@ -380,7 +380,7 @@ export interface EngineGameData {
   description?: string
   designer: string
   engine: string
-  id: WorldId
+  id: GameId
   jump: ElementId
   schema: string
   studioId: StudioId
@@ -393,11 +393,11 @@ export interface EngineGameData {
 }
 
 export interface EngineGameCollection {
-  [gameId: WorldId]: EngineGameData
+  [gameId: GameId]: EngineGameData
 }
 
 export interface EngineInputData {
-  gameId: WorldId
+  gameId: GameId
   id: ElementId
   passageId: ElementId
   variableId?: ElementId
@@ -408,7 +408,7 @@ export interface EngineInputCollection {
 }
 
 export interface EngineJumpData {
-  gameId: WorldId
+  gameId: GameId
   id: ElementId
   route: [ElementId?, ElementId?]
   sceneId?: ElementId
@@ -421,7 +421,7 @@ export interface EngineJumpCollection {
 export interface EnginePassageData {
   choices: ElementId[]
   content: string
-  gameId: WorldId
+  gameId: GameId
   gameOver: boolean
   id: ElementId
   input?: ElementId
@@ -436,12 +436,12 @@ export interface EnginePassageCollection {
 export interface EngineRouteData {
   choiceId?: ElementId
   destinationId: ElementId
-  destinationType: ELEMENT_TYPE
-  gameId: WorldId
+  destinationType: COMPONENT_TYPE
+  gameId: GameId
   id: ElementId
   inputId?: ElementId
   originId: ElementId
-  originType: ELEMENT_TYPE | EVENT_TYPE
+  originType: COMPONENT_TYPE | EVENT_TYPE
   sceneId: ElementId
 }
 
@@ -451,7 +451,7 @@ export interface EngineRouteCollection {
 
 export interface EngineSceneData {
   children: SceneChildRefs
-  gameId: WorldId
+  gameId: GameId
   id: ElementId
   jumps: ElementId[]
 }
@@ -461,7 +461,7 @@ export interface EngineSceneCollection {
 }
 
 export interface EngineSettingsData {
-  gameId: WorldId
+  gameId: GameId
   id: string // or DEFAULT_ENGINE_SETTINGS_KEY
   theme: ENGINE_THEME
 }
@@ -471,7 +471,7 @@ export interface EngineSettingsCollection {
 }
 
 export interface EngineVariableData {
-  gameId: WorldId
+  gameId: GameId
   id: ElementId
   initialValue: string
   title: string

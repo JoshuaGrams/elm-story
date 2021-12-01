@@ -5,11 +5,11 @@ import { StudioId, WorldId, ElementId, Folder } from '../data/types'
 
 const useFolders = (
   studioId: StudioId,
-  gameId: WorldId,
+  worldId: WorldId,
   deps?: any[]
 ): Folder[] | undefined => {
   const chapters = useLiveQuery(
-    () => new LibraryDatabase(studioId).folders.where({ gameId }).toArray(),
+    () => new LibraryDatabase(studioId).folders.where({ worldId }).toArray(),
     deps || [],
     undefined
   )

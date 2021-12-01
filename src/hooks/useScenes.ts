@@ -5,11 +5,11 @@ import { StudioId, Scene, WorldId, ElementId } from '../data/types'
 
 const useScenes = (
   studioId: StudioId,
-  gameId: WorldId,
+  worldId: WorldId,
   deps?: any[]
 ): Scene[] | undefined => {
   const scenes = useLiveQuery(
-    () => new LibraryDatabase(studioId).scenes.where({ gameId }).toArray(),
+    () => new LibraryDatabase(studioId).scenes.where({ worldId }).toArray(),
     deps || [],
     undefined
   )
@@ -19,20 +19,6 @@ const useScenes = (
   if (scenes) scenes.sort((a, b) => (a.title > b.title ? 1 : -1))
 
   return scenes
-}
-
-const useScenesByChapterRef = (
-  studioId: StudioId,
-  chapterId: ElementId,
-  deps?: any[]
-): Scene[] | undefined => {
-  const passages = useLiveQuery(
-    () => new LibraryDatabase(studioId).scenes.where({ chapterId }).toArray(),
-    deps || [],
-    undefined
-  )
-
-  return passages
 }
 
 const useScene = (
@@ -47,6 +33,6 @@ const useScene = (
     undefined
   )
 
-export { useScenesByChapterRef, useScene }
+export { useScene }
 
 export default useScenes

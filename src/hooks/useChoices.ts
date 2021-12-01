@@ -5,11 +5,11 @@ import { Choice, ElementId, WorldId, StudioId } from '../data/types'
 
 const useChoices = (
   studioId: StudioId,
-  gameId: WorldId,
+  worldId: WorldId,
   deps?: any[]
 ): Choice[] | undefined => {
   const choices = useLiveQuery(
-    () => new LibraryDatabase(studioId).choices.where({ gameId }).toArray(),
+    () => new LibraryDatabase(studioId).choices.where({ worldId }).toArray(),
     deps || [],
     undefined
   )
@@ -31,13 +31,13 @@ const useChoice = (
   return choice
 }
 
-const useChoicesByPassageRef = (
+const useChoicesByEventRef = (
   studioId: StudioId,
-  passageId?: ElementId,
+  eventId?: ElementId,
   deps?: any[]
 ): Choice[] | undefined => {
   const choices = useLiveQuery(
-    () => new LibraryDatabase(studioId).choices.where({ passageId }).toArray(),
+    () => new LibraryDatabase(studioId).choices.where({ eventId }).toArray(),
     deps || [],
     undefined
   )
@@ -45,6 +45,6 @@ const useChoicesByPassageRef = (
   return choices
 }
 
-export { useChoice, useChoicesByPassageRef }
+export { useChoice, useChoicesByEventRef }
 
 export default useChoices

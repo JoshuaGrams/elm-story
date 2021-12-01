@@ -10,7 +10,7 @@ interface AppState {
   menuOpen: boolean
   modalOpen: boolean
   selectedStudioId?: StudioId
-  selectedGameId?: WorldId
+  selectedWorldId?: WorldId
 }
 
 export enum APP_ACTION_TYPE {
@@ -67,7 +67,7 @@ const appReducer = (state: AppState, action: AppActionType): AppState => {
     case APP_ACTION_TYPE.STUDIO_SELECT:
       return { ...state, selectedStudioId: action.selectedStudioId }
     case APP_ACTION_TYPE.GAME_SELECT:
-      return { ...state, selectedGameId: action.selectedGameId }
+      return { ...state, selectedWorldId: action.selectedGameId }
     default:
       return state
   }
@@ -87,7 +87,7 @@ const defaultAppState: AppState = {
   menuOpen: false,
   modalOpen: false,
   selectedStudioId: undefined,
-  selectedGameId: undefined
+  selectedWorldId: undefined
 }
 
 export const AppContext = createContext<AppContextType>({

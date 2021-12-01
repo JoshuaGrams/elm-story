@@ -19,7 +19,7 @@ export default (database: Dexie) => {
       jumps: '&id,worldId,sceneId,title,*tags,updated,*route',
       live_events:
         '&id,worldId,destination,origin,prev,next,type,updated,[gameId+updated],version',
-      routes:
+      paths:
         '&id,worldId,sceneId,title,originId,choiceId,inputId,originType,destinationId,destinationType,*tags,updated',
       scenes: '&id,children,worldId,parent,title,*tags,updated',
       settings: '&id,worldId',
@@ -30,7 +30,8 @@ export default (database: Dexie) => {
     .upgrade(async (tx) => {
       const worldsTable = tx.table(LIBRARY_TABLE.WORLDS),
         liveEventsTable = tx.table(LIBRARY_TABLE.LIVE_EVENTS),
-        eventsTable = tx.table(LIBRARY_TABLE.EVENTS)
+        eventsTable = tx.table(LIBRARY_TABLE.EVENTS),
+        pathsTable = tx.table(LIBRARY_TABLE.PATHS)
 
       await Promise.all([
         worldsTable.bulkAdd(await tx.table('games').toArray()),
@@ -86,7 +87,7 @@ export default (database: Dexie) => {
           .table(LIBRARY_TABLE.FOLDERS)
           .toCollection()
           .modify((folder) => {
-            if (folder.parent[0] === ELEMENT_TYPE.GAME) {
+            if (folder.parent[0] === ELEMENT_TYPE.WORLD) {
               folder.parent = [ELEMENT_TYPE.WORLD, null]
             }
 
@@ -111,7 +112,7 @@ export default (database: Dexie) => {
             delete jump.gameId
           }),
         tx
-          .table(LIBRARY_TABLE.ROUTES)
+          .table(LIBRARY_TABLE.PATHS)
           .toCollection()
           .modify((route) => {
             if (route.destinationType === ELEMENT_TYPE.PASSAGE) {

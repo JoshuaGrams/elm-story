@@ -32,13 +32,13 @@ const ElementHelpButton: React.FC<{ type: ELEMENT_TYPE }> = ({ type }) => {
       case ELEMENT_TYPE.FOLDER:
         helpUrl = `${helpUrl}/folder-component/`
         break
-      case ELEMENT_TYPE.GAME:
+      case ELEMENT_TYPE.WORLD:
         helpUrl = `${helpUrl}/game-root-component/`
         break
       case ELEMENT_TYPE.JUMP:
         helpUrl = `${helpUrl}/jump-component/`
         break
-      case ELEMENT_TYPE.PASSAGE:
+      case ELEMENT_TYPE.EVENT:
         helpUrl = `${helpUrl}/passage-component/`
         break
       case ELEMENT_TYPE.ROUTE:

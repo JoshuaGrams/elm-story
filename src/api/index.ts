@@ -10,7 +10,7 @@ import * as scenes from './scenes'
 import * as routes from './routes'
 import * as conditions from './conditions'
 import * as effects from './effects'
-import * as passages from './passages'
+import * as passages from './events'
 import * as choices from './choices'
 import * as inputs from './inputs'
 import * as variables from './variables'
@@ -25,7 +25,7 @@ export default () => ({
   routes,
   conditions,
   effects,
-  passages,
+  events: passages,
   choices,
   inputs,
   variables

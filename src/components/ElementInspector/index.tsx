@@ -10,8 +10,8 @@ import styles from './styles.module.less'
 
 const ElementInspector: React.FC<{
   studioId: StudioId
-  gameId: WorldId | undefined
-}> = ({ studioId, gameId = undefined }) => {
+  worldId: WorldId | undefined
+}> = ({ studioId, worldId = undefined }) => {
   const [defaultLayout] = useState<LayoutData>({
     dockbox: {
       mode: 'horizontal',
@@ -27,10 +27,10 @@ const ElementInspector: React.FC<{
                   minHeight: 32,
                   content: (
                     <>
-                      {gameId && (
+                      {worldId && (
                         <ElementProperties
                           studioId={studioId}
-                          gameId={gameId}
+                          worldId={worldId}
                         />
                       )}
                     </>

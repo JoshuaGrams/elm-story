@@ -22,7 +22,7 @@ const createGameOutlineTreeData = (
       isChildrenLoading: false,
       data: {
         title: game.title,
-        type: ELEMENT_TYPE.GAME,
+        type: ELEMENT_TYPE.WORLD,
         selected: false,
         parentId: undefined,
         renaming: false

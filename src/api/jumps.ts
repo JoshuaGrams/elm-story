@@ -7,18 +7,18 @@ export async function getJump(studioId: StudioId, jumpId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getJump(jumpId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getJumpsByGameRef(
+export async function getJumpsByWorldRef(
   studioId: StudioId,
-  gameId: WorldId
+  worldId: WorldId
 ): Promise<Jump[]> {
   try {
-    return await new LibraryDatabase(studioId).getJumpsByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getJumpsByWorldRef(worldId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -29,18 +29,18 @@ export async function getJumpsBySceneRef(
   try {
     return await new LibraryDatabase(studioId).getJumpsBySceneRef(sceneId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getJumpsByPassageRef(
+export async function getJumpsByEventRef(
   studioId: StudioId,
-  passageId: ElementId
+  eventId: ElementId
 ): Promise<Jump[]> {
   try {
-    return await new LibraryDatabase(studioId).getJumpsByPassageRef(passageId)
+    return await new LibraryDatabase(studioId).getJumpsByEventRef(eventId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -50,7 +50,7 @@ export async function saveJump(studioId: StudioId, jump: Jump): Promise<Jump> {
   try {
     return await new LibraryDatabase(studioId).saveJump(jump)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -62,7 +62,7 @@ export async function saveJumpRoute(
   try {
     await new LibraryDatabase(studioId).saveJumpRoute(jumpId, jumpRoute)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -70,6 +70,6 @@ export async function removeJump(studioId: StudioId, jumpId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removeJump(jumpId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

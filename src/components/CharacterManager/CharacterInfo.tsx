@@ -286,9 +286,9 @@ ReferencesSelect.displayName = 'ReferencesSelect'
 
 const CharacterInfo: React.FC<{
   studioId: StudioId
-  gameId: WorldId
+  worldId: WorldId
   character: Character
-}> = ({ studioId, gameId, character }) => {
+}> = ({ studioId, worldId, character }) => {
   const titleInputRef = useRef<Input>(null)
 
   const [characterInfoForm] = Form.useForm()
@@ -343,7 +343,7 @@ const CharacterInfo: React.FC<{
             {character.id && (
               <CharacterMask
                 studioId={studioId}
-                gameId={gameId}
+                worldId={worldId}
                 characterId={character.id}
                 active
                 type={CHARACTER_MASK_TYPE.NEUTRAL}
@@ -415,7 +415,7 @@ const CharacterInfo: React.FC<{
                     try {
                       await Promise.all([
                         // #455: update associations (passages persona, content)
-                        api().passages.removeDeadPersonaRefsFromEvent(
+                        api().events.removeDeadPersonaRefsFromEvent(
                           studioId,
                           character.id,
                           newRefs

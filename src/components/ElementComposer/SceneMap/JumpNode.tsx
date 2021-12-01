@@ -92,8 +92,8 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
 
                   editorDispatch({
                     type:
-                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-                    selectedComponentEditorSceneViewPassage: null
+                      EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
+                    selectedElementEditorSceneViewEvent: null
                   })
 
                   editorDispatch({

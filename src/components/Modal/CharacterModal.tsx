@@ -13,14 +13,14 @@ import styles from './styles.module.less'
 
 interface CharacterModalProps extends ModalProps {
   studioId: StudioId
-  gameId: WorldId
+  worldId: WorldId
   characterId?: ElementId
   visible?: boolean
 }
 
 const CharacterModal: React.FC<CharacterModalProps> = ({
   studioId,
-  gameId,
+  worldId,
   characterId,
   visible,
   onCancel
@@ -44,7 +44,7 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
       {character && (
         <CharacterManager
           studioId={studioId}
-          gameId={gameId}
+          worldId={worldId}
           character={character}
         />
       )}

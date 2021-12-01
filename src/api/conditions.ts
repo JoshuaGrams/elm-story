@@ -13,18 +13,18 @@ export async function getCondition(studioId: StudioId, conditionId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getCondition(conditionId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getConditionsByGameRef(
+export async function getConditionsByWorldRef(
   studioId: StudioId,
-  gameId: WorldId
+  worldId: WorldId
 ): Promise<Condition[]> {
   try {
-    return await new LibraryDatabase(studioId).getConditionsByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getConditionsByGameRef(worldId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -39,7 +39,7 @@ export async function getConditionsByRouteRef(
       countOnly || false
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -52,7 +52,7 @@ export async function getConditionsByVariableRef(
       variableId
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -65,7 +65,7 @@ export async function saveCondition(
   try {
     return await new LibraryDatabase(studioId).saveCondition(condition)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -80,7 +80,7 @@ export async function saveConditionCompareOperatorType(
       newCompareOperatorType
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -95,7 +95,7 @@ export async function saveConditionValue(
       newValue
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -106,6 +106,6 @@ export async function removeCondition(
   try {
     await new LibraryDatabase(studioId).removeCondition(conditionId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

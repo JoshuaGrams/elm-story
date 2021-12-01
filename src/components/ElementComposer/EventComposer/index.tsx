@@ -26,7 +26,7 @@ import {
   EDITOR_ACTION_TYPE
 } from '../../../contexts/EditorContext'
 
-import { usePassage } from '../../../hooks'
+import { useEvent } from '../../../hooks'
 
 import {
   BaseEditor,
@@ -80,7 +80,7 @@ export const PassageViewTools: React.FC<{
   studioId: StudioId
   passageId: ElementId
 }> = ({ studioId, passageId }) => {
-  const passage = usePassage(studioId, passageId, [studioId, passageId])
+  const passage = useEvent(studioId, passageId, [studioId, passageId])
 
   const { editorDispatch } = useContext(EditorContext)
 
@@ -92,7 +92,7 @@ export const PassageViewTools: React.FC<{
           onClick={async () => {
             editorDispatch({
               type: EDITOR_ACTION_TYPE.COMPONENT_REMOVE,
-              removedComponent: { type: ELEMENT_TYPE.PASSAGE, id: passageId }
+              removedComponent: { type: ELEMENT_TYPE.EVENT, id: passageId }
             })
 
             const updatedSceneChildren = (
@@ -110,7 +110,7 @@ export const PassageViewTools: React.FC<{
                 passage.sceneId,
                 updatedSceneChildren
               ),
-              api().passages.removePassage(studioId, passageId)
+              api().events.removeEvent(studioId, passageId)
             ])
           }}
         >
@@ -171,7 +171,7 @@ const PassageView: React.FC<{
   passageId: ElementId
   onClose: () => void
 }> = ({ studioId, scene, passageId, onClose }) => {
-  const passage = usePassage(studioId, passageId, [studioId, passageId])
+  const passage = useEvent(studioId, passageId, [studioId, passageId])
 
   const slateEditor = useMemo<ReactEditor>(
     () => withHistory(withReact(createEditor())),
@@ -235,7 +235,7 @@ const PassageView: React.FC<{
   }, [])
 
   function close() {
-    if (editor.selectedGameOutlineComponent.id === scene.id || !scene.id)
+    if (editor.selectedWorldOutlineElement.id === scene.id || !scene.id)
       onClose()
   }
 
@@ -251,12 +251,12 @@ const PassageView: React.FC<{
         }
       }
     },
-    [editor.selectedGameOutlineComponent.id, scene, passageContent]
+    [editor.selectedWorldOutlineElement.id, scene, passageContent]
   )
 
   const saveContent = debounce(
     async (studioId: StudioId, passageId: ElementId, content) => {
-      await api().passages.savePassageContent(studioId, passageId, content)
+      await api().events.saveEventContent(studioId, passageId, content)
     },
     100
   )
@@ -346,10 +346,10 @@ const PassageView: React.FC<{
           <div
             className={styles.PassageView}
             onClick={() =>
-              editor.selectedGameOutlineComponent.id !== scene.id &&
+              editor.selectedWorldOutlineElement.id !== scene.id &&
               editorDispatch({
-                type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-                selectedGameOutlineComponent: {
+                type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+                selectedWorldOutlineElement: {
                   expanded: true,
                   id: scene.id,
                   title: scene.title,

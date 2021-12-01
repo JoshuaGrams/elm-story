@@ -31,8 +31,8 @@ const SceneRow: React.FC<{ scene: Scene }> = ({ scene }) => {
 
           scene?.id &&
             editorDispatch({
-              type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-              selectedGameOutlineComponent: {
+              type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+              selectedWorldOutlineElement: {
                 expanded: true,
                 id: scene.id,
                 title: scene.title,
@@ -60,8 +60,8 @@ const EventRow: React.FC<{
 
   const openScene = () => {
     editorDispatch({
-      type: EDITOR_ACTION_TYPE.GAME_OUTLINE_SELECT,
-      selectedGameOutlineComponent: {
+      type: EDITOR_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+      selectedWorldOutlineElement: {
         expanded: true,
         id: event.sceneId,
         title: event.title,
@@ -80,8 +80,8 @@ const EventRow: React.FC<{
       () =>
         event.id &&
         editorDispatch({
-          type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_PASSAGE,
-          selectedComponentEditorSceneViewPassage: event.id
+          type: EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_EVENT,
+          selectedElementEditorSceneViewEvent: event.id
         }),
       1
     )
@@ -126,7 +126,7 @@ const EventRow: React.FC<{
                 {character.id && (
                   <CharacterMask
                     studioId={studioId}
-                    gameId={character.gameId}
+                    worldId={character.worldId}
                     type={mask}
                     characterId={character.id}
                     width="76px"
@@ -181,7 +181,7 @@ SceneGroup.displayName = 'SceneGroup'
 
 const CharacterEvents: React.FC<{
   studioId: StudioId
-  gameId: WorldId
+  worldId: WorldId
   character: Character
 }> = ({ studioId, character }) => {
   const events = useCharacterEvents(studioId, character.id, [character.id])

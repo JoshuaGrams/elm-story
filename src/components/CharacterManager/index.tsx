@@ -34,9 +34,9 @@ RemoveCharacterButton.displayName = 'RemoveCharacterButton'
 
 const CharacterManager: React.FC<{
   studioId: StudioId
-  gameId: WorldId
+  worldId: WorldId
   character: Character
-}> = ({ studioId, gameId, character }) => {
+}> = ({ studioId, worldId, character }) => {
   const { editorDispatch } = useContext(EditorContext)
 
   return (
@@ -55,7 +55,7 @@ const CharacterManager: React.FC<{
                   try {
                     character.id &&
                       (await Promise.all([
-                        api().passages.removeDeadPersonasFromEvent(
+                        api().events.removeDeadPersonasFromEvent(
                           studioId,
                           character.id
                         ),
@@ -71,7 +71,7 @@ const CharacterManager: React.FC<{
             <Tabs.TabPane tab="Info" key={TAB_TYPE.INFO}>
               <CharacterInfo
                 studioId={studioId}
-                gameId={gameId}
+                worldId={worldId}
                 character={character}
               />
             </Tabs.TabPane>
@@ -81,7 +81,7 @@ const CharacterManager: React.FC<{
             <Tabs.TabPane tab="Events" key={TAB_TYPE.EVENTS}>
               <CharacterEvents
                 studioId={studioId}
-                gameId={gameId}
+                worldId={worldId}
                 character={character}
               />
             </Tabs.TabPane>

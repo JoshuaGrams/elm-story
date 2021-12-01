@@ -13,18 +13,18 @@ export async function getEffect(studioId: StudioId, effectId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getEffect(effectId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getEffectsByGameRef(
+export async function getEffectsByWorldRef(
   studioId: StudioId,
-  gameId: WorldId
+  worldId: WorldId
 ): Promise<Effect[]> {
   try {
-    return await new LibraryDatabase(studioId).getEffectsByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getEffectsByWorldRef(worldId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -39,7 +39,7 @@ export async function getEffectsByRouteRef(
       countOnly || false
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -52,7 +52,7 @@ export async function getEffectsByVariableRef(
       variableId
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -65,7 +65,7 @@ export async function saveEffect(
   try {
     return await new LibraryDatabase(studioId).saveEffect(effect)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -80,7 +80,7 @@ export async function saveEffectSetOperatorType(
       newSetOperatorType
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -92,7 +92,7 @@ export async function saveEffectValue(
   try {
     await new LibraryDatabase(studioId).saveEffectValue(effectId, newValue)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -100,6 +100,6 @@ export async function removeEffect(studioId: StudioId, effectId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removeEffect(effectId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

@@ -22,7 +22,7 @@ import {
   PlusOutlined
 } from '@ant-design/icons'
 
-import { SaveStudioModal, RemoveStudioModal, SaveGameModal } from '../Modal'
+import { SaveStudioModal, RemoveStudioModal, SaveWorldModal } from '../Modal'
 
 import styles from './styles.module.less'
 
@@ -90,7 +90,7 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
         )}
 
         {app.selectedStudioId && (
-          <SaveGameModal
+          <SaveWorldModal
             visible={saveGameModal.visible}
             onCancel={() => setSaveGameModal({ visible: false, edit: false })}
             afterClose={() => setSaveGameModal({ visible: false, edit: false })}

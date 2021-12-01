@@ -12,7 +12,7 @@ import { AppContext } from '../../contexts/AppContext'
 
 import { Dropdown, Menu } from 'antd'
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { ExportGameModal } from '../Modal'
+import { ExportWorldModal } from '../Modal'
 
 import styles from './styles.module.less'
 
@@ -43,35 +43,35 @@ const HelpButton: React.FC<{ type: 'JSON' | 'PWA' }> = ({ type }) => {
   )
 }
 
-const ExportGameMenu: React.FC<{ studioId: StudioId; game: World }> = ({
+const ExportWorldMenu: React.FC<{ studioId: StudioId; world: World }> = ({
   children,
   studioId,
-  game
+  world
 }) => {
   const { app } = useContext(AppContext)
 
-  const [exportGameModal, setExportGameModal] = useState({
-    title: 'Gathering game data...',
+  const [exportWorldModal, setExportWorldModal] = useState({
+    title: 'Gathering world data...',
     visible: false
   })
 
-  async function exportGame(jsonOnly?: boolean) {
-    if (game.id) {
-      setExportGameModal({ ...exportGameModal, visible: true })
+  async function exportWorld(jsonOnly?: boolean) {
+    if (world.id) {
+      setExportWorldModal({ ...exportWorldModal, visible: true })
 
-      const json = await getGameDataJSON(studioId, game.id, app.version)
+      const json = await getGameDataJSON(studioId, world.id, app.version)
 
       if (jsonOnly) {
         const element = document.createElement('a'),
           file = new Blob([json], { type: 'text/json' })
 
         element.href = URL.createObjectURL(file)
-        element.download = `${game.title.trim()}.json`
+        element.download = `${world.title.trim()}.json`
 
         setTimeout(() => {
           element.click()
 
-          setExportGameModal({ ...exportGameModal, visible: false })
+          setExportWorldModal({ ...exportWorldModal, visible: false })
         }, 1000)
       }
 
@@ -79,7 +79,7 @@ const ExportGameMenu: React.FC<{ studioId: StudioId; game: World }> = ({
         setTimeout(() => {
           ipcRenderer.send(WINDOW_EVENT_TYPE.EXPORT_GAME_START, json)
 
-          setExportGameModal({ ...exportGameModal, visible: false })
+          setExportWorldModal({ ...exportWorldModal, visible: false })
         }, 1000)
       }
     }
@@ -87,28 +87,28 @@ const ExportGameMenu: React.FC<{ studioId: StudioId; game: World }> = ({
 
   useEffect(() => {
     ipcRenderer.on(WINDOW_EVENT_TYPE.EXPORT_GAME_PROCESSING, () => {
-      setExportGameModal({ title: 'Compiling game...', visible: true })
+      setExportWorldModal({ title: 'Compiling game...', visible: true })
     })
 
     ipcRenderer.on(WINDOW_EVENT_TYPE.EXPORT_GAME_COMPLETE, () => {
-      setExportGameModal({ ...exportGameModal, visible: false })
+      setExportWorldModal({ ...exportWorldModal, visible: false })
     })
   }, [])
 
   return (
     <>
-      <ExportGameModal
-        title={exportGameModal.title}
-        visible={exportGameModal.visible}
+      <ExportWorldModal
+        title={exportWorldModal.title}
+        visible={exportWorldModal.visible}
       />
 
       <Dropdown
         overlay={
           <Menu onClick={(event) => event.domEvent.stopPropagation()}>
-            <Menu.Item onClick={() => exportGame(true)}>
+            <Menu.Item onClick={() => exportWorld(true)}>
               Export JSON <HelpButton type="JSON" />
             </Menu.Item>
-            <Menu.Item onClick={() => exportGame()}>
+            <Menu.Item onClick={() => exportWorld()}>
               Export PWA <HelpButton type="PWA" />
             </Menu.Item>
           </Menu>
@@ -121,6 +121,6 @@ const ExportGameMenu: React.FC<{ studioId: StudioId; game: World }> = ({
   )
 }
 
-ExportGameMenu.displayName = 'ExportGameMenu'
+ExportWorldMenu.displayName = 'ExportWorldMenu'
 
-export default ExportGameMenu
+export default ExportWorldMenu

@@ -5,11 +5,11 @@ import { WorldId, StudioId, Character, ElementId, Event } from '../data/types'
 
 const useCharacters = (
   studioId: StudioId,
-  gameId: WorldId,
+  worldId: WorldId,
   deps?: any[]
 ): Character[] | undefined => {
   const characters = useLiveQuery(
-    () => new LibraryDatabase(studioId).characters.where({ gameId }).toArray(),
+    () => new LibraryDatabase(studioId).characters.where({ worldId }).toArray(),
     deps || [],
     undefined
   )
@@ -37,7 +37,7 @@ const useCharacterEvents = (
 ): Event[] | undefined =>
   useLiveQuery(
     () =>
-      new LibraryDatabase(studioId).passages
+      new LibraryDatabase(studioId).events
         .where('persona')
         .equals(characterId || '')
         .toArray(),
