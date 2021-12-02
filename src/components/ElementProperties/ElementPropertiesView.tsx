@@ -4,7 +4,6 @@ import { ElementId, ELEMENT_TYPE, StudioId } from '../../data/types'
 
 import {
   AlignLeftOutlined,
-  DeploymentUnitOutlined,
   FolderOutlined,
   PartitionOutlined
 } from '@ant-design/icons'
@@ -29,8 +28,7 @@ const ComponentDetailView: React.FC<{
       {element.type === ELEMENT_TYPE.WORLD && (
         <>
           <div className={styles.componentDetailViewHeader}>
-            <DeploymentUnitOutlined className={styles.headerIcon} /> Selected
-            Storyworld
+            &#127757; Selected Storyworld
             <ElementHelpButton type={ELEMENT_TYPE.WORLD} />
           </div>
           <StoryworldProperties studioId={studioId} worldId={element.id} />

@@ -120,8 +120,7 @@ const WorldProperties: React.FC<{
                   >
                     {scenes.length === 0 && (
                       <div className="warningMessage">
-                        To define jump on world start, worlds require at least 1
-                        scene.
+                        To modify jump on world start, define at least 1 scene.
                       </div>
                     )}
 

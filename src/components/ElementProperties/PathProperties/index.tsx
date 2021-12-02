@@ -318,8 +318,7 @@ const PathDetails: React.FC<{
 
                   {variables && variables.length === 0 && (
                     <div className={styles.noVariables}>
-                      At least 1 world variable is required to create a
-                      condition.
+                      To modify path conditions, define at least 1 variable.
                     </div>
                   )}
 
@@ -382,7 +381,7 @@ const PathDetails: React.FC<{
 
                   {variables && variables.length === 0 && (
                     <div className={styles.noVariables}>
-                      At least 1 world variable is required to create an effect.
+                      To modify path effects, define at least 1 variable.
                     </div>
                   )}
                 </>

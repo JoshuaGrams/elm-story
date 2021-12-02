@@ -1102,18 +1102,18 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
   return (
     <div className={styles.WorldOutline}>
+      <TitleBar
+        studioId={studioId}
+        world={world}
+        onAdd={(_, childType: ELEMENT_TYPE) =>
+          composer.selectedWorldOutlineElement.id &&
+          onAdd(composer.selectedWorldOutlineElement.id, childType)
+        }
+        onWorldSelect={selectStoryworld}
+      />
+
       {world.id && treeData && (
         <>
-          <TitleBar
-            studioId={studioId}
-            world={world}
-            onAdd={(_, childType: ELEMENT_TYPE) =>
-              composer.selectedWorldOutlineElement.id &&
-              onAdd(composer.selectedWorldOutlineElement.id, childType)
-            }
-            onWorldSelect={selectStoryworld}
-          />
-
           <div className={styles.tree}>
             {treeData.items[treeData.rootId].hasChildren && (
               <Tree

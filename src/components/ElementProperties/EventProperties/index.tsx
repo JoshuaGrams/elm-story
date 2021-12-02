@@ -166,7 +166,7 @@ const Persona: React.FC<{
         <div className={styles.contentWrapper}>
           {characters.length === 0 && (
             <div className={styles.noCharacters}>
-              At least 1 story character is required to modify event persona.
+              To modify event persona, define at least 1 character.
             </div>
           )}
 

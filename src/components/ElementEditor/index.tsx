@@ -31,8 +31,7 @@ import { find as findBox } from 'rc-dock/lib/Algorithm'
 import {
   PartitionOutlined,
   CloseOutlined,
-  QuestionOutlined,
-  DeploymentUnitOutlined
+  QuestionOutlined
 } from '@ant-design/icons'
 
 import TabContent from './TabContent'
@@ -114,7 +113,7 @@ function getTabContent(
 function getTabIcon(type: ELEMENT_TYPE | undefined): JSX.Element {
   switch (type) {
     case ELEMENT_TYPE.WORLD:
-      return <DeploymentUnitOutlined className={styles.tabIcon} />
+      return <span>&#127757; </span>
     case ELEMENT_TYPE.SCENE:
       return <PartitionOutlined className={styles.tabIcon} />
     default:
