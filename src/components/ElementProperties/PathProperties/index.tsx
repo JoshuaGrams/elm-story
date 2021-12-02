@@ -265,7 +265,8 @@ const PathDetails: React.FC<{
           className={`${parentStyles.componentDetailViewWrapper} ${styles.RouteDetails}`}
         >
           <div className={parentStyles.content}>
-            <ElementTitle
+            {/* issues/#1 */}
+            {/* <ElementTitle
               title={path.title}
               onUpdate={async (title) =>
                 path.id &&
@@ -274,9 +275,8 @@ const PathDetails: React.FC<{
                   title
                 }))
               }
-            />
+            /> */}
             <div className={parentStyles.componentId}>{path.id}</div>
-
             {/* ROUTE CONDITIONS */}
             <div className={styles.routeFeature}>
               <div className={styles.featureHeader}>
@@ -340,7 +340,6 @@ const PathDetails: React.FC<{
                 </>
               </div>
             </div>
-
             {/* ROUTE EFFECTS */}
             <div className={styles.routeFeature}>
               <div className={styles.featureHeader}>
