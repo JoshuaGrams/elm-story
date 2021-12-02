@@ -99,7 +99,7 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
         }}
       >
         <Form.Item
-          label="Studio Title"
+          label="Title"
           name="title"
           rules={[{ required: true, message: 'Studio title is required.' }]}
         >

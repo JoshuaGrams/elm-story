@@ -28,7 +28,7 @@ const ComponentDetailView: React.FC<{
       {element.type === ELEMENT_TYPE.WORLD && (
         <>
           <div className={styles.componentDetailViewHeader}>
-            &#127757; Selected Storyworld
+            &#128218; Selected Storyworld
             <ElementHelpButton type={ELEMENT_TYPE.WORLD} />
           </div>
           <StoryworldProperties studioId={studioId} worldId={element.id} />

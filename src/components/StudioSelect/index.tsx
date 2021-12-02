@@ -72,7 +72,7 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
         }}
       />
 
-      <div className={`${styles.studioList} ${className}`}>
+      <div className={`${styles.StudioList} ${className}`}>
         {studios && (
           <>
             <Select
@@ -87,7 +87,9 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
                     type="primary"
                     style={{
                       width: '100%',
-                      marginTop: studios.length > 0 ? '6px' : '0px'
+                      marginTop: studios.length > 0 ? '6px' : '0px',
+                      borderTopLeftRadius: '0 !important',
+                      borderTopRightRadius: 0
                     }}
                     onClick={() =>
                       setSaveStudioModal({ visible: true, edit: false })
@@ -125,7 +127,7 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
             {app.selectedStudioId && (
               <Button
                 type="primary"
-                style={{ marginRight: 6 }}
+                style={{ marginRight: 6, borderRadius: 2 }}
                 onClick={() =>
                   setSaveStudioModal({ visible: true, edit: true })
                 }

@@ -107,7 +107,7 @@ const WorldProperties: React.FC<{
             <div className={parentStyles.componentId}>{world.id}</div>
           </div>
 
-          <div className={parentStyles.componentDetailViewNestedCollapse}>
+          <div className={parentStyles.elementPropertiesNestedCollapse}>
             <Collapse defaultActiveKey={['jump-panel']}>
               <Collapse.Panel
                 header="Jump on Start"
@@ -158,12 +158,12 @@ const WorldProperties: React.FC<{
             </Collapse>
           </div>
 
-          <div className={parentStyles.componentDetailViewNestedCollapse}>
+          <div className={parentStyles.elementPropertiesNestedCollapse}>
             <Collapse defaultActiveKey={['metadata-panel']}>
               <Collapse.Panel header="Metadata" key="metadata-panel">
                 <div className={parentStyles.content}>
                   <Form
-                    id="save-game-metadata-form"
+                    id="save-world-metadata-form"
                     form={metadataForm}
                     initialValues={{
                       copyright: world.copyright,

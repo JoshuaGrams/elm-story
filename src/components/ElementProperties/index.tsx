@@ -30,7 +30,7 @@ const ElementProperties: React.FC<{
   }, [composer.selectedWorldOutlineElement])
 
   return (
-    <div className={styles.componentProperties}>
+    <div className={styles.ElementProperties}>
       {selectedWorld?.id &&
         (!composer.selectedWorldOutlineElement.id ||
           !composer.selectedWorldOutlineElement.type) && (

@@ -125,7 +125,7 @@ h3 {
 }
 
 .ant-btn {
-  border-radius: unset;
+  border-radius: 2px !important;
 
   &:hover {
     border-color: var(--highlight-color-bright);
@@ -196,7 +196,8 @@ h3 {
 .ant-modal-content {
   background: var(--bg-color-3);
   border: 1px solid var(--border-color-10);
-  border-radius: unset;
+  border-radius: 2px;
+  overflow: hidden;
 
   .ant-modal-header {
     background: var(--bg-color-0);
@@ -226,6 +227,7 @@ h3 {
 .ant-input,
 .ant-input-affix-wrapper {
   box-shadow: unset !important;
+  border-radius: 2px !important;
 
   &:hover {
     border-color: var(--highlight-color-50a);
@@ -257,7 +259,7 @@ h3 {
 
 .ant-select {
   &:not(.ant-select-customize-input) .ant-select-selector {
-    border-radius: unset;
+    border-radius: 2px !important;
   }
 
   &:not(.ant-select-disabled):hover .ant-select-selector {
@@ -274,7 +276,7 @@ h3 {
 .ant-select-dropdown {
   background: var(--dropdown-bg-color);
   padding: 0px;
-  border-radius: unset;
+  border-radius: 2px important;
   border: 1px solid var(--dropdown-border-color);
 
   .ant-select-item {

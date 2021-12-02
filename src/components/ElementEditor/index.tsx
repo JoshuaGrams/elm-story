@@ -113,7 +113,7 @@ function getTabContent(
 function getTabIcon(type: ELEMENT_TYPE | undefined): JSX.Element {
   switch (type) {
     case ELEMENT_TYPE.WORLD:
-      return <span>&#127757; </span>
+      return <span>&#128218; </span>
     case ELEMENT_TYPE.SCENE:
       return <PartitionOutlined className={styles.tabIcon} />
     default:

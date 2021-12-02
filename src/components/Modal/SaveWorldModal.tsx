@@ -111,6 +111,7 @@ const SaveWorldModal: React.FC<SaveWorldModalProps> = ({
           label="Title"
           name="title"
           rules={[{ required: true, message: 'Title is required.' }]}
+          labelCol={{ span: 5 }}
         >
           <Input autoFocus />
         </Form.Item>
@@ -118,6 +119,7 @@ const SaveWorldModal: React.FC<SaveWorldModalProps> = ({
           label="Designer"
           name="designer"
           rules={[{ required: true, message: 'Designer is required.' }]}
+          labelCol={{ span: 5 }}
         >
           <Input />
         </Form.Item>
@@ -127,6 +129,7 @@ const SaveWorldModal: React.FC<SaveWorldModalProps> = ({
             label="Version"
             name="version"
             rules={[{ required: true, message: 'Version is required.' }]}
+            labelCol={{ span: 10 }}
           >
             <Input />
           </Form.Item>

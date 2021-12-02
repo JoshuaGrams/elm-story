@@ -58,7 +58,10 @@ const Dashboard = () => {
       <div className={styles.Dashboard}>
         <div className={styles.studioSelectWrapper}>
           <StudioSelect />
-          <Button onClick={() => importWorldDataJSONInput.current?.click()}>
+          <Button
+            style={{ borderRadius: 2 }}
+            onClick={() => importWorldDataJSONInput.current?.click()}
+          >
             <ImportOutlined />
           </Button>
         </div>

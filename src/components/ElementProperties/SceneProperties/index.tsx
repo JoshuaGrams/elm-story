@@ -103,8 +103,8 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                 <Collapse.Panel
                   header={
                     <>
-                      <ForwardOutlined className={styles.headerIcon} />
-                      Selected Jump
+                      <ForwardOutlined className={styles.headerIcon} /> Selected
+                      Jump
                       <ElementHelpButton type={ELEMENT_TYPE.JUMP} />
                     </>
                   }
