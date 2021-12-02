@@ -9,7 +9,10 @@ import {
   StudioId
 } from '../../data/types'
 
-import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../contexts/ComposerContext'
 
 import { CharacterModal } from '../Modal'
 import CharacterMask from '../CharacterManager/CharacterMask'
@@ -20,20 +23,20 @@ const CharacterRow: React.FC<{ studioId: StudioId; character: Character }> = ({
   studioId,
   character
 }) => {
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   const [selected, setSelected] = useState(false)
 
   useEffect(() => {
-    setSelected(editor.characterModal.id === character.id)
-  }, [editor.characterModal.id])
+    setSelected(composer.characterModal.id === character.id)
+  }, [composer.characterModal.id])
 
   return (
     <div
       className={`${styles.CharacterRow} ${selected ? styles.selected : ''}`}
       onClick={() =>
         character.id &&
-        editorDispatch({
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.OPEN_CHARACTER_MODAL,
           characterId: character.id
         })
@@ -70,17 +73,17 @@ const WorldCharacters: React.FC<{
 }> = ({ studioId, worldId }) => {
   const characters = useCharacters(studioId, worldId, [])
 
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   return (
     <>
       <CharacterModal
         studioId={studioId}
         worldId={worldId}
-        characterId={editor.characterModal.id}
-        visible={editor.characterModal.visible}
+        characterId={composer.characterModal.id}
+        visible={composer.characterModal.visible}
         onCancel={() =>
-          editorDispatch({ type: COMPOSER_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
+          composerDispatch({ type: COMPOSER_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
         }
       />
 

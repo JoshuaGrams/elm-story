@@ -16,7 +16,7 @@ const AddElementMenu: React.FC<{
   worldId: WorldId
   onAdd: OnAddElement
 }> = ({ children, worldId, onAdd }) => {
-  const { composer: editor } = useContext(ComposerContext)
+  const { composer } = useContext(ComposerContext)
 
   return (
     <Dropdown
@@ -26,8 +26,9 @@ const AddElementMenu: React.FC<{
             key={'add-folder'}
             onClick={() => onAdd(worldId, ELEMENT_TYPE.FOLDER)}
             disabled={
-              editor.selectedWorldOutlineElement.type === ELEMENT_TYPE.SCENE ||
-              editor.selectedWorldOutlineElement.type === ELEMENT_TYPE.EVENT
+              composer.selectedWorldOutlineElement.type ===
+                ELEMENT_TYPE.SCENE ||
+              composer.selectedWorldOutlineElement.type === ELEMENT_TYPE.EVENT
             }
           >
             <FolderOutlined />
@@ -37,8 +38,9 @@ const AddElementMenu: React.FC<{
             key={'add-scene'}
             onClick={() => onAdd(worldId, ELEMENT_TYPE.SCENE)}
             disabled={
-              editor.selectedWorldOutlineElement.type === ELEMENT_TYPE.SCENE ||
-              editor.selectedWorldOutlineElement.type === ELEMENT_TYPE.EVENT
+              composer.selectedWorldOutlineElement.type ===
+                ELEMENT_TYPE.SCENE ||
+              composer.selectedWorldOutlineElement.type === ELEMENT_TYPE.EVENT
             }
           >
             <PartitionOutlined />
@@ -48,8 +50,9 @@ const AddElementMenu: React.FC<{
             key={'add-event'}
             onClick={() => onAdd(worldId, ELEMENT_TYPE.EVENT)}
             disabled={
-              editor.selectedWorldOutlineElement.type === ELEMENT_TYPE.WORLD ||
-              editor.selectedWorldOutlineElement.type === ELEMENT_TYPE.FOLDER
+              composer.selectedWorldOutlineElement.type ===
+                ELEMENT_TYPE.WORLD ||
+              composer.selectedWorldOutlineElement.type === ELEMENT_TYPE.FOLDER
             }
           >
             <AlignLeftOutlined />

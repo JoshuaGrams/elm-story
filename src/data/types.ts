@@ -196,12 +196,12 @@ export interface Character extends Element {
   // TODO: add variable ID
 }
 
-export type GameChildRefs = Array<
+export type WorldChildRefs = Array<
   [ELEMENT_TYPE.FOLDER | ELEMENT_TYPE.SCENE, ElementId]
 >
 
 export interface World extends Element {
-  children: GameChildRefs
+  children: WorldChildRefs
   copyright?: string
   description?: string
   designer: string

@@ -11,7 +11,10 @@ import {
 
 import { useCharacterEvents, useScene } from '../../hooks'
 
-import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../contexts/ComposerContext'
 
 import { Table } from 'antd'
 import { PartitionOutlined } from '@ant-design/icons'
@@ -20,17 +23,17 @@ import styles from './styles.module.less'
 import CharacterMask from './CharacterMask'
 
 const SceneRow: React.FC<{ scene: Scene }> = ({ scene }) => {
-  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composerDispatch } = useContext(ComposerContext)
 
   return (
     <div className={styles.SceneRow}>
       <PartitionOutlined className={styles.icon} />
       <h1
         onClick={() => {
-          editorDispatch({ type: COMPOSER_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
+          composerDispatch({ type: COMPOSER_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
 
           scene?.id &&
-            editorDispatch({
+            composerDispatch({
               type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
               selectedWorldOutlineElement: {
                 expanded: true,
@@ -54,12 +57,12 @@ const EventRow: React.FC<{
   character: Character
   event: Event
 }> = ({ studioId, character, event }) => {
-  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composerDispatch } = useContext(ComposerContext)
 
   const ref = character.refs.find((ref) => ref[0] === event.persona?.[2])?.[1]
 
   const openScene = () => {
-    editorDispatch({
+    composerDispatch({
       type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
       selectedWorldOutlineElement: {
         expanded: true,
@@ -71,7 +74,7 @@ const EventRow: React.FC<{
   }
 
   const openEvent = () => {
-    editorDispatch({ type: COMPOSER_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
+    composerDispatch({ type: COMPOSER_ACTION_TYPE.CLOSE_CHARACTER_MODAL })
 
     openScene()
 
@@ -79,7 +82,7 @@ const EventRow: React.FC<{
     setTimeout(
       () =>
         event.id &&
-        editorDispatch({
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
           selectedSceneMapEvent: event.id
         }),

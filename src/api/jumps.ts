@@ -54,13 +54,13 @@ export async function saveJump(studioId: StudioId, jump: Jump): Promise<Jump> {
   }
 }
 
-export async function saveJumpRoute(
+export async function saveJumpPath(
   studioId: StudioId,
   jumpId: ElementId,
-  jumpRoute: JumpPath
+  jumpPath: JumpPath
 ): Promise<void> {
   try {
-    await new LibraryDatabase(studioId).saveJumpPath(jumpId, jumpRoute)
+    await new LibraryDatabase(studioId).saveJumpPath(jumpId, jumpPath)
   } catch (error) {
     throw error
   }

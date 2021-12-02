@@ -34,7 +34,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
 }) => {
   const scene = useScene(studioId, sceneId, [sceneId])
 
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   return (
     <>
@@ -51,7 +51,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                       title
                     })
 
-                    editorDispatch({
+                    composerDispatch({
                       type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
                       renamedElement: {
                         id: scene.id,
@@ -60,10 +60,10 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                     })
 
                     // TODO: Is this necessary?
-                    editorDispatch({
+                    composerDispatch({
                       type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
                       selectedWorldOutlineElement: {
-                        ...editor.selectedWorldOutlineElement,
+                        ...composer.selectedWorldOutlineElement,
                         title
                       }
                     })
@@ -72,29 +72,25 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
               />
               <div className={styles.componentId}>{scene.id}</div>
 
-              {!editor.selectedSceneMapEvent &&
-                !editor.selectedSceneMapJump &&
-                !editor.selectedSceneMapPath && (
+              {!composer.selectedSceneMapEvent &&
+                !composer.selectedSceneMapJump &&
+                !composer.selectedSceneMapPath && (
                   <div className={styles.multiSelection}>
-                    {editor.totalSceneMapSelectedEvents >
-                      0 && (
+                    {composer.totalSceneMapSelectedEvents > 0 && (
                       <div>
-                        Selected Events:{' '}
-                        {editor.totalSceneMapSelectedEvents}
+                        Selected Events: {composer.totalSceneMapSelectedEvents}
                       </div>
                     )}
 
-                    {editor.totalSceneMapSelectedJumps > 0 && (
+                    {composer.totalSceneMapSelectedJumps > 0 && (
                       <div>
-                        Selected Jumps:{' '}
-                        {editor.totalSceneMapSelectedJumps}
+                        Selected Jumps: {composer.totalSceneMapSelectedJumps}
                       </div>
                     )}
 
-                    {editor.totalSceneMapSelectedPaths > 0 && (
+                    {composer.totalSceneMapSelectedPaths > 0 && (
                       <div>
-                        Selected Paths:{' '}
-                        {editor.totalSceneMapSelectedPaths}
+                        Selected Paths: {composer.totalSceneMapSelectedPaths}
                       </div>
                     )}
                   </div>
@@ -102,7 +98,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
             </div>
 
             {/* Jump Panel */}
-            {editor.selectedSceneMapJump && (
+            {composer.selectedSceneMapJump && (
               <Collapse defaultActiveKey={['jump-details-panel']}>
                 <Collapse.Panel
                   header={
@@ -116,14 +112,14 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                 >
                   <JumpDetails
                     studioId={studioId}
-                    jumpId={editor.selectedSceneMapJump}
+                    jumpId={composer.selectedSceneMapJump}
                   />
                 </Collapse.Panel>
               </Collapse>
             )}
 
             {/* Path Panel */}
-            {editor.selectedSceneMapPath && (
+            {composer.selectedSceneMapPath && (
               <Collapse defaultActiveKey={['path-details-panel']}>
                 <Collapse.Panel
                   header={
@@ -138,13 +134,13 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                   <PathDetails
                     studioId={studioId}
                     worldId={scene.worldId}
-                    pathId={editor.selectedSceneMapPath}
+                    pathId={composer.selectedSceneMapPath}
                   />
                 </Collapse.Panel>
               </Collapse>
             )}
 
-            {editor.selectedSceneMapEvent && (
+            {composer.selectedSceneMapEvent && (
               <Collapse
                 defaultActiveKey={[
                   'passage-details-panel',
@@ -152,7 +148,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                 ]}
               >
                 {/* Passage Panel */}
-                {editor.selectedSceneMapEvent && (
+                {composer.selectedSceneMapEvent && (
                   <Collapse.Panel
                     header={
                       <>
@@ -165,13 +161,13 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                   >
                     <EventProperties
                       studioId={studioId}
-                      eventId={editor.selectedSceneMapEvent}
+                      eventId={composer.selectedSceneMapEvent}
                     />
                   </Collapse.Panel>
                 )}
 
                 {/* Choice Panel */}
-                {editor.selectedSceneMapChoice && (
+                {composer.selectedSceneMapChoice && (
                   <Collapse.Panel
                     header={
                       <>
@@ -184,7 +180,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                   >
                     <ChoiceDetails
                       studioId={studioId}
-                      choiceId={editor.selectedSceneMapChoice}
+                      choiceId={composer.selectedSceneMapChoice}
                     />
                   </Collapse.Panel>
                 )}

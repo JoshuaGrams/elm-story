@@ -38,17 +38,16 @@ const EventType: React.FC<{
   studioId: StudioId
   event: Event
 }> = React.memo(({ studioId, event }) => {
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   const changeType = useCallback(
     async (type: EVENT_TYPE) => {
       if (event.id) {
         // Change to input
         if (event.type === EVENT_TYPE.CHOICE && type === EVENT_TYPE.INPUT) {
-          editor.selectedWorldOutlineElement.id === event.sceneId &&
-            editorDispatch({
-              type:
-                COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
+          composer.selectedWorldOutlineElement.id === event.sceneId &&
+            composerDispatch({
+              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
               selectedSceneMapChoice: null
             })
 
@@ -275,7 +274,7 @@ const EventEndingToggle: React.FC<{
   studioId: StudioId
   event: Event
 }> = React.memo(({ studioId, event }) => {
-  const { composer: editor } = useContext(ComposerContext)
+  const { composer } = useContext(ComposerContext)
 
   const choices = useChoicesByEventRef(studioId, event.id, [event]),
     pathPassthroughs = usePathPassthroughsByEventRef(studioId, event.id, [
@@ -300,7 +299,7 @@ const EventEndingToggle: React.FC<{
     if (
       ((choices && choices.length > 0) || event.type === EVENT_TYPE.INPUT) &&
       event.ending &&
-      editor.selectedSceneMapEvent === event.id
+      composer.selectedSceneMapEvent === event.id
     ) {
       disableGameEnd()
     }
@@ -332,7 +331,7 @@ const EventProperties: React.FC<{
 }> = React.memo(({ studioId, eventId }) => {
   const event = useEvent(studioId, eventId, [eventId])
 
-  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composerDispatch } = useContext(ComposerContext)
 
   return (
     <>
@@ -350,7 +349,7 @@ const EventProperties: React.FC<{
                     title
                   })
 
-                  editorDispatch({
+                  composerDispatch({
                     type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
                     renamedElement: {
                       id: event.id,

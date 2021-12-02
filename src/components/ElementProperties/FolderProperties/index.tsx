@@ -21,7 +21,7 @@ const FolderDetails: React.FC<{
 }> = ({ studioId, folderId }) => {
   const folder = useFolder(studioId, folderId, [folderId])
 
-  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composerDispatch } = useContext(ComposerContext)
 
   return (
     <>
@@ -37,7 +37,7 @@ const FolderDetails: React.FC<{
                     title
                   })
 
-                  editorDispatch({
+                  composerDispatch({
                     type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
                     renamedElement: {
                       id: folder.id,

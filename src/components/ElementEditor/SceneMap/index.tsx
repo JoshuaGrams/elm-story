@@ -87,8 +87,11 @@ export const SceneMapTools: React.FC<{
 }> = ({ studioId, sceneId }) => {
   const scene = useScene(studioId, sceneId, [sceneId])
 
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext),
-    { elementEditorTab: editorTab, elementEditorTabDispatch: editorTabDispatch } = useContext(ElementEditorTabContext)
+  const { composer, composerDispatch } = useContext(ComposerContext),
+    {
+      elementEditorTab: editorTab,
+      elementEditorTabDispatch: editorTabDispatch
+    } = useContext(ElementEditorTabContext)
 
   return (
     <>
@@ -107,16 +110,16 @@ export const SceneMapTools: React.FC<{
                       ELEMENT_TYPE.EVENT,
                       {
                         x:
-                          editor.selectedSceneMapCenter.x -
+                          composer.selectedSceneMapCenter.x -
                           DEFAULT_NODE_SIZE.EVENT_WIDTH / 2,
                         y:
-                          editor.selectedSceneMapCenter.y -
+                          composer.selectedSceneMapCenter.y -
                           DEFAULT_NODE_SIZE.EVENT_HEIGHT / 2
                       }
                     )
 
                     if (eventId)
-                      editorDispatch({
+                      composerDispatch({
                         type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
                         savedElement: {
                           id: eventId,
@@ -141,10 +144,10 @@ export const SceneMapTools: React.FC<{
                     ELEMENT_TYPE.JUMP,
                     {
                       x:
-                        editor.selectedSceneMapCenter.x -
+                        composer.selectedSceneMapCenter.x -
                         DEFAULT_NODE_SIZE.JUMP_WIDTH / 2,
                       y:
-                        editor.selectedSceneMapCenter.y -
+                        composer.selectedSceneMapCenter.y -
                         (scene.children.length === 0
                           ? DEFAULT_NODE_SIZE.JUMP_HEIGHT
                           : DEFAULT_NODE_SIZE.JUMP_HEIGHT_EXTENDED) /
@@ -153,7 +156,7 @@ export const SceneMapTools: React.FC<{
                   )
 
                   if (jumpId)
-                    editorDispatch({
+                    composerDispatch({
                       type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
                       savedElement: {
                         id: jumpId,
@@ -176,10 +179,9 @@ export const SceneMapTools: React.FC<{
             !editorTab.eventForEditing.visible && (
               <Menu.Item
                 onClick={() =>
-                  !editor.centeredSceneMapSelection &&
-                  editorDispatch({
-                    type:
-                      COMPOSER_ACTION_TYPE.SCENE_MAP_CENTERED_SELECTION,
+                  !composer.centeredSceneMapSelection &&
+                  composerDispatch({
+                    type: COMPOSER_ACTION_TYPE.SCENE_MAP_CENTERED_SELECTION,
                     centeredSceneMapSelection: true
                   })
                 }
@@ -336,8 +338,11 @@ const SceneMap: React.FC<{
     height: flowWrapperRefHeight
   } = useDebouncedResizeObserver(500)
 
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext),
-    { elementEditorTab: editorTab, elementEditorTabDispatch: editorTabDispatch } = useContext(ElementEditorTabContext)
+  const { composer, composerDispatch } = useContext(ComposerContext),
+    {
+      elementEditorTab: editorTab,
+      elementEditorTabDispatch: editorTabDispatch
+    } = useContext(ElementEditorTabContext)
 
   const jumps = useJumpsBySceneRef(studioId, sceneId),
     scene = useScene(studioId, sceneId),
@@ -360,7 +365,7 @@ const SceneMap: React.FC<{
     [totalSelectedRoutes, setTotalSelectedRoutes] = useState<number>(0),
     [selectedJump, setSelectedJump] = useState<ElementId | null>(null),
     [selectedPassage, setSelectedPassage] = useState<ElementId | null>(
-      editor.selectedSceneMapEvent
+      composer.selectedSceneMapEvent
     ),
     [selectedRoute, setSelectedRoute] = useState<ElementId | null>(null),
     [selectedChoice, setSelectedChoice] = useState<ElementId | null>(null),
@@ -368,7 +373,7 @@ const SceneMap: React.FC<{
     [paneMoving, setPaneMoving] = useState(false)
 
   function setSelectedSceneViewCenter() {
-    editorDispatch({
+    composerDispatch({
       type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CENTER,
       selectedSceneMapCenter: {
         ...project({
@@ -384,7 +389,7 @@ const SceneMap: React.FC<{
   function highlightElements(elementsToHighlight: Elements<any> | null) {
     logger.info(`SceneMap->highlightElements`)
 
-    if (editor.selectedWorldOutlineElement.id === sceneId) {
+    if (composer.selectedWorldOutlineElement.id === sceneId) {
       const clonedElements = cloneDeep(elements),
         clonedJumps = clonedElements.filter(
           (clonedElement): clonedElement is Node =>
@@ -593,7 +598,7 @@ const SceneMap: React.FC<{
   async function onElementsRemove(elements: Elements<any>) {
     logger.info('onElementsRemove')
 
-    if (!editor.selectedSceneMapChoice) {
+    if (!composer.selectedSceneMapChoice) {
       const jumpRefs: ElementId[] = [],
         routeRefs: ElementId[] = [],
         passageRefs: ElementId[] = []
@@ -624,10 +629,10 @@ const SceneMap: React.FC<{
       )
     }
 
-    if (editor.selectedSceneMapChoice) {
+    if (composer.selectedSceneMapChoice) {
       await api().paths.removePathsByChoiceRef(
         studioId,
-        editor.selectedSceneMapChoice
+        composer.selectedSceneMapChoice
       )
     }
 
@@ -1004,52 +1009,46 @@ const SceneMap: React.FC<{
        ->useEffect`
     )
 
-    if (editor.selectedWorldOutlineElement.id === sceneId) {
+    if (composer.selectedWorldOutlineElement.id === sceneId) {
       setContext()
 
-      totalSelectedJumps !==
-        editor.totalSceneMapSelectedJumps &&
-        editorDispatch({
-          type:
-            COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
+      totalSelectedJumps !== composer.totalSceneMapSelectedJumps &&
+        composerDispatch({
+          type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
           totalSceneMapSelectedJumps: totalSelectedJumps
         })
 
-      totalSelectedPassages !==
-        editor.totalSceneMapSelectedEvents &&
-        editorDispatch({
-          type:
-            COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_EVENTS,
+      totalSelectedPassages !== composer.totalSceneMapSelectedEvents &&
+        composerDispatch({
+          type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_EVENTS,
           totalSceneMapSelectedEvents: totalSelectedPassages
         })
 
-      totalSelectedRoutes !==
-        editor.totalSceneMapSelectedPaths &&
-        editorDispatch({
-          type:
-            COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_PATHS,
+      totalSelectedRoutes !== composer.totalSceneMapSelectedPaths &&
+        composerDispatch({
+          type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_PATHS,
           totalSceneMapSelectedPaths: totalSelectedRoutes
         })
 
-      selectedJump !== editor.selectedSceneMapJump &&
-        editorDispatch({
+      selectedJump !== composer.selectedSceneMapJump &&
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
           selectedSceneMapJump: selectedJump
         })
 
-      selectedPassage !== editor.selectedSceneMapEvent &&
-        editorDispatch({
+      selectedPassage !== composer.selectedSceneMapEvent &&
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
           selectedSceneMapEvent: selectedPassage
         })
 
-      selectedRoute !== editor.selectedSceneMapPath &&
-        editorDispatch({
+      selectedRoute !== composer.selectedSceneMapPath &&
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_PATH,
           selectedSceneMapPath: selectedRoute
         })
 
-      editorDispatch({
+      composerDispatch({
         type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
         selectedSceneMapChoice: selectedChoice
       })
@@ -1057,7 +1056,7 @@ const SceneMap: React.FC<{
       highlightElements(selectedElements)
     }
   }, [
-    editor.selectedWorldOutlineElement,
+    composer.selectedWorldOutlineElement,
     totalSelectedJumps,
     totalSelectedPassages,
     selectedJump,
@@ -1067,10 +1066,10 @@ const SceneMap: React.FC<{
   ])
 
   useEffect(() => {
-    editor.selectedWorldOutlineElement.id === sceneId &&
+    composer.selectedWorldOutlineElement.id === sceneId &&
       setSelectedSceneViewCenter()
   }, [
-    editor.selectedWorldOutlineElement,
+    composer.selectedWorldOutlineElement,
     flowWrapperRefWidth,
     flowWrapperRefHeight,
     currentZoom
@@ -1082,13 +1081,9 @@ const SceneMap: React.FC<{
     )
 
     selectElement(
-      editor.selectedSceneMapEvent ||
-        editor.selectedSceneMapJump
+      composer.selectedSceneMapEvent || composer.selectedSceneMapJump
     )
-  }, [
-    editor.selectedSceneMapEvent,
-    editor.selectedSceneMapJump
-  ])
+  }, [composer.selectedSceneMapEvent, composer.selectedSceneMapJump])
 
   useEffect(() => {
     logger.info(`SceneMap->selectedElements->useEffect`)
@@ -1103,22 +1098,22 @@ const SceneMap: React.FC<{
   useEffect(() => {
     logger.info(`SceneMap->editor.saveElement,elements->useEffect`)
 
-    const foundElement = findElement(elements, editor.savedElement.id || null)
+    const foundElement = findElement(elements, composer.savedElement.id || null)
 
     if (foundElement) {
       setSelectedElements([foundElement])
 
-      editorDispatch({
+      composerDispatch({
         type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
         savedElement: { id: undefined, type: undefined }
       })
     }
-  }, [editor.savedElement, elements])
+  }, [composer.savedElement, elements])
 
   useEffect(() => {
     if (
-      editor.centeredSceneMapSelection &&
-      editor.selectedWorldOutlineElement.id === sceneId
+      composer.centeredSceneMapSelection &&
+      composer.selectedWorldOutlineElement.id === sceneId
     ) {
       logger.info(
         `SceneMap->editor.centeredComponentEditorSceneViewSelection-useEffect`
@@ -1126,17 +1121,12 @@ const SceneMap: React.FC<{
 
       centerSelection()
 
-      editorDispatch({
+      composerDispatch({
         type: COMPOSER_ACTION_TYPE.SCENE_MAP_CENTERED_SELECTION,
         centeredSceneMapSelection: false
       })
     }
-  }, [
-    editor.centeredSceneMapSelection,
-    nodes,
-    selectedElements,
-    currentZoom
-  ])
+  }, [composer.centeredSceneMapSelection, nodes, selectedElements, currentZoom])
 
   useEffect(() => {
     logger.info(
@@ -1144,16 +1134,15 @@ const SceneMap: React.FC<{
     )
 
     if (
-      editor.selectedWorldOutlineElement.id === sceneId &&
+      composer.selectedWorldOutlineElement.id === sceneId &&
       editorTab.eventForEditing.visible
     ) {
-      editor.selectedSceneMapEvent &&
-        editor.selectedSceneMapEvent !==
-          editorTab.eventForEditing.id &&
+      composer.selectedSceneMapEvent &&
+        composer.selectedSceneMapEvent !== editorTab.eventForEditing.id &&
         editorTabDispatch({
           type: ELEMENT_EDITOR_TAB_ACTION_TYPE.EDIT_EVENT,
           eventForEditing: {
-            id: editor.selectedSceneMapEvent,
+            id: composer.selectedSceneMapEvent,
             visible: true
           }
         })
@@ -1167,8 +1156,8 @@ const SceneMap: React.FC<{
     !editorTab.eventForEditing.visible && setContext()
   }, [
     editorTab.eventForEditing,
-    editor.selectedWorldOutlineElement,
-    editor.selectedSceneMapEvent
+    composer.selectedWorldOutlineElement,
+    composer.selectedSceneMapEvent
   ])
 
   return (
@@ -1183,9 +1172,9 @@ const SceneMap: React.FC<{
           onClick={() => {
             if (
               scene?.id &&
-              scene.id !== editor.selectedWorldOutlineElement.id
+              scene.id !== composer.selectedWorldOutlineElement.id
             ) {
-              editorDispatch({
+              composerDispatch({
                 type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
                 selectedWorldOutlineElement: {
                   id: scene.id,
@@ -1230,7 +1219,7 @@ const SceneMap: React.FC<{
                           )
 
                           if (eventId)
-                            editorDispatch({
+                            composerDispatch({
                               type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
                               savedElement: {
                                 id: eventId,
@@ -1256,7 +1245,7 @@ const SceneMap: React.FC<{
                           )
 
                           if (jumpId)
-                            editorDispatch({
+                            composerDispatch({
                               type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
                               savedElement: {
                                 id: jumpId,
@@ -1278,12 +1267,9 @@ const SceneMap: React.FC<{
                     'Edit Event',
                     ({ componentId }) => {
                       if (componentId) {
-                        if (
-                          componentId !== editor.selectedSceneMapEvent
-                        ) {
-                          editorDispatch({
-                            type:
-                              COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+                        if (componentId !== composer.selectedSceneMapEvent) {
+                          composerDispatch({
+                            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
                             selectedSceneMapEvent: componentId
                           })
                         }
@@ -1324,9 +1310,8 @@ const SceneMap: React.FC<{
 
                       if (foundPassage && foundPassage.id) {
                         if (foundPassage.type === EVENT_TYPE.CHOICE) {
-                          editor.selectedSceneMapEvent ===
-                            foundPassage.id &&
-                            editorDispatch({
+                          composer.selectedSceneMapEvent === foundPassage.id &&
+                            composerDispatch({
                               type:
                                 COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
                               selectedSceneMapChoice: null
@@ -1359,20 +1344,16 @@ const SceneMap: React.FC<{
                             componentId
                           )
 
-                          if (
-                            componentId ===
-                            editor.selectedSceneMapEvent
-                          ) {
+                          if (componentId === composer.selectedSceneMapEvent) {
                             setTotalSelectedPassages(0)
 
-                            editorDispatch({
-                              type:
-                                COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+                            composerDispatch({
+                              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
                               selectedSceneMapEvent: null
                             })
                           }
 
-                          editorDispatch({
+                          composerDispatch({
                             type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
                             removedElement: {
                               type: ELEMENT_TYPE.EVENT,
@@ -1401,15 +1382,11 @@ const SceneMap: React.FC<{
                             componentId
                           )
 
-                          if (
-                            componentId ===
-                            editor.selectedSceneMapJump
-                          ) {
+                          if (componentId === composer.selectedSceneMapJump) {
                             setTotalSelectedJumps(0)
 
-                            editorDispatch({
-                              type:
-                                COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+                            composerDispatch({
+                              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
                               selectedSceneMapJump: null
                             })
                           }
@@ -1440,13 +1417,12 @@ const SceneMap: React.FC<{
               logger.info('SceneMap->ReactFlow->onLoad')
 
               selectElement(
-                editor.selectedSceneMapEvent ||
-                  editor.selectedSceneMapJump
+                composer.selectedSceneMapEvent || composer.selectedSceneMapJump
               )
             }}
             elements={elements}
             onElementsRemove={
-              editor.selectedWorldOutlineElement.id === scene?.id
+              composer.selectedWorldOutlineElement.id === scene?.id
                 ? onElementsRemove
                 : undefined
             }

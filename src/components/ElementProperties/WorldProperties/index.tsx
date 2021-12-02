@@ -93,7 +93,7 @@ const WorldProperties: React.FC<{
                     title
                   })
 
-                  // editorDispatch({
+                  // composerDispatch({
                   //   type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
                   //   renamedElement: {
                   //     id: game.id,

@@ -2,11 +2,11 @@ import { ELEMENT_TYPE, Folder, World, Event, Scene } from '../data/types'
 
 import { TreeData } from '@atlaskit/tree'
 
-const createGameOutlineTreeData = (
+const createWorldOutlineTreeData = (
   game: World,
   folders: Folder[],
   scenes: Scene[],
-  passages: Event[]
+  events: Event[]
 ): TreeData => {
   if (game.id) {
     const gameOutlineTreeData: TreeData = {
@@ -73,19 +73,19 @@ const createGameOutlineTreeData = (
       }
     })
 
-    passages.map((passage) => {
-      if (passage.id) {
-        gameOutlineTreeData.items[passage.id] = {
-          id: passage.id,
+    events.map((event) => {
+      if (event.id) {
+        gameOutlineTreeData.items[event.id] = {
+          id: event.id,
           children: [],
           hasChildren: false,
           isExpanded: false,
           isChildrenLoading: false,
           data: {
-            title: passage.title,
-            type: ELEMENT_TYPE.PASSAGE,
+            title: event.title,
+            type: ELEMENT_TYPE.EVENT,
             selected: false,
-            parentId: passage.sceneId,
+            parentId: event.sceneId,
             renaming: false
           }
         }
@@ -94,8 +94,10 @@ const createGameOutlineTreeData = (
 
     return gameOutlineTreeData
   } else {
-    throw new Error('Unable to create game outline tree data. Missing game ID.')
+    throw new Error(
+      'Unable to create world outline tree data. Missing world ID.'
+    )
   }
 }
 
-export default createGameOutlineTreeData
+export default createWorldOutlineTreeData

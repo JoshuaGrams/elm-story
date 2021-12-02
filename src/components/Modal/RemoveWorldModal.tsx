@@ -20,7 +20,7 @@ const RemoveWorldModal: React.FC<RemoveWorldModalProps> = ({
 }) => {
   return (
     <Modal
-      title="Remove Storyworld"
+      title="Remove World"
       visible={visible}
       destroyOnClose
       onOk={async () => {

@@ -16,7 +16,10 @@ import {
   VARIABLE_TYPE
 } from '../../data/types'
 
-import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../contexts/ComposerContext'
 
 import { PlusOutlined } from '@ant-design/icons'
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
@@ -39,7 +42,7 @@ const WorldInspector: React.FC<{ studioId: StudioId; world: World }> = ({
   studioId,
   world
 }) => {
-  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composerDispatch } = useContext(ComposerContext)
 
   const [defaultLayout] = useState<LayoutData>({
     dockbox: {
@@ -82,8 +85,9 @@ const WorldInspector: React.FC<{ studioId: StudioId; world: World }> = ({
                               )
 
                               character.id &&
-                                editorDispatch({
-                                  type: COMPOSER_ACTION_TYPE.OPEN_CHARACTER_MODAL,
+                                composerDispatch({
+                                  type:
+                                    COMPOSER_ACTION_TYPE.OPEN_CHARACTER_MODAL,
                                   characterId: character.id
                                 })
                             }

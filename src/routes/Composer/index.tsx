@@ -10,7 +10,10 @@ import { ELEMENT_TYPE } from '../../data/types'
 import { useWorld } from '../../hooks'
 
 import { AppContext, APP_LOCATION } from '../../contexts/AppContext'
-import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../contexts/ComposerContext'
 
 import { DividerBox } from 'rc-dock'
 
@@ -20,11 +23,11 @@ import ElementInspector from '../../components/ElementInspector'
 
 import styles from './styles.module.less'
 
-const Editor: React.FC = () => {
+const Composer: React.FC = () => {
   const history = useHistory()
 
   const { app } = useContext(AppContext),
-    { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
+    { composer, composerDispatch } = useContext(ComposerContext)
 
   const selectedWorld =
     app.selectedStudioId && app.selectedWorldId
@@ -32,12 +35,12 @@ const Editor: React.FC = () => {
       : undefined
 
   function closeActiveTab() {
-    if (editor.selectedWorldOutlineElement.type !== ELEMENT_TYPE.WORLD) {
-      editorDispatch({
+    if (composer.selectedWorldOutlineElement.type !== ELEMENT_TYPE.WORLD) {
+      composerDispatch({
         type: COMPOSER_ACTION_TYPE.ELEMENT_EDITOR_CLOSE_TAB,
         closedEditorTab: {
-          id: editor.selectedWorldOutlineElement.id,
-          type: editor.selectedWorldOutlineElement.type
+          id: composer.selectedWorldOutlineElement.id,
+          type: composer.selectedWorldOutlineElement.type
         }
       })
     }
@@ -47,14 +50,14 @@ const Editor: React.FC = () => {
     ipcRenderer.removeAllListeners(WINDOW_EVENT_TYPE.CLOSE_TAB_OR_WINDOW)
 
     ipcRenderer.on(WINDOW_EVENT_TYPE.CLOSE_TAB_OR_WINDOW, closeActiveTab)
-  }, [editor.selectedWorldOutlineElement])
+  }, [composer.selectedWorldOutlineElement])
 
   useEffect(() => {
     logger.info(`Editor->selectedWorld->useEffect`)
 
     selectedWorld?.id &&
-      !editor.selectedWorldOutlineElement.id &&
-      editorDispatch({
+      !composer.selectedWorldOutlineElement.id &&
+      composerDispatch({
         type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
         selectedWorldOutlineElement: {
           id: selectedWorld.id,
@@ -80,8 +83,8 @@ const Editor: React.FC = () => {
 
       {/* Editor */}
       {app.selectedStudioId && selectedWorld && (
-        <DividerBox mode="horizontal" className={styles.editor}>
-          <DividerBox mode="vertical" className={styles.gameOutlinePanel}>
+        <DividerBox mode="horizontal" className={styles.Composer}>
+          <DividerBox mode="vertical" className={styles.worldOutlinePanel}>
             <WorldInspector
               studioId={app.selectedStudioId}
               world={selectedWorld}
@@ -105,4 +108,6 @@ const Editor: React.FC = () => {
   )
 }
 
-export default Editor
+Composer.displayName = 'Composer'
+
+export default Composer

@@ -23,7 +23,7 @@ import {
   SET_OPERATOR_TYPE,
   COMPARE_OPERATOR_TYPE,
   FolderChildRefs,
-  GameChildRefs as WorldChildRefs,
+  WorldChildRefs,
   SceneParentRef,
   SceneChildRefs,
   ELEMENT_TYPE,
@@ -822,7 +822,7 @@ export class LibraryDatabase extends Dexie {
 
   public async getJumpsByEventRef(eventId: ElementId): Promise<Jump[]> {
     try {
-      return await this.jumps.where({ eventId }).toArray()
+      return await this.jumps.where({ path: eventId }).toArray()
     } catch (error) {
       throw error
     }

@@ -31,7 +31,7 @@ const JumpDetails: React.FC<{
                   })
 
                   // TODO: This is not yet needed.
-                  // editorDispatch({
+                  // composerDispatch({
                   //   type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
                   //   renamedElement: {
                   //     id: jump.id,

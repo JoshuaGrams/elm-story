@@ -10,7 +10,10 @@ import {
   ENGINE_DEVTOOLS_EVENT_TYPE
 } from '../../lib/transport/types/0.5.1'
 
-import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../contexts/ComposerContext'
 
 import Runtime from './embeded/Runtime'
 
@@ -18,7 +21,7 @@ const Storyteller: React.FC<{
   studioId: StudioId
   worldId: WorldId
 }> = React.memo(({ studioId, worldId }) => {
-  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composerDispatch } = useContext(ComposerContext)
 
   const runtimeWrapperRef = useRef<HTMLDivElement>(null)
 
@@ -36,7 +39,7 @@ const Storyteller: React.FC<{
             const scene = await api().scenes.getScene(studioId, passage.sceneId)
 
             if (scene?.id) {
-              editorDispatch({
+              composerDispatch({
                 type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
                 selectedWorldOutlineElement: {
                   expanded: true,
@@ -50,9 +53,8 @@ const Storyteller: React.FC<{
               setTimeout(
                 () =>
                   detail.eventId &&
-                  editorDispatch({
-                    type:
-                      COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+                  composerDispatch({
+                    type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
                     selectedSceneMapEvent: detail.eventId
                   }),
                 1

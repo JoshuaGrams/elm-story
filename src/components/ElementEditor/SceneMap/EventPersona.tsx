@@ -20,7 +20,7 @@ const EventPersonaPane: React.FC<{
 }> = ({ studioId, worldId, persona }) => {
   const character = useCharacter(studioId, persona?.[0], [persona?.[0]])
 
-  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composerDispatch } = useContext(ComposerContext)
 
   const [maskAssetId, setMaskAssetId] = useState<string | undefined>(undefined),
     [refValue, setRefValue] = useState<string | undefined>(undefined)
@@ -66,7 +66,7 @@ const EventPersonaPane: React.FC<{
                   className={`${styles.title} nodrag`}
                   onClick={() =>
                     character.id &&
-                    editorDispatch({
+                    composerDispatch({
                       type: COMPOSER_ACTION_TYPE.OPEN_CHARACTER_MODAL,
                       characterId: character.id
                     })

@@ -140,16 +140,16 @@ export async function switchEventFromChoiceToInputType(
 ) {
   if (event && event.id) {
     try {
-      const foundPassthroughRoutes = await api().paths.getPassthroughRoutesByEventsRef(
+      const foundPassthroughPaths = await api().paths.getPassthroughPathsByEventRef(
         studioId,
         event.id
       )
 
       await Promise.all([
-        foundPassthroughRoutes.map(async (foundRoute) => {
-          foundRoute.id &&
-            foundRoute.choiceId === undefined &&
-            api().paths.removeRoute(studioId, foundRoute.id)
+        foundPassthroughPaths.map(async (foundPath) => {
+          foundPath.id &&
+            foundPath.choiceId === undefined &&
+            api().paths.removePath(studioId, foundPath.id)
         }),
         event.choices.map(
           async (choiceId) =>

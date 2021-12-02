@@ -13,7 +13,7 @@ import styles from './styles.module.less'
 const TabToolbar: React.FC<{
   component: { type: ELEMENT_TYPE; data: World | Scene | undefined }
 }> = ({ children, component }) => {
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   return (
     <div
@@ -23,9 +23,9 @@ const TabToolbar: React.FC<{
           component.type === ELEMENT_TYPE.SCENE &&
           component.data &&
           component.data.id &&
-          component.data.id !== editor.selectedWorldOutlineElement.id
+          component.data.id !== composer.selectedWorldOutlineElement.id
         ) {
-          editorDispatch({
+          composerDispatch({
             type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
             selectedWorldOutlineElement: {
               id: component.data.id,

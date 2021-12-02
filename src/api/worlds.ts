@@ -6,7 +6,7 @@ import {
   World,
   WorldId,
   ElementId,
-  GameChildRefs as WorldChildRefs
+  WorldChildRefs
 } from '../data/types'
 
 import api from '.'

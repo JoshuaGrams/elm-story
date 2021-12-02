@@ -13,7 +13,10 @@ import {
 
 import { useJump, useEventsBySceneRef, useScenes } from '../../hooks'
 
-import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../contexts/ComposerContext'
 
 import { Button, Divider, Select } from 'antd'
 import { RollbackOutlined } from '@ant-design/icons'
@@ -60,12 +63,10 @@ const JumpSelect: React.FC<{
   }, [scenes, selectedId])
 
   useEffect(() => {
-    logger.info(`JumpSelect->passages->useEffect`)
+    logger.info(`JumpSelect->events->useEffect`)
 
     events &&
-      setSelectedEventId(
-        events.find((passage) => passage.id === selectedId)?.id
-      )
+      setSelectedEventId(events.find((event) => event.id === selectedId)?.id)
   }, [events, selectedId])
 
   // TODO: abstract
@@ -161,7 +162,7 @@ const JumpTo: React.FC<{
 }> = ({ studioId, jumpId, onRemove }) => {
   const jump = useJump(studioId, jumpId, [studioId, jumpId])
 
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   async function onChangeRoutePart(
     componentType: ELEMENT_TYPE,
@@ -171,19 +172,17 @@ const JumpTo: React.FC<{
       switch (componentType) {
         case ELEMENT_TYPE.SCENE:
           componentId &&
-            (await api().jumps.saveJumpRoute(studioId, jump.id, [componentId]))
+            (await api().jumps.saveJumpPath(studioId, jump.id, [componentId]))
 
           if (!componentId) {
-            if (editor.selectedSceneMapJump) {
-              editorDispatch({
-                type:
-                  COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
+            if (composer.selectedSceneMapJump) {
+              composerDispatch({
+                type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
                 totalSceneMapSelectedJumps: 0
               })
 
-              editorDispatch({
-                type:
-                  COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+              composerDispatch({
+                type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
                 selectedSceneMapJump: null
               })
             }
@@ -196,7 +195,7 @@ const JumpTo: React.FC<{
           }
           break
         case ELEMENT_TYPE.EVENT:
-          await api().jumps.saveJumpRoute(
+          await api().jumps.saveJumpPath(
             studioId,
             jump.id,
             componentId ? [jump.path[0], componentId] : [jump.path[0]]

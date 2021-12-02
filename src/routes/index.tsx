@@ -5,7 +5,7 @@ import { Switch, Route } from 'react-router-dom'
 import ComposerProvider from '../contexts/ComposerContext'
 
 import Dashboard from './Dashboard'
-import Editor from './Editor'
+import Composer from './Composer'
 
 import styles from './styles.module.less'
 
@@ -15,7 +15,7 @@ const Routes: React.FC = () => (
       <Switch>
         <Route path="/editor">
           <ComposerProvider>
-            <Editor />
+            <Composer />
           </ComposerProvider>
         </Route>
         <Route path="/">

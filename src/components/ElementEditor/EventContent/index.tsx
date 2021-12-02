@@ -82,7 +82,7 @@ export const PassageViewTools: React.FC<{
 }> = ({ studioId, eventId }) => {
   const event = useEvent(studioId, eventId, [studioId, eventId])
 
-  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composerDispatch } = useContext(ComposerContext)
 
   return (
     <div>
@@ -90,7 +90,7 @@ export const PassageViewTools: React.FC<{
         <Button
           danger
           onClick={async () => {
-            editorDispatch({
+            composerDispatch({
               type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
               removedElement: { type: ELEMENT_TYPE.EVENT, id: eventId }
             })
@@ -180,7 +180,7 @@ const EventView: React.FC<{
 
   const isFocused = useFocused()
 
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   const [passageContent, setPassageContent] = useState<Descendant[]>(
       initialPassageContent
@@ -235,7 +235,7 @@ const EventView: React.FC<{
   }, [])
 
   function close() {
-    if (editor.selectedWorldOutlineElement.id === scene.id || !scene.id)
+    if (composer.selectedWorldOutlineElement.id === scene.id || !scene.id)
       onClose()
   }
 
@@ -251,7 +251,7 @@ const EventView: React.FC<{
         }
       }
     },
-    [editor.selectedWorldOutlineElement.id, scene, passageContent]
+    [composer.selectedWorldOutlineElement.id, scene, passageContent]
   )
 
   const saveContent = debounce(
@@ -346,8 +346,8 @@ const EventView: React.FC<{
           <div
             className={styles.PassageView}
             onClick={() =>
-              editor.selectedWorldOutlineElement.id !== scene.id &&
-              editorDispatch({
+              composer.selectedWorldOutlineElement.id !== scene.id &&
+              composerDispatch({
                 type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
                 selectedWorldOutlineElement: {
                   expanded: true,

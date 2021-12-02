@@ -42,7 +42,7 @@ const ElementItem = ({
   onRemove: OnRemoveElement
   OnEditElementTitle: OnEditElementTitle
 }) => {
-  const { composer: editor } = useContext(ComposerContext)
+  const { composer } = useContext(ComposerContext)
 
   const elementType: ELEMENT_TYPE = item.data.type,
     elementTitle: string = item.data.title
@@ -77,7 +77,7 @@ const ElementItem = ({
 
   if (item.data.selected && !snapshot.isDragging)
     compositeSelectionStyles.push(styles.selected)
-  if (item.id === editor.selectedSceneMapEvent)
+  if (item.id === composer.selectedSceneMapEvent)
     compositeSelectionStyles.push(styles.sceneComponentSelected)
 
   return (

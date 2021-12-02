@@ -16,7 +16,7 @@ const ElementProperties: React.FC<{
   studioId: StudioId
   worldId: WorldId | undefined
 }> = ({ studioId, worldId = undefined }) => {
-  const { composer: editor } = useContext(ComposerContext)
+  const { composer } = useContext(ComposerContext)
 
   const selectedWorld: World | undefined = worldId
     ? useWorld(studioId, worldId)
@@ -25,15 +25,15 @@ const ElementProperties: React.FC<{
   useEffect(() => {
     logger.info(
       `ElementProperties->editor.selectedWorldOutlineElement->
-       useEffect:${editor.selectedWorldOutlineElement.type}`
+       useEffect:${composer.selectedWorldOutlineElement.type}`
     )
-  }, [editor.selectedWorldOutlineElement])
+  }, [composer.selectedWorldOutlineElement])
 
   return (
     <div className={styles.componentProperties}>
       {selectedWorld?.id &&
-        (!editor.selectedWorldOutlineElement.id ||
-          !editor.selectedWorldOutlineElement.type) && (
+        (!composer.selectedWorldOutlineElement.id ||
+          !composer.selectedWorldOutlineElement.type) && (
           <ComponentDetailView
             studioId={studioId}
             element={{
@@ -43,13 +43,13 @@ const ElementProperties: React.FC<{
           />
         )}
 
-      {editor.selectedWorldOutlineElement.id &&
-        editor.selectedWorldOutlineElement.type && (
+      {composer.selectedWorldOutlineElement.id &&
+        composer.selectedWorldOutlineElement.type && (
           <ComponentDetailView
             studioId={studioId}
             element={{
-              id: editor.selectedWorldOutlineElement.id,
-              type: editor.selectedWorldOutlineElement.type
+              id: composer.selectedWorldOutlineElement.id,
+              type: composer.selectedWorldOutlineElement.type
             }}
           />
         )}

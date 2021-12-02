@@ -51,7 +51,7 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
       (actions) => actions.setSelectedElements
     )
 
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   return (
     <div className={styles.jumpNode} key={jump?.id}>
@@ -70,35 +70,28 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
             <div
               className={`${styles.jumpToContainer}`}
               onMouseDown={() => {
-                if (
-                  jump.id &&
-                  editor.selectedSceneMapJump !== jump.id
-                ) {
+                if (jump.id && composer.selectedSceneMapJump !== jump.id) {
                   setSelectedElement([
                     cloneDeep(jumps.find((jumpNode) => jumpNode.id === jump.id))
                   ])
 
-                  editorDispatch({
-                    type:
-                      COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
+                  composerDispatch({
+                    type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
                     totalSceneMapSelectedJumps: 1
                   })
 
-                  editorDispatch({
-                    type:
-                      COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+                  composerDispatch({
+                    type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
                     selectedSceneMapJump: jump.id
                   })
 
-                  editorDispatch({
-                    type:
-                      COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+                  composerDispatch({
+                    type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
                     selectedSceneMapEvent: null
                   })
 
-                  editorDispatch({
-                    type:
-                      COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
+                  composerDispatch({
+                    type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
                     selectedSceneMapChoice: null
                   })
                 }

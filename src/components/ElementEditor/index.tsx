@@ -11,7 +11,10 @@ import {
   StudioId
 } from '../../data/types'
 
-import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../contexts/ComposerContext'
 
 import { ReactFlowProvider } from 'react-flow-renderer'
 
@@ -175,7 +178,7 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
       }
     ])
 
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   function onLayoutChange(
     newLayout: LayoutBase,
@@ -235,7 +238,7 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
       // Removing tab
       if (
         direction === 'remove' &&
-        changingTabId === editor.selectedWorldOutlineElement.id
+        changingTabId === composer.selectedWorldOutlineElement.id
       ) {
         logger.info(`Removing tab`)
 
@@ -245,14 +248,14 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
 
         setTabs(clonedTabs)
 
-        editor.selectedSceneMapEvent &&
-          editorDispatch({
+        composer.selectedSceneMapEvent &&
+          composerDispatch({
             type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
             selectedSceneMapEvent: null
           })
 
-        editor.selectedSceneMapJump &&
-          editorDispatch({
+        composer.selectedSceneMapJump &&
+          composerDispatch({
             type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
             selectedSceneMapJump: null
           })
@@ -270,7 +273,7 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
               clonedTabs.find((clonedTab) => clonedTab.id === tabToSelectId)) ||
             undefined
 
-        editorDispatch({
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
           selectedWorldOutlineElement: {
             id: tabToSelect?.id || world.id,
@@ -284,14 +287,14 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
       // Not removing tab
       if (
         direction !== 'remove' &&
-        changingTabId !== editor.selectedWorldOutlineElement.id &&
-        !editor.renamedElement.id
+        changingTabId !== composer.selectedWorldOutlineElement.id &&
+        !composer.renamedElement.id
       ) {
         logger.info(`Not removing tab`)
 
         // Keep the event selected in WorldOutline
         // if (editor.selectedWorldOutlineElement.type !== ELEMENT_TYPE.EVENT)
-        editorDispatch({
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
           selectedWorldOutlineElement:
             clonedTabIndex !== -1 ? cloneDeep(tabs[clonedTabIndex]) : {}
@@ -301,16 +304,16 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
         if (
           clonedTabIndex !== -1 &&
           tabs[clonedTabIndex].type === ELEMENT_TYPE.WORLD &&
-          editor.selectedSceneMapEvent
+          composer.selectedSceneMapEvent
         )
-          editorDispatch({
+          composerDispatch({
             type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
             selectedSceneMapEvent: null
           })
       }
 
-      if (editor.renamedElement.id) {
-        editorDispatch({
+      if (composer.renamedElement.id) {
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
           renamedElement: {}
         })
@@ -319,7 +322,7 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
   }
 
   useEffect(() => {
-    const selectedElement = editor.selectedWorldOutlineElement
+    const selectedElement = composer.selectedWorldOutlineElement
 
     async function findTabAndOpen() {
       if (dockLayout.current && selectedElement.id && activePanelId) {
@@ -398,16 +401,16 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
     )
 
     findTabAndOpen()
-  }, [editor.selectedWorldOutlineElement.id])
+  }, [composer.selectedWorldOutlineElement.id])
 
   useEffect(() => {
     if (
       dockLayout.current &&
-      editor.renamedElement.id &&
-      editor.renamedElement.newTitle
+      composer.renamedElement.id &&
+      composer.renamedElement.newTitle
     ) {
       const tabToUpdate = cloneDeep(
-        dockLayout.current.find(editor.renamedElement.id)
+        dockLayout.current.find(composer.renamedElement.id)
       ) as TabData | undefined
 
       logger.info(`ElementEditor->editor.renamedElement->useEffect`)
@@ -415,16 +418,16 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
       if (tabToUpdate) {
         const clonedTabs = cloneDeep(tabs),
           foundTab = clonedTabs.find(
-            (clonedTab) => clonedTab.id === editor.renamedElement.id
+            (clonedTab) => clonedTab.id === composer.renamedElement.id
           )
 
         if (foundTab) {
-          foundTab.title = editor.renamedElement.newTitle
+          foundTab.title = composer.renamedElement.newTitle
 
           tabToUpdate.title = getTabTitle(
             {
               ...foundTab,
-              title: editor.renamedElement.newTitle
+              title: composer.renamedElement.newTitle
             },
             (componentId: ElementId) => {
               const tabToRemove = dockLayout.current?.find(componentId) as
@@ -458,9 +461,9 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
           setTimeout(
             () =>
               dockLayout.current &&
-              editor.renamedElement.id &&
+              composer.renamedElement.id &&
               dockLayout.current.updateTab(
-                editor.renamedElement.id,
+                composer.renamedElement.id,
                 tabToUpdate,
                 false
               ),
@@ -469,30 +472,30 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
         }
       }
     }
-  }, [editor.renamedElement])
+  }, [composer.renamedElement])
 
   useEffect(() => {
     async function removeTabs() {
-      if (!dockLayout.current || !editor.removedElement.id) return
+      if (!dockLayout.current || !composer.removedElement.id) return
 
       let scenesById: ElementId[] =
-          editor.removedElement.type === ELEMENT_TYPE.SCENE
-            ? [editor.removedElement.id]
+          composer.removedElement.type === ELEMENT_TYPE.SCENE
+            ? [composer.removedElement.id]
             : [],
         eventsById: ElementId[] = []
 
       const clonedTabs = cloneDeep(tabs)
 
-      if (editor.removedElement.type === ELEMENT_TYPE.FOLDER) {
+      if (composer.removedElement.type === ELEMENT_TYPE.FOLDER) {
         scenesById = (
           await api().folders.getChildRefsByFolderRef(
             studioId,
-            editor.removedElement.id
+            composer.removedElement.id
           )
         ).map((child) => child[1])
       }
 
-      if (editor.removedElement.type === ELEMENT_TYPE.SCENE) {
+      if (composer.removedElement.type === ELEMENT_TYPE.SCENE) {
         await Promise.all(
           scenesById.map(async (sceneId) => {
             eventsById = [
@@ -537,7 +540,7 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
         }
       })
 
-      const foundTab = dockLayout.current.find(editor.removedElement.id)
+      const foundTab = dockLayout.current.find(composer.removedElement.id)
 
       if (foundTab?.parent?.id) {
         // @ts-ignore rc-dock #75
@@ -545,7 +548,7 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
 
         clonedTabs.splice(
           clonedTabs.findIndex(
-            (clonedTab) => clonedTab.id === editor.removedElement.id
+            (clonedTab) => clonedTab.id === composer.removedElement.id
           ),
           1
         )
@@ -553,24 +556,24 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
     }
 
     removeTabs()
-  }, [editor.removedElement])
+  }, [composer.removedElement])
 
   useEffect(() => {
     logger.info(`ElementEditor->editor.closedEditorTab->useEffect`)
 
-    if (editor.closedEditorTab.id && dockLayout.current) {
-      const foundTab = dockLayout.current.find(editor.closedEditorTab.id) as
+    if (composer.closedEditorTab.id && dockLayout.current) {
+      const foundTab = dockLayout.current.find(composer.closedEditorTab.id) as
         | TabData
         | undefined
 
       foundTab && dockLayout.current.dockMove(foundTab, null, 'remove')
 
-      editorDispatch({
+      composerDispatch({
         type: COMPOSER_ACTION_TYPE.ELEMENT_EDITOR_CLOSE_TAB,
         closedEditorTab: {}
       })
     }
-  }, [editor.closedEditorTab])
+  }, [composer.closedEditorTab])
 
   return (
     <>

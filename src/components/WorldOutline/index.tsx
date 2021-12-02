@@ -1,6 +1,6 @@
 import logger from '../../lib/logger'
 import { cloneDeep } from 'lodash-es'
-import createGameOutlineTreeData from '../../lib/createGameOutlineTreeData'
+import createWorldOutlineTreeData from '../../lib/createWorldOutlineTreeData'
 
 import React, { useContext, useEffect, useState } from 'react'
 
@@ -15,7 +15,10 @@ import {
 } from '../../data/types'
 import { DEFAULT_NODE_SIZE } from '../ElementEditor/SceneMap'
 
-import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../contexts/ComposerContext'
 
 import Tree, {
   mutateTree,
@@ -41,7 +44,7 @@ import api from '../../api'
 
 export type OnSelectElement = (elementId: ElementId) => void
 export type OnAddElement = (
-  parentComponentId: ElementId,
+  parentElementId: ElementId,
   childType: ELEMENT_TYPE
 ) => void
 export type OnRemoveElement = (elementId: ElementId) => void
@@ -115,7 +118,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
   studioId,
   world
 }) => {
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   const [treeData, setTreeData] = useState<TreeData | undefined>(undefined),
     [movingElementId, setMovingElementId] = useState<string | undefined>(
@@ -135,17 +138,17 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
   function onDragStart(itemId: React.ReactText) {
     logger.info(`WorldOutline->onDragStart->${itemId}`)
 
-    if (treeData && editor.renamingWorldOutlineElement.id) {
+    if (treeData && composer.renamingWorldOutlineElement.id) {
       setTreeData(
-        mutateTree(treeData, editor.renamingWorldOutlineElement.id, {
+        mutateTree(treeData, composer.renamingWorldOutlineElement.id, {
           data: {
-            ...treeData.items[editor.renamingWorldOutlineElement.id].data,
+            ...treeData.items[composer.renamingWorldOutlineElement.id].data,
             renaming: false
           }
         })
       )
 
-      editorDispatch({
+      composerDispatch({
         type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_RENAME,
         renamingWorldOutlineElement: { id: undefined, renaming: false }
       })
@@ -199,12 +202,12 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
       newTreeData.items[movingElement.id].data.parentId = destinationParent.id
       newTreeData.items[movingElement.id].data.selected =
-        editor.selectedWorldOutlineElement.id === movingElement.id
+        composer.selectedWorldOutlineElement.id === movingElement.id
 
       setTreeData(newTreeData)
 
-      editor.selectedWorldOutlineElement.id === movingElement.id &&
-        editorDispatch({
+      composer.selectedWorldOutlineElement.id === movingElement.id &&
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
           selectedWorldOutlineElement: {
             id: movingElement.id as string,
@@ -213,6 +216,8 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
             title: movingElement.data.title
           }
         })
+
+      console.log('bp1')
 
       if (world.id) {
         try {
@@ -350,6 +355,8 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
               break
             case ELEMENT_TYPE.EVENT:
+              console.log('bp2')
+
               if (sourceParent.id !== destinationParent.id) {
                 const jumps = await api().jumps.getJumpsByEventRef(
                   studioId,
@@ -360,7 +367,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                   jumps.map(
                     async (jump) =>
                       jump.id &&
-                      (await api().jumps.saveJumpRoute(studioId, jump.id, [
+                      (await api().jumps.saveJumpPath(studioId, jump.id, [
                         jump.path[0],
                         jump.path[1]
                       ]))
@@ -409,23 +416,23 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
       }
     } else if (movingElement) {
       logger.info(
-        `Unable to move component type '${movingElement.data.type}' to type '${destinationParent.data.type}'`
+        `Unable to move element type '${movingElement.data.type}' to type '${destinationParent.data.type}'`
       )
     }
   }
 
-  function onSelect(componentId: ElementId) {
+  function onSelect(elementId: ElementId) {
     if (treeData) {
       const {
         id,
         data: { type, title, parentId }
-      } = treeData.items[componentId]
+      } = treeData.items[elementId]
 
       if (type === ELEMENT_TYPE.EVENT) {
         const parentItem = treeData.items[parentId]
 
-        if (editor.selectedWorldOutlineElement.id !== parentItem.id)
-          editorDispatch({
+        if (composer.selectedWorldOutlineElement.id !== parentItem.id)
+          composerDispatch({
             type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
             selectedWorldOutlineElement: {
               id: parentItem.id as ElementId,
@@ -435,12 +442,12 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
             }
           })
 
-        if (editor.selectedSceneMapEvent !== id)
+        if (composer.selectedSceneMapEvent !== id)
           // TODO: prevent infinite loop when selecting an unselected in an unselected scene
           // from a selected scene by hacking event stackO__O
           setTimeout(
             () =>
-              editorDispatch({
+              composerDispatch({
                 type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
                 selectedSceneMapEvent: id as ElementId
               }),
@@ -450,20 +457,20 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
       if (type !== ELEMENT_TYPE.EVENT) {
         if (ELEMENT_TYPE.WORLD || ELEMENT_TYPE.FOLDER) {
-          editor.selectedSceneMapEvent &&
-            editorDispatch({
+          composer.selectedSceneMapEvent &&
+            composerDispatch({
               type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
               selectedSceneMapEvent: null
             })
 
-          editor.selectedSceneMapJump &&
-            editorDispatch({
+          composer.selectedSceneMapJump &&
+            composerDispatch({
               type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
               selectedSceneMapJump: null
             })
         }
 
-        editorDispatch({
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
           selectedWorldOutlineElement: {
             id: id as ElementId,
@@ -476,16 +483,16 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
     }
   }
 
-  async function onAdd(parentComponentId: ElementId, childType: ELEMENT_TYPE) {
-    const parentItem = treeData?.items[parentComponentId]
+  async function onAdd(parentElementId: ElementId, childType: ELEMENT_TYPE) {
+    const parentItem = treeData?.items[parentElementId]
 
     if (treeData && parentItem && world.id) {
       const data = parentItem.data
       let newTreeData: TreeData
 
-      if (editor.selectedWorldOutlineElement.id)
+      if (composer.selectedWorldOutlineElement.id)
         treeData.items[
-          editor.selectedWorldOutlineElement.id
+          composer.selectedWorldOutlineElement.id
         ].data.selected = false
 
       switch (data.type) {
@@ -556,7 +563,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
             setTreeData(newTreeData)
 
-            editorDispatch({
+            composerDispatch({
               type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
               selectedWorldOutlineElement: {
                 id: childId,
@@ -639,7 +646,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
             setTreeData(newTreeData)
 
-            editorDispatch({
+            composerDispatch({
               type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
               selectedWorldOutlineElement: {
                 id: childId,
@@ -651,20 +658,20 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
           }
 
           break
-        // add passage
+        // add event
         case ELEMENT_TYPE.SCENE:
-          let passage = undefined
+          let event = undefined
 
           try {
-            passage = await api().events.saveEvent(studioId, {
+            event = await api().events.saveEvent(studioId, {
               choices: [],
               content: JSON.stringify([...DEFAULT_EVENT_CONTENT]),
               editor: {
                 componentEditorPosX:
-                  editor.selectedSceneMapCenter.x -
+                  composer.selectedSceneMapCenter.x -
                   DEFAULT_NODE_SIZE.EVENT_WIDTH / 2,
                 componentEditorPosY:
-                  editor.selectedSceneMapCenter.y -
+                  composer.selectedSceneMapCenter.y -
                   DEFAULT_NODE_SIZE.EVENT_HEIGHT / 2
               },
               ending: false,
@@ -680,7 +687,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
           parentItem.hasChildren = true
 
-          if (passage.id) {
+          if (event.id) {
             try {
               // #414
               const sceneChildren: SceneChildRefs = treeData.items[
@@ -693,21 +700,21 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
               await api().scenes.saveChildRefsToScene(
                 studioId,
                 parentItem.id as ElementId,
-                [...sceneChildren, [ELEMENT_TYPE.EVENT, passage.id]]
+                [...sceneChildren, [ELEMENT_TYPE.EVENT, event.id]]
               )
             } catch (error) {
               throw error
             }
 
-            editorDispatch({
+            composerDispatch({
               type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
-              selectedSceneMapEvent: passage.id
+              selectedSceneMapEvent: event.id
             })
 
-            editorDispatch({
+            composerDispatch({
               type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
               savedElement: {
-                id: passage.id,
+                id: event.id,
                 type: ELEMENT_TYPE.EVENT
               }
             })
@@ -718,7 +725,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
           break
       }
 
-      logger.info(`adding component to tree with id '${parentComponentId}'`)
+      logger.info(`adding element to tree with id '${parentElementId}'`)
     }
   }
 
@@ -734,24 +741,23 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
       if (
         (data.type === ELEMENT_TYPE.EVENT &&
-          item.id === editor.selectedSceneMapEvent) ||
+          item.id === composer.selectedSceneMapEvent) ||
         (data.type === ELEMENT_TYPE.SCENE &&
-          editor.selectedSceneMapEvent &&
-          item.children.includes(editor.selectedSceneMapEvent))
+          composer.selectedSceneMapEvent &&
+          item.children.includes(composer.selectedSceneMapEvent))
       ) {
-        editorDispatch({
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
           selectedSceneMapEvent: null
         })
 
-        editorDispatch({
-          type:
-            COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_EVENTS,
+        composerDispatch({
+          type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_EVENTS,
           totalSceneMapSelectedEvents: 0
         })
       }
 
-      editorDispatch({
+      composerDispatch({
         type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
         removedElement: { id: componentId, type: data.type }
       })
@@ -861,7 +867,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
         }
 
         // TODO: updating DB could fail; cache name if need revert on error
-        editorDispatch({
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
           renamedElement: {
             id: componentId,
@@ -870,13 +876,13 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
         })
 
         if (
-          componentId === editor.selectedWorldOutlineElement.id &&
-          title !== editor.selectedWorldOutlineElement.title
+          componentId === composer.selectedWorldOutlineElement.id &&
+          title !== composer.selectedWorldOutlineElement.title
         ) {
-          editorDispatch({
+          composerDispatch({
             type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
             selectedWorldOutlineElement: {
-              ...editor.selectedWorldOutlineElement,
+              ...composer.selectedWorldOutlineElement,
               title: title || treeData.items[componentId].data.title
             }
           })
@@ -890,7 +896,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
           })
         )
 
-        editorDispatch({
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_RENAME,
           renamingWorldOutlineElement: { id: componentId, renaming: true }
         })
@@ -902,29 +908,29 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
     if (treeData) {
       const clonedTreeData = cloneDeep(treeData)
 
-      Object.entries(clonedTreeData.items).map(([componentId, component]) => {
-        if (editor.renamingWorldOutlineElement.id) {
-          component.data.renaming = false
+      Object.entries(clonedTreeData.items).map(([elementId, element]) => {
+        if (composer.renamingWorldOutlineElement.id) {
+          element.data.renaming = false
 
-          editorDispatch({
+          composerDispatch({
             type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_RENAME,
             renamingWorldOutlineElement: { id: undefined, renaming: false }
           })
         }
 
-        component.isExpanded =
-          componentId === editor.selectedWorldOutlineElement.id ||
-          clonedTreeData.items[componentId].isExpanded
+        element.isExpanded =
+          elementId === composer.selectedWorldOutlineElement.id ||
+          clonedTreeData.items[elementId].isExpanded
 
         if (
-          componentId &&
-          editor.selectedWorldOutlineElement.id &&
-          componentId === editor.selectedWorldOutlineElement.id
+          elementId &&
+          composer.selectedWorldOutlineElement.id &&
+          elementId === composer.selectedWorldOutlineElement.id
         ) {
-          component.data.title = editor.selectedWorldOutlineElement.title
-          component.data.selected = true
+          element.data.title = composer.selectedWorldOutlineElement.title
+          element.data.selected = true
         } else {
-          component.data.selected = false
+          element.data.selected = false
         }
       })
 
@@ -933,20 +939,20 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
   }
 
   const selectStoryworld = () => {
-    editor.selectedSceneMapEvent &&
-      editorDispatch({
+    composer.selectedSceneMapEvent &&
+      composerDispatch({
         type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
         selectedSceneMapEvent: null
       })
 
-    editor.selectedSceneMapJump &&
-      editorDispatch({
+    composer.selectedSceneMapJump &&
+      composerDispatch({
         type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
         selectedSceneMapJump: null
       })
 
-    editor.selectedWorldOutlineElement.id !== world.id &&
-      editorDispatch({
+    composer.selectedWorldOutlineElement.id !== world.id &&
+      composerDispatch({
         type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
         selectedWorldOutlineElement: {
           id: world.id,
@@ -957,15 +963,15 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
       })
   }
 
-  useEffect(selectComponent, [editor.selectedWorldOutlineElement])
+  useEffect(selectComponent, [composer.selectedWorldOutlineElement])
 
   useEffect(() => {
     async function updateTree() {
       logger.info('WorldOutline->editor.savedElement effect')
 
       // TODO: Can't we do this better? *hic*
-      if (treeData && editor.savedElement.id) {
-        const { id, type } = editor.savedElement
+      if (treeData && composer.savedElement.id) {
+        const { id, type } = composer.savedElement
 
         switch (type) {
           case ELEMENT_TYPE.EVENT:
@@ -992,11 +998,11 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
               setTreeData(newTreeData)
 
-              if (editor.selectedWorldOutlineElement.id !== passage.sceneId) {
+              if (composer.selectedWorldOutlineElement.id !== passage.sceneId) {
                 const parentScene = treeData.items[passage.sceneId]
 
                 // TODO: sets tree data twice
-                editorDispatch({
+                composerDispatch({
                   type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
                   selectedWorldOutlineElement: {
                     id: parentScene.id as ElementId,
@@ -1015,45 +1021,45 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
     }
 
     updateTree()
-  }, [editor.savedElement])
+  }, [composer.savedElement])
 
   useEffect(() => {
     logger.info(
       `WorldOutline->editor.renamedElement->useEffect->
-       id:${editor.renamedElement.id} newTitle:'${editor.renamedElement.newTitle}'`
+       id:${composer.renamedElement.id} newTitle:'${composer.renamedElement.newTitle}'`
     )
 
     if (
       treeData &&
-      editor.renamedElement.id &&
-      editor.renamedElement.newTitle
+      composer.renamedElement.id &&
+      composer.renamedElement.newTitle
     ) {
       setTreeData(
-        mutateTree(treeData, editor.renamedElement.id, {
+        mutateTree(treeData, composer.renamedElement.id, {
           data: {
-            ...treeData.items[editor.renamedElement.id].data,
+            ...treeData.items[composer.renamedElement.id].data,
             title:
-              editor.renamedElement.newTitle ||
-              treeData.items[editor.renamedElement.id].data.title,
+              composer.renamedElement.newTitle ||
+              treeData.items[composer.renamedElement.id].data.title,
             renaming: false
           }
         })
       )
     }
-  }, [editor.renamedElement])
+  }, [composer.renamedElement])
 
   useEffect(() => {
     logger.info(`WorldOutline->editor.removedComponent->useEffect`)
 
-    if (treeData && editor.removedElement.id) {
+    if (treeData && composer.removedElement.id) {
       logger.info(
-        `Removing component from outline with ID: ${editor.removedElement.id}`
+        `Removing element from outline with ID: ${composer.removedElement.id}`
       )
 
-      setTreeData(removeItemFromTree(treeData, editor.removedElement.id))
+      setTreeData(removeItemFromTree(treeData, composer.removedElement.id))
 
-      if (editor.removedElement.type !== ELEMENT_TYPE.EVENT)
-        editorDispatch({
+      if (composer.removedElement.type !== ELEMENT_TYPE.EVENT)
+        composerDispatch({
           type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
           selectedWorldOutlineElement: {
             id: undefined,
@@ -1063,7 +1069,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
           }
         })
     }
-  }, [editor.removedElement])
+  }, [composer.removedElement])
 
   useEffect(() => {
     if (treeData) {
@@ -1082,7 +1088,9 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
           events = await api().events.getEventsByWorldRef(studioId, world.id)
 
         if (folders && scenes && events) {
-          setTreeData(createGameOutlineTreeData(world, folders, scenes, events))
+          setTreeData(
+            createWorldOutlineTreeData(world, folders, scenes, events)
+          )
         } else {
           throw new Error('Unable to build tree data.')
         }
@@ -1100,8 +1108,8 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
             studioId={studioId}
             world={world}
             onAdd={(_, childType: ELEMENT_TYPE) =>
-              editor.selectedWorldOutlineElement.id &&
-              onAdd(editor.selectedWorldOutlineElement.id, childType)
+              composer.selectedWorldOutlineElement.id &&
+              onAdd(composer.selectedWorldOutlineElement.id, childType)
             }
             onWorldSelect={selectStoryworld}
           />

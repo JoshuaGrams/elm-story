@@ -64,7 +64,7 @@ const WorldBox: React.FC<WorldBoxProps> = ({ studioId, world }) => {
           !world
             ? []
             : [
-                <Tooltip title="Remove Storyworld" mouseEnterDelay={1}>
+                <Tooltip title="Remove World" mouseEnterDelay={1}>
                   <DeleteOutlined
                     key="delete"
                     onClick={(event) => {
@@ -74,7 +74,7 @@ const WorldBox: React.FC<WorldBoxProps> = ({ studioId, world }) => {
                     }}
                   />
                 </Tooltip>,
-                <Tooltip title="Compose Storyworld" mouseEnterDelay={1}>
+                <Tooltip title="Edit World" mouseEnterDelay={1}>
                   <FormOutlined key="edit" />
                 </Tooltip>
               ]
@@ -102,7 +102,7 @@ const WorldBox: React.FC<WorldBoxProps> = ({ studioId, world }) => {
         }}
       >
         {!world && (
-          <Tooltip title="Create Storyworld" mouseEnterDelay={1}>
+          <Tooltip title="Create World" mouseEnterDelay={1}>
             <Button className={styles.addGameButton}>
               <PlusOutlined />
             </Button>

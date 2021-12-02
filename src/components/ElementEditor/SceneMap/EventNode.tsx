@@ -125,7 +125,7 @@ const ChoiceRow: React.FC<{
   const choice = useChoice(studioId, choiceId),
     outgoingPaths = usePathsByChoiceRef(studioId, choiceId)
 
-  const { composer: editor } = useContext(ComposerContext)
+  const { composer } = useContext(ComposerContext)
 
   const [renamingChoice, setRenamingChoice] = useState(false)
 
@@ -146,7 +146,7 @@ const ChoiceRow: React.FC<{
       className={`${styles.ChoiceRow} nodrag ${
         selected && styles.choiceSelected
       } ${
-        sceneId !== editor.selectedWorldOutlineElement.id && !showDivider
+        sceneId !== composer.selectedWorldOutlineElement.id && !showDivider
           ? styles.bottomRadius
           : ''
       }`}
@@ -401,7 +401,7 @@ const EventNode: React.FC<NodeProps<{
       (actions) => actions.setSelectedElements
     )
 
-  const { composer: editor, composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   const [choices, setChoices] = useState<
     { id: ElementId; title: string; handle: JSX.Element }[]
@@ -461,9 +461,9 @@ const EventNode: React.FC<NodeProps<{
 
   useEffect(() => {
     logger.info(
-      `EventNode->editor.selectedComponentEditorSceneViewChoice->useEffect->${editor.selectedSceneMapChoice}`
+      `EventNode->editor.selectedComponentEditorSceneViewChoice->useEffect->${composer.selectedSceneMapChoice}`
     )
-  }, [editor.selectedSceneMapChoice])
+  }, [composer.selectedSceneMapChoice])
 
   useEffect(() => {
     logger.info(`EventNode->useEffect->selectedChoice: ${data.selectedChoice}`)
@@ -484,15 +484,17 @@ const EventNode: React.FC<NodeProps<{
               style={{
                 overflow: 'hidden',
                 borderBottomLeftRadius:
-                  (editor.selectedSceneMapEvent === event.id &&
-                    editor.selectedWorldOutlineElement.id === event.sceneId) ||
+                  (composer.selectedSceneMapEvent === event.id &&
+                    composer.selectedWorldOutlineElement.id ===
+                      event.sceneId) ||
                   event.choices.length > 0 ||
                   event.type === EVENT_TYPE.INPUT
                     ? '0px'
                     : '5px',
                 borderBottomRightRadius:
-                  (editor.selectedSceneMapEvent === event.id &&
-                    editor.selectedWorldOutlineElement.id === event.sceneId) ||
+                  (composer.selectedSceneMapEvent === event.id &&
+                    composer.selectedWorldOutlineElement.id ===
+                      event.sceneId) ||
                   event.choices.length > 0 ||
                   event.type === EVENT_TYPE.INPUT
                     ? '0px'
@@ -537,8 +539,8 @@ const EventNode: React.FC<NodeProps<{
             <>
               <div
                 className={`${styles.choices} ${
-                  editor.selectedSceneMapEvent === event.id &&
-                  event.sceneId === editor.selectedWorldOutlineElement.id
+                  composer.selectedSceneMapEvent === event.id &&
+                  event.sceneId === composer.selectedWorldOutlineElement.id
                     ? ''
                     : styles.bottomRadius
                 }`}
@@ -567,7 +569,7 @@ const EventNode: React.FC<NodeProps<{
                               `EventNode->onClick: choice: ${choiceId}`
                             )
 
-                            editor.selectedSceneMapEvent !== eventId &&
+                            composer.selectedSceneMapEvent !== eventId &&
                               setSelectedElement([
                                 cloneDeep(
                                   events.find(
@@ -575,13 +577,13 @@ const EventNode: React.FC<NodeProps<{
                                   )
                                 )
                               ]) &&
-                              editorDispatch({
+                              composerDispatch({
                                 type:
                                   COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
                                 selectedSceneMapEvent: eventId
                               })
 
-                            editor.selectedSceneMapEvent === eventId &&
+                            composer.selectedSceneMapEvent === eventId &&
                               data.onChoiceSelect(eventId, choiceId)
                           }}
                           onReorder={async (eventId, choiceId, newPosition) => {
@@ -606,9 +608,8 @@ const EventNode: React.FC<NodeProps<{
                             )
                           }}
                           onDelete={async (choiceId, outgoingPaths) => {
-                            editor.selectedSceneMapChoice ===
-                              choice.id &&
-                              editorDispatch({
+                            composer.selectedSceneMapChoice === choice.id &&
+                              composerDispatch({
                                 type:
                                   COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
                                 selectedSceneMapChoice: null
@@ -660,15 +661,15 @@ const EventNode: React.FC<NodeProps<{
                   )}
               </div>
 
-              {editor.selectedSceneMapEvent === event.id &&
-                event.sceneId === editor.selectedWorldOutlineElement.id && (
+              {composer.selectedSceneMapEvent === event.id &&
+                event.sceneId === composer.selectedWorldOutlineElement.id && (
                   <div
                     className={`${styles.addChoiceButton} nodrag`}
                     onClick={async () => {
                       logger.info('EventNode->addChoiceButton->onClick')
 
                       if (
-                        editor.selectedSceneMapEvent === event.id &&
+                        composer.selectedSceneMapEvent === event.id &&
                         event.choices
                       ) {
                         const choiceId = uuid()
@@ -702,19 +703,16 @@ const EventNode: React.FC<NodeProps<{
                               )
                             )
                           ]) &&
-                          editorDispatch({
-                            type:
-                              COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+                          composerDispatch({
+                            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
                             selectedSceneMapJump: null
                           }) &&
-                          editorDispatch({
-                            type:
-                              COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+                          composerDispatch({
+                            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
                             selectedSceneMapEvent: event.id
                           }) &&
-                          editorDispatch({
-                            type:
-                              COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
+                          composerDispatch({
+                            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
                             selectedSceneMapChoice: null
                           })
                       }

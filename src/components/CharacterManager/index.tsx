@@ -2,7 +2,10 @@ import React, { useContext } from 'react'
 
 import { Character, WorldId, StudioId } from '../../data/types'
 
-import { ComposerContext, COMPOSER_ACTION_TYPE } from '../../contexts/ComposerContext'
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../contexts/ComposerContext'
 
 import { Tabs } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
@@ -37,7 +40,7 @@ const CharacterManager: React.FC<{
   worldId: WorldId
   character: Character
 }> = ({ studioId, worldId, character }) => {
-  const { composerDispatch: editorDispatch } = useContext(ComposerContext)
+  const { composerDispatch } = useContext(ComposerContext)
 
   return (
     <>
@@ -48,7 +51,7 @@ const CharacterManager: React.FC<{
             tabBarExtraContent={
               <RemoveCharacterButton
                 onRemove={async () => {
-                  editorDispatch({
+                  composerDispatch({
                     type: COMPOSER_ACTION_TYPE.CLOSE_CHARACTER_MODAL
                   })
 

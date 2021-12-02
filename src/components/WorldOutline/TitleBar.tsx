@@ -23,7 +23,7 @@ const TitleBar: React.FC<{
 }> = ({ studioId, world, onAdd, onWorldSelect }) => {
   const history = useHistory()
 
-  const { composer: editor } = useContext(ComposerContext)
+  const { composer } = useContext(ComposerContext)
 
   return (
     <>
@@ -45,7 +45,7 @@ const TitleBar: React.FC<{
 
         <span
           className={`${styles.worldTitle} ${
-            editor.selectedWorldOutlineElement.id === world.id
+            composer.selectedWorldOutlineElement.id === world.id
               ? styles.selected
               : ''
           }`}
