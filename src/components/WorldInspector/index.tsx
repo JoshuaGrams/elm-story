@@ -21,7 +21,6 @@ import {
   COMPOSER_ACTION_TYPE
 } from '../../contexts/ComposerContext'
 
-import { PlusOutlined } from '@ant-design/icons'
 import DockLayout, { DividerBox, LayoutData } from 'rc-dock'
 
 import WorldOutline from '../WorldOutline'
@@ -59,7 +58,7 @@ const WorldInspector: React.FC<{ studioId: StudioId; world: World }> = ({
                     <div>
                       Characters
                       {world.id && (
-                        <PlusOutlined
+                        <span
                           className={styles.tabAddComponentButton}
                           onClick={async () => {
                             if (world.id) {
@@ -92,7 +91,20 @@ const WorldInspector: React.FC<{ studioId: StudioId; world: World }> = ({
                                 })
                             }
                           }}
-                        />
+                        >
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 14 14"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M8 4H6V8H2V10H6V14H8V10H12V8H8V4Z"
+                              fill="white"
+                            />
+                          </svg>
+                        </span>
                       )}
                     </div>
                   ),
@@ -115,7 +127,7 @@ const WorldInspector: React.FC<{ studioId: StudioId; world: World }> = ({
                     <div>
                       Variables
                       {world.id && (
-                        <PlusOutlined
+                        <span
                           className={styles.tabAddComponentButton}
                           onClick={async () => {
                             // TODO: Fire only when tab is active #92
@@ -145,7 +157,20 @@ const WorldInspector: React.FC<{ studioId: StudioId; world: World }> = ({
                                 tags: []
                               }))
                           }}
-                        />
+                        >
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 14 14"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M8 4H6V8H2V10H6V14H8V10H12V8H8V4Z"
+                              fill="white"
+                            />
+                          </svg>
+                        </span>
                       )}
                     </div>
                   ),

@@ -10,7 +10,23 @@
   }
 
   .tabAddComponentButton {
-    color: white;
-    padding-left: 6px;
+    height: 14px;
+    width: 14px;
+    margin-left: 6px;
+
+    &:hover {
+      svg {
+        path {
+          fill: var(--highlight-color);
+        }
+      }
+    }
+
+    svg {
+      path {
+        fill: var(--highlight-color-dark);
+        transition: fill 0.2s;
+      }
+    }
   }
 }
