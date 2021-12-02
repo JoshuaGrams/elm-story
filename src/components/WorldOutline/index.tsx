@@ -518,7 +518,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                       parent: [ELEMENT_TYPE.WORLD, null],
                       tags: [],
                       title: childTitle,
-                      editor: {}
+                      composer: {}
                     })
                   : await api().folders.saveFolder(studioId, {
                       children: [],
@@ -666,11 +666,11 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
             event = await api().events.saveEvent(studioId, {
               choices: [],
               content: JSON.stringify([...DEFAULT_EVENT_CONTENT]),
-              editor: {
-                componentEditorPosX:
+              composer: {
+                sceneMapPosX:
                   composer.selectedSceneMapCenter.x -
                   DEFAULT_NODE_SIZE.EVENT_WIDTH / 2,
-                componentEditorPosY:
+                sceneMapPosY:
                   composer.selectedSceneMapCenter.y -
                   DEFAULT_NODE_SIZE.EVENT_HEIGHT / 2
               },
@@ -967,7 +967,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
   useEffect(() => {
     async function updateTree() {
-      logger.info('WorldOutline->editor.savedElement effect')
+      logger.info('WorldOutline->composer.savedElement effect')
 
       // TODO: Can't we do this better? *hic*
       if (treeData && composer.savedElement.id) {
@@ -1025,7 +1025,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
   useEffect(() => {
     logger.info(
-      `WorldOutline->editor.renamedElement->useEffect->
+      `WorldOutline->composer.renamedElement->useEffect->
        id:${composer.renamedElement.id} newTitle:'${composer.renamedElement.newTitle}'`
     )
 
@@ -1049,7 +1049,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
   }, [composer.renamedElement])
 
   useEffect(() => {
-    logger.info(`WorldOutline->editor.removedComponent->useEffect`)
+    logger.info(`WorldOutline->composer.removedComponent->useEffect`)
 
     if (treeData && composer.removedElement.id) {
       logger.info(

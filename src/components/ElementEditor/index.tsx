@@ -293,7 +293,7 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
         logger.info(`Not removing tab`)
 
         // Keep the event selected in WorldOutline
-        // if (editor.selectedWorldOutlineElement.type !== ELEMENT_TYPE.EVENT)
+        // if (composer.selectedWorldOutlineElement.type !== ELEMENT_TYPE.EVENT)
         composerDispatch({
           type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
           selectedWorldOutlineElement:
@@ -397,7 +397,7 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
     }
 
     logger.info(
-      `ElementEditor->editor.selectedWorldOutlineElement.id->useEffect->type: ${selectedElement.type}`
+      `ElementEditor->composer.selectedWorldOutlineElement.id->useEffect->type: ${selectedElement.type}`
     )
 
     findTabAndOpen()
@@ -413,7 +413,7 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
         dockLayout.current.find(composer.renamedElement.id)
       ) as TabData | undefined
 
-      logger.info(`ElementEditor->editor.renamedElement->useEffect`)
+      logger.info(`ElementEditor->composer.renamedElement->useEffect`)
 
       if (tabToUpdate) {
         const clonedTabs = cloneDeep(tabs),
@@ -559,7 +559,7 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
   }, [composer.removedElement])
 
   useEffect(() => {
-    logger.info(`ElementEditor->editor.closedEditorTab->useEffect`)
+    logger.info(`ElementEditor->composer.closedEditorTab->useEffect`)
 
     if (composer.closedEditorTab.id && dockLayout.current) {
       const foundTab = dockLayout.current.find(composer.closedEditorTab.id) as

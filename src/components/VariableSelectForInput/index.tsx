@@ -57,7 +57,7 @@ const VariableSelectForInput: React.FC<{
 
           {!input?.variableId && (
             <div className="warningMessage">
-              Variable selection is required for passage input.
+              Variable selection is required for event input.
             </div>
           )}
         </>
@@ -65,7 +65,7 @@ const VariableSelectForInput: React.FC<{
 
       {variables && variables.length === 0 && (
         <div className="warningMessage">
-          At least 1 world variable is required for passage input.
+          At least 1 world variable is required for event input.
         </div>
       )}
     </div>

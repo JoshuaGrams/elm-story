@@ -229,9 +229,9 @@ async function addElementToScene(
           content: JSON.stringify([...DEFAULT_EVENT_CONTENT]),
           tags: [],
           type: EVENT_TYPE.CHOICE,
-          editor: {
-            componentEditorPosX: position.x,
-            componentEditorPosY: position.y
+          composer: {
+            sceneMapPosX: position.x,
+            sceneMapPosY: position.y
           }
         })
 
@@ -249,9 +249,9 @@ async function addElementToScene(
           title: 'Untitled Jump',
           path: [scene.id],
           tags: [],
-          editor: {
-            componentEditorPosX: position.x,
-            componentEditorPosY: position.y
+          composer: {
+            sceneMapPosX: position.x,
+            sceneMapPosY: position.y
           }
         })
 
@@ -508,9 +508,9 @@ const SceneMap: React.FC<{
           clonedJump &&
             (await api().jumps.saveJump(studioId, {
               ...clonedJump,
-              editor: {
-                componentEditorPosX: position.x,
-                componentEditorPosY: position.y
+              composer: {
+                sceneMapPosX: position.x,
+                sceneMapPosY: position.y
               }
             }))
         }
@@ -524,9 +524,9 @@ const SceneMap: React.FC<{
           clonedPassage &&
             (await api().events.saveEvent(studioId, {
               ...clonedPassage,
-              editor: {
-                componentEditorPosX: position.x,
-                componentEditorPosY: position.y
+              composer: {
+                sceneMapPosX: position.x,
+                sceneMapPosY: position.y
               }
             }))
         }
@@ -693,9 +693,9 @@ const SceneMap: React.FC<{
           foundNode &&
             (await api().jumps.saveJump(studioId, {
               ...clonedJump,
-              editor: {
-                componentEditorPosX: foundNode.position.x,
-                componentEditorPosY: foundNode.position.y
+              composer: {
+                sceneMapPosX: foundNode.position.x,
+                sceneMapPosY: foundNode.position.y
               }
             }))
         }),
@@ -706,9 +706,9 @@ const SceneMap: React.FC<{
           foundNode &&
             (await api().events.saveEvent(studioId, {
               ...clonedPassage,
-              editor: {
-                componentEditorPosX: foundNode.position.x,
-                componentEditorPosY: foundNode.position.y
+              composer: {
+                sceneMapPosX: foundNode.position.x,
+                sceneMapPosY: foundNode.position.y
               }
             }))
         })
@@ -904,10 +904,10 @@ const SceneMap: React.FC<{
             id: jump.id,
             data: { studioId, jumpId: jump.id, type: ELEMENT_TYPE.JUMP },
             type: 'jumpNode',
-            position: jump.editor
+            position: jump.composer
               ? {
-                  x: jump.editor.componentEditorPosX || 0,
-                  y: jump.editor.componentEditorPosY || 0
+                  x: jump.composer.sceneMapPosX || 0,
+                  y: jump.composer.sceneMapPosY || 0
                 }
               : { x: 0, y: 0 }
           })
@@ -952,10 +952,10 @@ const SceneMap: React.FC<{
             id: passage.id,
             data: passageNodeData,
             type: 'passageNode',
-            position: passage.editor
+            position: passage.composer
               ? {
-                  x: passage.editor.componentEditorPosX || 0,
-                  y: passage.editor.componentEditorPosY || 0
+                  x: passage.composer.sceneMapPosX || 0,
+                  y: passage.composer.sceneMapPosY || 0
                 }
               : { x: 0, y: 0 }
           })
@@ -992,16 +992,16 @@ const SceneMap: React.FC<{
 
     ready &&
       transform({
-        x: scene?.editor?.componentEditorTransformX || 0,
-        y: scene?.editor?.componentEditorTransformY || 0,
-        zoom: scene?.editor?.componentEditorTransformZoom || 1
+        x: scene?.composer?.sceneMapTransformX || 0,
+        y: scene?.composer?.sceneMapTransformY || 0,
+        zoom: scene?.composer?.sceneMapTransformZoom || 1
       })
   }, [ready])
 
   useEffect(() => {
     logger.info(
       `SceneMap->
-       editor.selectedWorldOutlineElement,
+       composer.selectedWorldOutlineElement,
        totalSelectedPassages,
        selectedJump,
        selectedPassage,
@@ -1077,7 +1077,7 @@ const SceneMap: React.FC<{
 
   useEffect(() => {
     logger.info(
-      `SceneMap->editor.selectedComponentEditorSceneViewPassage/Jump->useEffects`
+      `SceneMap->composer.selectedComponentEditorSceneViewPassage/Jump->useEffects`
     )
 
     selectElement(
@@ -1096,7 +1096,7 @@ const SceneMap: React.FC<{
   }, [elements])
 
   useEffect(() => {
-    logger.info(`SceneMap->editor.saveElement,elements->useEffect`)
+    logger.info(`SceneMap->composer.saveElement,elements->useEffect`)
 
     const foundElement = findElement(elements, composer.savedElement.id || null)
 
@@ -1116,7 +1116,7 @@ const SceneMap: React.FC<{
       composer.selectedWorldOutlineElement.id === sceneId
     ) {
       logger.info(
-        `SceneMap->editor.centeredComponentEditorSceneViewSelection-useEffect`
+        `SceneMap->composer.centeredComponentEditorSceneViewSelection-useEffect`
       )
 
       centerSelection()

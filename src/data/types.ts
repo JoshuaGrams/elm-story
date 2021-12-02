@@ -77,14 +77,14 @@ export interface Element {
   title: string
   tags: string[] | []
   updated?: number // UTC timestamp
-  editor?: {
+  composer?: {
     // SceneMap transform
-    componentEditorTransformX?: number
-    componentEditorTransformY?: number
-    componentEditorTransformZoom?: number
-    // SceneMap->Passage,Jump position
-    componentEditorPosX?: number
-    componentEditorPosY?: number
+    sceneMapTransformX?: number
+    sceneMapTransformY?: number
+    sceneMapTransformZoom?: number
+    // SceneMap->Event,Jump position
+    sceneMapPosX?: number
+    sceneMapPosY?: number
   }
 }
 

@@ -24,7 +24,7 @@ const ElementProperties: React.FC<{
 
   useEffect(() => {
     logger.info(
-      `ElementProperties->editor.selectedWorldOutlineElement->
+      `ElementProperties->composer.selectedWorldOutlineElement->
        useEffect:${composer.selectedWorldOutlineElement.type}`
     )
   }, [composer.selectedWorldOutlineElement])

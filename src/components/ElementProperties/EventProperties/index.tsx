@@ -166,7 +166,7 @@ const Persona: React.FC<{
         <div className={styles.contentWrapper}>
           {characters.length === 0 && (
             <div className={styles.noCharacters}>
-              At least 1 story character is required to compose event persona.
+              At least 1 story character is required to modify event persona.
             </div>
           )}
 
@@ -317,7 +317,7 @@ const EventEndingToggle: React.FC<{
           event.type === EVENT_TYPE.INPUT
         }
       >
-        Ending
+        Ending Event
       </Checkbox>
     </div>
   )

@@ -461,7 +461,7 @@ const EventNode: React.FC<NodeProps<{
 
   useEffect(() => {
     logger.info(
-      `EventNode->editor.selectedComponentEditorSceneViewChoice->useEffect->${composer.selectedSceneMapChoice}`
+      `EventNode->composer.selectedComponentEditorSceneViewChoice->useEffect->${composer.selectedSceneMapChoice}`
     )
   }, [composer.selectedSceneMapChoice])
 

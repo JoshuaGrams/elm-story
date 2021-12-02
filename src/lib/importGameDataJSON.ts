@@ -192,7 +192,7 @@ export default (
             { editor, id, path, sceneId, tags, title, updated }
           ] of Object.entries(jumps)) {
             await api().jumps.saveJump(_.studioId, {
-              editor,
+              composer: editor,
               worldId: _.id,
               id,
               path,
@@ -223,7 +223,7 @@ export default (
             await api().events.saveEvent(_.studioId, {
               choices,
               content,
-              editor,
+              composer: editor,
               ending,
               worldId: _.id,
               id,
@@ -276,7 +276,7 @@ export default (
           ] of Object.entries(scenes)) {
             await api().scenes.saveScene(_.studioId, {
               children,
-              editor,
+              composer: editor,
               id,
               worldId: _.id,
               jumps,

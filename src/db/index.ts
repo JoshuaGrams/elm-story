@@ -955,10 +955,10 @@ export class LibraryDatabase extends Dexie {
           if (scene) {
             this.scenes.update(sceneId, {
               ...scene,
-              editor: {
-                componentEditorTransformX: transform.x,
-                componentEditorTransformY: transform.y,
-                componentEditorTransformZoom: transform.zoom
+              composer: {
+                sceneMapTransformX: transform.x,
+                sceneMapTransformY: transform.y,
+                sceneMapTransformZoom: transform.zoom
               },
               updated: Date.now()
             })

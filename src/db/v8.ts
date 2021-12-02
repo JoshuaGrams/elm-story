@@ -12,8 +12,8 @@ export default (database: Dexie) => {
       bookmarks: '&id,worldId,event,updated,version',
       characters: '&id,worldId,title,*tags,updated',
       choices: '&id,worldId,eventId,title,*tags,updated',
-      conditions: '&id,worldId,routeId,variableId,title,*tags,updated',
-      effects: '&id,worldId,routeId,variableId,title,*tags,updated',
+      conditions: '&id,worldId,pathId,variableId,title,*tags,updated',
+      effects: '&id,worldId,pathId,variableId,title,*tags,updated',
       events: '&id,ending,worldId,*persona,sceneId,title,*tags,updated',
       folders: '&id,children,worldId,parent,title,*tags,updated',
       inputs: '&id,worldId,eventId,variableId,title,*tags,updated',
@@ -68,8 +68,8 @@ export default (database: Dexie) => {
             condition.worldId = condition.gameId
             delete condition.gameId
 
-            condition.pathId = condition.routeId
-            delete condition.routeId
+            condition.pathId = condition.pathId
+            delete condition.pathId
           }),
         tx
           .table(LIBRARY_TABLE.EFFECTS)
@@ -87,6 +87,14 @@ export default (database: Dexie) => {
           .modify((event) => {
             event.ending = event.gameOver
             delete event.gameOver
+
+            if (event.editor) {
+              event.composer.sceneMapPosX = event.editor.componentEditorPosX
+              event.composer.sceneMapPosY = event.editor.componentEditorPosY
+
+              delete event.editor.componentEditorPosX
+              delete event.editor.componentEditorPosY
+            }
 
             event.worldId = event.gameId
             delete event.gameId
@@ -118,6 +126,14 @@ export default (database: Dexie) => {
           .modify((jump) => {
             jump.path = [...jump.route]
 
+            if (jump.editor) {
+              jump.composer.sceneMapPosX = jump.editor.componentEditorPosX
+              jump.composer.sceneMapPosY = jump.editor.componentEditorPosY
+
+              delete jump.editor.componentEditorPosX
+              delete jump.editor.componentEditorPosY
+            }
+
             jump.worldId = jump.gameId
             delete jump.gameId
           }),
@@ -139,6 +155,19 @@ export default (database: Dexie) => {
             scene.children = scene.children.map(
               (child: [ELEMENT_TYPE, string]) => [ELEMENT_TYPE.EVENT, child[1]]
             )
+
+            if (scene.editor) {
+              scene.composer.sceneMapTransformX =
+                scene.editor.componentEditorTransformX
+              scene.composer.sceneMapTransformY =
+                scene.editor.componentEditorTransformY
+              scene.composer.sceneMapTransformZoom =
+                scene.editor.componentEditorTransformZoom
+
+              delete scene.editor.componentEditorTransformX
+              delete scene.editor.componentEditorTransformY
+              delete scene.editor.componentEditorTransformZoom
+            }
 
             scene.worldId = scene.gameId
             delete scene.gameId
