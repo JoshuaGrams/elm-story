@@ -279,6 +279,14 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async getCharactersByWorldRef(worldId: WorldId): Promise<Character[]> {
+    try {
+      return await this.characters.where({ worldId }).toArray()
+    } catch (error) {
+      throw error
+    }
+  }
+
   public async saveCharacter(character: Character) {
     if (!character.worldId)
       throw new Error('Unable to save character to database. Missing game ID.')

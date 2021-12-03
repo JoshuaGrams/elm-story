@@ -2,8 +2,8 @@ import {
   ElementId,
   WorldId,
   StudioId,
-  GameDataJSON,
-  GameChildRefs,
+  WorldDataJSON,
+  WorldChildRefs,
   FolderChildRefs,
   FolderParentRef,
   ELEMENT_TYPE,
@@ -16,60 +16,81 @@ import api from '../api'
 
 export default async (
   studioId: StudioId,
-  gameId: WorldId,
+  worldId: WorldId,
   schemaVersion: string
 ): Promise<string> => {
   try {
     const studio = await api().studios.getStudio(studioId),
-      game = await api().worlds.getWorld(studioId, gameId)
+      world = await api().worlds.getWorld(studioId, worldId)
 
-    const choices = await api().choices.getChoicesByGameRef(studioId, gameId),
-      conditions = await api().conditions.getConditionsByGameRef(
+    const characters = await api().characters.getCharactersByWorldRef(
         studioId,
-        gameId
+        worldId
       ),
-      effects = await api().effects.getEffectsByGameRef(studioId, gameId),
-      folders = await api().folders.getFoldersByWorldRef(studioId, gameId),
-      inputs = await api().inputs.getInputsByGameRef(studioId, gameId),
-      jumps = await api().jumps.getJumpsByGameRef(studioId, gameId),
-      routes = await api().paths.getRoutesByGameRef(studioId, gameId),
-      passages = await api().events.getPassagesByGameRef(studioId, gameId),
-      scenes = await api().scenes.getScenesByGameRef(studioId, gameId),
-      variables = await api().variables.getVariablesByGameRef(studioId, gameId)
+      choices = await api().choices.getChoicesByWorldRef(studioId, worldId),
+      conditions = await api().conditions.getConditionsByWorldRef(
+        studioId,
+        worldId
+      ),
+      effects = await api().effects.getEffectsByWorldRef(studioId, worldId),
+      events = await api().events.getEventsByWorldRef(studioId, worldId),
+      folders = await api().folders.getFoldersByWorldRef(studioId, worldId),
+      inputs = await api().inputs.getInputsByWorldRef(studioId, worldId),
+      jumps = await api().jumps.getJumpsByWorldRef(studioId, worldId),
+      paths = await api().paths.getPathsByWorldRef(studioId, worldId),
+      scenes = await api().scenes.getScenesByWorldRef(studioId, worldId),
+      variables = await api().variables.getVariablesByWorldRef(
+        studioId,
+        worldId
+      )
 
-    let gameData: GameDataJSON = {
+    let worldData: WorldDataJSON = {
       _: {
-        children: game.children as GameChildRefs,
-        copyright: game.copyright,
-        description: game.description,
-        designer: game.designer,
+        children: world.children as WorldChildRefs,
+        copyright: world.copyright,
+        description: world.description,
+        designer: world.designer,
         engine: schemaVersion,
-        id: game.id as ElementId,
-        jump: game.jump,
+        id: world.id as ElementId,
+        jump: world.jump,
         schema: `https://elmstory.com/schema/elm-story-${schemaVersion}.json`,
         studioId: studioId,
         studioTitle: studio?.title as string,
-        tags: game.tags,
-        title: game.title,
-        updated: game.updated as number,
-        version: game.version,
-        website: game.website
+        tags: world.tags,
+        title: world.title,
+        updated: world.updated as number,
+        version: world.version,
+        website: world.website
       },
+      characters: {},
       choices: {},
       conditions: {},
       effects: {},
+      events: {},
       folders: {},
       inputs: {},
       jumps: {},
-      passages: {},
-      routes: {},
+      paths: {},
       scenes: {},
       variables: {}
     }
 
+    characters.map(
+      ({ description, id, masks, refs, tags, title, updated }) =>
+        (worldData.characters[id as string] = {
+          description,
+          id: id as string,
+          masks,
+          refs,
+          tags,
+          title,
+          updated: updated as number
+        })
+    )
+
     choices.map(
       ({ id, eventId, tags, title, updated }) =>
-        (gameData.choices[id as string] = {
+        (worldData.choices[id as string] = {
           id: id as string,
           eventId,
           tags,
@@ -79,11 +100,11 @@ export default async (
     )
 
     conditions.map(
-      ({ compare, id, routeId, tags, title, updated, variableId }) =>
-        (gameData.conditions[id as string] = {
+      ({ compare, id, pathId, tags, title, updated, variableId }) =>
+        (worldData.conditions[id as string] = {
           compare: [compare[0], compare[1], compare[2]],
           id: id as string,
-          routeId,
+          pathId,
           tags,
           title,
           updated: updated as number,
@@ -92,10 +113,10 @@ export default async (
     )
 
     effects.map(
-      ({ id, routeId, set, tags, title, updated, variableId }) =>
-        (gameData.effects[id as string] = {
+      ({ id, pathId, set, tags, title, updated, variableId }) =>
+        (worldData.effects[id as string] = {
           id: id as string,
-          routeId,
+          pathId,
           set,
           tags,
           title,
@@ -104,48 +125,11 @@ export default async (
         })
     )
 
-    folders.map(
-      ({ children, id, parent, tags, title, updated }) =>
-        (gameData.folders[id as string] = {
-          children: children as FolderChildRefs,
-          id: id as string,
-          parent: parent as FolderParentRef,
-          tags,
-          title,
-          updated: updated as number
-        })
-    )
-
-    inputs.map(
-      ({ id, eventId, tags, title, updated, variableId }) =>
-        (gameData.inputs[id as string] = {
-          id: id as string,
-          eventId,
-          tags,
-          title,
-          updated: updated as number,
-          variableId
-        })
-    )
-
-    jumps.map(
-      ({ editor, id, path, sceneId, tags, title, updated }) =>
-        (gameData.jumps[id as string] = {
-          editor,
-          id: id as string,
-          path,
-          sceneId,
-          tags,
-          title,
-          updated: updated as number
-        })
-    )
-
-    passages.map(
+    events.map(
       ({
         choices,
         content,
-        editor,
+        composer,
         ending,
         id,
         input,
@@ -155,10 +139,10 @@ export default async (
         type,
         updated
       }) =>
-        (gameData.passages[id as string] = {
+        (worldData.events[id as string] = {
           choices,
           content,
-          editor,
+          composer,
           ending,
           id: id as string,
           input,
@@ -170,7 +154,44 @@ export default async (
         })
     )
 
-    routes.map(
+    folders.map(
+      ({ children, id, parent, tags, title, updated }) =>
+        (worldData.folders[id as string] = {
+          children: children as FolderChildRefs,
+          id: id as string,
+          parent: parent as FolderParentRef,
+          tags,
+          title,
+          updated: updated as number
+        })
+    )
+
+    inputs.map(
+      ({ id, eventId, tags, title, updated, variableId }) =>
+        (worldData.inputs[id as string] = {
+          id: id as string,
+          eventId,
+          tags,
+          title,
+          updated: updated as number,
+          variableId
+        })
+    )
+
+    jumps.map(
+      ({ composer, id, path, sceneId, tags, title, updated }) =>
+        (worldData.jumps[id as string] = {
+          composer,
+          id: id as string,
+          path,
+          sceneId,
+          tags,
+          title,
+          updated: updated as number
+        })
+    )
+
+    paths.map(
       ({
         choiceId,
         destinationId,
@@ -184,7 +205,7 @@ export default async (
         title,
         updated
       }) =>
-        (gameData.routes[id as string] = {
+        (worldData.paths[id as string] = {
           choiceId,
           destinationId,
           destinationType: destinationType as ELEMENT_TYPE,
@@ -200,10 +221,10 @@ export default async (
     )
 
     scenes.map(
-      ({ children, editor, id, jumps, parent, tags, title, updated }) =>
-        (gameData.scenes[id as string] = {
+      ({ children, composer, id, jumps, parent, tags, title, updated }) =>
+        (worldData.scenes[id as string] = {
           children: children as SceneChildRefs,
-          editor,
+          composer,
           id: id as string,
           jumps,
           parent: parent as SceneParentRef,
@@ -215,7 +236,7 @@ export default async (
 
     variables.map(
       ({ id, initialValue, tags, title, type, updated }) =>
-        (gameData.variables[id as string] = {
+        (worldData.variables[id as string] = {
           id: id as string,
           initialValue,
           tags,
@@ -225,7 +246,7 @@ export default async (
         })
     )
 
-    return JSON.stringify(gameData, null, 2)
+    return JSON.stringify(worldData, null, 2)
   } catch (error) {
     throw error
   }

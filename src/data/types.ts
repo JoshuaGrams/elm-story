@@ -286,14 +286,14 @@ export enum EVENT_TYPE {
 export type EventPersona = [ElementId, CHARACTER_MASK_TYPE, string | undefined] // [characterId, mask, reference ID]
 
 export interface Event extends Element {
-  ending: boolean // world end
-  worldId: WorldId
-  sceneId: ElementId
   choices: ElementId[]
   content: string
+  ending: boolean // world end
   input?: ElementId // input ref
   persona?: EventPersona
+  sceneId: ElementId
   type: EVENT_TYPE
+  worldId: WorldId
 }
 
 export interface Choice extends Element {
