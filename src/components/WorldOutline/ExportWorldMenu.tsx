@@ -4,7 +4,7 @@ import React, { useContext, useState, useEffect } from 'react'
 
 import getGameDataJSON from '../../lib/getGameDataJSON'
 
-import { World } from '../../data/types'
+import { World, WORLD_EXPORT_TYPE } from '../../data/types'
 import { StudioId } from '../../lib/transport/types/0.5.1'
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
@@ -16,17 +16,17 @@ import { ExportWorldModal } from '../Modal'
 
 import styles from './styles.module.less'
 
-const HelpButton: React.FC<{ type: 'JSON' | 'PWA' }> = ({ type }) => {
+const HelpButton: React.FC<{ type: WORLD_EXPORT_TYPE }> = ({ type }) => {
   const openHelp = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation()
 
     let helpUrl
 
     switch (type) {
-      case 'JSON':
+      case WORLD_EXPORT_TYPE.JSON:
         helpUrl = 'https://docs.elmstory.com/guides/data/json/overview/'
         break
-      case 'PWA':
+      case WORLD_EXPORT_TYPE.PWA:
         helpUrl = 'https://docs.elmstory.com/guides/data/pwa/overview/'
         break
       default:
@@ -51,46 +51,40 @@ const ExportWorldMenu: React.FC<{ studioId: StudioId; world: World }> = ({
   const { app } = useContext(AppContext)
 
   const [exportWorldModal, setExportWorldModal] = useState({
-    title: 'Gathering world data...',
+    title: 'Gathering storyworld data...',
     visible: false
   })
 
-  async function exportWorld(jsonOnly?: boolean) {
+  async function exportWorld(type: WORLD_EXPORT_TYPE) {
     if (world.id) {
       setExportWorldModal({ ...exportWorldModal, visible: true })
 
-      const json = await getGameDataJSON(studioId, world.id, app.version)
+      const worldDataAsString = await getGameDataJSON(
+        studioId,
+        world.id,
+        app.version
+      )
 
-      if (jsonOnly) {
-        const element = document.createElement('a'),
-          file = new Blob([json], { type: 'text/json' })
+      setTimeout(() => {
+        ipcRenderer.send(WINDOW_EVENT_TYPE.EXPORT_WORLD_START, {
+          type,
+          data: worldDataAsString
+        })
 
-        element.href = URL.createObjectURL(file)
-        element.download = `${world.title.trim()}.json`
-
-        setTimeout(() => {
-          element.click()
-
-          setExportWorldModal({ ...exportWorldModal, visible: false })
-        }, 1000)
-      }
-
-      if (!jsonOnly) {
-        setTimeout(() => {
-          ipcRenderer.send(WINDOW_EVENT_TYPE.EXPORT_GAME_START, json)
-
-          setExportWorldModal({ ...exportWorldModal, visible: false })
-        }, 1000)
-      }
+        setExportWorldModal({ ...exportWorldModal, visible: false })
+      }, 1000)
     }
   }
 
   useEffect(() => {
-    ipcRenderer.on(WINDOW_EVENT_TYPE.EXPORT_GAME_PROCESSING, () => {
-      setExportWorldModal({ title: 'Compiling game...', visible: true })
+    ipcRenderer.on(WINDOW_EVENT_TYPE.EXPORT_WORLD_PROCESSING, () => {
+      setExportWorldModal({
+        title: 'Compiling storyworld data...',
+        visible: true
+      })
     })
 
-    ipcRenderer.on(WINDOW_EVENT_TYPE.EXPORT_GAME_COMPLETE, () => {
+    ipcRenderer.on(WINDOW_EVENT_TYPE.EXPORT_WORLD_COMPLETE, () => {
       setExportWorldModal({ ...exportWorldModal, visible: false })
     })
   }, [])
@@ -105,11 +99,11 @@ const ExportWorldMenu: React.FC<{ studioId: StudioId; world: World }> = ({
       <Dropdown
         overlay={
           <Menu onClick={(event) => event.domEvent.stopPropagation()}>
-            <Menu.Item onClick={() => exportWorld(true)}>
-              Export JSON <HelpButton type="JSON" />
+            <Menu.Item onClick={() => exportWorld(WORLD_EXPORT_TYPE.JSON)}>
+              Export JSON <HelpButton type={WORLD_EXPORT_TYPE.JSON} />
             </Menu.Item>
-            <Menu.Item onClick={() => exportWorld()}>
-              Export PWA <HelpButton type="PWA" />
+            <Menu.Item onClick={() => exportWorld(WORLD_EXPORT_TYPE.PWA)}>
+              Export PWA <HelpButton type={WORLD_EXPORT_TYPE.PWA} />
             </Menu.Item>
           </Menu>
         }

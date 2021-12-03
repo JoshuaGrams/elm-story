@@ -10,7 +10,7 @@ import { ComposerContext } from '../../contexts/ComposerContext'
 import { Button, Tooltip } from 'antd'
 import { ExportOutlined, LeftOutlined, PlusOutlined } from '@ant-design/icons'
 
-import ExportWorldMenu from './ExportGameMenu'
+import ExportWorldMenu from './ExportWorldMenu'
 import AddElementMenu from './AddElementMenu'
 
 import styles from './styles.module.less'

@@ -4,7 +4,7 @@ import lzwCompress from 'lzwcompress'
 
 import {
   ELEMENT_TYPE,
-  GameDataJSON,
+  WorldDataJSON,
   ESGEngineCollectionData
 } from '../transport/types/0.6.0'
 
@@ -22,7 +22,7 @@ function filterCollectionChildProps<T extends object, U extends keyof T>(
   return filteredCollection
 }
 
-function format(gameData: GameDataJSON): string {
+function format(gameData: WorldDataJSON): string {
   const {
     _,
     choices,
@@ -30,11 +30,11 @@ function format(gameData: GameDataJSON): string {
     effects,
     inputs,
     jumps,
-    passages,
+    events: passages,
     paths,
     scenes,
     variables
-  }: GameDataJSON = cloneDeep(gameData)
+  }: WorldDataJSON = cloneDeep(gameData)
 
   return lzwCompress.pack({
     _: {

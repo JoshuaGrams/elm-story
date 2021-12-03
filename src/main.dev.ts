@@ -25,8 +25,8 @@ import md5 from 'md5'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
 
-import { WorldId, StudioId } from './data/types'
-import { GameDataJSON } from './lib/transport/types/0.5.1'
+import { WorldId, StudioId, WORLD_EXPORT_TYPE } from './data/types'
+import { WorldDataJSON } from './lib/transport/types/0.6.0'
 
 export default class AppUpdater {
   constructor() {
@@ -227,7 +227,7 @@ const createWindow = async () => {
         }
       )
 
-      // removes studio or game assets
+      // removes studio or world assets
       ipcMain.handle(
         WINDOW_EVENT_TYPE.REMOVE_ASSETS,
         async (
@@ -287,118 +287,150 @@ const createWindow = async () => {
       )
 
       ipcMain.on(
-        WINDOW_EVENT_TYPE.EXPORT_GAME_START,
-        async (_, gameData: string) => {
+        WINDOW_EVENT_TYPE.EXPORT_WORLD_START,
+        async (
+          _,
+          {
+            type: worldType,
+            data: worldDataAsString
+          }: { type: WORLD_EXPORT_TYPE; data: string }
+        ) => {
           if (mainWindow) {
             const result = await dialog.showOpenDialog(mainWindow, {
-              title: 'Select folder to export PWA',
+              title: `Select folder to export ${worldType}`,
               properties: ['openDirectory']
             })
 
             if (!result.canceled) {
               mainWindow.webContents.send(
-                WINDOW_EVENT_TYPE.EXPORT_GAME_PROCESSING
+                WINDOW_EVENT_TYPE.EXPORT_WORLD_PROCESSING
               )
 
-              const parsedGameData: GameDataJSON = JSON.parse(gameData)
+              const parsedGameData: WorldDataJSON = JSON.parse(
+                worldDataAsString
+              )
 
-              const gameFolderName = `${parsedGameData._.title
-                .replace(/[^A-Z0-9]+/gi, '-')
-                .toLocaleLowerCase()}_${parsedGameData._.version}_${Date.now()}`
+              const baseWorldFolderName = `${parsedGameData._.title
+                  .replace(/[^A-Z0-9]+/gi, '-')
+                  .toLocaleLowerCase()}_${parsedGameData._.version}`,
+                fullWorldFolderName = `${baseWorldFolderName}_${Date.now()}`
 
               const savePathBase = result.filePaths[0],
-                savePathFull = `${savePathBase}/${gameFolderName}`
+                savePathFull = `${savePathBase}/${fullWorldFolderName}`
 
-              const enginePath =
-                process.env.NODE_ENV === 'development'
-                  ? path.join(__dirname, '../assets/engine-dist')
-                  : path.join(process.resourcesPath, 'assets/engine-dist')
+              if (worldType === WORLD_EXPORT_TYPE.JSON) {
+                try {
+                  await Promise.all([
+                    fs.outputFile(
+                      `${savePathFull}/${baseWorldFolderName}.json`,
+                      worldDataAsString
+                    ),
+                    fs.copy(
+                      `${app.getPath('userData')}/assets/${
+                        parsedGameData._.studioId
+                      }/${parsedGameData._.id}`.replace(/\\/g, '/'),
+                      `${savePathFull}/assets`
+                    )
+                  ])
+                } catch (error) {
+                  throw error
+                }
+              }
 
-              try {
-                await fs.copy(enginePath, savePathFull)
+              if (worldType === WORLD_EXPORT_TYPE.PWA) {
+                const enginePath =
+                  process.env.NODE_ENV === 'development'
+                    ? path.join(__dirname, '../assets/engine-dist')
+                    : path.join(process.resourcesPath, 'assets/engine-dist')
 
-                const manifest: { 'index.html': { file: string } } = JSON.parse(
-                  await fs.readFile(`${savePathFull}/manifest.json`, 'utf8')
-                )
+                try {
+                  await fs.copy(enginePath, savePathFull)
 
-                let [html, js, webmanifest, sw] = await Promise.all([
-                  fs.readFile(`${savePathFull}/index.html`, 'utf8'),
-                  fs.readFile(
-                    `${savePathFull}/${manifest['index.html'].file}`,
-                    'utf8'
-                  ),
-                  fs.readFile(`${savePathFull}/manifest.webmanifest`, 'utf8'),
-                  fs.readFile(`${savePathFull}/sw.js`, 'utf8')
-                ])
-
-                const gameDescription =
-                  parsedGameData._.description ||
-                  `${parsedGameData._.title} is a game made with Elm Story.`
-
-                html = html
-                  .replace('___gameTitle___', parsedGameData._.title)
-                  .replace('___gameDescription___', gameDescription)
-                js = js
-                  .replace('___gameId___', parsedGameData._.id)
-                  .replace(
-                    '"___engineData___"',
-                    JSON.stringify(format(parsedGameData))
+                  const manifest: {
+                    'index.html': { file: string }
+                  } = JSON.parse(
+                    await fs.readFile(`${savePathFull}/manifest.json`, 'utf8')
                   )
-                webmanifest = webmanifest
-                  .replace(/___gameTitle___/g, parsedGameData._.title)
-                  .replace('___gameDescription___', gameDescription)
 
-                // #379, #373
-                const swIndexRevSearchString = `index.html",revision:"`,
-                  startingIndexRevReplacePosition =
-                    sw.indexOf(swIndexRevSearchString) +
-                    swIndexRevSearchString.length,
-                  newIndexHash = md5(html)
+                  let [html, js, webmanifest, sw] = await Promise.all([
+                    fs.readFile(`${savePathFull}/index.html`, 'utf8'),
+                    fs.readFile(
+                      `${savePathFull}/${manifest['index.html'].file}`,
+                      'utf8'
+                    ),
+                    fs.readFile(`${savePathFull}/manifest.webmanifest`, 'utf8'),
+                    fs.readFile(`${savePathFull}/sw.js`, 'utf8')
+                  ])
 
-                // update index revision
-                sw = `${sw.substr(
-                  0,
-                  startingIndexRevReplacePosition
-                )}${newIndexHash}${sw.substr(
-                  startingIndexRevReplacePosition + newIndexHash.length
-                )}`
+                  const gameDescription =
+                    parsedGameData._.description ||
+                    `${parsedGameData._.title} is a storyworld made with Elm Story.`
 
-                const swJSRevSearchString = `${manifest['index.html'].file}",revision:"`,
-                  startingJSRevReplacePosition =
-                    sw.indexOf(swJSRevSearchString) +
-                    swJSRevSearchString.length,
-                  newJSHash = md5(js)
+                  html = html
+                    .replace('___gameTitle___', parsedGameData._.title)
+                    .replace('___gameDescription___', gameDescription)
+                  js = js
+                    .replace('___gameId___', parsedGameData._.id)
+                    .replace(
+                      '"___engineData___"',
+                      JSON.stringify(format(parsedGameData))
+                    )
+                  webmanifest = webmanifest
+                    .replace(/___gameTitle___/g, parsedGameData._.title)
+                    .replace('___gameDescription___', gameDescription)
 
-                // update js revision
-                sw = `${sw.substr(
-                  0,
-                  startingJSRevReplacePosition
-                )}${newJSHash}${sw.substr(
-                  startingJSRevReplacePosition + newJSHash.length
-                )}`
+                  // #379, #373
+                  const swIndexRevSearchString = `index.html",revision:"`,
+                    startingIndexRevReplacePosition =
+                      sw.indexOf(swIndexRevSearchString) +
+                      swIndexRevSearchString.length,
+                    newIndexHash = md5(html)
 
-                await Promise.all([
-                  fs.writeFile(`${savePathFull}/index.html`, html),
-                  fs.writeFile(
-                    `${savePathFull}/${manifest['index.html'].file}`,
-                    js
-                  ),
-                  fs.writeFile(
-                    `${savePathFull}/manifest.webmanifest`,
-                    webmanifest
-                  ),
-                  fs.writeFile(`${savePathFull}/sw.js`, sw),
-                  fs.remove(`${savePathFull}/manifest.json`)
-                ])
-              } catch (error) {
-                throw error
+                  // update index revision
+                  sw = `${sw.substr(
+                    0,
+                    startingIndexRevReplacePosition
+                  )}${newIndexHash}${sw.substr(
+                    startingIndexRevReplacePosition + newIndexHash.length
+                  )}`
+
+                  const swJSRevSearchString = `${manifest['index.html'].file}",revision:"`,
+                    startingJSRevReplacePosition =
+                      sw.indexOf(swJSRevSearchString) +
+                      swJSRevSearchString.length,
+                    newJSHash = md5(js)
+
+                  // update js revision
+                  sw = `${sw.substr(
+                    0,
+                    startingJSRevReplacePosition
+                  )}${newJSHash}${sw.substr(
+                    startingJSRevReplacePosition + newJSHash.length
+                  )}`
+
+                  await Promise.all([
+                    fs.writeFile(`${savePathFull}/index.html`, html),
+                    fs.writeFile(
+                      `${savePathFull}/${manifest['index.html'].file}`,
+                      js
+                    ),
+                    fs.writeFile(
+                      `${savePathFull}/manifest.webmanifest`,
+                      webmanifest
+                    ),
+                    fs.writeFile(`${savePathFull}/sw.js`, sw),
+                    fs.remove(`${savePathFull}/manifest.json`)
+                  ])
+                } catch (error) {
+                  throw error
+                }
               }
 
               setTimeout(() => {
                 shell.openPath(savePathFull)
 
                 mainWindow?.webContents.send(
-                  WINDOW_EVENT_TYPE.EXPORT_GAME_COMPLETE
+                  WINDOW_EVENT_TYPE.EXPORT_WORLD_COMPLETE
                 )
               }, 5000)
             }

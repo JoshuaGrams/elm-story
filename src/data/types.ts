@@ -6,6 +6,11 @@ export enum PLATFORM_TYPE {
   LINUX = 'linux'
 }
 
+export enum WORLD_EXPORT_TYPE {
+  JSON = 'JSON',
+  PWA = 'PWA'
+}
+
 export enum ELEMENT_TYPE {
   CHARACTER = 'CHARACTER',
   CHOICE = 'CHOICE',
