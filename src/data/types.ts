@@ -27,7 +27,7 @@ export enum ELEMENT_TYPE {
   WORLD = 'WORLD'
 }
 
-export enum GAME_TEMPLATE {
+export enum WORLD_TEMPLATE {
   ADVENTURE = 'ADVENTURE',
   OPEN_WORLD = 'OPEN_WORLD'
 }
@@ -213,7 +213,7 @@ export interface World extends Element {
   engine: string
   id?: WorldId
   jump: ElementId | null // Jump
-  template: GAME_TEMPLATE
+  template: WORLD_TEMPLATE
   version: string
   website?: string
 }

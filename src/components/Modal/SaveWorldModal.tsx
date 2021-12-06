@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 
-import { StudioId, World, GAME_TEMPLATE } from '../../data/types'
+import { StudioId, World, WORLD_TEMPLATE } from '../../data/types'
 
 import { AppContext } from '../../contexts/AppContext'
 
@@ -92,7 +92,7 @@ const SaveWorldModal: React.FC<SaveWorldModalProps> = ({
                     engine: app.version,
                     jump: null,
                     // TODO: Enable user-defined once more templates are supported.
-                    template: GAME_TEMPLATE.ADVENTURE,
+                    template: WORLD_TEMPLATE.ADVENTURE,
                     title,
                     tags: [],
                     // TODO: Move to defines/types.

@@ -103,9 +103,10 @@ export default (database: Dexie) => {
           .table(LIBRARY_TABLE.FOLDERS)
           .toCollection()
           .modify((folder) => {
-            if (folder.parent[0] === ELEMENT_TYPE.WORLD) {
-              folder.parent = [ELEMENT_TYPE.WORLD, null]
-            }
+            folder.parent =
+              folder.parent[0] === 'GAME'
+                ? [ELEMENT_TYPE.WORLD, null]
+                : folder.parent
 
             folder.worldId = folder.gameId
             delete folder.gameId
@@ -152,6 +153,11 @@ export default (database: Dexie) => {
           .table(LIBRARY_TABLE.SCENES)
           .toCollection()
           .modify((scene) => {
+            scene.parent =
+              scene.parent[0] === 'GAME'
+                ? [ELEMENT_TYPE.WORLD, null]
+                : scene.parent
+
             scene.children = scene.children.map(
               (child: [ELEMENT_TYPE, string]) => [ELEMENT_TYPE.EVENT, child[1]]
             )

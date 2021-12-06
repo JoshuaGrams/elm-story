@@ -7,6 +7,7 @@ import { GameDataJSON as GameDataJSON_031 } from '../types/0.3.1'
 import { GameDataJSON as GameDataJSON_040 } from '../types/0.4.0'
 import { GameDataJSON as GameDataJSON_050 } from '../types/0.5.0'
 import { GameDataJSON as GameDataJSON_051 } from '../types/0.5.1'
+import { WorldDataJSON as WorldDataJSON_060 } from '../types/0.6.0'
 
 function isValidData(data: any, schema: Schema): [boolean, ValidationError[]] {
   const { errors } = new Validator().validate(data, schema)
@@ -15,24 +16,25 @@ function isValidData(data: any, schema: Schema): [boolean, ValidationError[]] {
 }
 
 export default (
-  gameData:
+  worldData:
     | GameDataJSON_013
     | GameDataJSON_020
     | GameDataJSON_030
     | GameDataJSON_031
     | GameDataJSON_040
     | GameDataJSON_050
-    | GameDataJSON_051,
+    | GameDataJSON_051
+    | WorldDataJSON_060,
   version: string
 ): [boolean, ValidationError[] | { path?: string; message: string }[]] => {
   try {
-    return isValidData(gameData, require(`../schema/${version}.json`))
+    return isValidData(worldData, require(`../schema/${version}.json`))
   } catch (error) {
     return [
       false,
       [
         {
-          message: `Unable to validate game data. Schema '${version}' is not supported.`
+          message: `Unable to validate storyworld data. Schema '${version}' is not supported.`
         }
       ]
     ]
