@@ -286,7 +286,63 @@ const createWindow = async () => {
         }
       )
 
-      ipcMain.on(
+      ipcMain.handle(
+        WINDOW_EVENT_TYPE.IMPORT_WORLD_GET_JSON,
+        async (
+          _
+        ): Promise<{ worldData?: WorldDataJSON; jsonPath?: string }> => {
+          if (mainWindow) {
+            const result = await dialog.showOpenDialog(mainWindow, {
+              title: `Select storyworld JSON to import`,
+              properties: ['openFile']
+            })
+
+            if (!result.canceled) {
+              try {
+                return {
+                  worldData: JSON.parse(
+                    await fs.readFile(result.filePaths[0], 'utf8')
+                  ),
+                  jsonPath: result.filePaths[0]
+                }
+              } catch (error) {
+                throw error
+              }
+            }
+
+            return { worldData: undefined, jsonPath: undefined }
+          }
+
+          return { worldData: undefined, jsonPath: undefined }
+        }
+      )
+
+      ipcMain.handle(
+        WINDOW_EVENT_TYPE.IMPORT_WORLD_ASSETS,
+        async (
+          _,
+          {
+            studioId,
+            worldId,
+            jsonPath
+          }: { studioId: StudioId; worldId: WorldId; jsonPath: string }
+        ) => {
+          try {
+            const worldDirectory = path.dirname(jsonPath)
+
+            await fs.copy(
+              `${worldDirectory}/assets`,
+              `${app.getPath(
+                'userData'
+              )}/assets/${studioId}/${worldId}/`.replace(/\\/g, '/')
+            )
+          } catch (error) {
+            // directory doesn't exist; skip
+          }
+        }
+      )
+
+      ipcMain.handle(
         WINDOW_EVENT_TYPE.EXPORT_WORLD_START,
         async (
           _,
@@ -297,7 +353,7 @@ const createWindow = async () => {
         ) => {
           if (mainWindow) {
             const result = await dialog.showOpenDialog(mainWindow, {
-              title: `Select folder to export ${worldType}`,
+              title: `Select folder to export storyworld as ${worldType}`,
               properties: ['openDirectory']
             })
 

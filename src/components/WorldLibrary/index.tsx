@@ -1,6 +1,10 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import { ipcRenderer } from 'electron'
 
+import React, { useState, useEffect, useContext } from 'react'
+
+import { WINDOW_EVENT_TYPE } from '../../lib/events'
 import { StudioId, Studio } from '../../data/types'
+import { WorldDataJSON } from '../../lib/transport/types/0.6.0'
 
 import { useWorlds, useStudios } from '../../hooks'
 import { WORLD_SORT } from '../../hooks/useWorlds'
@@ -19,8 +23,6 @@ interface WorldLibraryProps {
 }
 
 const WorldLibrary: React.FC<WorldLibraryProps> = ({ studioId }) => {
-  const importWorldDataJSONInput = useRef<HTMLInputElement>(null)
-
   const { app } = useContext(AppContext)
 
   const [selectedStudio, setSelectedStudio] = useState<Studio | undefined>(
@@ -30,28 +32,39 @@ const WorldLibrary: React.FC<WorldLibraryProps> = ({ studioId }) => {
     [sortBy] = useState<WORLD_SORT>(WORLD_SORT.DATE),
     [importJSONModal, setImportJSONModal] = useState<{
       visible: boolean
-      file: File | null
-    }>({ visible: false, file: null })
+      worldData?: WorldDataJSON
+      jsonPath?: string
+      error?: boolean
+    }>({
+      visible: false,
+      worldData: undefined,
+      jsonPath: undefined,
+      error: false
+    })
 
   const studios = useStudios([studioId])
   const worlds = useWorlds(studioId, sortBy, [studioId, sortBy])
 
   // TODO: dupe from dashboard
-  function onImportWorldDataJSON() {
-    if (importWorldDataJSONInput.current?.files) {
+  async function importWorld() {
+    try {
+      const { worldData, jsonPath } = await ipcRenderer.invoke(
+        WINDOW_EVENT_TYPE.IMPORT_WORLD_GET_JSON
+      )
+
+      worldData &&
+        setImportJSONModal({
+          visible: true,
+          worldData,
+          jsonPath
+        })
+    } catch (error) {
       setImportJSONModal({
         visible: true,
-        file: importWorldDataJSONInput.current?.files[0]
+        worldData: undefined,
+        jsonPath: undefined,
+        error: true
       })
-    }
-  }
-
-  // TODO: dupe from dashboard
-  function onImportWorldDataJSONFinished() {
-    setImportJSONModal({ visible: false, file: null })
-
-    if (importWorldDataJSONInput.current) {
-      importWorldDataJSONInput.current.value = ''
     }
   }
 
@@ -76,17 +89,18 @@ const WorldLibrary: React.FC<WorldLibraryProps> = ({ studioId }) => {
 
       <ImportJSONModal
         visible={importJSONModal.visible}
-        afterClose={onImportWorldDataJSONFinished}
+        afterClose={() =>
+          setImportJSONModal({
+            visible: false,
+            worldData: undefined,
+            jsonPath: undefined,
+            error: false
+          })
+        }
         studioId={app.selectedStudioId}
-        file={importJSONModal.file}
-      />
-
-      <input
-        ref={importWorldDataJSONInput}
-        type="file"
-        accept=".json"
-        style={{ display: 'none' }}
-        onChange={onImportWorldDataJSON}
+        incomingWorldData={importJSONModal.worldData}
+        incomingJSONPath={importJSONModal.jsonPath}
+        incomingError={importJSONModal.error}
       />
 
       <div className={styles.WorldLibrary}>
@@ -99,11 +113,7 @@ const WorldLibrary: React.FC<WorldLibraryProps> = ({ studioId }) => {
               Select another studio or{' '}
               <a onClick={() => setSaveWorldModalVisible(true)}>
                 create
-              </a> /{' '}
-              <a onClick={() => importWorldDataJSONInput.current?.click()}>
-                import
-              </a>
-              .
+              </a> / <a onClick={importWorld}>import</a>.
             </div>
           )}
 

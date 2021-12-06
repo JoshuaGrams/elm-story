@@ -1,13 +1,12 @@
 import { ipcRenderer } from 'electron'
-import importGameDataJSON from '../../lib/importGameDataJSON'
+import importWorldData from '../../lib/importWorldData'
 
 import React, { useContext, useEffect, useState } from 'react'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
 import { ElementId, StudioId } from '../../data/types'
-import { GameDataJSON as GameDataJSON_013 } from '../../lib/transport/types/0.1.3'
-import { GameDataJSON as GameDataJSON_020 } from '../../lib/transport/types/0.2.0'
+import { WorldDataJSON } from '../../lib/transport/types/0.6.0'
 
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 
@@ -20,20 +19,22 @@ import api from '../../api'
 
 interface ImportJSONModalProps extends ModalProps {
   studioId?: StudioId
-  file: File | null
+  incomingWorldData: WorldDataJSON | undefined
+  incomingJSONPath: string | undefined
+  incomingError?: boolean
 }
 
 const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
   visible = false,
   afterClose,
-  file
+  incomingWorldData,
+  incomingJSONPath,
+  incomingError
 }) => {
   const { appDispatch } = useContext(AppContext)
 
   const [importingGameData, setImportingGameData] = useState(false),
-    [worldData, setWorldData] = useState<
-      GameDataJSON_013 | GameDataJSON_020 | undefined
-    >(undefined),
+    [worldData, setWorldData] = useState<WorldDataJSON | undefined>(undefined),
     [importingGameDataErrors, setImportingGameDataErrors] = useState<string[]>(
       []
     ),
@@ -62,7 +63,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
 
         // TODO: handle finish errors
         // TODO: ts errors
-        await importGameDataJSON(worldData, true).finish()
+        await importWorldData(worldData, incomingJSONPath, true).finish()
 
         appDispatch({
           type: APP_ACTION_TYPE.STUDIO_SELECT,
@@ -81,12 +82,12 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
       setImportingGameData(true)
 
       try {
-        // Remove game first to prevent merging of existing data
+        // Remove world first to prevent merging of existing data
         await api().worlds.removeWorld(worldData._.studioId, worldData._.id)
 
         // TODO: handle finish errors
         // TODO: ts errors
-        await importGameDataJSON(worldData, true).finish()
+        await importWorldData(worldData, incomingJSONPath, true).finish()
 
         appDispatch({
           type: APP_ACTION_TYPE.STUDIO_SELECT,
@@ -101,40 +102,26 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
   }
 
   useEffect(() => {
-    async function processFile() {
-      if (file) {
-        setImportingGameData(true)
-        setWorldData(undefined)
-        setImportingGameDataErrors([])
-        setStudioNotFound(false)
-        setGameExists(false)
+    setImportingGameData(incomingWorldData ? true : false)
+    setImportingGameDataErrors([])
+    setStudioNotFound(false)
+    setGameExists(false)
 
-        const reader = new FileReader()
+    setWorldData(incomingWorldData)
+  }, [incomingWorldData])
 
-        reader.addEventListener('load', async () => {
-          try {
-            setWorldData(JSON.parse(reader.result as string))
-          } catch (error) {
-            setImportingGameData(false)
-
-            setImportingGameDataErrors([
-              'Unable to parse JSON. Data is invalid or corrupt.'
-            ])
-          }
-        })
-
-        reader.readAsText(file)
-      }
-    }
-
-    processFile()
-  }, [file])
+  useEffect(() => {
+    incomingError &&
+      setImportingGameDataErrors([
+        'Unable to import storyworld. JSON is corrupt or empty.'
+      ])
+  }, [incomingError])
 
   useEffect(() => {
     async function importGameData() {
       if (worldData) {
         // TODO: ts errors
-        const { errors, finish } = importGameDataJSON(worldData)
+        const { errors, finish } = importWorldData(worldData, incomingJSONPath)
 
         if (errors.length > 0) {
           setImportingGameData(false)
@@ -161,7 +148,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
 
           // Studio found...
           if (foundStudio) {
-            // ...but game exists; confirm with user to overwrite
+            // ...but world exists; confirm with user to overwrite
             if (
               foundStudio.worlds.findIndex((id) => id === worldData._.id) !== -1
             ) {
@@ -184,7 +171,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
               return
             }
 
-            // ...game does not exist, finish processing
+            // ...world does not exist, finish processing
             if (
               foundStudio.worlds.findIndex((id) => id === worldData._.id) === -1
             ) {
@@ -208,7 +195,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
 
   return (
     <Modal
-      visible={visible && file ? true : false}
+      visible={visible}
       destroyOnClose
       closable={false}
       centered
@@ -247,7 +234,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
       <div style={{ textAlign: 'center' }}>
         {importingGameData && (
           <>
-            <div style={{ marginBottom: 20 }}>Importing Game Data</div>
+            <div style={{ marginBottom: 20 }}>Importing Storyworld Data</div>
             <LoadingOutlined style={{ fontSize: 24 }} spin />
           </>
         )}
@@ -303,21 +290,21 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
               Studio '{studioNotFound.title}' with ID '{studioNotFound.id}' not
               found in local database.
             </div>
-            <div>Create studio and finish game import?</div>
+            <div>Create studio and finish world import?</div>
           </>
         )}
 
         {!importingGameData && gameExists && gameExists !== true && (
           <>
             <div style={{ marginBottom: 10 }}>
-              Game '{gameExists.title}' with ID '{gameExists.id}' exists.
+              Storyworld '{gameExists.title}' with ID '{gameExists.id}' exists.
             </div>
             {gameExists.newer && (
               <div style={{ marginBottom: 10 }}>
-                Local game data is also newer.
+                Local world data is also newer.
               </div>
             )}
-            <div>Replace existing data and finish game import?</div>
+            <div>Replace existing data and finish world import?</div>
           </>
         )}
       </div>

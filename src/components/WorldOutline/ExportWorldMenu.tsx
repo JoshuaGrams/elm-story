@@ -2,7 +2,7 @@ import { ipcRenderer } from 'electron'
 
 import React, { useContext, useState, useEffect } from 'react'
 
-import getGameDataJSON from '../../lib/getGameDataJSON'
+import getWorldDataJSON from '../../lib/getWorldDataJSON'
 
 import { World, WORLD_EXPORT_TYPE } from '../../data/types'
 import { StudioId } from '../../lib/transport/types/0.5.1'
@@ -59,7 +59,7 @@ const ExportWorldMenu: React.FC<{ studioId: StudioId; world: World }> = ({
     if (world.id) {
       setExportWorldModal({ ...exportWorldModal, visible: true })
 
-      const worldDataAsString = await getGameDataJSON(
+      const worldDataAsString = await getWorldDataJSON(
         studioId,
         world.id,
         app.version

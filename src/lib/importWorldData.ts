@@ -1,3 +1,5 @@
+import { ipcRenderer } from 'electron'
+
 import { cloneDeep } from 'lodash'
 import semver from 'semver'
 import { ValidationError } from 'jsonschema'
@@ -20,6 +22,7 @@ import v020Upgrade from './transport/upgrade/0.2.0'
 import v040Upgrade from './transport/upgrade/0.4.0'
 import v050Upgrade from './transport/upgrade/0.5.0'
 import v060Upgrade from './transport/upgrade/0.6.0'
+import { WINDOW_EVENT_TYPE } from './events'
 
 export default (
   worldData: GameDataJSON_013 &
@@ -28,6 +31,7 @@ export default (
     GameDataJSON_050 &
     GameDataJSON_051 &
     WorldDataJSON_060,
+  jsonPath: string | undefined,
   skipValidation?: boolean
 ): {
   errors: string[]
@@ -340,6 +344,12 @@ export default (
             title: `${_.title} (Imported)`,
             version: _.version,
             website: _.website
+          })
+
+          await ipcRenderer.invoke(WINDOW_EVENT_TYPE.IMPORT_WORLD_ASSETS, {
+            studioId: _.studioId,
+            worldId: _.id,
+            jsonPath
           })
         } catch (error) {
           return [`${error}`]
