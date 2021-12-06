@@ -66,7 +66,7 @@ const ExportWorldMenu: React.FC<{ studioId: StudioId; world: World }> = ({
       )
 
       setTimeout(() => {
-        ipcRenderer.send(WINDOW_EVENT_TYPE.EXPORT_WORLD_START, {
+        ipcRenderer.invoke(WINDOW_EVENT_TYPE.EXPORT_WORLD_START, {
           type,
           data: worldDataAsString
         })
