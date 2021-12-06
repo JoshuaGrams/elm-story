@@ -30,7 +30,7 @@ export default ({
         ELEMENT_TYPE.SCENE,
         sceneId
       ]),
-      parent: [ELEMENT_TYPE.GAME, null],
+      parent: ['GAME', null],
       ...pick(clonedChapters[chapterId], ['id', 'tags', 'title', 'updated'])
     }
   })
@@ -48,10 +48,7 @@ export default ({
     const clonedScene = clonedScenes[sceneId]
 
     upgradedScenes[sceneId] = {
-      children: clonedScene.passages.map((passageId) => [
-        ELEMENT_TYPE.PASSAGE,
-        passageId
-      ]),
+      children: clonedScene.passages.map((passageId) => ['PASSAGE', passageId]),
       parent: [ELEMENT_TYPE.FOLDER, clonedScene.chapterId],
       ...pick(clonedScene, [
         'editor',

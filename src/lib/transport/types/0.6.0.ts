@@ -148,8 +148,8 @@ export interface CharacterData {
   id: ElementId
   masks: CharacterMask[]
   refs: CharacterRefs
-  title: string
   tags: string[]
+  title: string
   updated: number
 }
 
@@ -232,8 +232,8 @@ export interface FolderCollection {
 }
 
 export interface InputData {
-  id: ElementId
   eventId: ElementId
+  id: ElementId
   tags: string[]
   title: string
   updated: number
