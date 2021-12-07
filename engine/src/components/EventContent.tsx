@@ -4,8 +4,7 @@ import reactStringReplace from 'react-string-replace'
 import {
   VARIABLE_TYPE,
   EngineLiveEventStateCollection,
-  EventPersona,
-  ElementId
+  EventCharacterPersona
 } from '../types'
 import {
   gameMethods,
@@ -15,7 +14,8 @@ import {
 } from '../lib/templates'
 
 import { EngineContext } from '../contexts/EngineContext'
-import EventMask from './EventMask'
+
+import EventCharacterReference from './EventCharacterReference'
 
 const processTemplateBlock = (
   template: string,
@@ -90,11 +90,10 @@ const decorate = (
 }
 
 const EventContent: React.FC<{
-  eventId: ElementId
   content: string
-  persona?: EventPersona
+  persona?: EventCharacterPersona
   state: EngineLiveEventStateCollection
-}> = React.memo(({ eventId, content, persona, state }) => {
+}> = React.memo(({ content, persona, state }) => {
   const { engine } = useContext(EngineContext)
 
   const parsedContent: {
@@ -103,12 +102,14 @@ const EventContent: React.FC<{
   }[] = JSON.parse(content)
 
   return (
-    <>
-      {persona && <EventMask eventId={eventId} persona={persona} />}
-
+    <div>
       {parsedContent.map((descendant, index) => {
         return (
           <p key={`content-p-text-${index}`}>
+            {persona && index === 0 && (
+              <EventCharacterReference persona={persona} />
+            )}
+
             {decorate(
               descendant.children[0].text,
               state,
@@ -121,7 +122,7 @@ const EventContent: React.FC<{
       {!parsedContent[0].children[0].text && parsedContent.length === 1 && (
         <div className="engine-warning-message">Event content required.</div>
       )}
-    </>
+    </div>
   )
 })
 

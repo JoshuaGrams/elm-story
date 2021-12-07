@@ -197,7 +197,11 @@ export interface EffectCollection {
   [effectId: string]: EffectData
 }
 
-export type EventPersona = [ElementId, CHARACTER_MASK_TYPE, string | undefined] // [characterId, mask, reference ID]
+export type EventCharacterPersona = [
+  ElementId,
+  CHARACTER_MASK_TYPE,
+  string | undefined
+] // [characterId, mask, reference ID]
 
 export interface EventData {
   choices: ElementId[]
@@ -209,7 +213,7 @@ export interface EventData {
   ending: boolean
   id: ElementId
   input?: ElementId // variable ID
-  persona?: EventPersona
+  persona?: EventCharacterPersona
   sceneId: ElementId
   tags: string[]
   title: string
@@ -368,6 +372,7 @@ export interface EngineBookmarkCollection {
 export interface EngineCharacterData {
   id: ElementId
   masks: CharacterMask[]
+  refs: CharacterRefs
   title: string
   worldId: WorldId
 }
@@ -486,7 +491,7 @@ export interface EngineEventData {
   ending: boolean
   id: ElementId
   input?: ElementId
-  persona?: EventPersona
+  persona?: EventCharacterPersona
   sceneId: ElementId
   type: EVENT_TYPE
   worldId: WorldId

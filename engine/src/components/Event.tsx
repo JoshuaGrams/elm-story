@@ -26,6 +26,8 @@ import { NextLiveEventProcessor } from './LiveEvent'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
+import EventCharacterMask from './EventCharacterMask'
+import EventCharacterReference from './EventCharacterReference'
 import EventContent from './EventContent'
 import EventChoices from './EventChoices'
 import EventInput from './EventInput'
@@ -156,12 +158,20 @@ export const Event: React.FC<{
       >
         {event && (
           <>
-            <EventContent
-              eventId={event.id}
-              content={event.content}
-              persona={event.persona}
-              state={liveEvent.state}
-            />
+            <div
+              style={{
+                display: event.persona ? 'grid' : 'unset',
+                gridTemplateColumns: event.persona ? '13.5rem auto' : 'unset'
+              }}
+            >
+              {event.persona && <EventCharacterMask persona={event.persona} />}
+
+              <EventContent
+                content={event.content}
+                persona={event.persona}
+                state={liveEvent.state}
+              />
+            </div>
 
             {event.type === EVENT_TYPE.CHOICE && (
               <EventChoices
