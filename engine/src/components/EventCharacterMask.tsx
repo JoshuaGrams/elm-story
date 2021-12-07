@@ -36,20 +36,16 @@ const EventCharacterMask: React.FC<{
   )
 
   return (
-    <>
-      {mask?.assetId && (
-        <div className="character-mask">
-          <div
-            className="portrait"
-            style={{
-              backgroundImage: mask.assetId
-                ? `url(../../data/amber-shores_0.0.45/assets/${mask.assetId}.jpeg)`
-                : `url(data:image/svg+xml;base64,${btoa(placeholder)})`
-            }}
-          />
-        </div>
-      )}
-    </>
+    <div className="character-mask">
+      <div
+        className="portrait"
+        style={{
+          backgroundImage: mask?.assetId
+            ? `url(../../data/amber-shores_0.0.45/assets/${mask.assetId}.jpeg)`
+            : `url(data:image/svg+xml;base64,${btoa(placeholder)})`
+        }}
+      />
+    </div>
   )
 })
 
