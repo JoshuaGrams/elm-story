@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useQuery } from 'react-query'
 
 import { LibraryDatabase } from '../lib/db'
-import { findStartingDestinationPassage } from '../lib/api'
+import { findStartingDestinationLiveEvent } from '../lib/api'
 
 import { WorldId, StudioId } from '../types'
 
@@ -11,24 +11,24 @@ import { EngineContext } from '../contexts/EngineContext'
 
 const StartingDestinationGate: React.FC<{
   studioId: StudioId
-  gameId: WorldId
-}> = React.memo(({ children, studioId, gameId }) => {
+  worldId: WorldId
+}> = React.memo(({ children, studioId, worldId }) => {
   const { engine } = useContext(EngineContext)
 
   const passageCount: number = useLiveQuery(
-    () => new LibraryDatabase(studioId).passages.where({ gameId }).count(),
+    () => new LibraryDatabase(studioId).events.where({ worldId }).count(),
     [],
     -1
   )
 
   const { data: startingDestinationPassage } = useQuery(
-    [`startingDestination-${gameId}`, studioId, gameId, passageCount],
+    [`startingDestination-${worldId}`, studioId, worldId, passageCount],
     async () => {
       if (!engine.installed) {
         try {
-          const foundStartingDestination = await findStartingDestinationPassage(
+          const foundStartingDestination = await findStartingDestinationLiveEvent(
             studioId,
-            gameId
+            worldId
           )
 
           return foundStartingDestination ? true : false
@@ -48,7 +48,7 @@ const StartingDestinationGate: React.FC<{
     <>
       {passageCount === 0 && !engine.installed && (
         <div className="engine-warning-message" style={{ padding: '1.4rem' }}>
-          Scene and passage required to render game.
+          Scene and event required to render game.
         </div>
       )}
 

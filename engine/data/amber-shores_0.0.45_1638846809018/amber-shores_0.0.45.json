@@ -1,0 +1,772 @@
+{
+  "_": {
+    "children": [
+      [
+        "FOLDER",
+        "58ee805c-2f58-4614-bfbc-c7d123272517"
+      ]
+    ],
+    "copyright": "(c) 2021 Elm Story Games",
+    "description": "You wake in a dusty, frigid and dimly lit room...",
+    "designer": "ritsuke",
+    "engine": "0.6.0",
+    "id": "701b0e45-1afa-4754-97d3-b600a52efaf3",
+    "jump": "0a300279-034a-4b78-88ac-922afec0480c",
+    "schema": "https://elmstory.com/schema/elm-story-0.6.0.json",
+    "studioId": "131415d0-0684-40f6-a474-9797968cd850",
+    "studioTitle": "Elm Story Games",
+    "tags": [],
+    "title": "Amber Shores",
+    "updated": 1638846545097,
+    "version": "0.0.45",
+    "website": "https://elmstory.com"
+  },
+  "characters": {
+    "4719f708-7995-4cf1-9c1a-f974880d97c6": {
+      "id": "4719f708-7995-4cf1-9c1a-f974880d97c6",
+      "masks": [
+        {
+          "type": "NEUTRAL",
+          "active": true,
+          "assetId": "e799548c-289e-45c6-b43d-8fc76ef605a4"
+        }
+      ],
+      "refs": [
+        [
+          "2029959e-7450-40cd-8b99-76ba345267d9",
+          "SHE"
+        ],
+        [
+          "2dfd1238-9aef-46c5-91ef-0bd5bc0e9845",
+          "HER"
+        ],
+        [
+          "88bb5737-66a3-4525-baf2-3e586781d5c8",
+          "LYRA"
+        ],
+        [
+          "b78aec9c-038b-4f86-96a5-7c4160c44830",
+          "SILVERTOUNGE"
+        ]
+      ],
+      "tags": [],
+      "title": "Lyra Silvertounge",
+      "updated": 1638845933802
+    },
+    "d65f167c-afa8-4590-83e3-84fc25200433": {
+      "id": "d65f167c-afa8-4590-83e3-84fc25200433",
+      "masks": [
+        {
+          "type": "NEUTRAL",
+          "active": true,
+          "assetId": "36282099-5612-4404-929b-a42a34c31a33"
+        },
+        {
+          "type": "TENSE",
+          "active": true,
+          "assetId": "13f2ed6a-d4a5-461e-801e-170f7b114f7a"
+        }
+      ],
+      "refs": [],
+      "tags": [],
+      "title": "Bear",
+      "updated": 1638845970058
+    }
+  },
+  "choices": {
+    "62895cad-0dca-417a-9487-ca786565d80d": {
+      "id": "62895cad-0dca-417a-9487-ca786565d80d",
+      "eventId": "ca122de2-5736-43cc-86fd-5f23c575e8a1",
+      "tags": [],
+      "title": "Pull chain",
+      "updated": 1632154503352
+    },
+    "6c04cf12-d002-4554-ab15-c6ec3a40d2f1": {
+      "id": "6c04cf12-d002-4554-ab15-c6ec3a40d2f1",
+      "eventId": "646575da-18f4-434b-8270-cfa41a73e290",
+      "tags": [],
+      "title": "Continue",
+      "updated": 1632153225682
+    },
+    "819822f7-f00e-4ab5-8f14-f38dda38ebfd": {
+      "id": "819822f7-f00e-4ab5-8f14-f38dda38ebfd",
+      "eventId": "a623eae4-7624-40aa-879b-60b2bb731f5e",
+      "tags": [],
+      "title": "Continue",
+      "updated": 1632321174580
+    },
+    "bd686644-a515-48a0-b61c-85fa1423537f": {
+      "id": "bd686644-a515-48a0-b61c-85fa1423537f",
+      "eventId": "28a637df-584f-4ff7-9969-5e633da5d6e8",
+      "tags": [],
+      "title": "Turn on the light",
+      "updated": 1632153300686
+    },
+    "c26ccc38-ad61-4a37-afd9-2631b66f4a68": {
+      "id": "c26ccc38-ad61-4a37-afd9-2631b66f4a68",
+      "eventId": "a623eae4-7624-40aa-879b-60b2bb731f5e",
+      "tags": [],
+      "title": "Reconsider",
+      "updated": 1632321165867
+    },
+    "cddd4290-c64f-4b30-8f51-33a302d05958": {
+      "id": "cddd4290-c64f-4b30-8f51-33a302d05958",
+      "eventId": "646575da-18f4-434b-8270-cfa41a73e290",
+      "tags": [],
+      "title": "Examine the lamp",
+      "updated": 1632152223371
+    }
+  },
+  "conditions": {
+    "9c6260b1-14da-43ab-91ea-3df44658a907": {
+      "compare": [
+        "c558640d-baed-4b40-bc54-b1ddc8c54090",
+        "=",
+        "0"
+      ],
+      "id": "9c6260b1-14da-43ab-91ea-3df44658a907",
+      "pathId": "f53cb719-9ee3-40b7-941a-fdb812653b3f",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1632321884091,
+      "variableId": "c558640d-baed-4b40-bc54-b1ddc8c54090"
+    },
+    "9f2ca877-a65e-4403-a8fd-69cf41583155": {
+      "compare": [
+        "c558640d-baed-4b40-bc54-b1ddc8c54090",
+        ">",
+        "0"
+      ],
+      "id": "9f2ca877-a65e-4403-a8fd-69cf41583155",
+      "pathId": "6b2e835e-0c12-4e96-8149-a42d6206b873",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1632322686011,
+      "variableId": "c558640d-baed-4b40-bc54-b1ddc8c54090"
+    },
+    "a5a9be7e-2c51-4c35-ada0-858a3d81b919": {
+      "compare": [
+        "9451c0fa-a3cc-4839-a8bd-8abc17ce4725",
+        "=",
+        "true"
+      ],
+      "id": "a5a9be7e-2c51-4c35-ada0-858a3d81b919",
+      "pathId": "b9db7a25-68cc-4866-9f89-ab74b729104b",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1632152640774,
+      "variableId": "9451c0fa-a3cc-4839-a8bd-8abc17ce4725"
+    },
+    "ce57b28f-5d75-455c-8dc1-cb940d819a08": {
+      "compare": [
+        "9451c0fa-a3cc-4839-a8bd-8abc17ce4725",
+        "=",
+        "false"
+      ],
+      "id": "ce57b28f-5d75-455c-8dc1-cb940d819a08",
+      "pathId": "ef7bf9f2-19d7-4e49-b4d4-d82ff05caecc",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1632153245697,
+      "variableId": "9451c0fa-a3cc-4839-a8bd-8abc17ce4725"
+    }
+  },
+  "effects": {
+    "29310583-3647-4a58-8e0f-f1a35c5e2d42": {
+      "id": "29310583-3647-4a58-8e0f-f1a35c5e2d42",
+      "pathId": "e653e6d3-dae6-41a6-8a5b-3a1070a4b114",
+      "set": [
+        "9451c0fa-a3cc-4839-a8bd-8abc17ce4725",
+        "=",
+        "true"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1633568737222,
+      "variableId": "9451c0fa-a3cc-4839-a8bd-8abc17ce4725"
+    },
+    "570a4f42-1f73-4d99-becb-5e3329a80018": {
+      "id": "570a4f42-1f73-4d99-becb-5e3329a80018",
+      "pathId": "de1529ea-5ee7-421b-b550-717a2fe1fd5f",
+      "set": [
+        "c558640d-baed-4b40-bc54-b1ddc8c54090",
+        "+",
+        "1"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1632322408931,
+      "variableId": "c558640d-baed-4b40-bc54-b1ddc8c54090"
+    },
+    "9c9f9b9a-8324-4e80-86b3-a3406e52ad65": {
+      "id": "9c9f9b9a-8324-4e80-86b3-a3406e52ad65",
+      "pathId": "a6cc45bc-277c-4f83-9034-25924373eadb",
+      "set": [
+        "c558640d-baed-4b40-bc54-b1ddc8c54090",
+        "+",
+        "1"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1633655146541,
+      "variableId": "c558640d-baed-4b40-bc54-b1ddc8c54090"
+    },
+    "bf28c265-8c68-4323-9e9f-9f36778af90f": {
+      "id": "bf28c265-8c68-4323-9e9f-9f36778af90f",
+      "pathId": "418ced6c-30cd-4249-8039-044dae14a176",
+      "set": [
+        "9451c0fa-a3cc-4839-a8bd-8abc17ce4725",
+        "=",
+        "false"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1633655077725,
+      "variableId": "9451c0fa-a3cc-4839-a8bd-8abc17ce4725"
+    }
+  },
+  "events": {
+    "080c450b-016a-41e3-9492-96b09de09017": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"The dimly lit room is covered in dust, cobwebs and ice.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"You are afraid, barely noticing the steam exiting your mouth.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Howling wind creaks the ancient wood.\"}]}]",
+      "composer": {
+        "sceneMapPosX": -91,
+        "sceneMapPosY": 741.5
+      },
+      "ending": false,
+      "id": "080c450b-016a-41e3-9492-96b09de09017",
+      "persona": [
+        "d65f167c-afa8-4590-83e3-84fc25200433",
+        "NEUTRAL",
+        null
+      ],
+      "sceneId": "13048caf-4075-4d4c-ace5-acf984eed1f4",
+      "tags": [],
+      "title": "Intro",
+      "type": "CHOICE",
+      "updated": 1638845991513
+    },
+    "09a1dab3-b83d-405e-9521-0f5336ce73b2": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Quickly, you feel around for the lamp.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Pulling down on the gold chain, the dim red haze returns.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"The room has changed.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1131.9618953919821,
+        "sceneMapPosY": 679.3735419931475
+      },
+      "ending": false,
+      "id": "09a1dab3-b83d-405e-9521-0f5336ce73b2",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Attempt to turn on the light",
+      "type": "CHOICE",
+      "updated": 1635994560224
+    },
+    "0ebfa65d-bfa6-45ed-abbe-55d457bc76bf": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"In shock, you snap your hand back, pulling the chain with you.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"The lamp crashes to the floor, extinguishing the light.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1375.9618953919821,
+        "sceneMapPosY": 679.3735419931475
+      },
+      "ending": false,
+      "id": "0ebfa65d-bfa6-45ed-abbe-55d457bc76bf",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Breaking the lamp",
+      "type": "CHOICE",
+      "updated": 1635994560267
+    },
+    "1f02125d-f06c-4ddd-b369-38611e764490": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\\\"How did I get here?\\\" you whisper.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Carefully looking around, you realize the absence of windows.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"There are no doors.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 162,
+        "sceneMapPosY": 740
+      },
+      "ending": false,
+      "id": "1f02125d-f06c-4ddd-b369-38611e764490",
+      "persona": [
+        "4719f708-7995-4cf1-9c1a-f974880d97c6",
+        "NEUTRAL",
+        "88bb5737-66a3-4525-baf2-3e586781d5c8"
+      ],
+      "sceneId": "13048caf-4075-4d4c-ace5-acf984eed1f4",
+      "tags": [],
+      "title": "Looking around",
+      "type": "CHOICE",
+      "updated": 1638845978775
+    },
+    "28a637df-584f-4ff7-9969-5e633da5d6e8": {
+      "choices": [
+        "bd686644-a515-48a0-b61c-85fa1423537f"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"As your breathing quickens, panic begins to swell in your throat.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"You feel the space around you closing in.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 878.3003487735207,
+        "sceneMapPosY": 659.3735419931475
+      },
+      "ending": false,
+      "id": "28a637df-584f-4ff7-9969-5e633da5d6e8",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Panic",
+      "type": "CHOICE",
+      "updated": 1635994554360
+    },
+    "569d12c3-7050-49e0-891e-9fde24167822": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Thank you for playing this preview of Amber Shores.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"The first chapter will be available December 2021.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1869.1398728601362,
+        "sceneMapPosY": 694.4803284740406
+      },
+      "ending": true,
+      "id": "569d12c3-7050-49e0-891e-9fde24167822",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Game Over",
+      "type": "CHOICE",
+      "updated": 1638845887615
+    },
+    "646575da-18f4-434b-8270-cfa41a73e290": {
+      "choices": [
+        "cddd4290-c64f-4b30-8f51-33a302d05958",
+        "6c04cf12-d002-4554-ab15-c6ec3a40d2f1"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You are standing in the middle of the room.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"{ isLampOn ? 'A red, stained glass lamp sits atop a round accent table.' : 'It is pitch black. The cold intensifies.' }\"}]}]",
+      "composer": {
+        "sceneMapPosX": 612,
+        "sceneMapPosY": 524
+      },
+      "ending": false,
+      "id": "646575da-18f4-434b-8270-cfa41a73e290",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Idle",
+      "type": "CHOICE",
+      "updated": 1633638767130
+    },
+    "a623eae4-7624-40aa-879b-60b2bb731f5e": {
+      "choices": [
+        "819822f7-f00e-4ab5-8f14-f38dda38ebfd",
+        "c26ccc38-ad61-4a37-afd9-2631b66f4a68"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You hesitate.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"{ restarted == 0 ? '\\\"This is crazy,\\\" you whisper. \\\"Why am I doing this?\\\"' : 'As you gather resolve, the sense of unease lessens.' }\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1146.2113703141315,
+        "sceneMapPosY": 512.0337217144872
+      },
+      "ending": false,
+      "id": "a623eae4-7624-40aa-879b-60b2bb731f5e",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Questioning yourself",
+      "type": "CHOICE",
+      "updated": 1635994554428
+    },
+    "ca122de2-5736-43cc-86fd-5f23c575e8a1": {
+      "choices": [
+        "62895cad-0dca-417a-9487-ca786565d80d"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"The lamp is on, dimly glowing with red haze.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Under the stained glass shade hangs a tattered, gold chain.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 878.8715500354701,
+        "sceneMapPosY": 469.6388451062143
+      },
+      "ending": false,
+      "id": "ca122de2-5736-43cc-86fd-5f23c575e8a1",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Examining the lamp",
+      "type": "CHOICE",
+      "updated": 1635994554460
+    },
+    "d36396ed-7a5c-451a-b020-b11fdd2abba8": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You gently pull down on the chain.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1418.2113703141315,
+        "sceneMapPosY": 386.4803284740407
+      },
+      "ending": false,
+      "id": "d36396ed-7a5c-451a-b020-b11fdd2abba8",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Turning off the lamp",
+      "type": "CHOICE",
+      "updated": 1635994554479
+    },
+    "d8d224f7-3070-4497-aa2f-44142739d207": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You are trapped.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 418,
+        "sceneMapPosY": 740
+      },
+      "ending": false,
+      "id": "d8d224f7-3070-4497-aa2f-44142739d207",
+      "persona": [
+        "d65f167c-afa8-4590-83e3-84fc25200433",
+        "TENSE",
+        null
+      ],
+      "sceneId": "13048caf-4075-4d4c-ace5-acf984eed1f4",
+      "tags": [],
+      "title": "Trapped",
+      "type": "CHOICE",
+      "updated": 1638845985583
+    },
+    "f38457e7-2800-46f9-9d65-b38130221563": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Covered in freezing cold sweat, you feel your throat fully close.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Falling to the ground, you lose consciousness.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1623.9618953919821,
+        "sceneMapPosY": 679.3735419931475
+      },
+      "ending": false,
+      "id": "f38457e7-2800-46f9-9d65-b38130221563",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Losing consciousness",
+      "type": "CHOICE",
+      "updated": 1635994560327
+    }
+  },
+  "folders": {
+    "58ee805c-2f58-4614-bfbc-c7d123272517": {
+      "children": [
+        [
+          "SCENE",
+          "13048caf-4075-4d4c-ace5-acf984eed1f4"
+        ],
+        [
+          "SCENE",
+          "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3"
+        ]
+      ],
+      "id": "58ee805c-2f58-4614-bfbc-c7d123272517",
+      "parent": [
+        "WORLD",
+        null
+      ],
+      "tags": [],
+      "title": "Preview",
+      "updated": 1635994586381
+    }
+  },
+  "inputs": {},
+  "jumps": {
+    "0a300279-034a-4b78-88ac-922afec0480c": {
+      "composer": {},
+      "id": "0a300279-034a-4b78-88ac-922afec0480c",
+      "path": [
+        "13048caf-4075-4d4c-ace5-acf984eed1f4",
+        "080c450b-016a-41e3-9492-96b09de09017"
+      ],
+      "tags": [],
+      "title": "On Game Start Jump",
+      "updated": 1638845877774
+    },
+    "109af87a-6617-4fa5-bb7f-cddd36b6fabe": {
+      "composer": {
+        "sceneMapPosX": 1818.318177344399,
+        "sceneMapPosY": 397.27643874245905
+      },
+      "id": "109af87a-6617-4fa5-bb7f-cddd36b6fabe",
+      "path": [
+        "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+        "646575da-18f4-434b-8270-cfa41a73e290"
+      ],
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Jump to idle",
+      "updated": 1635994553918
+    },
+    "9a0fa254-dbe5-4e49-a9b3-16f6a146a4ba": {
+      "composer": {
+        "sceneMapPosX": 678,
+        "sceneMapPosY": 740
+      },
+      "id": "9a0fa254-dbe5-4e49-a9b3-16f6a146a4ba",
+      "path": [
+        "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+        "646575da-18f4-434b-8270-cfa41a73e290"
+      ],
+      "sceneId": "13048caf-4075-4d4c-ace5-acf984eed1f4",
+      "tags": [],
+      "title": "Jump to the room",
+      "updated": 1635994510958
+    }
+  },
+  "paths": {
+    "418ced6c-30cd-4249-8039-044dae14a176": {
+      "destinationId": "109af87a-6617-4fa5-bb7f-cddd36b6fabe",
+      "destinationType": "JUMP",
+      "id": "418ced6c-30cd-4249-8039-044dae14a176",
+      "originId": "d36396ed-7a5c-451a-b020-b11fdd2abba8",
+      "originType": "CHOICE",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1633655073503
+    },
+    "6b2e835e-0c12-4e96-8149-a42d6206b873": {
+      "choiceId": "62895cad-0dca-417a-9487-ca786565d80d",
+      "destinationId": "d36396ed-7a5c-451a-b020-b11fdd2abba8",
+      "destinationType": "EVENT",
+      "id": "6b2e835e-0c12-4e96-8149-a42d6206b873",
+      "originId": "ca122de2-5736-43cc-86fd-5f23c575e8a1",
+      "originType": "CHOICE",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632321346497
+    },
+    "6b6b0dbf-9a3f-4199-9744-7cc1cef10f51": {
+      "choiceId": "819822f7-f00e-4ab5-8f14-f38dda38ebfd",
+      "destinationId": "d36396ed-7a5c-451a-b020-b11fdd2abba8",
+      "destinationType": "EVENT",
+      "id": "6b6b0dbf-9a3f-4199-9744-7cc1cef10f51",
+      "originId": "a623eae4-7624-40aa-879b-60b2bb731f5e",
+      "originType": "CHOICE",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632321149636
+    },
+    "7bfa8725-9e06-46ef-8b5a-f64c60c4f036": {
+      "destinationId": "569d12c3-7050-49e0-891e-9fde24167822",
+      "destinationType": "EVENT",
+      "id": "7bfa8725-9e06-46ef-8b5a-f64c60c4f036",
+      "originId": "f38457e7-2800-46f9-9d65-b38130221563",
+      "originType": "CHOICE",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1633655263304
+    },
+    "8ca7e657-aa28-4d0b-a188-a8fddb1e208b": {
+      "destinationId": "d8d224f7-3070-4497-aa2f-44142739d207",
+      "destinationType": "EVENT",
+      "id": "8ca7e657-aa28-4d0b-a188-a8fddb1e208b",
+      "originId": "1f02125d-f06c-4ddd-b369-38611e764490",
+      "originType": "CHOICE",
+      "sceneId": "13048caf-4075-4d4c-ace5-acf984eed1f4",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1633654969868
+    },
+    "95bd78ed-736a-488c-9047-0ac65b73597b": {
+      "destinationId": "9a0fa254-dbe5-4e49-a9b3-16f6a146a4ba",
+      "destinationType": "JUMP",
+      "id": "95bd78ed-736a-488c-9047-0ac65b73597b",
+      "originId": "d8d224f7-3070-4497-aa2f-44142739d207",
+      "originType": "CHOICE",
+      "sceneId": "13048caf-4075-4d4c-ace5-acf984eed1f4",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1633654975818
+    },
+    "a6cc45bc-277c-4f83-9034-25924373eadb": {
+      "destinationId": "f38457e7-2800-46f9-9d65-b38130221563",
+      "destinationType": "EVENT",
+      "id": "a6cc45bc-277c-4f83-9034-25924373eadb",
+      "originId": "0ebfa65d-bfa6-45ed-abbe-55d457bc76bf",
+      "originType": "CHOICE",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1633655140871
+    },
+    "ad7a2bd9-5c18-4f38-ab10-1086de37f32f": {
+      "destinationId": "1f02125d-f06c-4ddd-b369-38611e764490",
+      "destinationType": "EVENT",
+      "id": "ad7a2bd9-5c18-4f38-ab10-1086de37f32f",
+      "originId": "080c450b-016a-41e3-9492-96b09de09017",
+      "originType": "CHOICE",
+      "sceneId": "13048caf-4075-4d4c-ace5-acf984eed1f4",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1633654962632
+    },
+    "b9db7a25-68cc-4866-9f89-ab74b729104b": {
+      "choiceId": "cddd4290-c64f-4b30-8f51-33a302d05958",
+      "destinationId": "ca122de2-5736-43cc-86fd-5f23c575e8a1",
+      "destinationType": "EVENT",
+      "id": "b9db7a25-68cc-4866-9f89-ab74b729104b",
+      "originId": "646575da-18f4-434b-8270-cfa41a73e290",
+      "originType": "CHOICE",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632151728568
+    },
+    "de1529ea-5ee7-421b-b550-717a2fe1fd5f": {
+      "choiceId": "c26ccc38-ad61-4a37-afd9-2631b66f4a68",
+      "destinationId": "109af87a-6617-4fa5-bb7f-cddd36b6fabe",
+      "destinationType": "JUMP",
+      "id": "de1529ea-5ee7-421b-b550-717a2fe1fd5f",
+      "originId": "a623eae4-7624-40aa-879b-60b2bb731f5e",
+      "originType": "CHOICE",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632321182596
+    },
+    "e653e6d3-dae6-41a6-8a5b-3a1070a4b114": {
+      "choiceId": "bd686644-a515-48a0-b61c-85fa1423537f",
+      "destinationId": "09a1dab3-b83d-405e-9521-0f5336ce73b2",
+      "destinationType": "EVENT",
+      "id": "e653e6d3-dae6-41a6-8a5b-3a1070a4b114",
+      "originId": "28a637df-584f-4ff7-9969-5e633da5d6e8",
+      "originType": "CHOICE",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632154420733
+    },
+    "ef7bf9f2-19d7-4e49-b4d4-d82ff05caecc": {
+      "choiceId": "6c04cf12-d002-4554-ab15-c6ec3a40d2f1",
+      "destinationId": "28a637df-584f-4ff7-9969-5e633da5d6e8",
+      "destinationType": "EVENT",
+      "id": "ef7bf9f2-19d7-4e49-b4d4-d82ff05caecc",
+      "originId": "646575da-18f4-434b-8270-cfa41a73e290",
+      "originType": "CHOICE",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632152681886
+    },
+    "f089c381-303e-4153-b843-6bf00668ef2d": {
+      "destinationId": "0ebfa65d-bfa6-45ed-abbe-55d457bc76bf",
+      "destinationType": "EVENT",
+      "id": "f089c381-303e-4153-b843-6bf00668ef2d",
+      "originId": "09a1dab3-b83d-405e-9521-0f5336ce73b2",
+      "originType": "CHOICE",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1633655103129
+    },
+    "f53cb719-9ee3-40b7-941a-fdb812653b3f": {
+      "choiceId": "62895cad-0dca-417a-9487-ca786565d80d",
+      "destinationId": "a623eae4-7624-40aa-879b-60b2bb731f5e",
+      "destinationType": "EVENT",
+      "id": "f53cb719-9ee3-40b7-941a-fdb812653b3f",
+      "originId": "ca122de2-5736-43cc-86fd-5f23c575e8a1",
+      "originType": "CHOICE",
+      "sceneId": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1632155011130
+    }
+  },
+  "scenes": {
+    "13048caf-4075-4d4c-ace5-acf984eed1f4": {
+      "children": [
+        [
+          "EVENT",
+          "080c450b-016a-41e3-9492-96b09de09017"
+        ],
+        [
+          "EVENT",
+          "1f02125d-f06c-4ddd-b369-38611e764490"
+        ],
+        [
+          "EVENT",
+          "d8d224f7-3070-4497-aa2f-44142739d207"
+        ]
+      ],
+      "composer": {
+        "sceneMapTransformX": 116.93404175638989,
+        "sceneMapTransformY": -256.78330680647866,
+        "sceneMapTransformZoom": 0.8379365227974908
+      },
+      "id": "13048caf-4075-4d4c-ace5-acf984eed1f4",
+      "jumps": [
+        "9a0fa254-dbe5-4e49-a9b3-16f6a146a4ba"
+      ],
+      "parent": [
+        "FOLDER",
+        "58ee805c-2f58-4614-bfbc-c7d123272517"
+      ],
+      "tags": [],
+      "title": "Game Start",
+      "updated": 1638846002067
+    },
+    "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3": {
+      "children": [
+        [
+          "EVENT",
+          "646575da-18f4-434b-8270-cfa41a73e290"
+        ],
+        [
+          "EVENT",
+          "ca122de2-5736-43cc-86fd-5f23c575e8a1"
+        ],
+        [
+          "EVENT",
+          "28a637df-584f-4ff7-9969-5e633da5d6e8"
+        ],
+        [
+          "EVENT",
+          "09a1dab3-b83d-405e-9521-0f5336ce73b2"
+        ],
+        [
+          "EVENT",
+          "a623eae4-7624-40aa-879b-60b2bb731f5e"
+        ],
+        [
+          "EVENT",
+          "0ebfa65d-bfa6-45ed-abbe-55d457bc76bf"
+        ],
+        [
+          "EVENT",
+          "f38457e7-2800-46f9-9d65-b38130221563"
+        ],
+        [
+          "EVENT",
+          "d36396ed-7a5c-451a-b020-b11fdd2abba8"
+        ],
+        [
+          "EVENT",
+          "569d12c3-7050-49e0-891e-9fde24167822"
+        ]
+      ],
+      "composer": {
+        "sceneMapTransformX": -339.52667890061,
+        "sceneMapTransformY": -262.20474746624313,
+        "sceneMapTransformZoom": 1.3195079107728946
+      },
+      "id": "fa2ecaf4-7746-4cdf-9bc8-0992738a7db3",
+      "jumps": [
+        "109af87a-6617-4fa5-bb7f-cddd36b6fabe"
+      ],
+      "parent": [
+        "FOLDER",
+        "58ee805c-2f58-4614-bfbc-c7d123272517"
+      ],
+      "tags": [],
+      "title": "The Room",
+      "updated": 1638845893847
+    }
+  },
+  "variables": {
+    "9451c0fa-a3cc-4839-a8bd-8abc17ce4725": {
+      "id": "9451c0fa-a3cc-4839-a8bd-8abc17ce4725",
+      "initialValue": "true",
+      "tags": [],
+      "title": "isLampOn",
+      "type": "BOOLEAN",
+      "updated": 1632151377243
+    },
+    "c558640d-baed-4b40-bc54-b1ddc8c54090": {
+      "id": "c558640d-baed-4b40-bc54-b1ddc8c54090",
+      "initialValue": "0",
+      "tags": [],
+      "title": "restarted",
+      "type": "NUMBER",
+      "updated": 1632153291635
+    }
+  }
+}

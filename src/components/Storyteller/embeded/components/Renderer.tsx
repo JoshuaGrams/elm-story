@@ -3,21 +3,23 @@ import { useQuery } from 'react-query'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
-import { getBookmarkAuto, saveBookmarkEvent, saveEventDate } from '../lib/api'
+import {
+  getBookmarkAuto,
+  saveBookmarkLiveEvent,
+  saveLiveEventDate
+} from '../lib/api'
 
 import {
   AUTO_ENGINE_BOOKMARK_KEY,
-  INITIAL_ENGINE_EVENT_ORIGIN_KEY
+  INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY
 } from '../lib'
 
 import TitleCard from './TitleCard'
-import EventStreamTitleBar from './EventStreamTitleBar'
-import EventStream from './EventStream'
+import EventStreamTitleBar from './LiveEventStreamTitleBar'
+import LiveEventStream from './LiveEventStream'
 
-import EventPassageXRay, {
-  ENGINE_XRAY_CONTAINER_HEIGHT
-} from './EventPassageXRay'
-import ResetNotification from './ResetNotifcation'
+import EventXRay, { ENGINE_XRAY_CONTAINER_HEIGHT } from './EventXRay'
+import ResetNotification from './ResetNotification'
 
 const Renderer: React.FC = () => {
   const { engine, engineDispatch } = useContext(EngineContext)
@@ -25,62 +27,65 @@ const Renderer: React.FC = () => {
   const { data: autoBookmark } = useQuery(
     'autoBookmark',
     async () =>
-      engine.gameInfo &&
-      (await getBookmarkAuto(engine.gameInfo.studioId, engine.gameInfo.id))
+      engine.worldInfo &&
+      (await getBookmarkAuto(engine.worldInfo.studioId, engine.worldInfo.id))
   )
 
-  const startGame = useCallback(async () => {
-    if (engine.gameInfo) {
-      const updatedBookmark = await saveBookmarkEvent(
-        engine.gameInfo.studioId,
-        `${AUTO_ENGINE_BOOKMARK_KEY}${engine.gameInfo.id}`,
-        `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${engine.gameInfo.id}`
+  const startWorld = useCallback(async () => {
+    if (engine.worldInfo) {
+      const updatedBookmark = await saveBookmarkLiveEvent(
+        engine.worldInfo.studioId,
+        `${AUTO_ENGINE_BOOKMARK_KEY}${engine.worldInfo.id}`,
+        `${INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY}${engine.worldInfo.id}`
       )
 
       updatedBookmark &&
-        (await saveEventDate(
-          engine.gameInfo.studioId,
-          `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${engine.gameInfo.id}`,
+        (await saveLiveEventDate(
+          engine.worldInfo.studioId,
+          `${INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY}${engine.worldInfo.id}`,
           updatedBookmark.updated
         ))
 
       engineDispatch({
         type: ENGINE_ACTION_TYPE.PLAY,
-        fromEvent: `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${engine.gameInfo.id}`
+        fromEvent: `${INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY}${engine.worldInfo.id}`
       })
     }
-  }, [engine.gameInfo])
+  }, [engine.worldInfo])
 
-  const continueGame = useCallback(() => {
+  const continueWorld = useCallback(() => {
     autoBookmark &&
       engineDispatch({
         type: ENGINE_ACTION_TYPE.PLAY,
-        fromEvent: autoBookmark.event
+        fromEvent: autoBookmark.liveEventId
       })
   }, [autoBookmark])
 
   useEffect(() => {
-    if (engine.gameInfo && engine.isEditor) {
-      autoBookmark?.event ? continueGame() : startGame()
+    if (engine.worldInfo && engine.isComposer) {
+      autoBookmark?.liveEventId ? continueWorld() : startWorld()
     }
-  }, [engine.gameInfo, engine.isEditor])
+  }, [engine.worldInfo, engine.isComposer])
 
   return (
     <div id="renderer">
-      {engine.gameInfo && (
+      {engine.worldInfo && (
         <>
-          {!engine.playing && !engine.isEditor && (
-            <TitleCard onStartGame={startGame} onContinueGame={continueGame} />
+          {!engine.playing && !engine.isComposer && (
+            <TitleCard
+              onStartWorld={startWorld}
+              onContinueWorld={continueWorld}
+            />
           )}
 
           {engine.playing && (
             <>
-              {!engine.isEditor && <EventStreamTitleBar />}
-              <EventStream />
+              {!engine.isComposer && <EventStreamTitleBar />}
+              <LiveEventStream />
 
-              {engine.isEditor && (
+              {engine.isComposer && (
                 <>
-                  {engine.gameInfo && engine.devTools.xrayVisible && (
+                  {engine.worldInfo && engine.devTools.xrayVisible && (
                     <div
                       style={{
                         height: ENGINE_XRAY_CONTAINER_HEIGHT,
@@ -91,8 +96,8 @@ const Renderer: React.FC = () => {
                         overflowY: 'auto'
                       }}
                     >
-                      {engine.eventsInStream.length > 0 && (
-                        <EventPassageXRay event={engine.eventsInStream[0]} />
+                      {engine.liveEventsInStream.length > 0 && (
+                        <EventXRay event={engine.liveEventsInStream[0]} />
                       )}
                     </div>
                   )}

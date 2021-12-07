@@ -1,7 +1,12 @@
 import React, { useContext } from 'react'
 import reactStringReplace from 'react-string-replace'
 
-import { VARIABLE_TYPE, EngineEventStateCollection } from '../types'
+import {
+  VARIABLE_TYPE,
+  EngineLiveEventStateCollection,
+  EventPersona,
+  ElementId
+} from '../types'
 import {
   gameMethods,
   getProcessedTemplate,
@@ -10,10 +15,11 @@ import {
 } from '../lib/templates'
 
 import { EngineContext } from '../contexts/EngineContext'
+import EventMask from './EventMask'
 
 const processTemplateBlock = (
   template: string,
-  state: EngineEventStateCollection
+  state: EngineLiveEventStateCollection
 ): [string, string[]] => {
   const expressions = getTemplateExpressions(template),
     variables: {
@@ -49,7 +55,7 @@ const processTemplateBlock = (
 
 const decorate = (
   template: string,
-  state: EngineEventStateCollection,
+  state: EngineLiveEventStateCollection,
   highlightExpressions?: boolean
 ) => {
   const [processedTemplate, expressions] = processTemplateBlock(template, state)
@@ -83,10 +89,12 @@ const decorate = (
   })
 }
 
-const EventPassageContent: React.FC<{
+const EventContent: React.FC<{
+  eventId: ElementId
   content: string
-  state: EngineEventStateCollection
-}> = React.memo(({ content, state }) => {
+  persona?: EventPersona
+  state: EngineLiveEventStateCollection
+}> = React.memo(({ eventId, content, persona, state }) => {
   const { engine } = useContext(EngineContext)
 
   const parsedContent: {
@@ -96,6 +104,8 @@ const EventPassageContent: React.FC<{
 
   return (
     <>
+      {persona && <EventMask eventId={eventId} persona={persona} />}
+
       {parsedContent.map((descendant, index) => {
         return (
           <p key={`content-p-text-${index}`}>
@@ -109,12 +119,12 @@ const EventPassageContent: React.FC<{
       })}
 
       {!parsedContent[0].children[0].text && parsedContent.length === 1 && (
-        <div className="engine-warning-message">Passage content required.</div>
+        <div className="engine-warning-message">Event content required.</div>
       )}
     </>
   )
 })
 
-EventPassageContent.displayName = 'EventPassageContent'
+EventContent.displayName = 'EventContent'
 
-export default EventPassageContent
+export default EventContent

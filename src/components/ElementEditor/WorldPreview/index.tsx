@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react'
 
 import { WorldId, StudioId } from '../../../data/types'
 import {
-  EngineDevToolsEvent,
-  ENGINE_DEVTOOLS_EVENTS,
-  ENGINE_DEVTOOLS_EVENT_TYPE
-} from '../../../lib/transport/types/0.5.1'
+  EngineDevToolsLiveEvent,
+  ENGINE_DEVTOOLS_LIVE_EVENTS,
+  ENGINE_DEVTOOLS_LIVE_EVENT_TYPE
+} from '../../../lib/transport/types/0.6.0'
 
 import { useWorld } from '../../../hooks'
 
@@ -24,11 +24,11 @@ export const StoryworldPreviewTools: React.FC<{
     [xrayVisible, setXrayVisible] = useState(false)
 
   const dispatchEngineDevToolsEvent = (
-    eventType: ENGINE_DEVTOOLS_EVENT_TYPE
+    eventType: ENGINE_DEVTOOLS_LIVE_EVENT_TYPE
   ) => {
     window.dispatchEvent(
-      new CustomEvent<EngineDevToolsEvent>(
-        ENGINE_DEVTOOLS_EVENTS.EDITOR_TO_ENGINE,
+      new CustomEvent<EngineDevToolsLiveEvent>(
+        ENGINE_DEVTOOLS_LIVE_EVENTS.EDITOR_TO_ENGINE,
         {
           detail: { eventType }
         }
@@ -40,7 +40,7 @@ export const StoryworldPreviewTools: React.FC<{
     <Menu mode="horizontal">
       <Menu.Item
         onClick={() =>
-          dispatchEngineDevToolsEvent(ENGINE_DEVTOOLS_EVENT_TYPE.RESET)
+          dispatchEngineDevToolsEvent(ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RESET)
         }
       >
         Reset
@@ -48,7 +48,7 @@ export const StoryworldPreviewTools: React.FC<{
       <Menu.Item
         onClick={() => {
           setXrayVisible(!xrayVisible)
-          dispatchEngineDevToolsEvent(ENGINE_DEVTOOLS_EVENT_TYPE.TOGGLE_XRAY)
+          dispatchEngineDevToolsEvent(ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.TOGGLE_XRAY)
         }}
         className={`${
           xrayVisible ? 'esg-menu-item-enabled' : 'esg-menu-item-disabled'
@@ -60,7 +60,7 @@ export const StoryworldPreviewTools: React.FC<{
         onClick={() => {
           setHighlightExpressions(!highlightExpressions)
           dispatchEngineDevToolsEvent(
-            ENGINE_DEVTOOLS_EVENT_TYPE.TOGGLE_EXPRESSIONS
+            ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.TOGGLE_EXPRESSIONS
           )
         }}
         className={`${
@@ -76,7 +76,7 @@ export const StoryworldPreviewTools: React.FC<{
         onClick={() => {
           setBlockedChoicesVisible(!blockedChoicesVisible)
           dispatchEngineDevToolsEvent(
-            ENGINE_DEVTOOLS_EVENT_TYPE.TOGGLE_BLOCKED_CHOICES
+            ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.TOGGLE_BLOCKED_CHOICES
           )
         }}
         className={`${

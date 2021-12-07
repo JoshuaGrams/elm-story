@@ -11,16 +11,16 @@ import {
   EngineEffectCollection,
   EngineEffectData,
   EngineEventCollection,
-  EngineEventData,
-  EngineGameData,
+  EngineLiveEventData,
+  EngineWorldData,
   EngineInputCollection,
   EngineInputData,
   EngineJumpCollection,
   EngineJumpData,
-  EnginePassageCollection,
-  EnginePassageData,
-  EngineRouteCollection,
-  EngineRouteData,
+  EngineLiveEventCollection,
+  EngineEventData,
+  EnginePathCollection,
+  EnginePathData,
   EngineSceneCollection,
   EngineSceneData,
   EngineSettingsCollection,
@@ -28,7 +28,8 @@ import {
   EngineVariableCollection,
   EngineVariableData,
   WorldId,
-  StudioId
+  StudioId,
+  EngineCharacterCollection
 } from '../../types'
 
 export enum LIBRARY_TABLE {
@@ -38,19 +39,21 @@ export enum LIBRARY_TABLE {
   CONDITIONS = 'conditions',
   EFFECTS = 'effects',
   EVENTS = 'events',
-  GAMES = 'games',
+  FOLDERS = 'folders',
   INPUTS = 'inputs',
   JUMPS = 'jumps',
-  PASSAGES = 'passages',
-  ROUTES = 'routes',
+  LIVE_EVENTS = 'live_events',
+  PATHS = 'paths',
   SCENES = 'scenes',
   SETTINGS = 'settings',
-  VARIABLES = 'variables'
+  VARIABLES = 'variables',
+  WORLDS = 'worlds'
 }
 
 import v6 from './v6'
 import v7 from './v7'
 import v8 from './v8'
+import v9 from './v9'
 
 export const DB_NAME = 'esg-library'
 
@@ -61,14 +64,14 @@ export class LibraryDatabase extends Dexie {
   public conditions: Dexie.Table<EngineConditionData, string>
   public effects: Dexie.Table<EngineEffectData, string>
   public events: Dexie.Table<EngineEventData, string>
-  public games: Dexie.Table<EngineGameData, string>
   public inputs: Dexie.Table<EngineInputData, string>
   public jumps: Dexie.Table<EngineJumpData, string>
-  public passages: Dexie.Table<EnginePassageData, string>
-  public routes: Dexie.Table<EngineRouteData, string>
+  public live_events: Dexie.Table<EngineLiveEventData, string>
+  public paths: Dexie.Table<EnginePathData, string>
   public scenes: Dexie.Table<EngineSceneData, string>
   public settings: Dexie.Table<EngineSettingsData, string>
   public variables: Dexie.Table<EngineVariableData, string>
+  public worlds: Dexie.Table<EngineWorldData, string>
 
   public constructor(studioId: StudioId) {
     super(`${DB_NAME}-${studioId}`)
@@ -76,6 +79,7 @@ export class LibraryDatabase extends Dexie {
     v6(this)
     v7(this)
     v8(this)
+    v9(this)
 
     this.bookmarks = this.table(LIBRARY_TABLE.BOOKMARKS)
     this.characters = this.table(LIBRARY_TABLE.CHARACTERS)
@@ -83,14 +87,14 @@ export class LibraryDatabase extends Dexie {
     this.conditions = this.table(LIBRARY_TABLE.CONDITIONS)
     this.effects = this.table(LIBRARY_TABLE.EFFECTS)
     this.events = this.table(LIBRARY_TABLE.EVENTS)
-    this.games = this.table(LIBRARY_TABLE.GAMES)
     this.inputs = this.table(LIBRARY_TABLE.INPUTS)
     this.jumps = this.table(LIBRARY_TABLE.JUMPS)
-    this.passages = this.table(LIBRARY_TABLE.PASSAGES)
-    this.routes = this.table(LIBRARY_TABLE.ROUTES)
+    this.live_events = this.table(LIBRARY_TABLE.LIVE_EVENTS)
+    this.paths = this.table(LIBRARY_TABLE.PATHS)
     this.scenes = this.table(LIBRARY_TABLE.SCENES)
     this.settings = this.table(LIBRARY_TABLE.SETTINGS)
     this.variables = this.table(LIBRARY_TABLE.VARIABLES)
+    this.worlds = this.table(LIBRARY_TABLE.WORLDS)
   }
 
   public async saveBookmarkCollectionData(
@@ -116,8 +120,32 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async saveCharacterCollectionData(
+    worldId: WorldId,
+    characterCollection: EngineCharacterCollection
+  ) {
+    try {
+      await this.transaction(
+        'rw',
+        this.characters,
+        async () =>
+          await Promise.all([
+            Object.keys(characterCollection).map(
+              async (key) =>
+                await this.characters.add(
+                  { ...characterCollection[key], worldId },
+                  characterCollection[key].id
+                )
+            )
+          ])
+      )
+    } catch (error) {
+      throw error
+    }
+  }
+
   public async saveChoiceCollectionData(
-    gameId: WorldId,
+    worldId: WorldId,
     choiceCollection: EngineChoiceCollection
   ) {
     try {
@@ -129,7 +157,7 @@ export class LibraryDatabase extends Dexie {
             Object.keys(choiceCollection).map(
               async (key) =>
                 await this.choices.add(
-                  { ...choiceCollection[key], gameId },
+                  { ...choiceCollection[key], worldId },
                   choiceCollection[key].id
                 )
             )
@@ -141,7 +169,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveConditionCollectionData(
-    gameId: WorldId,
+    worldId: WorldId,
     conditionCollection: EngineConditionCollection
   ) {
     try {
@@ -153,7 +181,7 @@ export class LibraryDatabase extends Dexie {
             Object.keys(conditionCollection).map(
               async (key) =>
                 await this.conditions.add(
-                  { ...conditionCollection[key], gameId },
+                  { ...conditionCollection[key], worldId },
                   conditionCollection[key].id
                 )
             )
@@ -165,7 +193,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveEffectCollectionData(
-    gameId: WorldId,
+    worldId: WorldId,
     effectCollection: EngineEffectCollection
   ) {
     try {
@@ -177,7 +205,7 @@ export class LibraryDatabase extends Dexie {
             Object.keys(effectCollection).map(
               async (key) =>
                 await this.effects.add(
-                  { ...effectCollection[key], gameId },
+                  { ...effectCollection[key], worldId },
                   effectCollection[key].id
                 )
             )
@@ -189,7 +217,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveEventCollectionData(
-    gameId: WorldId,
+    worldId: WorldId,
     eventCollection: EngineEventCollection
   ) {
     try {
@@ -201,7 +229,7 @@ export class LibraryDatabase extends Dexie {
             Object.keys(eventCollection).map(
               async (key) =>
                 await this.events.add(
-                  { ...eventCollection[key], gameId },
+                  { ...eventCollection[key], worldId },
                   eventCollection[key].id
                 )
             )
@@ -212,20 +240,8 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveGameData(gameData: EngineGameData) {
-    try {
-      await this.transaction(
-        'rw',
-        this.games,
-        async () => await this.games.add(gameData, gameData.id)
-      )
-    } catch (error) {
-      throw error
-    }
-  }
-
   public async saveInputCollectionData(
-    gameId: WorldId,
+    worldId: WorldId,
     inputCollection: EngineInputCollection
   ) {
     try {
@@ -237,7 +253,7 @@ export class LibraryDatabase extends Dexie {
             Object.keys(inputCollection).map(
               async (key) =>
                 await this.inputs.add(
-                  { ...inputCollection[key], gameId },
+                  { ...inputCollection[key], worldId },
                   inputCollection[key].id
                 )
             )
@@ -249,7 +265,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveJumpCollectionData(
-    gameId: WorldId,
+    worldId: WorldId,
     jumpCollection: EngineJumpCollection
   ) {
     try {
@@ -261,7 +277,7 @@ export class LibraryDatabase extends Dexie {
             Object.keys(jumpCollection).map(
               async (key) =>
                 await this.jumps.add(
-                  { ...jumpCollection[key], gameId },
+                  { ...jumpCollection[key], worldId },
                   jumpCollection[key].id
                 )
             )
@@ -272,21 +288,21 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async savePassageCollectionData(
-    gameId: WorldId,
-    passageCollection: EnginePassageCollection
+  public async saveLiveEventCollectionData(
+    worldId: WorldId,
+    liveEventCollection: EngineLiveEventCollection
   ) {
     try {
       await this.transaction(
         'rw',
-        this.passages,
+        this.live_events,
         async () =>
           await Promise.all([
-            Object.keys(passageCollection).map(
+            Object.keys(liveEventCollection).map(
               async (key) =>
-                await this.passages.add(
-                  { ...passageCollection[key], gameId },
-                  passageCollection[key].id
+                await this.live_events.add(
+                  { ...liveEventCollection[key], worldId },
+                  liveEventCollection[key].id
                 )
             )
           ])
@@ -296,20 +312,20 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveRouteCollectionData(
-    gameId: WorldId,
-    routeCollection: EngineRouteCollection
+  public async savePathCollectionData(
+    worldId: WorldId,
+    routeCollection: EnginePathCollection
   ) {
     try {
       await this.transaction(
         'rw',
-        this.routes,
+        this.paths,
         async () =>
           await Promise.all([
             Object.keys(routeCollection).map(
               async (key) =>
-                await this.routes.add(
-                  { ...routeCollection[key], gameId },
+                await this.paths.add(
+                  { ...routeCollection[key], worldId },
                   routeCollection[key].id
                 )
             )
@@ -321,7 +337,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveSceneCollectionData(
-    gameId: WorldId,
+    worldId: WorldId,
     sceneCollection: EngineSceneCollection
   ) {
     try {
@@ -333,7 +349,7 @@ export class LibraryDatabase extends Dexie {
             Object.keys(sceneCollection).map(
               async (key) =>
                 await this.scenes.add(
-                  { ...sceneCollection[key], gameId },
+                  { ...sceneCollection[key], worldId },
                   sceneCollection[key].id
                 )
             )
@@ -370,7 +386,7 @@ export class LibraryDatabase extends Dexie {
   }
 
   public async saveVariableCollectionData(
-    gameId: WorldId,
+    worldId: WorldId,
     variableCollection: EngineVariableCollection
   ) {
     try {
@@ -382,11 +398,23 @@ export class LibraryDatabase extends Dexie {
             Object.keys(variableCollection).map(
               async (key) =>
                 await this.variables.add(
-                  { ...variableCollection[key], gameId },
+                  { ...variableCollection[key], worldId },
                   variableCollection[key].id
                 )
             )
           ])
+      )
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public async saveWorldData(worldData: EngineWorldData) {
+    try {
+      await this.transaction(
+        'rw',
+        this.worlds,
+        async () => await this.worlds.add(worldData, worldData.id)
       )
     } catch (error) {
       throw error

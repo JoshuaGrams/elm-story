@@ -12,8 +12,8 @@ const EventStreamTitleBar: React.FC = () => {
 
   return (
     <>
-      {engine.gameInfo && (
-        <div id="event-stream-title-bar" className="title-bar">
+      {engine.worldInfo && (
+        <div id="live-event-stream-title-bar" className="title-bar">
           <button
             onClick={() => engineDispatch({ type: ENGINE_ACTION_TYPE.STOP })}
           >
@@ -31,12 +31,12 @@ const EventStreamTitleBar: React.FC = () => {
             </svg>
           </button>
           <span
-            id="event-stream-title-bar-game-title"
+            id="live-event-stream-title-bar-game-title"
             className="title-bar-title"
           >
-            {engine.gameInfo.title}
+            {engine.worldInfo.title}
           </span>
-          {!engine.isEditor && (
+          {!engine.isComposer && (
             <button
               onClick={() =>
                 settingsDispatch({ type: SETTINGS_ACTION_TYPE.OPEN })

@@ -6,23 +6,23 @@ import { useQuery } from 'react-query'
 
 import {
   getGameInfo,
-  removeGameData,
-  resetGame,
+  removeWorldData,
+  resetWorld,
   saveEngineCollectionData,
-  saveEngineDefaultGameCollectionData
+  saveEngineDefaultWorldCollectionData
 } from '../lib/api'
 
 import { WorldId, StudioId, ESGEngineCollectionData } from '../types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
-import { INITIAL_ENGINE_EVENT_ORIGIN_KEY } from '../lib'
+import { INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY } from '../lib'
 
 const Installer: React.FC<{
   studioId: StudioId
-  gameId: WorldId
+  worldId: WorldId
   data?: ESGEngineCollectionData
   isEditor: boolean
-}> = React.memo(({ children, studioId, gameId, data, isEditor }) => {
+}> = React.memo(({ children, studioId, worldId, data, isEditor }) => {
   const { engine, engineDispatch } = useContext(EngineContext)
 
   useQuery(
@@ -39,7 +39,7 @@ const Installer: React.FC<{
                 updating: true
               })
 
-              await removeGameData(studioId, gameId)
+              await removeWorldData(studioId, worldId)
               await saveEngineCollectionData(data, true)
 
               engineDispatch({
@@ -54,13 +54,13 @@ const Installer: React.FC<{
             engineDispatch({ type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION })
 
             // #421
-            const foundGame = await getGameInfo(studioId, gameId)
+            const foundGame = await getGameInfo(studioId, worldId)
 
             if (foundGame) {
-              await resetGame(studioId, gameId, true, true)
-              await saveEngineDefaultGameCollectionData(
+              await resetWorld(studioId, worldId, true, true)
+              await saveEngineDefaultWorldCollectionData(
                 studioId,
-                gameId,
+                worldId,
                 foundGame.version
               )
 
@@ -74,8 +74,8 @@ const Installer: React.FC<{
                 })
 
                 engineDispatch({
-                  type: ENGINE_ACTION_TYPE.SET_CURRENT_EVENT,
-                  id: `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
+                  type: ENGINE_ACTION_TYPE.SET_CURRENT_LIVE_EVENT,
+                  id: `${INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY}${worldId}`
                 })
               }
             } else {
@@ -105,7 +105,7 @@ const Installer: React.FC<{
   useEffect(() => {
     async function setGameData() {
       if (engine.installed) {
-        const gameInfo = await getGameInfo(studioId, gameId)
+        const gameInfo = await getGameInfo(studioId, worldId)
 
         gameInfo &&
           engineDispatch({

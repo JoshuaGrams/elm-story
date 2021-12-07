@@ -2,20 +2,20 @@ import { cloneDeep } from 'lodash'
 
 import React, { createContext, useMemo, useReducer } from 'react'
 
-import { ElementId, EngineEventData, WorldId, StudioId } from '../types'
+import { ElementId, EngineLiveEventData, WorldId, StudioId } from '../types'
 
 interface EngineState {
-  currentEvent: ElementId | undefined
+  currentLiveEvent: ElementId | undefined
   devTools: {
     highlightExpressions: boolean
     blockedChoicesVisible: boolean
     xrayVisible: boolean
   }
-  eventsInStream: EngineEventData[]
+  liveEventsInStream: EngineLiveEventData[]
   installed: boolean
   installId: string | undefined
-  isEditor: boolean
-  gameInfo?: {
+  isComposer: boolean
+  worldInfo?: {
     copyright?: string
     description?: string
     designer: string
@@ -36,7 +36,7 @@ interface EngineState {
 }
 
 export enum ENGINE_ACTION_TYPE {
-  APPEND_EVENTS_TO_STREAM = 'APPEND_EVENTS_TO_STREAM',
+  APPEND_LIVE_EVENTS_TO_STREAM = 'APPEND_EVENTS_TO_STREAM',
   CLEAR_EVENT_STREAM = 'CLEAR_EVENT_STREAM',
   SET_GAME_INFO = 'SET_GAME_INFO',
   HIDE_RESET_NOTIFICATION = 'HIDE_RESET_NOTIFICATION',
@@ -44,14 +44,14 @@ export enum ENGINE_ACTION_TYPE {
   SET_INSTALLED = 'SET_INSTALLED',
   SET_INSTALL_ID = 'SET_INSTALL_ID',
   SET_IS_EDITOR = 'SET_EDITOR',
-  SET_CURRENT_EVENT = 'SET_CURRENT_EVENT',
+  SET_CURRENT_LIVE_EVENT = 'SET_CURRENT_EVENT',
   SET_UPDATE_GAME = 'UPDATE_GAME',
   STOP = 'STOP',
   SHOW_RESET_NOTIFICATION = 'SHOW_RESET_NOTIFICATION',
   TOGGLE_DEVTOOLS_BLOCKED_CHOICES = 'TOGGLE_DEVTOOLS_BLOCKED_CHOICES',
   TOGGLE_DEVTOOLS_EXPRESSIONS = 'TOGGLE_DEVTOOLS_EXPRESSIONS',
   TOGGLE_DEVTOOLS_XRAY = 'TOGGLE_DEVTOOLS_XRAY',
-  UPDATE_EVENT_IN_STREAM = 'UPDATE_EVENT_IN_STREAM'
+  UPDATE_LIVE_EVENT_IN_STREAM = 'UPDATE_EVENT_IN_STREAM'
 }
 
 type EngineActionType =
@@ -59,18 +59,18 @@ type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.SET_INSTALL_ID; id?: string }
   | { type: ENGINE_ACTION_TYPE.SET_IS_EDITOR }
   | {
-      type: ENGINE_ACTION_TYPE.SET_CURRENT_EVENT
+      type: ENGINE_ACTION_TYPE.SET_CURRENT_LIVE_EVENT
       id?: ElementId
     }
   | { type: ENGINE_ACTION_TYPE.CLEAR_EVENT_STREAM }
   | {
-      type: ENGINE_ACTION_TYPE.APPEND_EVENTS_TO_STREAM
-      events: EngineEventData[]
+      type: ENGINE_ACTION_TYPE.APPEND_LIVE_EVENTS_TO_STREAM
+      liveEvents: EngineLiveEventData[]
       reset?: boolean
     }
   | {
-      type: ENGINE_ACTION_TYPE.UPDATE_EVENT_IN_STREAM
-      event: EngineEventData
+      type: ENGINE_ACTION_TYPE.UPDATE_LIVE_EVENT_IN_STREAM
+      liveEvent: EngineLiveEventData
     }
   | {
       type: ENGINE_ACTION_TYPE.SET_GAME_INFO
@@ -114,59 +114,62 @@ const engineReducer = (
     case ENGINE_ACTION_TYPE.SET_IS_EDITOR:
       return {
         ...state,
-        isEditor: true
+        isComposer: true
       }
-    case ENGINE_ACTION_TYPE.SET_CURRENT_EVENT:
+    case ENGINE_ACTION_TYPE.SET_CURRENT_LIVE_EVENT:
       return {
         ...state,
-        currentEvent: action.id
+        currentLiveEvent: action.id
       }
     case ENGINE_ACTION_TYPE.CLEAR_EVENT_STREAM:
       return {
         ...state,
-        eventsInStream: []
+        liveEventsInStream: []
       }
-    case ENGINE_ACTION_TYPE.APPEND_EVENTS_TO_STREAM:
+    case ENGINE_ACTION_TYPE.APPEND_LIVE_EVENTS_TO_STREAM:
       if (!action.reset) {
         return {
           ...state,
-          eventsInStream: [...action.events, ...state.eventsInStream]
+          liveEventsInStream: [
+            ...action.liveEvents,
+            ...state.liveEventsInStream
+          ]
         }
       } else {
         return {
           ...state,
-          eventsInStream: action.events
+          liveEventsInStream: action.liveEvents
         }
       }
-    case ENGINE_ACTION_TYPE.UPDATE_EVENT_IN_STREAM:
-      const foundEventIndex = state.eventsInStream.findIndex(
-        (event) => event.id === action.event.id
+    case ENGINE_ACTION_TYPE.UPDATE_LIVE_EVENT_IN_STREAM:
+      const foundEventIndex = state.liveEventsInStream.findIndex(
+        (event) => event.id === action.liveEvent.id
       )
 
       if (foundEventIndex !== -1) {
-        const clonedEvents = cloneDeep(state.eventsInStream)
+        const clonedEvents = cloneDeep(state.liveEventsInStream)
 
-        clonedEvents[foundEventIndex] = action.event
+        clonedEvents[foundEventIndex] = action.liveEvent
 
-        return { ...state, eventsInStream: clonedEvents }
+        return { ...state, liveEventsInStream: clonedEvents }
       } else {
         return state
       }
     case ENGINE_ACTION_TYPE.SET_GAME_INFO:
       return {
         ...state,
-        gameInfo: action.gameInfo
+        worldInfo: action.gameInfo
       }
     case ENGINE_ACTION_TYPE.PLAY:
       return {
         ...state,
-        currentEvent: action.fromEvent,
+        currentLiveEvent: action.fromEvent,
         playing: true
       }
     case ENGINE_ACTION_TYPE.STOP:
       return {
         ...state,
-        eventsInStream: [],
+        liveEventsInStream: [],
         playing: false
       }
     case ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION:
@@ -219,17 +222,17 @@ interface EngineContextType {
 }
 
 const defaultEngineState: EngineState = {
-  currentEvent: undefined,
+  currentLiveEvent: undefined,
   devTools: {
     blockedChoicesVisible: false,
     highlightExpressions: false,
     xrayVisible: false
   },
-  eventsInStream: [],
+  liveEventsInStream: [],
   installed: false,
   installId: undefined,
-  isEditor: false,
-  gameInfo: undefined,
+  isComposer: false,
+  worldInfo: undefined,
   playing: false,
   resetNotification: {
     message: undefined,

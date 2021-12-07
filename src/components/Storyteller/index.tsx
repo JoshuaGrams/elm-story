@@ -5,10 +5,10 @@ import api from '../../api'
 
 import { ELEMENT_TYPE, WorldId, StudioId } from '../../data/types'
 import {
-  EngineDevToolsEvent,
-  ENGINE_DEVTOOLS_EVENTS,
-  ENGINE_DEVTOOLS_EVENT_TYPE
-} from '../../lib/transport/types/0.5.1'
+  EngineDevToolsLiveEvent,
+  ENGINE_DEVTOOLS_LIVE_EVENTS,
+  ENGINE_DEVTOOLS_LIVE_EVENT_TYPE
+} from '../../lib/transport/types/0.6.0'
 
 import {
   ComposerContext,
@@ -28,10 +28,10 @@ const Storyteller: React.FC<{
   const [runtimeStyles, setRuntimeStyles] = useState({})
 
   const processEvents = async (event: Event) => {
-    const { detail } = event as CustomEvent<EngineDevToolsEvent>
+    const { detail } = event as CustomEvent<EngineDevToolsLiveEvent>
 
     switch (detail.eventType) {
-      case ENGINE_DEVTOOLS_EVENT_TYPE.OPEN_PASSAGE:
+      case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.OPEN_EVENT:
         if (detail.eventId) {
           const passage = await api().events.getEvent(studioId, detail.eventId)
 
@@ -91,13 +91,13 @@ const Storyteller: React.FC<{
 
   useEffect(() => {
     window.addEventListener(
-      ENGINE_DEVTOOLS_EVENTS.ENGINE_TO_EDITOR,
+      ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_EDITOR,
       processEvents
     )
 
     return () => {
       window.removeEventListener(
-        ENGINE_DEVTOOLS_EVENTS.ENGINE_TO_EDITOR,
+        ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_EDITOR,
         processEvents
       )
     }

@@ -4,39 +4,39 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { LibraryDatabase } from '../lib/db'
 
 import {
-  EngineDevToolsEvent,
-  EngineEventData,
-  ENGINE_DEVTOOLS_EVENTS,
-  ENGINE_DEVTOOLS_EVENT_TYPE
+  EngineDevToolsLiveEvent,
+  EngineLiveEventData,
+  ENGINE_DEVTOOLS_LIVE_EVENTS,
+  ENGINE_DEVTOOLS_LIVE_EVENT_TYPE
 } from '../types'
 
 import { EngineContext } from '../contexts/EngineContext'
 
 export const ENGINE_XRAY_CONTAINER_HEIGHT = 250
 
-const EventPassageXRay: React.FC<{
-  event: EngineEventData
+const EventXRay: React.FC<{
+  event: EngineLiveEventData
 }> = React.memo(({ event }) => {
   const { engine } = useContext(EngineContext)
 
-  if (!engine.gameInfo) return null
+  if (!engine.worldInfo) return null
 
-  const { studioId, id: gameId } = engine.gameInfo
+  const { studioId, id: worldId } = engine.worldInfo
 
   const variables = useLiveQuery(
-    () => new LibraryDatabase(studioId).variables.where({ gameId }).toArray(),
+    () => new LibraryDatabase(studioId).variables.where({ worldId }).toArray(),
     [],
     []
   )
 
   const gotoPassage = () => {
     window.dispatchEvent(
-      new CustomEvent<EngineDevToolsEvent>(
-        ENGINE_DEVTOOLS_EVENTS.ENGINE_TO_EDITOR,
+      new CustomEvent<EngineDevToolsLiveEvent>(
+        ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_EDITOR,
         {
           detail: {
-            eventType: ENGINE_DEVTOOLS_EVENT_TYPE.OPEN_PASSAGE,
-            passageId: event.destination
+            eventType: ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.OPEN_EVENT,
+            eventId: event.destination
           }
         }
       )
@@ -109,6 +109,6 @@ const EventPassageXRay: React.FC<{
   )
 })
 
-EventPassageXRay.displayName = 'EventPassageXRay'
+EventXRay.displayName = 'EventXRay'
 
-export default EventPassageXRay
+export default EventXRay

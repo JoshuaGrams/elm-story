@@ -56,7 +56,7 @@
     color: var(--warning-color);
   }
 
-  #game-update-toast {
+  #world-update-toast {
     position: absolute;
     bottom: 0;
     background: red;
@@ -134,17 +134,17 @@
     margin-bottom: 2.4rem;
   }
 
-  #title-card-game-title {
+  #title-card-world-title {
     font-size: 3.2rem;
     margin-bottom: 1rem;
   }
 
-  #title-card-game-version {
+  #title-card-world-version {
     font-size: 1.2rem;
     margin-bottom: 2.4rem;
   }
 
-  #title-card-game-designer {
+  #title-card-world-designer {
     margin-bottom: 4rem;
   }
 
@@ -213,11 +213,11 @@
     right: 0;
   }
 
-  #event-stream-title-bar {
+  #live-event-stream-title-bar {
     grid-template-columns: var(--title-bar-height) 1fr var(--title-bar-height);
   }
 
-  #event-stream {
+  #live-event-stream {
     position: absolute;
     top: var(--title-bar-height);
     bottom: 0;
@@ -227,52 +227,52 @@
     margin: 0 auto;
   }
 
-  #events {
+  #live-events {
     display: flex;
     flex-direction: column-reverse;
     justify-content: flex-start;
     min-height: 100%;
   }
 
-  .event {
+  .live-event {
     overflow: hidden;
   }
 
-  .event-past {
+  .live-event-past {
     color: var(--event-past-text-color);
   }
 
-  .event-passage {
+  .event-content {
     padding: 1.4rem 1rem;
-    border-bottom: var(--event-passage-bottom-border);
+    border-bottom: var(--event-content-bottom-border);
     height: auto;
   }
 
-  .event-passage .expression {
+  .event-content .expression {
     border-bottom: 1px dashed var(--primary-color);
   }
 
-  .event-passage .expression-error {
+  .event-content .expression-error {
     border-bottom: 1px dashed red;
   }
 
-  .event-passage p {
+  .event-content p {
     margin-bottom: 1.4rem;
     line-height: 2.8rem;
   }
 
-  .event-passage p:last-child {
+  .event-content p:last-child {
     margin-bottom: 0;
   }
 
-  .event-choices,
-  .event-input-result {
+  .event-content-choices,
+  .event-content-input-result {
     display: grid;
     justify-items: right;
     padding: 1.4rem;
   }
 
-  .event-choice {
+  .event-content-choice {
     margin-bottom: 0.6rem;
 
     &:last-child {
@@ -280,37 +280,37 @@
     }
   }
 
-  .event-loopback-btn-content {
+  .event-content-loopback-btn-content {
     display: inline-block;
     vertical-align: middle;
     padding-right: 0.6rem;
   }
 
-  .event-choice button:disabled,
-  .event-loopback-btn button:disabled {
+  .event-content-choice button:disabled,
+  .event-content-loopback-btn button:disabled {
     cursor: not-allowed;
     color: var(--event-past-choice-text-color);
     background: var(--event-past-choice-background-color);
     border: var(--event-past-choice-border);
   }
 
-  .event-choice-result button:disabled,
-  .event-input-result button:disabled {
+  .event-content-choice-result button:disabled,
+  .event-content-input-result button:disabled {
     color: var(--event-past-choice-result-text-color);
     background: var(--event-past-choice-result-background-color);
   }
 
-  .event-choice .closed-route {
+  .event-content-choice .closed-route {
     border: 1px dashed var(--warning-color) !important;
     color: var(--warning-color) !important;
   }
 
-  .event-input-result button:disabled {
+  .event-content-input-result button:disabled {
     cursor: not-allowed;
     border: var(--event-past-choice-border);
   }
 
-  .event-input {
+  .event-content-input {
     width: 100%;
 
     form {
@@ -346,14 +346,14 @@
     }
   }
 
-  .event-result {
+  .event-content-result {
     width: 100%;
     text-align: right;
     color: var(--primary-color);
     font-size: 1.2rem;
   }
 
-  .event-result-date {
+  .event-content-result-date {
     font-size: 1rem;
     color: var(--event-past-text-color);
   }

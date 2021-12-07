@@ -9,29 +9,29 @@ import React, {
 } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import { findOpenRoute, getRoutesFromInput } from '../lib/api'
+import { findOpenPath, getPathsFromInput } from '../lib/api'
 import { LibraryDatabase } from '../lib/db'
 
 import {
   VARIABLE_TYPE,
+  EngineLiveEventData,
   EngineEventData,
-  EnginePassageData,
   EngineVariableData
 } from '../types'
-import { RouteProcessor, translateEventResultValue } from './EventPassage'
+import { PathProcessor, translateLiveEventResultValue } from './Event'
 
 import { EngineContext } from '../contexts/EngineContext'
 
-const EventPassageInput: React.FC<{
-  passage: EnginePassageData
+const EventInput: React.FC<{
   event: EngineEventData
-  onSubmitRoute: RouteProcessor
-}> = React.memo(({ passage, event, onSubmitRoute }) => {
+  liveEvent: EngineLiveEventData
+  onSubmitPath: PathProcessor
+}> = React.memo(({ event, liveEvent, onSubmitPath: onSubmitRoute }) => {
   const { engine } = useContext(EngineContext)
 
-  if (!engine.gameInfo) return null
+  if (!engine.worldInfo) return null
 
-  const { studioId } = engine.gameInfo
+  const { studioId } = engine.worldInfo
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -39,9 +39,7 @@ const EventPassageInput: React.FC<{
     [routeError, setRouteError] = useState<boolean>(false)
 
   const input = useLiveQuery(() =>
-    new LibraryDatabase(studioId).inputs
-      .where({ passageId: passage.id })
-      .first()
+    new LibraryDatabase(studioId).inputs.where({ eventId: event.id }).first()
   )
 
   const inputVariable = useLiveQuery(async () => {
@@ -53,9 +51,10 @@ const EventPassageInput: React.FC<{
       )
 
       if (variable) {
-        let value: string | number | undefined = event.state[variable.id].value
+        let value: string | number | undefined =
+          liveEvent.state[variable.id].value
 
-        switch (event.state[variable.id].type) {
+        switch (liveEvent.state[variable.id].type) {
           case VARIABLE_TYPE.NUMBER:
             value = Number(value)
             break
@@ -74,25 +73,25 @@ const EventPassageInput: React.FC<{
   const submitInput = useCallback(
     async (boolValue?: 'true' | 'false') => {
       if (input && inputVariable && inputValue) {
-        const stateWithInputValue = cloneDeep(event.state)
+        const stateWithInputValue = cloneDeep(liveEvent.state)
 
         stateWithInputValue[inputVariable.id].value =
           boolValue ||
           // #400
           `${typeof inputValue === 'string' ? inputValue.trim() : inputValue}`
 
-        const foundOpenRoute = await findOpenRoute(
+        const foundOpenRoute = await findOpenPath(
           studioId,
-          await getRoutesFromInput(studioId, input.id),
+          await getPathsFromInput(studioId, input.id),
           stateWithInputValue
         )
 
         // if event.origin, loopback
-        if (foundOpenRoute || event.origin) {
+        if (foundOpenRoute || liveEvent.origin) {
           setRouteError(false)
 
           onSubmitRoute({
-            originId: event.origin,
+            originId: liveEvent.origin,
             result: {
               id: input.id,
               value: boolValue
@@ -101,19 +100,19 @@ const EventPassageInput: React.FC<{
                   : 'No'
                 : `${inputValue}`
             },
-            route: foundOpenRoute,
+            path: foundOpenRoute,
             state: stateWithInputValue
           })
         }
 
-        if (!foundOpenRoute && !event.origin) {
+        if (!foundOpenRoute && !liveEvent.origin) {
           setRouteError(true)
         }
       }
 
       !inputValue && inputRef.current && inputRef.current.focus()
     },
-    [event, input, inputVariable, inputValue]
+    [liveEvent, input, inputVariable, inputValue]
   )
 
   useEffect(() => {
@@ -121,8 +120,12 @@ const EventPassageInput: React.FC<{
   }, [inputValue])
 
   return (
-    <div className={`${!event.result ? 'event-input' : 'event-input-result'}`}>
-      {!event.result && input && (
+    <div
+      className={`${
+        !liveEvent.result ? 'event-content-input' : 'event-content-input-result'
+      }`}
+    >
+      {!liveEvent.result && input && (
         <>
           {inputVariable && (
             <>
@@ -168,17 +171,17 @@ const EventPassageInput: React.FC<{
               )}
 
               {inputVariable.type === VARIABLE_TYPE.BOOLEAN && (
-                <div className="event-choices">
+                <div className="event-content-choices">
                   <button
-                    className="event-choice"
-                    key="event-passage-input-yes-btn"
+                    className="event-content-choice"
+                    key="event-content-input-yes-btn"
                     onClick={() => submitInput('true')}
                   >
                     Yes
                   </button>
                   <button
-                    className="event-choice"
-                    key="event-passage-input-no-btn"
+                    className="event-content-choice"
+                    key="event-content-input-no-btn"
                     onClick={() => submitInput('false')}
                   >
                     No
@@ -200,15 +203,15 @@ const EventPassageInput: React.FC<{
         </>
       )}
 
-      {event.result && (
+      {liveEvent.result && (
         <button disabled={true}>
-          {translateEventResultValue(event.result.value)}
+          {translateLiveEventResultValue(liveEvent.result.value)}
         </button>
       )}
     </div>
   )
 })
 
-EventPassageInput.displayName = 'EventPassageInput'
+EventInput.displayName = 'EventInput'
 
-export default EventPassageInput
+export default EventInput

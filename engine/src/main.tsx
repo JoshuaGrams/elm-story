@@ -8,9 +8,9 @@ function main() {
     ___packedESGEngineData: string = '___engineData___'
 
   console.info(
-    `[ESRE] made with Elm Story ${String.fromCodePoint(
+    `[STORYTELLER] made with Elm Story ${String.fromCodePoint(
       0x1f4da
-    )} 0.5.1 | https://elmstory.com`
+    )} 0.6.0 | https://elmstory.com`
   )
 
   const rendererContainer = document.getElementById('runtime') || document.body
@@ -20,7 +20,7 @@ function main() {
       <>
         <ServiceWorker />
         <Runtime
-          game={{ id: ___gameId, data: ___packedESGEngineData, packed: true }}
+          world={{ id: ___gameId, data: ___packedESGEngineData, packed: true }}
         />
       </>,
       rendererContainer
@@ -28,16 +28,21 @@ function main() {
   }
 
   if (import.meta.env.DEV) {
-    import('../data/terminal-access_0.0.1.json').then((data) =>
-      render(
-        <>
-          <ServiceWorker />
-          <Runtime
-            game={{ id: data._.id, data: JSON.stringify(data), packed: false }}
-          />
-        </>,
-        rendererContainer
-      )
+    import('../data/amber-shores_0.0.45/amber-shores_0.0.45.json').then(
+      (data) =>
+        render(
+          <>
+            <ServiceWorker />
+            <Runtime
+              world={{
+                id: data._.id,
+                data: JSON.stringify(data),
+                packed: false
+              }}
+            />
+          </>,
+          rendererContainer
+        )
     )
   }
 }

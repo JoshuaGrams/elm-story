@@ -197,6 +197,8 @@ export interface EffectCollection {
   [effectId: string]: EffectData
 }
 
+export type EventPersona = [ElementId, CHARACTER_MASK_TYPE, string | undefined] // [characterId, mask, reference ID]
+
 export interface EventData {
   choices: ElementId[]
   content: string
@@ -207,6 +209,7 @@ export interface EventData {
   ending: boolean
   id: ElementId
   input?: ElementId // variable ID
+  persona?: EventPersona
   sceneId: ElementId
   tags: string[]
   title: string
