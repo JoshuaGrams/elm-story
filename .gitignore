@@ -1,7 +1,7 @@
 # ESG
 design
 engine/tsc-build
-src/components/GameEngine/embedded
+src/components/Storyteller/embedded
 assets/engine-dist
 
 # Logs

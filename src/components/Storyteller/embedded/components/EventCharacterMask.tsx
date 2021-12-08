@@ -65,15 +65,11 @@ const EventCharacterMask: React.FC<{
       if (mask?.assetId) {
         if (!engine.isComposer) {
           // local development
-          if (import.meta?.env?.DEV) {
-            setMaskUrl(
-              `../../data/amber-shores_0.0.45/assets/${mask.assetId}.jpeg`
-            )
-          }
-
+          // to see mask images, uncomment... but remember to re-comment out when done!
+          // setMaskUrl(
+          //   `../../data/amber-shores_0.0.45/assets/${mask.assetId}.jpeg`
+          // )
           // TODO: PWA
-          if (!import.meta?.env?.DEV) {
-          }
         }
 
         if (engine.isComposer) {
