@@ -123,7 +123,7 @@ const Settings: React.FC = () => {
 
           {import.meta.env.MODE === 'development' && (
             <div>
-              <h2>Engine Mode</h2>
+              <h2>Storyteller Mode</h2>
               <p>{import.meta.env.MODE}</p>
             </div>
           )}

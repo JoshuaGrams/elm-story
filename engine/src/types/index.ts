@@ -422,6 +422,22 @@ export interface EngineEffectCollection {
   [effectId: ElementId]: EngineEffectData
 }
 
+export interface EngineEventData {
+  choices: ElementId[]
+  content: string
+  ending: boolean
+  id: ElementId
+  input?: ElementId
+  persona?: EventCharacterPersona
+  sceneId: ElementId
+  type: EVENT_TYPE
+  worldId: WorldId
+}
+
+export interface EngineEventCollection {
+  [eventId: ElementId]: EngineEventData
+}
+
 export interface EngineLiveEventStateData {
   title: string
   type: VARIABLE_TYPE
@@ -489,22 +505,6 @@ export interface EngineJumpData {
 
 export interface EngineJumpCollection {
   [jumpId: ElementId]: EngineJumpData
-}
-
-export interface EngineEventData {
-  choices: ElementId[]
-  content: string
-  ending: boolean
-  id: ElementId
-  input?: ElementId
-  persona?: EventCharacterPersona
-  sceneId: ElementId
-  type: EVENT_TYPE
-  worldId: WorldId
-}
-
-export interface EngineEventCollection {
-  [eventId: ElementId]: EngineEventData
 }
 
 export interface EnginePathData {
@@ -590,10 +590,10 @@ export interface ESGEngineCollectionData {
   conditions: EngineConditionCollection
   effects: EngineEffectCollection
   events: EngineEventCollection
-  games: EngineWorldCollection
   inputs: EngineInputCollection
   jumps: EngineJumpCollection
   paths: EnginePathCollection
   scenes: EngineSceneCollection
   variables: EngineVariableCollection
+  worlds: EngineWorldCollection
 }

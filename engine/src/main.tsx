@@ -4,8 +4,8 @@ import ServiceWorker from './components/ServiceWorker'
 import Runtime from './Runtime'
 
 function main() {
-  let ___gameId: string = '___gameId___',
-    ___packedESGEngineData: string = '___engineData___'
+  let ___worldId: string = '___worldId___',
+    ___packedStoryworldData: string = '___storytellerData___'
 
   console.info(
     `[STORYTELLER] made with Elm Story ${String.fromCodePoint(
@@ -20,7 +20,11 @@ function main() {
       <>
         <ServiceWorker />
         <Runtime
-          world={{ id: ___gameId, data: ___packedESGEngineData, packed: true }}
+          world={{
+            id: ___worldId,
+            data: ___packedStoryworldData,
+            packed: true
+          }}
         />
       </>,
       rendererContainer
@@ -28,7 +32,7 @@ function main() {
   }
 
   if (import.meta.env.DEV) {
-    import('../data/amber-shores_0.0.45/amber-shores_0.0.45.json').then(
+    import('../data/terminal-access_0.0.2/terminal-access_0.0.2.json').then(
       (data) =>
         render(
           <>

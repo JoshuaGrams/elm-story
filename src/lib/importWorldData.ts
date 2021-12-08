@@ -237,8 +237,6 @@ export default (
             })
           }
 
-          console.log(inputs)
-
           // Save inputs
           for await (const [
             __,

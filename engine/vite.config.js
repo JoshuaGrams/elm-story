@@ -8,8 +8,9 @@ import pkg from './package.json'
 
 const license = `
 /*
-  @license ${pkg.name} ${pkg.version}
+  @license ${pkg.name} ${pkg.version} / ESG Storyteller
   Copyright (c) Elm Story Games LLC. All rights reserved.
+  Storyworld content (c) original author(s).
   Generated: ${Date.now()} | https://elmstory.com
 */
 `
@@ -28,9 +29,9 @@ export default defineConfig({
         'fonts/*.ttf'
       ],
       manifest: {
-        name: '___gameTitle___',
-        short_name: '___gameTitle___',
-        description: '___gameDescription___',
+        name: '___worldTitle___',
+        short_name: '___worldTitle___',
+        description: '___worldDescription___',
         theme_color: '#080808',
         background_color: '#080808',
         icons: [

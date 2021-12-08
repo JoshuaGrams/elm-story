@@ -22,23 +22,26 @@ function filterCollectionChildProps<T extends object, U extends keyof T>(
   return filteredCollection
 }
 
-function format(gameData: WorldDataJSON): string {
+function format(worldData: WorldDataJSON): string {
   const {
     _,
+    characters,
     choices,
     conditions,
     effects,
+    events,
     inputs,
     jumps,
-    events: passages,
     paths,
     scenes,
     variables
-  }: WorldDataJSON = cloneDeep(gameData)
+  }: WorldDataJSON = cloneDeep(worldData)
 
+  // TODO: fix types
+  // @ts-ignore
   return lzwCompress.pack({
     _: {
-      children: gameData._.children
+      children: worldData._.children
         .filter((child) => child[0] === ELEMENT_TYPE.SCENE)
         .map((child) => child),
       ...pick(_, [
@@ -58,31 +61,39 @@ function format(gameData: WorldDataJSON): string {
         'website'
       ])
     },
+    characters: filterCollectionChildProps(characters, [
+      'id',
+      'masks',
+      'refs',
+      'title'
+    ]),
     choices: filterCollectionChildProps(choices, ['id', 'eventId', 'title']),
+    // @ts-ignore
     conditions: filterCollectionChildProps(conditions, [
       'compare',
       'id',
-      'routeId',
+      'pathId',
       'variableId'
     ]),
+    // @ts-ignore
     effects: filterCollectionChildProps(effects, [
       'id',
-      'routeId',
+      'pathId',
       'set',
       'variableId'
     ]),
-    games: {},
-    inputs: filterCollectionChildProps(inputs, ['id', 'eventId', 'variableId']),
-    jumps: filterCollectionChildProps(jumps, ['id', 'path', 'sceneId']),
-    passages: filterCollectionChildProps(passages, [
+    events: filterCollectionChildProps(events, [
       'choices',
       'content',
-      'gameOver',
+      'ending',
       'id',
       'input',
+      'persona',
       'sceneId',
       'type'
     ]),
+    inputs: filterCollectionChildProps(inputs, ['id', 'eventId', 'variableId']),
+    jumps: filterCollectionChildProps(jumps, ['id', 'path', 'sceneId']),
     paths: filterCollectionChildProps(paths, [
       'choiceId',
       'destinationId',
@@ -99,7 +110,8 @@ function format(gameData: WorldDataJSON): string {
       'initialValue',
       'title',
       'type'
-    ])
+    ]),
+    worlds: {}
   } as ESGEngineCollectionData)
 }
 

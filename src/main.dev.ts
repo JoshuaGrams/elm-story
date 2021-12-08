@@ -362,13 +362,13 @@ const createWindow = async () => {
                 WINDOW_EVENT_TYPE.EXPORT_WORLD_PROCESSING
               )
 
-              const parsedGameData: WorldDataJSON = JSON.parse(
+              const parsedWorldData: WorldDataJSON = JSON.parse(
                 worldDataAsString
               )
 
-              const baseWorldFolderName = `${parsedGameData._.title
+              const baseWorldFolderName = `${parsedWorldData._.title
                   .replace(/[^A-Z0-9]+/gi, '-')
-                  .toLocaleLowerCase()}_${parsedGameData._.version}`,
+                  .toLocaleLowerCase()}_${parsedWorldData._.version}`,
                 fullWorldFolderName = `${baseWorldFolderName}_${Date.now()}`
 
               const savePathBase = result.filePaths[0],
@@ -383,8 +383,8 @@ const createWindow = async () => {
                     ),
                     fs.copy(
                       `${app.getPath('userData')}/assets/${
-                        parsedGameData._.studioId
-                      }/${parsedGameData._.id}`.replace(/\\/g, '/'),
+                        parsedWorldData._.studioId
+                      }/${parsedWorldData._.id}`.replace(/\\/g, '/'),
                       `${savePathFull}/assets`
                     )
                   ])
@@ -402,6 +402,13 @@ const createWindow = async () => {
                 try {
                   await fs.copy(enginePath, savePathFull)
 
+                  await fs.copy(
+                    `${app.getPath('userData')}/assets/${
+                      parsedWorldData._.studioId
+                    }/${parsedWorldData._.id}/`.replace(/\\/g, '/'),
+                    `${savePathFull}/assets/content`
+                  )
+
                   const manifest: {
                     'index.html': { file: string }
                   } = JSON.parse(
@@ -418,22 +425,22 @@ const createWindow = async () => {
                     fs.readFile(`${savePathFull}/sw.js`, 'utf8')
                   ])
 
-                  const gameDescription =
-                    parsedGameData._.description ||
-                    `${parsedGameData._.title} is a storyworld made with Elm Story.`
+                  const worldDescription =
+                    parsedWorldData._.description ||
+                    `${parsedWorldData._.title} is a storyworld made with Elm Story.`
 
                   html = html
-                    .replace('___gameTitle___', parsedGameData._.title)
-                    .replace('___gameDescription___', gameDescription)
+                    .replace('___worldTitle___', parsedWorldData._.title)
+                    .replace('___worldDescription___', worldDescription)
                   js = js
-                    .replace('___gameId___', parsedGameData._.id)
+                    .replace('___worldId___', parsedWorldData._.id)
                     .replace(
-                      '"___engineData___"',
-                      JSON.stringify(format(parsedGameData))
+                      '"___storytellerData___"',
+                      JSON.stringify(format(parsedWorldData))
                     )
                   webmanifest = webmanifest
-                    .replace(/___gameTitle___/g, parsedGameData._.title)
-                    .replace('___gameDescription___', gameDescription)
+                    .replace(/___worldTitle___/g, parsedWorldData._.title)
+                    .replace('___worldDescription___', worldDescription)
 
                   // #379, #373
                   const swIndexRevSearchString = `index.html",revision:"`,
@@ -463,6 +470,45 @@ const createWindow = async () => {
                   )}${newJSHash}${sw.substr(
                     startingJSRevReplacePosition + newJSHash.length
                   )}`
+
+                  // update content assets
+                  const contentAssetsList = await fs.readdir(
+                      `${savePathFull}/assets/content`
+                    ),
+                    swManifestRevSearchString = `manifest.webmanifest",revision:"`,
+                    startingAssetInsertPosition =
+                      sw.indexOf(swManifestRevSearchString) +
+                      swManifestRevSearchString.length +
+                      34
+
+                  let assets: { filename: string; md5: string }[] = []
+
+                  await Promise.all(
+                    contentAssetsList.map(async (assetFilename) => {
+                      assets.push({
+                        filename: assetFilename,
+                        md5: md5(
+                          await fs.readFile(
+                            `${savePathFull}/assets/content/${assetFilename}`
+                          )
+                        )
+                      })
+                    })
+                  )
+
+                  let assetDataToInsert = ''
+
+                  assets.map((asset) => {
+                    assetDataToInsert =
+                      assetDataToInsert +
+                      `,{url:"assets/content/${asset.filename}",revision:"${asset.md5}"}`
+                  })
+
+                  sw = [
+                    sw.slice(0, startingAssetInsertPosition),
+                    assetDataToInsert,
+                    sw.slice(startingAssetInsertPosition)
+                  ].join('')
 
                   await Promise.all([
                     fs.writeFile(`${savePathFull}/index.html`, html),
