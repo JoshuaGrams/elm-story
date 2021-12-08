@@ -36,9 +36,9 @@ const EventCharacterMask: React.FC<{
   )
 
   return (
-    <div className="character-mask">
+    <div className="event-character-mask">
       <div
-        className="portrait"
+        className="event-character-mask-portrait"
         style={{
           backgroundImage: mask?.assetId
             ? `url(../../data/amber-shores_0.0.45/assets/${mask.assetId}.jpeg)`
