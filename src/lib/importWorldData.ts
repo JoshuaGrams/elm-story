@@ -76,20 +76,24 @@ export default (
         // #288
         // Upgrade from 0.2.0+ to 0.6.0
         if (
-          semver.gt(engineVersion, '0.2.0') &&
+          semver.gte(engineVersion, '0.2.0') &&
           semver.lt(engineVersion, '0.6.0')
         ) {
-          // feedback#85: input is set to empty object with 0.4.0 upgrade
-          upgradedWorldData = semver.lt(engineVersion, '0.5.0')
-            ? v040Upgrade(
-                cloneDeep(worldData) as
-                  | GameDataJSON_020
-                  | GameDataJSON_030
-                  | GameDataJSON_031
-              )
-            : cloneDeep(worldData)
+          upgradedWorldData = cloneDeep(worldData)
 
-          upgradedWorldData = v050Upgrade(cloneDeep(upgradedWorldData))
+          // feedback#85: input is set to empty object with 0.4.0 upgrade
+          // feedback#87: gameOver being switched to false before upgrade to ending
+          if (semver.lt(engineVersion, '0.5.0')) {
+            upgradedWorldData = v040Upgrade(
+              cloneDeep(worldData) as
+                | GameDataJSON_020
+                | GameDataJSON_030
+                | GameDataJSON_031
+            )
+
+            upgradedWorldData = v050Upgrade(cloneDeep(upgradedWorldData))
+          }
+
           upgradedWorldData = v060Upgrade(cloneDeep(upgradedWorldData))
         }
 
