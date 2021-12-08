@@ -1,0 +1,80 @@
+.TabContent {
+  height: 100%;
+  width: 100%;
+
+  .TabContentToolbar {
+    height: 32px;
+    border-bottom: 1px solid hsl(0, 0%, 20%);
+    text-align: center;
+    background: var(--tab-toolbar-bg-color);
+    z-index: 7;
+
+    :global .ant-menu {
+      height: 32px;
+      font-size: 12px;
+      text-transform: uppercase;
+      text-align: center;
+      background: transparent;
+
+      &.ant-menu-horizontal {
+        line-height: 32px;
+      }
+
+      .ant-menu-item {
+        margin: 0px 16px;
+        border-bottom: none !important;
+        color: var(--highlight-color);
+
+        &.esg-menu-item-enabled {
+          text-decoration: underline !important;
+        }
+
+        &.esg-menu-item-disabled {
+          color: var(--disabled-color) !important;
+        }
+
+        &:hover,
+        &.ant-menu-item-active {
+          color: var(--highlight-color-bright);
+        }
+      }
+
+      .ant-menu-submenu {
+        color: var(--highlight-color);
+        border: none !important;
+
+        &:hover,
+        &.ant-menu-submenu-active {
+          color: var(--highlight-color-bright);
+        }
+
+        .ant-menu-submenu-title:hover {
+          color: var(--highlight-color-bright);
+        }
+      }
+    }
+
+    :global .ant-btn {
+      border: none;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--highlight-color);
+
+      &:hover {
+        color: var(--highlight-color-bright);
+      }
+
+      &:focus {
+        color: var(--highlight-color) !important;
+      }
+    }
+  }
+
+  .TabContentView {
+    position: absolute;
+    top: 32px;
+    bottom: 0px;
+    width: 100%;
+    overflow: auto;
+  }
+}

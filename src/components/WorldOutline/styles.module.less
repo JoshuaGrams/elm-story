@@ -1,0 +1,210 @@
+@import '../../styles/variables';
+
+.HelpButton {
+  display: inline-block;
+  color: var(--help-button-color);
+  font-size: 12px;
+  height: 22px;
+
+  &:hover {
+    color: var(--highlight-color);
+    cursor: pointer;
+  }
+}
+
+.WorldOutline {
+  width: 100%;
+  height: 100%;
+
+  * {
+    font-size: 12px !important;
+  }
+
+  .TitleBar {
+    border-bottom: solid var(--primary-border-color) 1px;
+    background: hsl(0, 0%, 0%);
+    height: 32px;
+    position: relative;
+
+    .dashboardButton {
+      padding: 4px 7px;
+    }
+
+    .worldTitle {
+      height: 30px;
+      text-overflow: ellipsis;
+      position: absolute;
+      top: 0px;
+      left: 28px;
+      right: 52px;
+      overflow: hidden;
+      white-space: nowrap;
+      line-height: 30px;
+      word-break: keep-all;
+      color: hsl(0, 0%, 60%);
+
+      &.selected {
+        color: white;
+      }
+
+      &:hover {
+        color: white;
+        cursor: pointer;
+      }
+    }
+
+    .worldButtons {
+      display: inline-block;
+      position: absolute;
+      right: 0px;
+
+      button {
+        padding: 4px 6px;
+      }
+    }
+  }
+
+  .tree {
+    top: 32px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    position: absolute;
+    box-sizing: border-box;
+    padding-top: 4px;
+    overflow: auto;
+
+    div[data-react-beautiful-dnd-droppable] {
+      * {
+        cursor: pointer !important;
+      }
+    }
+
+    .itemRow {
+      height: 24px;
+      line-height: 24px !important;
+      position: relative;
+
+      :global .ant-dropdown-trigger {
+        height: 100%;
+      }
+
+      :global .ant-typography {
+        display: inline-block;
+        padding-left: 10px !important;
+        height: 24px !important;
+        position: absolute;
+        right: 0px;
+        left: 38px;
+        top: 0px;
+        bottom: 0px;
+
+        textarea {
+          min-height: 20px !important;
+          max-height: 20px !important;
+          top: 3px;
+          left: -1px;
+          padding: 0px;
+          max-width: 100%;
+          color: white !important;
+          box-shadow: none !important;
+          border-radius: 0px !important;
+          overflow: hidden;
+        }
+
+        :global .ant-typography-edit-content-confirm {
+          display: none;
+        }
+      }
+
+      .title {
+        color: hsl(0, 0%, 60%);
+      }
+
+      .dragging {
+        padding-left: 47px;
+
+        .draggingTitle {
+          border: 1px solid var(--highlight-color);
+          background: var(--highlight-color-50a);
+        }
+      }
+
+      &:hover {
+        .title {
+          color: white;
+        }
+
+        .itemIcon {
+          color: hsl(0, 0%, 80%);
+        }
+
+        .badge {
+          :global .ant-badge-count {
+            background: hsl(0, 0%, 15%) !important;
+          }
+        }
+      }
+
+      &.selected {
+        background: hsl(0, 0%, 10%);
+
+        .itemIcon {
+          &.component {
+            color: var(--highlight-color) !important;
+          }
+        }
+
+        .title {
+          color: white;
+        }
+
+        &:hover {
+        }
+      }
+
+      &.sceneComponentSelected {
+        .itemIcon {
+          &.component {
+            color: var(--highlight-color) !important;
+          }
+        }
+
+        .title {
+          color: white;
+          text-decoration: underline;
+        }
+      }
+
+      button {
+        background: transparent !important;
+      }
+
+      .itemIcon {
+        font-size: 11px;
+        color: hsl(0, 0%, 40%);
+
+        &.component {
+          margin-right: 8px;
+
+          &.passage {
+            margin-left: 28px;
+          }
+        }
+      }
+
+      .badge {
+        position: absolute;
+        right: 6px;
+        top: 5px;
+
+        :global .ant-badge-count {
+          background: hsl(0, 0%, 10%) !important;
+          font-size: 10px;
+          min-width: 24px;
+          border: none !important;
+        }
+      }
+    }
+  }
+}

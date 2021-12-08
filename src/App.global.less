@@ -1,0 +1,355 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+@import './styles/variables';
+@import '~antd/dist/antd.dark.less';
+@import './styles/engine.less';
+@import './styles//engine-editor.less';
+@import './styles/ant.less'; // overrides
+@import '~rc-dock/dist/rc-dock.css';
+@import '@fontsource/fira-mono';
+
+:root {
+  --antd-wave-shadow-color: transparent;
+  --highlight-color: hsl(265, 100%, 60%);
+  --highlight-color-bright: hsl(265, 100%, 65%);
+  --highlight-color-dark: hsl(265, 100%, 30%);
+  --highlight-color-80a: hsla(265, 100%, 60%, 0.8);
+  --highlight-color-50a: hsla(265, 100%, 60%, 0.5);
+  --highlight-color-30a: hsla(265, 100%, 60%, 0.3);
+  --highlight-color-20a: hsla(265, 100%, 60%, 0.2);
+  --highlight-color-10a: hsla(265, 100%, 60%, 0.1);
+  --disabled-color: hsl(0, 0%, 20%);
+  --disabled-color-bright: hsl(0, 0%, 40%);
+  --jump-node-color: hsl(160, 100%, 60%);
+  --warning-color: hsl(350, 100%, 60%);
+  --warning-color-bright: hsl(350, 100%, 65%);
+  --primary-border-color: hsl(0, 0%, 20%);
+  --tab-toolbar-bg-color: hsl(0, 0%, 0%);
+  --bg-color-0: hsl(0, 0%, 0%);
+  --bg-color-3: hsl(0, 0%, 3%);
+  --bg-color-5: hsl(0, 0%, 5%);
+  --bg-color-8: hsl(0, 0%, 8%);
+  --bg-color-10: hsl(0, 0%, 10%);
+  --bg-color-15: hsl(0, 0%, 15%);
+  --border-color-5: hsl(0, 0%, 5%);
+  --border-color-10: hsl(0, 0%, 10%);
+  --border-color-20: hsl(0, 0%, 20%);
+  --modal-title-color: white;
+  --modal-mask-color: hsla(0, 0%, 0%, 0.8);
+  --dropdown-bg-color: hsl(0, 0%, 10%);
+  --dropdown-border-color: hsl(0, 0%, 0%);
+  --dropdown-active-item-color: hsl(0, 0%, 18%);
+  --dropdown-selected-item-color: hsl(0, 0%, 15%);
+  --dropdown-item-color: hsl(0, 0%, 60%);
+  --warning-message-color: hsl(50, 100%, 50%);
+  --event-node-row-icon-color: hsl(0, 0%, 40%);
+  --component-id: hsl(0, 0%, 40%);
+  --help-button-color: hsl(0, 0%, 40%);
+  --drive-color: hsl(185, 100%, 60%);
+  --drive-color-dark: hsla(185, 100%, 60%, 0.2);
+  --energy-color: hsl(40, 100%, 60%);
+  --energy-color-dark: hsla(40, 100%, 60%, 0.2);
+}
+
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(0, 0%, 6%);
+  border: 1px solid hsl(0, 0%, 0%);
+
+  &:hover {
+    background-color: hsl(0, 0%, 8%);
+  }
+
+  &:active {
+    background-color: hsl(0, 0%, 10%);
+  }
+}
+
+::-webkit-scrollbar-track {
+  border: 1px solid hsl(0, 0%, 0%);
+  background-color: hsl(0, 0%, 2%);
+}
+
+* {
+  user-select: none;
+  font-family: 'Fira Mono';
+  outline: none !important;
+
+  &::selection {
+    background: var(--highlight-color-50a);
+  }
+}
+
+html {
+  font-size: 62.5%;
+}
+
+html,
+body {
+  height: unset !important;
+  width: unset !important;
+}
+
+body {
+  background-color: hsl(0, 0%, 4%);
+  color: white;
+}
+
+div {
+  position: relative;
+}
+
+a {
+  color: var(--highlight-color);
+  text-decoration: underline !important;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--highlight-color-bright);
+  }
+}
+
+ul {
+  list-style-type: none;
+}
+
+h3 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.ant-btn {
+  border-radius: 2px !important;
+
+  &:hover {
+    border-color: var(--highlight-color-bright);
+    color: white;
+  }
+
+  &:focus {
+    color: white !important;
+  }
+
+  &.ant-btn-link {
+    color: var(--highlight-color);
+
+    &:hover {
+      border-color: transparent;
+
+      .ant-icon {
+        color: var(--highlight-color-bright);
+      }
+    }
+  }
+
+  &.ant-btn-text {
+    border-color: transparent !important;
+  }
+}
+
+.ant-collapse {
+  border-color: var(--primary-border-color) !important;
+}
+
+.ant-btn-primary {
+  background: var(--highlight-color);
+  border-color: var(--highlight-color);
+
+  &:hover {
+    background: var(--highlight-color-bright);
+    border-color: var(--highlight-color-bright);
+  }
+
+  &:focus {
+    background: var(--highlight-color);
+    border-color: var(--highlight-color);
+  }
+}
+
+.ant-btn-dangerous {
+  color: white;
+  border-color: var(--warning-color) !important;
+
+  &.ant-btn-primary {
+    background: var(--warning-color);
+
+    &:hover {
+      background: var(--warning-color-bright);
+    }
+  }
+
+  &:hover {
+    border-color: var(--warning-color-bright) !important;
+  }
+}
+
+.ant-modal-mask {
+  background: var(--modal-mask-color);
+}
+
+.ant-modal-content {
+  background: var(--bg-color-3);
+  border: 1px solid var(--border-color-10);
+  border-radius: 2px;
+  overflow: hidden;
+
+  .ant-modal-header {
+    background: var(--bg-color-0);
+    border-radius: unset;
+    border-bottom: 1px solid var(--bg-color-10);
+
+    .ant-modal-title {
+      color: var(--modal-title-color);
+    }
+  }
+
+  .ant-modal-footer {
+    border-top: 1px solid var(--bg-color-10);
+  }
+}
+
+.ant-modal-close {
+  color: white;
+}
+
+.ant-card-actions {
+  .anticon:hover {
+    color: var(--highlight-color) !important;
+  }
+}
+
+.ant-input,
+.ant-input-affix-wrapper {
+  box-shadow: unset !important;
+  border-radius: 2px !important;
+
+  &:hover {
+    border-color: var(--highlight-color-50a);
+  }
+
+  &:focus,
+  &.ant-input-affix-wrapper-focused {
+    border-color: var(--highlight-color) !important;
+  }
+}
+
+.ant-form-item-has-error .ant-input {
+  border-color: var(--warning-color);
+
+  &:focus {
+    border-color: var(--warning-color);
+    box-shadow: unset;
+  }
+}
+
+.ant-form-item-explain.ant-form-item-explain-error {
+  color: var(--warning-color);
+}
+
+.ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  color: var(--warning-color);
+}
+
+.ant-select {
+  &:not(.ant-select-customize-input) .ant-select-selector {
+    border-radius: 2px !important;
+  }
+
+  &:not(.ant-select-disabled):hover .ant-select-selector {
+    border-color: var(--highlight-color-50a);
+  }
+
+  &.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input)
+    .ant-select-selector {
+    border-color: var(--highlight-color);
+    box-shadow: unset;
+  }
+}
+
+.ant-select-dropdown {
+  background: var(--dropdown-bg-color);
+  padding: 0px;
+  border-radius: 2px important;
+  border: 1px solid var(--dropdown-border-color);
+
+  .ant-select-item {
+    color: var(--dropdown-item-color);
+    background: none !important;
+  }
+
+  .ant-select-item-empty {
+    display: none;
+  }
+
+  .ant-select-item-option-active {
+    color: white;
+    background: var(--dropdown-active-item-color) !important;
+  }
+
+  .ant-select-item-option-selected {
+    background: var(--dropdown-selected-item-color) !important;
+
+    &.ant-select-item-option-active {
+      color: white;
+      background: var(--dropdown-selected-item-color) !important;
+    }
+  }
+}
+
+.ant-menu-submenu-popup {
+  .ant-menu {
+    text-transform: uppercase !important;
+    font-size: 12px;
+
+    .ant-menu-item {
+      background: transparent;
+      color: var(--highlight-color);
+
+      &.esg-menu-item-enabled {
+        text-decoration: underline !important;
+      }
+
+      &.esg-menu-item-disabled {
+        color: var(--disabled-color-bright) !important;
+      }
+
+      &:hover,
+      &.ant-menu-item-active {
+        color: var(--highlight-color-bright);
+      }
+    }
+  }
+}
+
+.warningMessage {
+  color: var(--warning-message-color);
+  font-size: 10px;
+  padding: 4px 10px;
+}
+
+.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.ant-checkbox:hover .ant-checkbox-inner,
+.ant-checkbox-input:focus + .ant-checkbox-inner {
+  border-color: var(--highlight-color-bright);
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--highlight-color);
+  border-color: var(--highlight-color-bright);
+}
+
+.ant-checkbox-checked::after {
+  border-color: transparent;
+}
+
+#renderer {
+  width: 100%;
+  height: 100%;
+}

@@ -1,0 +1,80 @@
+.ElementProperties {
+  border: none !important;
+  background: none !important;
+
+  * {
+    border-radius: 0px !important;
+  }
+
+  .ComponentDetailView {
+    .componentDetailViewHeader {
+      font-size: 12px;
+      text-transform: uppercase;
+      text-align: left;
+      background: hsl(0, 0%, 0%);
+      border-bottom: 1px solid hsl(0, 0%, 15%);
+      padding: 0px 4px;
+      padding-left: 10px;
+      height: 32px;
+      line-height: 32px;
+    }
+
+    .headerIcon {
+      color: var(--highlight-color);
+    }
+
+    .componentDetailViewWrapper {
+      .componentId {
+        font-size: 10px;
+        color: var(--component-id);
+
+        &::before {
+          content: 'EID: ';
+        }
+      }
+
+      .content {
+        padding: 10px;
+
+        .multiSelection {
+          padding-top: 10px;
+        }
+      }
+
+      :global .ant-collapse {
+        border-right: none;
+        border-left: none;
+        background: none !important;
+
+        .ant-collapse-header {
+          font-size: 12px;
+          text-transform: uppercase;
+          height: 24px;
+          padding: 0px !important;
+          padding-left: 30px !important;
+          line-height: 24px !important;
+          background: hsl(0, 0%, 0%);
+
+          .ant-collapse-arrow {
+            top: 2px !important;
+            line-height: 24px !important;
+            padding: 0px !important;
+            left: 10px;
+          }
+        }
+
+        .ant-collapse-item {
+          border-bottom: 1px solid hsl(0, 0%, 15%);
+        }
+
+        .ant-collapse-content {
+          border-top: 1px solid hsl(0, 0%, 15%);
+          background: none !important;
+          .ant-collapse-content-box {
+            padding: 0px;
+          }
+        }
+      }
+    }
+  }
+}

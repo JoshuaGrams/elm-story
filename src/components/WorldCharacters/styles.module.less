@@ -1,0 +1,55 @@
+.WorldCharacters {
+  padding: 10px;
+
+  .CharacterRow {
+    height: 60px;
+    display: grid;
+    grid-template-columns: 48px auto;
+    margin-bottom: 2px;
+    align-items: center;
+
+    &:hover {
+      cursor: pointer;
+
+      .mask {
+        border-color: var(--highlight-color);
+        opacity: 1;
+      }
+
+      .title {
+        color: white;
+      }
+    }
+
+    &:last-of-type {
+      margin: 0;
+    }
+
+    .mask {
+      opacity: 0.4;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+
+    .title {
+      padding-left: 12px;
+      height: 20px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      color: hsl(0, 0%, 60%);
+      transition: color 0.2s;
+    }
+
+    &.selected {
+      .mask {
+        border-color: var(--highlight-color);
+        opacity: 1;
+      }
+
+      .title {
+        text-decoration: underline;
+        color: white;
+      }
+    }
+  }
+}

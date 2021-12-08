@@ -1,0 +1,32 @@
+.WorldInspector {
+  .outline {
+    border: 1px solid hsl(0, 0%, 20%);
+  }
+
+  :global .dock-panel {
+    .dock-tabpane {
+      overflow-y: auto !important;
+    }
+  }
+
+  .tabAddComponentButton {
+    height: 14px;
+    width: 14px;
+    margin-left: 6px;
+
+    &:hover {
+      svg {
+        path {
+          fill: var(--highlight-color);
+        }
+      }
+    }
+
+    svg {
+      path {
+        fill: var(--highlight-color-dark);
+        transition: fill 0.2s;
+      }
+    }
+  }
+}

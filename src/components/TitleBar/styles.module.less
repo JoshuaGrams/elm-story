@@ -1,0 +1,71 @@
+@import '../../styles/variables';
+
+.titleBar {
+  height: @title-bar-height;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  box-sizing: border-box;
+  background: @glass-opacity;
+  backdrop-filter: @glass-blur;
+  border-bottom: 1px solid hsl(0, 0%, 0%);
+
+  .dragBar {
+    -webkit-app-region: drag;
+    height: 100%;
+    position: absolute;
+  }
+
+  .titleBarButtonsContainer {
+    position: absolute;
+    left: 10px;
+    height: 100%;
+    display: grid;
+    width: auto;
+    cursor: pointer !important;
+
+    .titleBarButton {
+      grid-row: 1;
+      width: 23px;
+      height: 44px;
+      line-height: 44px;
+      text-align: center;
+      transition: color 0.2s;
+
+      &.helpButton {
+        color: var(--help-button-color);
+      }
+
+      &:hover {
+        color: var(--highlight-color);
+      }
+    }
+  }
+
+  header {
+    text-align: center;
+    height: 100%;
+    line-height: @title-bar-height;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .titleBarIcon {
+    cursor: pointer;
+    position: absolute;
+    top: 0px;
+    height: 45px;
+    right: 15px;
+    display: grid;
+    place-content: center;
+
+    svg path {
+      transition: fill 0.2s;
+    }
+
+    &:hover svg path {
+      fill: var(--highlight-color);
+    }
+  }
+}

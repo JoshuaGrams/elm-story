@@ -1,0 +1,56 @@
+{
+  "name": "@elmstorygames/engine",
+  "version": "0.6.0",
+  "description": "The Elm Story game engine.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/elmstorygames/engine.git"
+  },
+  "author": {
+    "name": "Elm Story Games",
+    "email": "elmstorygames@gmail.com"
+  },
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "rimraf ./tsc-build && tsc && rimraf ../assets/engine-dist && cross-env DEBUG=vite-plugin-pwa:* vite build",
+    "serve": "vite preview",
+    "dev": "vite",
+    "dev-embed": "vite --mode embed",
+    "https": "yarn build && serve ../assets/engine-dist"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/elmstorygames/engine/issues"
+  },
+  "homepage": "https://gitlab.com/elmstorygames/engine",
+  "devDependencies": {
+    "@types/lodash": "^4.14.173",
+    "@types/node": "^16.9.6",
+    "@types/react": "^17.0.24",
+    "@types/react-dom": "^17.0.9",
+    "@types/uuid": "^8.3.1",
+    "@vitejs/plugin-react": "^1.0.0",
+    "cross-env": "^7.0.3",
+    "https-localhost": "^4.7.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.4.2",
+    "vite": "^2.5.4",
+    "vite-plugin-banner": "^0.1.3",
+    "vite-plugin-html": "^2.1.0",
+    "vite-plugin-pwa": "^0.11.3"
+  },
+  "dependencies": {
+    "@react-hook/resize-observer": "^1.2.4",
+    "acorn": "^8.5.0",
+    "dexie": "^v3.2.0-beta.1",
+    "dexie-react-hooks": "^1.0.7",
+    "lodash": "^4.17.21",
+    "lzwcompress": "^1.1.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-query": "^3.24.4",
+    "react-spring": "^9.2.4",
+    "react-string-replace": "^0.4.4",
+    "semver": "^7.3.5",
+    "uuid": "^8.3.2"
+  }
+}

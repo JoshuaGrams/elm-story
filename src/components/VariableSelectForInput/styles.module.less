@@ -1,0 +1,21 @@
+.VariableSelectForInput {
+  .select {
+    width: 100%;
+    font-size: 12px;
+
+    :global .ant-select-selector {
+      border: none;
+      border-bottom: 1px solid hsl(0, 0%, 15%) !important;
+    }
+
+    &.inputVariable :global .ant-select-selector {
+      border: none !important;
+    }
+  }
+
+  .warningMessage {
+    color: var(--warning-message-color);
+    font-size: 10px;
+    padding: 4px 10px;
+  }
+}

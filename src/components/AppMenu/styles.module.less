@@ -1,0 +1,35 @@
+@import '../../styles/variables';
+
+.blocker {
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  left: 0px;
+  bottom: 0px;
+  display: none;
+  z-index: 1000;
+
+  &.blocking {
+    display: block;
+  }
+}
+
+.appMenu {
+  top: @title-bar-height - 1px;
+  position: fixed;
+  background: @glass-opacity !important;
+  border: 1px solid black !important;
+  backdrop-filter: @glass-blur;
+  box-sizing: border-box;
+  width: 200px;
+  box-shadow: 0px 0px 20px hsla(0, 0%, 0%, 0.8) !important;
+  z-index: 1001;
+
+  &.floating {
+    left: 102px - 23px;
+  }
+
+  &.fullscreen {
+    left: 79px - 23px;
+  }
+}

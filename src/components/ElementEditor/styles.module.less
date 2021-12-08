@@ -1,0 +1,72 @@
+:global .dock {
+  .dock-tab {
+    border-bottom: none;
+
+    &:hover {
+      color: white;
+    }
+
+    &.dock-tab-active {
+      color: white;
+    }
+
+    .dock-tab-btn {
+      cursor: pointer;
+    }
+
+    .dock-tab-close-btn {
+      display: none !important;
+    }
+  }
+
+  .dock-ink-bar {
+    background: var(--highlight-color-dark);
+  }
+}
+
+:global .dock-nav-more {
+  display: none !important;
+}
+
+:global .dragging-layer {
+  --default-background-color: var(--highlight-color-50a) !important;
+
+  .dock-tab-close-btn {
+    display: none !important;
+  }
+
+  * {
+    background: none !important;
+  }
+
+  .dragging * {
+    background: none !important;
+  }
+}
+
+:global .dock-dropdown-menu {
+  background: black !important;
+}
+
+:global .dock-layout > .dock-drop-indicator {
+  border: solid 1px var(--highlight-color) !important;
+  opacity: 1 !important;
+  background: var(--highlight-color-50a) !important;
+  box-shadow: unset !important;
+}
+
+.tabTitle {
+  .tabIcon {
+    color: var(--highlight-color);
+    padding-right: 6px;
+  }
+
+  .title {
+    color: white !important;
+  }
+
+  .tabCloseButton {
+    padding-left: 6px;
+    color: white;
+  }
+}
