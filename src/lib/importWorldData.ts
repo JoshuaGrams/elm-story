@@ -79,12 +79,15 @@ export default (
           semver.gt(engineVersion, '0.2.0') &&
           semver.lt(engineVersion, '0.6.0')
         ) {
-          upgradedWorldData = v040Upgrade(
-            cloneDeep(worldData) as
-              | GameDataJSON_020
-              | GameDataJSON_030
-              | GameDataJSON_031
-          )
+          // feedback#85: input is set to empty object with 0.4.0 upgrade
+          upgradedWorldData = semver.lt(engineVersion, '0.5.0')
+            ? v040Upgrade(
+                cloneDeep(worldData) as
+                  | GameDataJSON_020
+                  | GameDataJSON_030
+                  | GameDataJSON_031
+              )
+            : cloneDeep(worldData)
 
           upgradedWorldData = v050Upgrade(cloneDeep(upgradedWorldData))
           upgradedWorldData = v060Upgrade(cloneDeep(upgradedWorldData))
@@ -229,6 +232,8 @@ export default (
               worldId: _.id
             })
           }
+
+          console.log(inputs)
 
           // Save inputs
           for await (const [
