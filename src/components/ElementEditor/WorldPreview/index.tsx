@@ -28,7 +28,7 @@ export const StoryworldPreviewTools: React.FC<{
   ) => {
     window.dispatchEvent(
       new CustomEvent<EngineDevToolsLiveEvent>(
-        ENGINE_DEVTOOLS_LIVE_EVENTS.EDITOR_TO_ENGINE,
+        ENGINE_DEVTOOLS_LIVE_EVENTS.COMPOSER_TO_ENGINE,
         {
           detail: { eventType }
         }
@@ -48,7 +48,9 @@ export const StoryworldPreviewTools: React.FC<{
       <Menu.Item
         onClick={() => {
           setXrayVisible(!xrayVisible)
-          dispatchEngineDevToolsEvent(ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.TOGGLE_XRAY)
+          dispatchEngineDevToolsEvent(
+            ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.TOGGLE_XRAY
+          )
         }}
         className={`${
           xrayVisible ? 'esg-menu-item-enabled' : 'esg-menu-item-disabled'

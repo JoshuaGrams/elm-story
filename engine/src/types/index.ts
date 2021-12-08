@@ -343,17 +343,23 @@ export enum ENGINE_DEVTOOLS_LIVE_EVENT_TYPE {
   RESET = 'RESET',
   TOGGLE_EXPRESSIONS = 'TOGGLE_EXPRESSIONS',
   TOGGLE_BLOCKED_CHOICES = 'TOGGLE_BLOCKED_CHOICES',
-  TOGGLE_XRAY = 'TOGGLE_XRAY'
+  TOGGLE_XRAY = 'TOGGLE_XRAY',
+  GET_ASSET_URL = 'GET_ASSET_URL',
+  RETURN_ASSET_URL = 'RETURN_ASSET_URL'
 }
 
 export enum ENGINE_DEVTOOLS_LIVE_EVENTS {
-  EDITOR_TO_ENGINE = 'editor:engine:devtools:event',
-  ENGINE_TO_EDITOR = 'engine:editor:devtools:event'
+  COMPOSER_TO_ENGINE = 'composer:engine:devtools:event',
+  ENGINE_TO_COMPOSER = 'engine:composer:devtools:event'
 }
 
 export interface EngineDevToolsLiveEvent {
   eventType: ENGINE_DEVTOOLS_LIVE_EVENT_TYPE
   eventId?: ElementId
+  asset?: {
+    id?: string
+    url?: string
+  }
 }
 
 export interface EngineBookmarkData {

@@ -1,8 +1,11 @@
+import { ipcRenderer } from 'electron'
+
 import React, { useRef, useState, useEffect, useContext } from 'react'
 import useResizeObserver from '@react-hook/resize-observer'
 
 import api from '../../api'
 
+import { WINDOW_EVENT_TYPE } from '../../lib/events'
 import { ELEMENT_TYPE, WorldId, StudioId } from '../../data/types'
 import {
   EngineDevToolsLiveEvent,
@@ -15,7 +18,7 @@ import {
   COMPOSER_ACTION_TYPE
 } from '../../contexts/ComposerContext'
 
-import Runtime from './embeded/Runtime'
+import Runtime from './embedded/Runtime'
 
 const Storyteller: React.FC<{
   studioId: StudioId
@@ -63,6 +66,28 @@ const Storyteller: React.FC<{
           }
         }
         break
+      case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.GET_ASSET_URL:
+        window.dispatchEvent(
+          new CustomEvent<EngineDevToolsLiveEvent>(
+            ENGINE_DEVTOOLS_LIVE_EVENTS.COMPOSER_TO_ENGINE,
+            {
+              detail: {
+                eventType: ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RETURN_ASSET_URL,
+                eventId: detail.eventId,
+                asset: {
+                  url: await ipcRenderer.invoke(WINDOW_EVENT_TYPE.GET_ASSET, {
+                    studioId,
+                    worldId,
+                    id: detail.asset?.id,
+                    ext: 'jpeg'
+                  })
+                }
+              }
+            }
+          )
+        )
+
+        break
       default:
         throw 'Unknown engine event type.'
     }
@@ -91,13 +116,13 @@ const Storyteller: React.FC<{
 
   useEffect(() => {
     window.addEventListener(
-      ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_EDITOR,
+      ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_COMPOSER,
       processEvents
     )
 
     return () => {
       window.removeEventListener(
-        ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_EDITOR,
+        ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_COMPOSER,
         processEvents
       )
     }
@@ -106,7 +131,7 @@ const Storyteller: React.FC<{
   return (
     <div ref={runtimeWrapperRef} style={{ width: '100%', height: '100%' }}>
       <div id="runtime" style={runtimeStyles}>
-        {/* <Runtime studioId={studioId} world={{ id: worldId }} /> */}
+        <Runtime studioId={studioId} world={{ id: worldId }} />
       </div>
     </div>
   )

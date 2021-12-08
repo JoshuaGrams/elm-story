@@ -32,7 +32,7 @@ const EventXRay: React.FC<{
   const gotoPassage = () => {
     window.dispatchEvent(
       new CustomEvent<EngineDevToolsLiveEvent>(
-        ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_EDITOR,
+        ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_COMPOSER,
         {
           detail: {
             eventType: ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.OPEN_EVENT,

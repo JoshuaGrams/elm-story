@@ -267,8 +267,8 @@ export enum ENGINE_DEVTOOLS_EVENT_TYPE {
 }
 
 export enum ENGINE_DEVTOOLS_EVENTS {
-  EDITOR_TO_ENGINE = 'editor:engine:devtools:event',
-  ENGINE_TO_EDITOR = 'engine:editor:devtools:event'
+  COMPOSER_TO_ENGINE = 'composer:engine:devtools:event',
+  ENGINE_TO_COMPOSER = 'engine:composer:devtools:event'
 }
 
 export interface EngineDevToolsEvent {

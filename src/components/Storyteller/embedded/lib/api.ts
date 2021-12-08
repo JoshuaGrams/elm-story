@@ -29,7 +29,6 @@ import {
   EngineWorldData,
   EngineEventData,
   EngineLiveEventResult,
-  EventPersona,
   CHARACTER_MASK_TYPE,
   CharacterMask
 } from '../types'
@@ -716,6 +715,36 @@ export const getCharacterMask = async (
 
     if (foundCharacter) {
       return foundCharacter.masks.find((mask) => mask.type === maskType)
+    }
+
+    return undefined
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getCharacterReference = async (
+  studioId: StudioId,
+  characterId: ElementId,
+  refId?: string
+): Promise<string | undefined> => {
+  try {
+    const foundCharacter = await new LibraryDatabase(studioId).characters.get(
+      characterId
+    )
+
+    if (foundCharacter) {
+      if (!refId) {
+        return foundCharacter.title
+      }
+
+      const foundRef = foundCharacter.refs.find((ref) => ref[0] === refId)
+
+      if (foundRef) {
+        return foundRef[1]
+      } else {
+        return foundCharacter.title
+      }
     }
 
     return undefined

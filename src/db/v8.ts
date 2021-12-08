@@ -9,7 +9,7 @@ export default (database: Dexie) => {
   database
     .version(8)
     .stores({
-      bookmarks: '&id,worldId,event,updated,version',
+      bookmarks: '&id,worldId,liveEventId,updated,version',
       characters: '&id,worldId,title,*tags,updated',
       choices: '&id,worldId,eventId,title,*tags,updated',
       conditions: '&id,worldId,pathId,variableId,title,*tags,updated',
@@ -19,7 +19,7 @@ export default (database: Dexie) => {
       inputs: '&id,worldId,eventId,variableId,title,*tags,updated',
       jumps: '&id,worldId,sceneId,title,*tags,updated,*path',
       live_events:
-        '&id,worldId,destination,origin,prev,next,type,updated,[gameId+updated],version',
+        '&id,worldId,destination,origin,prev,next,type,updated,[worldId+updated],version',
       paths:
         '&id,worldId,sceneId,title,originId,choiceId,inputId,originType,destinationId,destinationType,*tags,updated',
       scenes: '&id,children,worldId,parent,title,*tags,updated',

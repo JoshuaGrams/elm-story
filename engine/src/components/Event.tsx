@@ -164,7 +164,9 @@ export const Event: React.FC<{
                 gridTemplateColumns: event.persona ? '13.5rem auto' : 'unset'
               }}
             >
-              {event.persona && <EventCharacterMask persona={event.persona} />}
+              {event.persona && (
+                <EventCharacterMask eventId={eventId} persona={event.persona} />
+              )}
 
               <EventContent
                 content={event.content}

@@ -37,19 +37,19 @@ const DevTools: React.FC = () => {
         })
         break
       default:
-        throw 'Unknown engine event type.'
+        break
     }
   }
 
   useEffect(() => {
     window.addEventListener(
-      ENGINE_DEVTOOLS_LIVE_EVENTS.EDITOR_TO_ENGINE,
+      ENGINE_DEVTOOLS_LIVE_EVENTS.COMPOSER_TO_ENGINE,
       processEvent
     )
 
     return () => {
       window.removeEventListener(
-        ENGINE_DEVTOOLS_LIVE_EVENTS.EDITOR_TO_ENGINE,
+        ENGINE_DEVTOOLS_LIVE_EVENTS.COMPOSER_TO_ENGINE,
         processEvent
       )
     }
