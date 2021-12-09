@@ -106,12 +106,12 @@ const Persona: React.FC<{
         ? [characterId, CHARACTER_MASK_TYPE.NEUTRAL, undefined]
         : undefined
 
+      setPersona(newPersona)
+
       await api().events.saveEvent(studioId, {
         ...event,
         persona: newPersona
       })
-
-      setPersona(newPersona)
     },
     [event, persona]
   )
@@ -121,12 +121,12 @@ const Persona: React.FC<{
       const newPersona: EventPersona | undefined =
         maskType && persona ? [persona[0], maskType, persona[2]] : undefined
 
+      setPersona(newPersona)
+
       await api().events.saveEvent(studioId, {
         ...event,
         persona: newPersona
       })
-
-      setPersona(newPersona)
     },
     [event, persona]
   )
@@ -137,12 +137,12 @@ const Persona: React.FC<{
         ? [persona[0], persona[1], reference]
         : undefined
 
+      setPersona(newPersona)
+
       await api().events.saveEvent(studioId, {
         ...event,
         persona: newPersona
       })
-
-      setPersona(newPersona)
     },
     [event, persona]
   )
