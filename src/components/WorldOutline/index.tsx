@@ -217,8 +217,6 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
           }
         })
 
-      console.log('bp1')
-
       if (world.id) {
         try {
           switch (movingElement.data.type) {
@@ -355,8 +353,6 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
               break
             case ELEMENT_TYPE.EVENT:
-              console.log('bp2')
-
               if (sourceParent.id !== destinationParent.id) {
                 const jumps = await api().jumps.getJumpsByEventRef(
                   studioId,
