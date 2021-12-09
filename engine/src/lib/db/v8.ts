@@ -34,7 +34,7 @@ export default (database: Dexie) => {
 
       await Promise.all([
         worldsTable.bulkAdd(await tx.table('games').toArray()),
-        pathsTable.bulkAdd(await tx.table('route').toArray()),
+        pathsTable.bulkAdd(await tx.table('routes').toArray()),
         liveEventsTable.bulkAdd(await tx.table('events').toArray()),
         eventsTable.clear()
       ])
@@ -49,8 +49,8 @@ export default (database: Dexie) => {
             bookmark.liveEventId = bookmark.event
             delete bookmark.event
 
-            bookmark.worldId = bookmark.worldId
-            delete bookmark.worldId
+            bookmark.worldId = bookmark.gameId
+            delete bookmark.gameId
           }),
         tx
           .table(LIBRARY_TABLE.CHOICES)
@@ -93,18 +93,6 @@ export default (database: Dexie) => {
             delete event.gameId
           }),
         tx
-          .table(LIBRARY_TABLE.FOLDERS)
-          .toCollection()
-          .modify((folder) => {
-            folder.parent =
-              folder.parent[0] === 'GAME'
-                ? [ELEMENT_TYPE.WORLD, null]
-                : folder.parent
-
-            folder.worldId = folder.gameId
-            delete folder.gameId
-          }),
-        tx
           .table(LIBRARY_TABLE.INPUTS)
           .toCollection()
           .modify((input) => {
@@ -124,6 +112,13 @@ export default (database: Dexie) => {
             delete jump.gameId
           }),
         tx
+          .table(LIBRARY_TABLE.LIVE_EVENTS)
+          .toCollection()
+          .modify((liveEvent) => {
+            liveEvent.worldId = liveEvent.gameId
+            delete liveEvent.gameId
+          }),
+        tx
           .table(LIBRARY_TABLE.PATHS)
           .toCollection()
           .modify((path) => {
@@ -138,11 +133,6 @@ export default (database: Dexie) => {
           .table(LIBRARY_TABLE.SCENES)
           .toCollection()
           .modify((scene) => {
-            scene.parent =
-              scene.parent[0] === 'GAME'
-                ? [ELEMENT_TYPE.WORLD, null]
-                : scene.parent
-
             scene.children = scene.children.map(
               (child: [ELEMENT_TYPE, string]) => [ELEMENT_TYPE.EVENT, child[1]]
             )

@@ -259,14 +259,14 @@ export const saveEngineDefaultWorldCollectionData = async (
 }
 
 // #373: recursive
-const findEventFromBookmarkWithExistingDestination = async (
+const findLiveEventFromBookmarkWithExistingDestination = async (
   studioId: StudioId,
-  eventId: ElementId
+  liveEventId: ElementId
 ): Promise<EngineLiveEventData | undefined> => {
   const libraryDatabase = new LibraryDatabase(studioId)
 
   try {
-    const foundLiveEvent = await libraryDatabase.live_events.get(eventId)
+    const foundLiveEvent = await libraryDatabase.live_events.get(liveEventId)
 
     if (foundLiveEvent) {
       const foundDestination = await libraryDatabase.live_events.get(
@@ -277,7 +277,7 @@ const findEventFromBookmarkWithExistingDestination = async (
         return foundLiveEvent
       } else {
         if (foundLiveEvent.prev) {
-          return findEventFromBookmarkWithExistingDestination(
+          return findLiveEventFromBookmarkWithExistingDestination(
             studioId,
             foundLiveEvent.prev
           )
@@ -308,7 +308,7 @@ export const updateEngineDefaultWorldCollectionData = async (
     const [foundWorld, foundLiveEvent] = await Promise.all([
       libraryDatabase.worlds.get(worldId),
       foundBookmark?.liveEventId
-        ? findEventFromBookmarkWithExistingDestination(
+        ? findLiveEventFromBookmarkWithExistingDestination(
             studioId,
             foundBookmark.liveEventId
           )

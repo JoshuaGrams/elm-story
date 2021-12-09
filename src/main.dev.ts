@@ -402,12 +402,16 @@ const createWindow = async () => {
                 try {
                   await fs.copy(enginePath, savePathFull)
 
-                  await fs.copy(
-                    `${app.getPath('userData')}/assets/${
-                      parsedWorldData._.studioId
-                    }/${parsedWorldData._.id}/`.replace(/\\/g, '/'),
-                    `${savePathFull}/assets/content`
-                  )
+                  try {
+                    await fs.copy(
+                      `${app.getPath('userData')}/assets/${
+                        parsedWorldData._.studioId
+                      }/${parsedWorldData._.id}/`.replace(/\\/g, '/'),
+                      `${savePathFull}/assets/content`
+                    )
+                  } catch (error) {
+                    logger.info(`Assets don't exist. Skipping...`)
+                  }
 
                   const manifest: {
                     'index.html': { file: string }
@@ -472,43 +476,50 @@ const createWindow = async () => {
                   )}`
 
                   // update content assets
-                  const contentAssetsList = await fs.readdir(
+                  try {
+                    const contentAssetsList = await fs.readdir(
                       `${savePathFull}/assets/content`
-                    ),
-                    swManifestRevSearchString = `manifest.webmanifest",revision:"`,
-                    startingAssetInsertPosition =
-                      sw.indexOf(swManifestRevSearchString) +
-                      swManifestRevSearchString.length +
-                      34
+                    )
 
-                  let assets: { filename: string; md5: string }[] = []
+                    if (contentAssetsList.length > 0) {
+                      const swManifestRevSearchString = `manifest.webmanifest",revision:"`,
+                        startingAssetInsertPosition =
+                          sw.indexOf(swManifestRevSearchString) +
+                          swManifestRevSearchString.length +
+                          34
 
-                  await Promise.all(
-                    contentAssetsList.map(async (assetFilename) => {
-                      assets.push({
-                        filename: assetFilename,
-                        md5: md5(
-                          await fs.readFile(
-                            `${savePathFull}/assets/content/${assetFilename}`
-                          )
-                        )
+                      let assets: { filename: string; md5: string }[] = []
+
+                      await Promise.all(
+                        contentAssetsList.map(async (assetFilename) => {
+                          assets.push({
+                            filename: assetFilename,
+                            md5: md5(
+                              await fs.readFile(
+                                `${savePathFull}/assets/content/${assetFilename}`
+                              )
+                            )
+                          })
+                        })
+                      )
+
+                      let assetDataToInsert = ''
+
+                      assets.map((asset) => {
+                        assetDataToInsert =
+                          assetDataToInsert +
+                          `,{url:"assets/content/${asset.filename}",revision:"${asset.md5}"}`
                       })
-                    })
-                  )
 
-                  let assetDataToInsert = ''
-
-                  assets.map((asset) => {
-                    assetDataToInsert =
-                      assetDataToInsert +
-                      `,{url:"assets/content/${asset.filename}",revision:"${asset.md5}"}`
-                  })
-
-                  sw = [
-                    sw.slice(0, startingAssetInsertPosition),
-                    assetDataToInsert,
-                    sw.slice(startingAssetInsertPosition)
-                  ].join('')
+                      sw = [
+                        sw.slice(0, startingAssetInsertPosition),
+                        assetDataToInsert,
+                        sw.slice(startingAssetInsertPosition)
+                      ].join('')
+                    }
+                  } catch (error) {
+                    logger.info('Asset content does not exist. Skipping...')
+                  }
 
                   await Promise.all([
                     fs.writeFile(`${savePathFull}/index.html`, html),

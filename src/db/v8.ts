@@ -36,7 +36,7 @@ export default (database: Dexie) => {
 
       await Promise.all([
         worldsTable.bulkAdd(await tx.table('games').toArray()),
-        pathsTable.bulkAdd(await tx.table('route').toArray()),
+        pathsTable.bulkAdd(await tx.table('routes').toArray()),
         liveEventsTable.bulkAdd(await tx.table('events').toArray()),
         eventsTable.clear()
       ])
@@ -89,8 +89,10 @@ export default (database: Dexie) => {
             delete event.gameOver
 
             if (event.editor) {
-              event.composer.sceneMapPosX = event.editor.componentEditorPosX
-              event.composer.sceneMapPosY = event.editor.componentEditorPosY
+              event.composer = {
+                sceneMapPosX: event.editor.componentEditorPosX,
+                sceneMapPosY: event.editor.componentEditorPosY
+              }
 
               delete event.editor.componentEditorPosX
               delete event.editor.componentEditorPosY
@@ -128,8 +130,10 @@ export default (database: Dexie) => {
             jump.path = [...jump.route]
 
             if (jump.editor) {
-              jump.composer.sceneMapPosX = jump.editor.componentEditorPosX
-              jump.composer.sceneMapPosY = jump.editor.componentEditorPosY
+              jump.composer = {
+                sceneMapPosX: jump.editor.componentEditorPosX,
+                sceneMapPosY: jump.editor.componentEditorPosY
+              }
 
               delete jump.editor.componentEditorPosX
               delete jump.editor.componentEditorPosY
@@ -163,12 +167,11 @@ export default (database: Dexie) => {
             )
 
             if (scene.editor) {
-              scene.composer.sceneMapTransformX =
-                scene.editor.componentEditorTransformX
-              scene.composer.sceneMapTransformY =
-                scene.editor.componentEditorTransformY
-              scene.composer.sceneMapTransformZoom =
-                scene.editor.componentEditorTransformZoom
+              scene.composer = {
+                sceneMapTransformX: scene.editor.componentEditorTransformX,
+                sceneMapTransformY: scene.editor.componentEditorTransformY,
+                sceneMapTransformZoom: scene.editor.componentEditorTransformZoom
+              }
 
               delete scene.editor.componentEditorTransformX
               delete scene.editor.componentEditorTransformY
