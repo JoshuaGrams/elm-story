@@ -36,11 +36,6 @@ const VariableSelectForInput: React.FC<{
         <>
           <Select
             className={`${styles.select} ${styles.inputVariable}`}
-            style={{
-              borderBottom: !input?.variableId
-                ? '1px solid hsl(0, 0%, 15%)'
-                : 'none'
-            }}
             value={input?.variableId}
             placeholder={'Select Input Variable'}
             onChange={changeInput}
