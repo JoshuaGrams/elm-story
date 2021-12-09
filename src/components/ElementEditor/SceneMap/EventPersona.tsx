@@ -29,7 +29,7 @@ const EventPersonaPane: React.FC<{
     if (persona && character) {
       const foundMask = character.masks.find((mask) => mask.type === persona[1])
 
-      foundMask && setMaskAssetId(foundMask.assetId)
+      setMaskAssetId(foundMask?.assetId)
 
       const foundRef = character.refs.find(
         (ref) =>
@@ -38,6 +38,8 @@ const EventPersonaPane: React.FC<{
       )
 
       setRefValue(foundRef?.[1])
+    } else {
+      setMaskAssetId(undefined)
     }
   }, [persona, character])
 
