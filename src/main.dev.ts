@@ -434,8 +434,8 @@ const createWindow = async () => {
                     `${parsedWorldData._.title} is a storyworld made with Elm Story.`
 
                   html = html
-                    .replace('___worldTitle___', parsedWorldData._.title)
-                    .replace('___worldDescription___', worldDescription)
+                    .replace(/___worldTitle___/g, parsedWorldData._.title)
+                    .replace(/___worldDescription___/g, worldDescription)
                   js = js
                     .replace('___worldId___', parsedWorldData._.id)
                     .replace(
