@@ -14,41 +14,41 @@ const ElementHelpButton: React.FC<{ type: ELEMENT_TYPE }> = ({ type }) => {
     event.stopPropagation()
 
     let helpUrl =
-      'https://docs.elmstory.com/guides/production/composer/components'
+      'https://docs.elmstory.com/guides/production/composer/elements'
 
     switch (type) {
       case ELEMENT_TYPE.CHARACTER:
-        helpUrl = `${helpUrl}/character-component/`
+        helpUrl = `${helpUrl}/character-element/`
         break
       case ELEMENT_TYPE.CHOICE:
-        helpUrl = `${helpUrl}/choice-component/`
+        helpUrl = `${helpUrl}/choice-element/`
         break
       case ELEMENT_TYPE.CONDITION:
-        helpUrl = `${helpUrl}/condition-component/`
+        helpUrl = `${helpUrl}/condition-element/`
         break
       case ELEMENT_TYPE.EFFECT:
-        helpUrl = `${helpUrl}/effect-component/`
+        helpUrl = `${helpUrl}/effect-element/`
         break
       case ELEMENT_TYPE.FOLDER:
-        helpUrl = `${helpUrl}/folder-component/`
+        helpUrl = `${helpUrl}/folder-element/`
         break
       case ELEMENT_TYPE.WORLD:
-        helpUrl = `${helpUrl}/world-root-component/`
+        helpUrl = `${helpUrl}/world-root-element/`
         break
       case ELEMENT_TYPE.JUMP:
-        helpUrl = `${helpUrl}/jump-component/`
+        helpUrl = `${helpUrl}/jump-element/`
         break
       case ELEMENT_TYPE.EVENT:
-        helpUrl = `${helpUrl}/event-component/`
+        helpUrl = `${helpUrl}/event-element/`
         break
       case ELEMENT_TYPE.PATH:
-        helpUrl = `${helpUrl}/path-component/`
+        helpUrl = `${helpUrl}/path-element/`
         break
       case ELEMENT_TYPE.SCENE:
-        helpUrl = `${helpUrl}/scene-component/`
+        helpUrl = `${helpUrl}/scene-element/`
         break
       case ELEMENT_TYPE.VARIABLE:
-        helpUrl = `${helpUrl}/variable-component/`
+        helpUrl = `${helpUrl}/variable-element/`
         break
       default:
         helpUrl = 'https://docs.elmstory.com/'
