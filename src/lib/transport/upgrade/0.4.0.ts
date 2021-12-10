@@ -1,7 +1,7 @@
 // #288: upgrades 0.2.0-0.3.X data to 0.4.0
 import { cloneDeep } from 'lodash-es'
 
-import { PASSAGE_TYPE } from '../../../data/types'
+import { EVENT_TYPE } from '../../../data/types'
 import { GameDataJSON as GameDataJSON_020 } from '../types/0.2.0'
 import { GameDataJSON as GameDataJSON_030 } from '../types/0.3.0'
 import { GameDataJSON as GameDataJSON_031 } from '../types/0.3.1'
@@ -31,7 +31,7 @@ export default ({
   Object.keys(clonedPassages).map((passageId) => {
     upgradedPassages[passageId] = {
       ...clonedPassages[passageId],
-      type: PASSAGE_TYPE.CHOICE
+      type: EVENT_TYPE.CHOICE
     }
   })
 

@@ -13,11 +13,11 @@ const Theme: React.FC = ({ children }) => {
     { settings, settingsDispatch } = useContext(SettingsContext)
 
   const theme = useQuery(['theme', engine], async () => {
-    if (!engine.gameInfo) return
+    if (!engine.worldInfo) return
 
-    const { studioId, id: gameId } = engine.gameInfo
+    const { studioId, id: worldId } = engine.worldInfo
 
-    return await getThemeSetting(studioId, gameId)
+    return await getThemeSetting(studioId, worldId)
   })
 
   useEffect(() => {

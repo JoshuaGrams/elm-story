@@ -1,5 +1,5 @@
 import React, { useMemo, createContext, useReducer } from 'react'
-import { StudioId, GameId, PLATFORM_TYPE } from '../data/types'
+import { StudioId, WorldId, PLATFORM_TYPE } from '../data/types'
 
 interface AppState {
   version: string
@@ -10,7 +10,7 @@ interface AppState {
   menuOpen: boolean
   modalOpen: boolean
   selectedStudioId?: StudioId
-  selectedGameId?: GameId
+  selectedWorldId?: WorldId
 }
 
 export enum APP_ACTION_TYPE {
@@ -28,7 +28,7 @@ export enum APP_ACTION_TYPE {
 
 export enum APP_LOCATION {
   DASHBOARD = '/',
-  EDITOR = '/editor'
+  COMPOSER = '/editor'
 }
 
 type AppActionType =
@@ -41,7 +41,7 @@ type AppActionType =
   | { type: APP_ACTION_TYPE.MODAL_OPEN }
   | { type: APP_ACTION_TYPE.MODAL_CLOSE }
   | { type: APP_ACTION_TYPE.STUDIO_SELECT; selectedStudioId?: StudioId }
-  | { type: APP_ACTION_TYPE.GAME_SELECT; selectedGameId?: GameId }
+  | { type: APP_ACTION_TYPE.GAME_SELECT; selectedGameId?: WorldId }
 
 const appReducer = (state: AppState, action: AppActionType): AppState => {
   switch (action.type) {
@@ -67,7 +67,7 @@ const appReducer = (state: AppState, action: AppActionType): AppState => {
     case APP_ACTION_TYPE.STUDIO_SELECT:
       return { ...state, selectedStudioId: action.selectedStudioId }
     case APP_ACTION_TYPE.GAME_SELECT:
-      return { ...state, selectedGameId: action.selectedGameId }
+      return { ...state, selectedWorldId: action.selectedGameId }
     default:
       return state
   }
@@ -79,15 +79,15 @@ interface AppContextType {
 }
 
 const defaultAppState: AppState = {
-  version: '0.5.1',
-  build: '5625f664',
+  version: '0.6.0',
+  build: '--',
   platform: undefined,
   fullscreen: false,
   location: APP_LOCATION.DASHBOARD,
   menuOpen: false,
   modalOpen: false,
   selectedStudioId: undefined,
-  selectedGameId: undefined
+  selectedWorldId: undefined
 }
 
 export const AppContext = createContext<AppContextType>({

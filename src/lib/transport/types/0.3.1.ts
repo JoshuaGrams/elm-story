@@ -1,7 +1,7 @@
 import {
   COMPARE_OPERATOR_TYPE,
-  ComponentId,
-  COMPONENT_TYPE,
+  ElementId,
+  ELEMENT_TYPE,
   FolderChildRefs,
   FolderParentRef,
   GameChildRefs,
@@ -28,8 +28,8 @@ export interface RootData {
 }
 
 export interface ChoiceData {
-  id: ComponentId
-  passageId: ComponentId
+  id: ElementId
+  passageId: ElementId
   tags: string[]
   title: string
   updated: number
@@ -40,13 +40,13 @@ export interface ChoiceCollection {
 }
 
 export interface ConditionData {
-  compare: [ComponentId, COMPARE_OPERATOR_TYPE, string]
-  id: ComponentId
-  routeId: ComponentId
+  compare: [ElementId, COMPARE_OPERATOR_TYPE, string]
+  id: ElementId
+  routeId: ElementId
   tags: string[]
   title: string
   updated: number
-  variableId: ComponentId
+  variableId: ElementId
 }
 
 export interface ConditionCollection {
@@ -54,9 +54,9 @@ export interface ConditionCollection {
 }
 
 export interface EffectData {
-  id: ComponentId
-  routeId: ComponentId
-  set: [ComponentId, SET_OPERATOR_TYPE, string]
+  id: ElementId
+  routeId: ElementId
+  set: [ElementId, SET_OPERATOR_TYPE, string]
   tags: string[]
   title: string
   updated: number
@@ -69,7 +69,7 @@ export interface EffectCollection {
 
 export interface FolderData {
   children: FolderChildRefs
-  id: ComponentId
+  id: ElementId
   parent: FolderParentRef
   tags: string[]
   title: string
@@ -85,9 +85,9 @@ export interface JumpData {
     componentEditorPosX?: number
     componentEditorPosY?: number
   }
-  id: ComponentId
-  route: [ComponentId?, ComponentId?]
-  sceneId?: ComponentId
+  id: ElementId
+  route: [ElementId?, ElementId?]
+  sceneId?: ElementId
   tags: string[]
   title: string
   updated: number
@@ -98,14 +98,14 @@ export interface JumpCollection {
 }
 
 export interface PassageData {
-  choices: ComponentId[]
+  choices: ElementId[]
   content: string
   editor?: {
     componentEditorPosX?: number
     componentEditorPosY?: number
   }
-  id: ComponentId
-  sceneId: ComponentId
+  id: ElementId
+  sceneId: ElementId
   tags: string[]
   title: string
   updated: number
@@ -116,13 +116,13 @@ export interface PassageCollection {
 }
 
 export interface RouteData {
-  choiceId?: ComponentId
-  destinationId: ComponentId
-  destinationType: COMPONENT_TYPE
-  id: ComponentId
-  originId: ComponentId
-  originType: COMPONENT_TYPE
-  sceneId: ComponentId
+  choiceId?: ElementId
+  destinationId: ElementId
+  destinationType: ELEMENT_TYPE
+  id: ElementId
+  originId: ElementId
+  originType: ELEMENT_TYPE
+  sceneId: ElementId
   tags: string[]
   title: string
   updated: number
@@ -139,8 +139,8 @@ export interface SceneData {
     componentEditorTransformY?: number
     componentEditorTransformZoom?: number
   }
-  id: ComponentId
-  jumps: ComponentId[]
+  id: ElementId
+  jumps: ElementId[]
   parent: SceneParentRef
   tags: string[]
   title: string
@@ -152,7 +152,7 @@ export interface SceneCollection {
 }
 
 export interface VariableData {
-  id: ComponentId
+  id: ElementId
   initialValue: string
   tags: string[]
   title: string

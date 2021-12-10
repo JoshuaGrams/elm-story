@@ -1,6 +1,6 @@
 import React, { createContext, useMemo, useReducer } from 'react'
 
-import { ENGINE_THEME } from '../types/0.5.1'
+import { ENGINE_THEME } from '../types'
 
 interface SettingsContext {
   open: boolean

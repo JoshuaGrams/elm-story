@@ -4,25 +4,27 @@ import { pick } from 'lodash'
 import React, { useContext, useEffect } from 'react'
 import { useQuery } from 'react-query'
 
+import { LibraryDatabase } from '../lib/db'
+
 import {
-  getGameInfo,
-  removeGameData,
-  resetGame,
+  getWorldInfo,
+  removeWorldData,
+  resetWorld,
   saveEngineCollectionData,
-  saveEngineDefaultGameCollectionData
+  saveEngineDefaultWorldCollectionData
 } from '../lib/api'
 
-import { GameId, StudioId, ESGEngineCollectionData } from '../types/0.5.1'
+import { WorldId, StudioId, ESGEngineCollectionData } from '../types'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
-import { INITIAL_ENGINE_EVENT_ORIGIN_KEY } from '../lib'
+import { INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY } from '../lib'
 
 const Installer: React.FC<{
   studioId: StudioId
-  gameId: GameId
+  worldId: WorldId
   data?: ESGEngineCollectionData
-  isEditor: boolean
-}> = React.memo(({ children, studioId, gameId, data, isEditor }) => {
+  isComposer: boolean
+}> = React.memo(({ children, studioId, worldId, data, isComposer }) => {
   const { engine, engineDispatch } = useContext(EngineContext)
 
   useQuery(
@@ -30,38 +32,45 @@ const Installer: React.FC<{
     async () => {
       try {
         if (!engine.installed) {
-          if (!isEditor && data) {
-            const updateGame = await saveEngineCollectionData(data, false)
+          if (!isComposer && data) {
+            const database = new LibraryDatabase(studioId)
 
-            if (updateGame) {
-              engineDispatch({
-                type: ENGINE_ACTION_TYPE.SET_UPDATE_GAME,
-                updating: true
-              })
+            // feedback#95
+            database.on('ready', async () => {
+              const updateStory = await saveEngineCollectionData(data, false)
 
-              await removeGameData(studioId, gameId)
-              await saveEngineCollectionData(data, true)
+              if (updateStory) {
+                engineDispatch({
+                  type: ENGINE_ACTION_TYPE.SET_UPDATE_WORLD,
+                  updating: true
+                })
 
-              engineDispatch({
-                type: ENGINE_ACTION_TYPE.SET_UPDATE_GAME,
-                updating: false
-              })
-            }
+                await removeWorldData(studioId, worldId)
+                await saveEngineCollectionData(data, true)
+
+                engineDispatch({
+                  type: ENGINE_ACTION_TYPE.SET_UPDATE_WORLD,
+                  updating: false
+                })
+              }
+            })
+
+            await database.open()
           }
 
-          if (isEditor) {
-            engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_EDITOR })
+          if (isComposer) {
+            engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_COMPOSER })
             engineDispatch({ type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION })
 
             // #421
-            const foundGame = await getGameInfo(studioId, gameId)
+            const foundWorld = await getWorldInfo(studioId, worldId)
 
-            if (foundGame) {
-              await resetGame(studioId, gameId, true, true)
-              await saveEngineDefaultGameCollectionData(
+            if (foundWorld) {
+              await resetWorld(studioId, worldId, true, true)
+              await saveEngineDefaultWorldCollectionData(
                 studioId,
-                gameId,
-                foundGame.version
+                worldId,
+                foundWorld.version
               )
 
               if (engine.playing) {
@@ -69,17 +78,17 @@ const Installer: React.FC<{
                 // event stream from using old version
                 // TODO: this is set again after install
                 engineDispatch({
-                  type: ENGINE_ACTION_TYPE.SET_GAME_INFO,
-                  gameInfo: foundGame
+                  type: ENGINE_ACTION_TYPE.SET_WORLD_INFO,
+                  gameInfo: foundWorld
                 })
 
                 engineDispatch({
-                  type: ENGINE_ACTION_TYPE.SET_CURRENT_EVENT,
-                  id: `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
+                  type: ENGINE_ACTION_TYPE.SET_CURRENT_LIVE_EVENT,
+                  id: `${INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY}${worldId}`
                 })
               }
             } else {
-              throw 'Unable to find game during install.'
+              throw 'Unable to find world during install.'
             }
           }
 
@@ -103,17 +112,17 @@ const Installer: React.FC<{
   )
 
   useEffect(() => {
-    async function setGameData() {
+    async function setWorldData() {
       if (engine.installed) {
-        const gameInfo = await getGameInfo(studioId, gameId)
+        const worldInfo = await getWorldInfo(studioId, worldId)
 
-        gameInfo &&
+        worldInfo &&
           engineDispatch({
-            type: ENGINE_ACTION_TYPE.SET_GAME_INFO,
+            type: ENGINE_ACTION_TYPE.SET_WORLD_INFO,
             gameInfo: studioId
               ? {
                   studioId, // games in editor database does not have studioId
-                  ...pick(gameInfo, [
+                  ...pick(worldInfo, [
                     'copyright',
                     'description',
                     'designer',
@@ -125,7 +134,7 @@ const Installer: React.FC<{
                     'website'
                   ])
                 }
-              : pick(gameInfo, [
+              : pick(worldInfo, [
                   'copyright',
                   'description',
                   'designer',
@@ -141,7 +150,7 @@ const Installer: React.FC<{
       }
     }
 
-    setGameData()
+    setWorldData()
   }, [engine.installed])
 
   return <>{engine.installed && children}</>

@@ -1,23 +1,23 @@
-import { Input, ComponentId, GameId, StudioId } from '../data/types'
+import { Input, ElementId, WorldId, StudioId } from '../data/types'
 import { v4 as uuid } from 'uuid'
 import { LibraryDatabase } from '../db'
 
-export async function getInput(studioId: StudioId, inputId: ComponentId) {
+export async function getInput(studioId: StudioId, inputId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getInput(inputId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getInputsByGameRef(
+export async function getInputsByWorldRef(
   studioId: StudioId,
-  gameId: GameId
+  worldId: WorldId
 ): Promise<Input[]> {
   try {
-    return await new LibraryDatabase(studioId).getInputsByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getInputsByWorldRef(worldId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -27,14 +27,14 @@ export async function saveInput(studioId: StudioId, input: Input) {
   try {
     return await new LibraryDatabase(studioId).saveInput(input)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveVariableRefToInput(
   studioId: StudioId,
-  inputId: ComponentId,
-  variableId?: ComponentId
+  inputId: ElementId,
+  variableId?: ElementId
 ) {
   try {
     return await new LibraryDatabase(studioId).saveVariableRefToInput(
@@ -42,14 +42,14 @@ export async function saveVariableRefToInput(
       variableId
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function removeInput(studioId: StudioId, inputId: ComponentId) {
+export async function removeInput(studioId: StudioId, inputId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removeInput(inputId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

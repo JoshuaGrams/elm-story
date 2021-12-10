@@ -2,8 +2,8 @@
 
 import Dexie from 'dexie'
 
-import { PASSAGE_TYPE } from '../data/types'
-import { DB_NAME, LIBRARY_TABLE } from '.'
+import { EVENT_TYPE } from '../data/types'
+import { DB_NAME } from '.'
 
 export default (database: Dexie) => {
   // UID is added to base library database name
@@ -17,11 +17,11 @@ export default (database: Dexie) => {
       })
       .upgrade(async (tx) => {
         try {
-          const passagesTable = tx.table(LIBRARY_TABLE.PASSAGES)
+          const passagesTable = tx.table('passages')
 
           await passagesTable.toCollection().modify((passage) => {
             passage.input = undefined
-            passage.type = PASSAGE_TYPE.CHOICE
+            passage.type = EVENT_TYPE.CHOICE
           })
         } catch (error) {}
       })

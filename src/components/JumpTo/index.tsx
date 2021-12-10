@@ -3,17 +3,20 @@ import logger from '../../lib/logger'
 import React, { useContext, useEffect, useState } from 'react'
 
 import {
-  ComponentId,
-  COMPONENT_TYPE,
-  GameId,
-  Passage,
+  ElementId,
+  ELEMENT_TYPE,
+  WorldId,
+  Event,
   Scene,
   StudioId
 } from '../../data/types'
 
-import { useJump, usePassagesBySceneRef, useScenes } from '../../hooks'
+import { useJump, useEventsBySceneRef, useScenes } from '../../hooks'
 
-import { EditorContext, EDITOR_ACTION_TYPE } from '../../contexts/EditorContext'
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../contexts/ComposerContext'
 
 import { Button, Divider, Select } from 'antd'
 import { RollbackOutlined } from '@ant-design/icons'
@@ -24,32 +27,32 @@ import api from '../../api'
 
 const JumpSelect: React.FC<{
   studioId: StudioId
-  gameId?: GameId
-  sceneId?: ComponentId
-  selectedId: ComponentId | undefined
+  worldId?: WorldId
+  sceneId?: ElementId
+  selectedId: ElementId | undefined
   onChangeRoutePart: (
-    componentType: COMPONENT_TYPE,
-    componentId: ComponentId | null
+    componentType: ELEMENT_TYPE,
+    componentId: ElementId | null
   ) => Promise<void>
-}> = ({ studioId, gameId, sceneId, selectedId, onChangeRoutePart }) => {
-  let scenes: Scene[] | undefined = gameId
-      ? useScenes(studioId, gameId, [gameId])
+}> = ({ studioId, worldId, sceneId, selectedId, onChangeRoutePart }) => {
+  let scenes: Scene[] | undefined = worldId
+      ? useScenes(studioId, worldId, [worldId])
       : undefined,
-    passages: Passage[] | undefined = sceneId
-      ? usePassagesBySceneRef(studioId, sceneId, [sceneId])
+    events: Event[] | undefined = sceneId
+      ? useEventsBySceneRef(studioId, sceneId, [sceneId])
       : undefined
 
-  const [selectedSceneId, setSelectedSceneId] = useState<
-      ComponentId | undefined
-    >(undefined),
-    [selectedPassageId, setSelectedPassageId] = useState<
-      ComponentId | undefined
-    >(undefined)
+  const [selectedSceneId, setSelectedSceneId] = useState<ElementId | undefined>(
+      undefined
+    ),
+    [selectedEventId, setSelectedEventId] = useState<ElementId | undefined>(
+      undefined
+    )
 
   async function onChange(componentId: string) {
-    gameId && (await onChangeRoutePart(COMPONENT_TYPE.SCENE, componentId))
+    worldId && (await onChangeRoutePart(ELEMENT_TYPE.SCENE, componentId))
 
-    sceneId && (await onChangeRoutePart(COMPONENT_TYPE.PASSAGE, componentId))
+    sceneId && (await onChangeRoutePart(ELEMENT_TYPE.EVENT, componentId))
   }
 
   useEffect(() => {
@@ -60,13 +63,11 @@ const JumpSelect: React.FC<{
   }, [scenes, selectedId])
 
   useEffect(() => {
-    logger.info(`JumpSelect->passages->useEffect`)
+    logger.info(`JumpSelect->events->useEffect`)
 
-    passages &&
-      setSelectedPassageId(
-        passages.find((passage) => passage.id === selectedId)?.id
-      )
-  }, [passages, selectedId])
+    events &&
+      setSelectedEventId(events.find((event) => event.id === selectedId)?.id)
+  }, [events, selectedId])
 
   // TODO: abstract
   return (
@@ -93,9 +94,7 @@ const JumpSelect: React.FC<{
 
                 <Button className={styles.rollBackBtn}>
                   <RollbackOutlined
-                    onClick={() =>
-                      onChangeRoutePart(COMPONENT_TYPE.SCENE, null)
-                    }
+                    onClick={() => onChangeRoutePart(ELEMENT_TYPE.SCENE, null)}
                   />
                 </Button>
               </>
@@ -104,17 +103,17 @@ const JumpSelect: React.FC<{
         </>
       )}
 
-      {passages && passages.length > 0 && (
+      {events && events.length > 0 && (
         <>
           <Divider>
-            <h2>Passage</h2>
+            <h2>Event</h2>
           </Divider>
 
           <div className={`${styles.selectWrapper} nodrag`}>
-            {selectedPassageId && (
+            {selectedEventId && (
               <>
-                <Select value={selectedPassageId} onChange={onChange}>
-                  {passages.map(
+                <Select value={selectedEventId} onChange={onChange}>
+                  {events.map(
                     (passage) =>
                       passage.id && (
                         <Select.Option value={passage.id} key={passage.id}>
@@ -126,21 +125,19 @@ const JumpSelect: React.FC<{
 
                 <Button className={styles.rollBackBtn}>
                   <RollbackOutlined
-                    onClick={() =>
-                      onChangeRoutePart(COMPONENT_TYPE.PASSAGE, null)
-                    }
+                    onClick={() => onChangeRoutePart(ELEMENT_TYPE.EVENT, null)}
                   />
                 </Button>
               </>
             )}
 
-            {!selectedPassageId && (
+            {!selectedEventId && (
               <Button
                 onClick={async () => {
-                  if (passages) {
+                  if (events) {
                     const scene = await api().scenes.getScene(
                       studioId,
-                      passages[0].sceneId
+                      events[0].sceneId
                     )
 
                     onChange(scene.children[0][1])
@@ -148,7 +145,7 @@ const JumpSelect: React.FC<{
                 }}
                 className={`${styles.jumpToBtn} nodrag`}
               >
-                Jump to Passage
+                Jump to Event
               </Button>
             )}
           </div>
@@ -160,50 +157,48 @@ const JumpSelect: React.FC<{
 
 const JumpTo: React.FC<{
   studioId: StudioId
-  jumpId: ComponentId
-  onRemove?: (jumpId: ComponentId) => Promise<void>
+  jumpId: ElementId
+  onRemove?: (jumpId: ElementId) => Promise<void>
 }> = ({ studioId, jumpId, onRemove }) => {
   const jump = useJump(studioId, jumpId, [studioId, jumpId])
 
-  const { editor, editorDispatch } = useContext(EditorContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   async function onChangeRoutePart(
-    componentType: COMPONENT_TYPE,
-    componentId: ComponentId | null
+    componentType: ELEMENT_TYPE,
+    componentId: ElementId | null
   ) {
     if (jump?.id) {
       switch (componentType) {
-        case COMPONENT_TYPE.SCENE:
+        case ELEMENT_TYPE.SCENE:
           componentId &&
-            (await api().jumps.saveJumpRoute(studioId, jump.id, [componentId]))
+            (await api().jumps.saveJumpPath(studioId, jump.id, [componentId]))
 
           if (!componentId) {
-            if (editor.selectedComponentEditorSceneViewJump) {
-              editorDispatch({
-                type:
-                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_TOTAL_SELECTED_JUMPS,
-                totalComponentEditorSceneViewSelectedJumps: 0
+            if (composer.selectedSceneMapJump) {
+              composerDispatch({
+                type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
+                totalSceneMapSelectedJumps: 0
               })
 
-              editorDispatch({
-                type:
-                  EDITOR_ACTION_TYPE.COMPONENT_EDITOR_SCENE_VIEW_SELECT_JUMP,
-                selectedComponentEditorSceneViewJump: null
+              composerDispatch({
+                type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+                selectedSceneMapJump: null
               })
             }
 
-            await api().games.saveJumpRefToGame(studioId, jump.gameId, null)
+            await api().worlds.saveJumpRefToWorld(studioId, jump.worldId, null)
 
             await api().jumps.removeJump(studioId, jump.id)
 
             onRemove && (await onRemove(jumpId))
           }
           break
-        case COMPONENT_TYPE.PASSAGE:
-          await api().jumps.saveJumpRoute(
+        case ELEMENT_TYPE.EVENT:
+          await api().jumps.saveJumpPath(
             studioId,
             jump.id,
-            componentId ? [jump.route[0], componentId] : [jump.route[0]]
+            componentId ? [jump.path[0], componentId] : [jump.path[0]]
           )
           break
         default:
@@ -217,21 +212,21 @@ const JumpTo: React.FC<{
       {jump && (
         <>
           {/* Scene */}
-          {jump.route[0] && (
+          {jump.path[0] && (
             <JumpSelect
               studioId={studioId}
-              gameId={jump.gameId}
-              selectedId={jump.route[0]}
+              worldId={jump.worldId}
+              selectedId={jump.path[0]}
               onChangeRoutePart={onChangeRoutePart}
             />
           )}
 
           {/* Passage */}
-          {jump.route[0] && (
+          {jump.path[0] && (
             <JumpSelect
               studioId={studioId}
-              sceneId={jump.route[0]}
-              selectedId={jump.route[1]}
+              sceneId={jump.path[0]}
+              selectedId={jump.path[1]}
               onChangeRoutePart={onChangeRoutePart}
             />
           )}

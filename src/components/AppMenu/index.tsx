@@ -22,7 +22,7 @@ import {
   PlusOutlined
 } from '@ant-design/icons'
 
-import { SaveStudioModal, RemoveStudioModal, SaveGameModal } from '../Modal'
+import { SaveStudioModal, RemoveStudioModal, SaveWorldModal } from '../Modal'
 
 import styles from './styles.module.less'
 
@@ -39,7 +39,7 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
       edit: false
     }),
     [removeStudioModalVisible, setRemoveStudioModalVisible] = useState(false),
-    [saveGameModal, setSaveGameModal] = useState({
+    [saveWorldModal, setSaveWorldModal] = useState({
       visible: false,
       edit: false
     })
@@ -90,12 +90,14 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
         )}
 
         {app.selectedStudioId && (
-          <SaveGameModal
-            visible={saveGameModal.visible}
-            onCancel={() => setSaveGameModal({ visible: false, edit: false })}
-            afterClose={() => setSaveGameModal({ visible: false, edit: false })}
+          <SaveWorldModal
+            visible={saveWorldModal.visible}
+            onCancel={() => setSaveWorldModal({ visible: false, edit: false })}
+            afterClose={() =>
+              setSaveWorldModal({ visible: false, edit: false })
+            }
             studioId={app.selectedStudioId}
-            edit={saveGameModal.edit}
+            edit={saveWorldModal.edit}
           />
         )}
       </>
@@ -157,14 +159,14 @@ const AppMenu: React.FC<{ className?: string }> = ({ className = '' }) => {
               </Menu.SubMenu>
             )}
             {app.selectedStudioId && (
-              <Menu.SubMenu title="Games">
+              <Menu.SubMenu title="Worlds">
                 <Menu.Item
                   icon={<PlusOutlined />}
                   onClick={() => {
                     if (app.selectedStudioId) {
                       appDispatch({ type: APP_ACTION_TYPE.MENU_CLOSE })
 
-                      setSaveGameModal({ visible: true, edit: false })
+                      setSaveWorldModal({ visible: true, edit: false })
                     }
                   }}
                 >

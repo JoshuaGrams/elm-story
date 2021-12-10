@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 
+import { Studio } from '../../data/types'
+
 import { useStudios } from '../../hooks'
 
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
@@ -10,7 +12,6 @@ import { EditOutlined } from '@ant-design/icons'
 import { SaveStudioModal } from '../Modal'
 
 import styles from './styles.module.less'
-import { Studio } from '../../data/types'
 
 type StudioSelectProps = {
   className?: string
@@ -52,10 +53,14 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
         studio={selectedStudio}
         edit={saveStudioModal.edit}
         onSave={(studioId) =>
-          appDispatch({
-            type: APP_ACTION_TYPE.STUDIO_SELECT,
-            selectedStudioId: studioId
-          })
+          setTimeout(
+            () =>
+              appDispatch({
+                type: APP_ACTION_TYPE.STUDIO_SELECT,
+                selectedStudioId: studioId
+              }),
+            100
+          )
         }
         onRemove={() => {
           appDispatch({
@@ -67,13 +72,13 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
         }}
       />
 
-      <div className={`${styles.studioList} ${className}`}>
+      <div className={`${styles.StudioList} ${className}`}>
         {studios && (
           <>
             <Select
               style={{ width: '100%', textAlign: 'center' }}
               placeholder="Select studio..."
-              value={app.selectedStudioId || undefined}
+              value={app.selectedStudioId}
               dropdownRender={(menu) => (
                 <div>
                   {menu}
@@ -82,7 +87,9 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
                     type="primary"
                     style={{
                       width: '100%',
-                      marginTop: studios.length > 0 ? '6px' : '0px'
+                      marginTop: studios.length > 0 ? '6px' : '0px',
+                      borderTopLeftRadius: '0 !important',
+                      borderTopRightRadius: 0
                     }}
                     onClick={() =>
                       setSaveStudioModal({ visible: true, edit: false })
@@ -99,20 +106,28 @@ const StudioSelect: React.FC<StudioSelectProps> = ({
                 })
               }}
             >
-              {studios.map((studio) => (
-                <Option
-                  style={{ textAlign: 'center' }}
-                  value={`${studio.id}`}
-                  key={studio.id}
-                >
-                  {studio.title} | {studio.games.length} Games
-                </Option>
-              ))}
+              {studios.map(
+                (studio) =>
+                  studio.id &&
+                  studio.title && (
+                    <Option
+                      style={{ textAlign: 'center' }}
+                      value={studio.id}
+                      key={studio.id}
+                    >
+                      {studio.title}{' '}
+                      <span style={{ color: `hsl(0, 0%, 40%)` }}>|</span>{' '}
+                      {`${studio.worlds.length} ${
+                        studio.worlds.length === 1 ? 'world' : 'worlds'
+                      }`}
+                    </Option>
+                  )
+              )}
             </Select>
             {app.selectedStudioId && (
               <Button
                 type="primary"
-                style={{ marginRight: 6 }}
+                style={{ marginRight: 6, borderRadius: 2 }}
                 onClick={() =>
                   setSaveStudioModal({ visible: true, edit: true })
                 }

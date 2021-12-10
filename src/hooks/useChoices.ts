@@ -1,15 +1,15 @@
 import { LibraryDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import { Choice, ComponentId, GameId, StudioId } from '../data/types'
+import { Choice, ElementId, WorldId, StudioId } from '../data/types'
 
 const useChoices = (
   studioId: StudioId,
-  gameId: GameId,
+  worldId: WorldId,
   deps?: any[]
 ): Choice[] | undefined => {
   const choices = useLiveQuery(
-    () => new LibraryDatabase(studioId).choices.where({ gameId }).toArray(),
+    () => new LibraryDatabase(studioId).choices.where({ worldId }).toArray(),
     deps || [],
     undefined
   )
@@ -19,7 +19,7 @@ const useChoices = (
 
 const useChoice = (
   studioId: StudioId,
-  choiceId: ComponentId,
+  choiceId: ElementId,
   deps?: any[]
 ): Choice | undefined => {
   const choice = useLiveQuery(
@@ -31,13 +31,13 @@ const useChoice = (
   return choice
 }
 
-const useChoicesByPassageRef = (
+const useChoicesByEventRef = (
   studioId: StudioId,
-  passageId?: ComponentId,
+  eventId?: ElementId,
   deps?: any[]
 ): Choice[] | undefined => {
   const choices = useLiveQuery(
-    () => new LibraryDatabase(studioId).choices.where({ passageId }).toArray(),
+    () => new LibraryDatabase(studioId).choices.where({ eventId }).toArray(),
     deps || [],
     undefined
   )
@@ -45,6 +45,6 @@ const useChoicesByPassageRef = (
   return choices
 }
 
-export { useChoice, useChoicesByPassageRef }
+export { useChoice, useChoicesByEventRef }
 
 export default useChoices

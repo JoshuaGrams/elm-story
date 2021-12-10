@@ -3,78 +3,75 @@ import { v4 as uuid } from 'uuid'
 
 import {
   COMPARE_OPERATOR_TYPE,
-  ComponentId,
+  ElementId,
   Condition,
-  GameId,
+  WorldId,
   StudioId
 } from '../data/types'
 
-export async function getCondition(
-  studioId: StudioId,
-  conditionId: ComponentId
-) {
+export async function getCondition(studioId: StudioId, conditionId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getCondition(conditionId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getConditionsByGameRef(
+export async function getConditionsByWorldRef(
   studioId: StudioId,
-  gameId: GameId
+  worldId: WorldId
 ): Promise<Condition[]> {
   try {
-    return await new LibraryDatabase(studioId).getConditionsByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getConditionsByWorldRef(worldId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function getConditionsByRouteRef(
   studioId: StudioId,
-  routeId: ComponentId,
+  pathId: ElementId,
   countOnly?: boolean
 ): Promise<number | Condition[]> {
   try {
-    return await new LibraryDatabase(studioId).getConditionsByRouteRef(
-      routeId,
+    return await new LibraryDatabase(studioId).getConditionsByPathRef(
+      pathId,
       countOnly || false
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function getConditionsByVariableRef(
   studioId: StudioId,
-  variableId: ComponentId
+  variableId: ElementId
 ): Promise<Condition[]> {
   try {
     return await new LibraryDatabase(studioId).getConditionsByVariableRef(
       variableId
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveCondition(
   studioId: StudioId,
   condition: Condition
-): Promise<ComponentId> {
+): Promise<ElementId> {
   if (!condition.id) condition.id = uuid()
 
   try {
     return await new LibraryDatabase(studioId).saveCondition(condition)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveConditionCompareOperatorType(
   studioId: StudioId,
-  conditionId: ComponentId,
+  conditionId: ElementId,
   newCompareOperatorType: COMPARE_OPERATOR_TYPE
 ) {
   try {
@@ -83,13 +80,13 @@ export async function saveConditionCompareOperatorType(
       newCompareOperatorType
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveConditionValue(
   studioId: StudioId,
-  conditionId: ComponentId,
+  conditionId: ElementId,
   newValue: string
 ) {
   try {
@@ -98,17 +95,17 @@ export async function saveConditionValue(
       newValue
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function removeCondition(
   studioId: StudioId,
-  conditionId: ComponentId
+  conditionId: ElementId
 ) {
   try {
     await new LibraryDatabase(studioId).removeCondition(conditionId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

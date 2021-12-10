@@ -21,7 +21,7 @@ const ServiceWorker: React.FC = () => {
   return (
     <>
       {needRefresh && (
-        <div id="game-update-toast">
+        <div id="world-update-toast">
           <span>{!updateApp ? 'Update available.' : 'Updating...'}</span>
 
           <button

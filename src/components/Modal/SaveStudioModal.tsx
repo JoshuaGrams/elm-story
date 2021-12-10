@@ -24,7 +24,7 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
 }) => {
   const [saveStudioForm] = Form.useForm()
 
-  let footerButtons = []
+  let footerButtons: JSX.Element[] = []
 
   if (edit) {
     footerButtons.push(
@@ -88,7 +88,7 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
             const studioId = await api().studios.saveStudio(
               studio && edit
                 ? { ...studio, title }
-                : { title, tags: [], games: [] }
+                : { title, tags: [], worlds: [] }
             )
 
             onSave && onSave(studioId)
@@ -99,7 +99,7 @@ const SaveStudioModal: React.FC<SaveStudioModalProps> = ({
         }}
       >
         <Form.Item
-          label="Studio Title"
+          label="Title"
           name="title"
           rules={[{ required: true, message: 'Studio title is required.' }]}
         >

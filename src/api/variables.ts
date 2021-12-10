@@ -2,75 +2,75 @@ import { LibraryDatabase, LIBRARY_TABLE } from '../db'
 import { v4 as uuid } from 'uuid'
 
 import {
-  ComponentId,
-  GameId,
+  ElementId,
+  WorldId,
   StudioId,
   Variable,
   VARIABLE_TYPE
 } from '../data/types'
 
-export async function getVariable(studioId: StudioId, variableId: ComponentId) {
+export async function getVariable(studioId: StudioId, variableId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getVariable(variableId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getVariablesByGameRef(
+export async function getVariablesByWorldRef(
   studioId: StudioId,
-  gameId: GameId
+  worldId: WorldId
 ): Promise<Variable[]> {
   try {
-    return await new LibraryDatabase(studioId).getVariablesByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getVariablesByWorldRef(worldId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveVariable(
   studioId: StudioId,
   variable: Variable
-): Promise<ComponentId> {
+): Promise<ElementId> {
   if (!variable.id) variable.id = uuid()
 
   try {
     return await new LibraryDatabase(studioId).saveVariable(variable)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function removeVariable(
   studioId: StudioId,
-  variableId: ComponentId
+  variableId: ElementId
 ) {
   try {
     await new LibraryDatabase(studioId).removeVariable(variableId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveVariableTitle(
   studioId: StudioId,
-  variableId: ComponentId,
+  variableId: ElementId,
   title: string
 ) {
   try {
-    await new LibraryDatabase(studioId).saveComponentTitle(
+    await new LibraryDatabase(studioId).saveElementTitle(
       variableId,
       LIBRARY_TABLE.VARIABLES,
       title
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveVariableType(
   studioId: StudioId,
-  variableId: ComponentId,
+  variableId: ElementId,
   type: VARIABLE_TYPE
 ) {
   try {
@@ -79,13 +79,13 @@ export async function saveVariableType(
       type
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveVariableInitialValue(
   studioId: StudioId,
-  variableId: ComponentId,
+  variableId: ElementId,
   initialValue: string
 ) {
   try {
@@ -94,6 +94,6 @@ export async function saveVariableInitialValue(
       initialValue
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

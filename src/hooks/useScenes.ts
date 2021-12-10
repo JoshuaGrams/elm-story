@@ -1,15 +1,15 @@
 import { LibraryDatabase } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import { StudioId, Scene, GameId, ComponentId } from '../data/types'
+import { StudioId, Scene, WorldId, ElementId } from '../data/types'
 
 const useScenes = (
   studioId: StudioId,
-  gameId: GameId,
+  worldId: WorldId,
   deps?: any[]
 ): Scene[] | undefined => {
   const scenes = useLiveQuery(
-    () => new LibraryDatabase(studioId).scenes.where({ gameId }).toArray(),
+    () => new LibraryDatabase(studioId).scenes.where({ worldId }).toArray(),
     deps || [],
     undefined
   )
@@ -21,23 +21,9 @@ const useScenes = (
   return scenes
 }
 
-const useScenesByChapterRef = (
-  studioId: StudioId,
-  chapterId: ComponentId,
-  deps?: any[]
-): Scene[] | undefined => {
-  const passages = useLiveQuery(
-    () => new LibraryDatabase(studioId).scenes.where({ chapterId }).toArray(),
-    deps || [],
-    undefined
-  )
-
-  return passages
-}
-
 const useScene = (
   studioId: StudioId,
-  sceneId: ComponentId | undefined | null,
+  sceneId: ElementId | undefined | null,
   deps?: any[]
 ): Scene | undefined =>
   useLiveQuery(
@@ -47,6 +33,6 @@ const useScene = (
     undefined
   )
 
-export { useScenesByChapterRef, useScene }
+export { useScene }
 
 export default useScenes

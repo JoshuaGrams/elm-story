@@ -3,16 +3,16 @@ import { cloneDeep, Many, pick } from 'lodash'
 import lzwCompress from 'lzwcompress'
 
 import {
-  COMPONENT_TYPE,
-  GameDataJSON,
+  ELEMENT_TYPE,
+  WorldDataJSON,
   ESGEngineCollectionData
-} from '../transport/types/0.5.1'
+} from '../transport/types/0.6.0'
 
 function filterCollectionChildProps<T extends object, U extends keyof T>(
-  collectionToFilter: { [ComponentId: string]: T },
+  collectionToFilter: { [ElementId: string]: T },
   props: Many<U>
 ) {
-  const filteredCollection: { [ComponentId: string]: Pick<T, U> } = {}
+  const filteredCollection: { [ElementId: string]: Pick<T, U> } = {}
 
   Object.keys(collectionToFilter).map(
     (objectId) =>
@@ -22,24 +22,27 @@ function filterCollectionChildProps<T extends object, U extends keyof T>(
   return filteredCollection
 }
 
-function format(gameData: GameDataJSON): string {
+function format(worldData: WorldDataJSON): string {
   const {
     _,
+    characters,
     choices,
     conditions,
     effects,
+    events,
     inputs,
     jumps,
-    passages,
-    routes,
+    paths,
     scenes,
     variables
-  }: GameDataJSON = cloneDeep(gameData)
+  }: WorldDataJSON = cloneDeep(worldData)
 
+  // TODO: fix types
+  // @ts-ignore
   return lzwCompress.pack({
     _: {
-      children: gameData._.children
-        .filter((child) => child[0] === COMPONENT_TYPE.SCENE)
+      children: worldData._.children
+        .filter((child) => child[0] === ELEMENT_TYPE.SCENE)
         .map((child) => child),
       ...pick(_, [
         'copyright',
@@ -58,37 +61,42 @@ function format(gameData: GameDataJSON): string {
         'website'
       ])
     },
-    choices: filterCollectionChildProps(choices, ['id', 'passageId', 'title']),
+    characters: filterCollectionChildProps(characters, [
+      'id',
+      'masks',
+      'refs',
+      'title'
+    ]),
+    choices: filterCollectionChildProps(choices, ['id', 'eventId', 'title']),
+    // @ts-ignore
     conditions: filterCollectionChildProps(conditions, [
       'compare',
       'id',
-      'routeId',
+      'pathId',
       'variableId'
     ]),
+    // @ts-ignore
     effects: filterCollectionChildProps(effects, [
       'id',
-      'routeId',
+      'pathId',
       'set',
       'variableId'
     ]),
-    games: {},
-    inputs: filterCollectionChildProps(inputs, [
-      'id',
-      'passageId',
-      'variableId'
-    ]),
-    jumps: filterCollectionChildProps(jumps, ['id', 'route', 'sceneId']),
-    passages: filterCollectionChildProps(passages, [
+    events: filterCollectionChildProps(events, [
       'choices',
       'content',
-      'gameOver',
+      'ending',
       'id',
       'input',
+      'persona',
       'sceneId',
       'type'
     ]),
-    routes: filterCollectionChildProps(routes, [
+    inputs: filterCollectionChildProps(inputs, ['id', 'eventId', 'variableId']),
+    jumps: filterCollectionChildProps(jumps, ['id', 'path', 'sceneId']),
+    paths: filterCollectionChildProps(paths, [
       'choiceId',
+      'conditionsType',
       'destinationId',
       'destinationType',
       'id',
@@ -103,7 +111,8 @@ function format(gameData: GameDataJSON): string {
       'initialValue',
       'title',
       'type'
-    ])
+    ]),
+    worlds: {}
   } as ESGEngineCollectionData)
 }
 

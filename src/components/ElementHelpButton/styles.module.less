@@ -1,0 +1,21 @@
+.ElementHelpButton {
+  position: absolute;
+  top: 0;
+  right: 6px;
+  width: 22px;
+  text-align: center;
+  color: var(--help-button-color);
+  font-size: 12px;
+
+  &:hover {
+    color: var(--highlight-color);
+    cursor: pointer;
+  }
+}
+
+:global(.dock-extra-content) .ElementHelpButton {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 12px;
+}

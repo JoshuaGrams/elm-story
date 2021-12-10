@@ -1,8 +1,8 @@
 export const AUTO_ENGINE_BOOKMARK_KEY = '___auto___'
-export const INITIAL_ENGINE_EVENT_ORIGIN_KEY = '___initial___'
-export const ENGINE_EVENT_LOOPBACK_RESULT_VALUE = '___loopback___'
+export const INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY = '___initial___'
+export const ENGINE_LIVE_EVENT_LOOPBACK_RESULT_VALUE = '___loopback___'
 export const ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE = '___passthrough___'
-export const ENGINE_EVENT_GAME_OVER_RESULT_VALUE = '___gameover___'
+export const ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE = '___storyover___'
 export const DEFAULT_ENGINE_SETTINGS_KEY = '__default__'
 
 export const scrollElementToBottom = (element: HTMLElement, smooth?: boolean) =>

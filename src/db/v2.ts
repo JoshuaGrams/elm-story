@@ -1,8 +1,22 @@
 import Dexie from 'dexie'
 
-import { DB_NAME, LIBRARY_TABLE } from '.'
+import { APP_TABLE, DB_NAME, LIBRARY_TABLE } from '.'
 
 export default (database: Dexie) => {
+  if (database.name.includes(DB_NAME.APP)) {
+    database.version(2).upgrade(async (tx) => {
+      await tx
+        .table(APP_TABLE.STUDIOS)
+        .toCollection()
+        .modify((studio) => {
+          if (studio.games) {
+            studio.worlds = [...studio.games]
+            delete studio.games
+          }
+        })
+    })
+  }
+
   // UID is added to base library database name
   if (database.name.includes(DB_NAME.LIBRARY)) {
     database
@@ -12,7 +26,7 @@ export default (database: Dexie) => {
         variables: '&id,gameId,title,type,*tags,updated'
       })
       .upgrade((tx) => {
-        tx.table(LIBRARY_TABLE.GAMES)
+        tx.table('games')
           .toCollection()
           .modify((game) => {
             game.designer = game.director

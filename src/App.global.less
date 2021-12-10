@@ -44,9 +44,15 @@
   --dropdown-selected-item-color: hsl(0, 0%, 15%);
   --dropdown-item-color: hsl(0, 0%, 60%);
   --warning-message-color: hsl(50, 100%, 50%);
-  --passage-node-row-icon-color: hsl(0, 0%, 40%);
+  --event-node-row-icon-color: hsl(0, 0%, 40%);
   --component-id: hsl(0, 0%, 40%);
   --help-button-color: hsl(0, 0%, 40%);
+  --drive-color: hsl(185, 100%, 60%);
+  --drive-color-dark: hsla(185, 100%, 60%, 0.2);
+  --energy-color: hsl(40, 100%, 60%);
+  --energy-color-dark: hsla(40, 100%, 60%, 0.2);
+  --path-conditions-type-all-color: hsl(339, 100%, 55%);
+  --path-conditions-type-any-color: hsl(184, 100%, 55%);
 }
 
 ::-webkit-scrollbar {
@@ -121,7 +127,7 @@ h3 {
 }
 
 .ant-btn {
-  border-radius: unset;
+  border-radius: 2px !important;
 
   &:hover {
     border-color: var(--highlight-color-bright);
@@ -192,7 +198,8 @@ h3 {
 .ant-modal-content {
   background: var(--bg-color-3);
   border: 1px solid var(--border-color-10);
-  border-radius: unset;
+  border-radius: 2px;
+  overflow: hidden;
 
   .ant-modal-header {
     background: var(--bg-color-0);
@@ -219,14 +226,18 @@ h3 {
   }
 }
 
-.ant-input {
+.ant-input,
+.ant-input-affix-wrapper {
+  box-shadow: unset !important;
+  border-radius: 2px !important;
+
   &:hover {
     border-color: var(--highlight-color-50a);
   }
 
-  &:focus {
-    border-color: var(--highlight-color);
-    box-shadow: unset;
+  &:focus,
+  &.ant-input-affix-wrapper-focused {
+    border-color: var(--highlight-color) !important;
   }
 }
 
@@ -250,7 +261,7 @@ h3 {
 
 .ant-select {
   &:not(.ant-select-customize-input) .ant-select-selector {
-    border-radius: unset;
+    border-radius: 2px !important;
   }
 
   &:not(.ant-select-disabled):hover .ant-select-selector {
@@ -267,7 +278,7 @@ h3 {
 .ant-select-dropdown {
   background: var(--dropdown-bg-color);
   padding: 0px;
-  border-radius: unset;
+  border-radius: 2px important;
   border: 1px solid var(--dropdown-border-color);
 
   .ant-select-item {

@@ -1,8 +1,8 @@
 import React, { useCallback, useContext } from 'react'
 
-import { resetGame, saveThemeSetting } from '../lib/api'
+import { resetWorld, saveThemeSetting } from '../lib/api'
 
-import { ENGINE_THEME } from '../types/0.5.1'
+import { ENGINE_THEME } from '../types'
 
 import { EngineContext } from '../contexts/EngineContext'
 import {
@@ -16,11 +16,11 @@ const Settings: React.FC = () => {
   const { engine } = useContext(EngineContext),
     { settings, settingsDispatch } = useContext(SettingsContext)
 
-  if (!engine.gameInfo) return null
+  if (!engine.worldInfo) return null
 
   const {
     studioId,
-    id: gameId,
+    id: worldId,
     copyright,
     description,
     designer,
@@ -28,7 +28,7 @@ const Settings: React.FC = () => {
     title,
     version,
     website
-  } = engine.gameInfo
+  } = engine.worldInfo
 
   const setTheme = useCallback(
     async (theme: ENGINE_THEME) => {
@@ -38,7 +38,7 @@ const Settings: React.FC = () => {
         closeSettings: true
       })
 
-      await saveThemeSetting(studioId, gameId, theme)
+      await saveThemeSetting(studioId, worldId, theme)
     },
     [studioId]
   )
@@ -123,7 +123,7 @@ const Settings: React.FC = () => {
 
           {import.meta.env.MODE === 'development' && (
             <div>
-              <h2>Engine Mode</h2>
+              <h2>Storyteller Mode</h2>
               <p>{import.meta.env.MODE}</p>
             </div>
           )}
@@ -133,13 +133,13 @@ const Settings: React.FC = () => {
             <p>
               <a
                 onClick={async () => {
-                  if (engine.gameInfo?.id) {
-                    await resetGame(studioId, gameId)
+                  if (engine.worldInfo?.id) {
+                    await resetWorld(studioId, worldId)
                     location.reload()
                   }
                 }}
               >
-                Reset Game
+                Reset World
               </a>
             </p>
           </div>

@@ -3,8 +3,8 @@
 import Dexie from 'dexie'
 
 import {
-  COMPONENT_TYPE,
-  ComponentId,
+  ELEMENT_TYPE,
+  ElementId,
   FolderChildRefs,
   SceneChildRefs,
   GameChildRefs
@@ -24,14 +24,14 @@ export default (database: Dexie) => {
       })
       .upgrade(async (tx) => {
         try {
-          const gamesTable = tx.table(LIBRARY_TABLE.GAMES)
+          const gamesTable = tx.table('games')
 
           await gamesTable.toCollection().modify((game) => {
-            const chapterIds: ComponentId[] = game.chapters,
+            const chapterIds: ElementId[] = game.chapters,
               gameChildren: GameChildRefs = []
 
             chapterIds.map((chapterId) =>
-              gameChildren.push([COMPONENT_TYPE.FOLDER, chapterId])
+              gameChildren.push([ELEMENT_TYPE.FOLDER, chapterId])
             )
 
             game.children = gameChildren
@@ -43,13 +43,13 @@ export default (database: Dexie) => {
           await folderTable.bulkAdd(await tx.table('chapters').toArray())
 
           await folderTable.toCollection().modify((folder) => {
-            folder.parent = [COMPONENT_TYPE.GAME, null]
+            folder.parent = ['GAME', null]
 
-            const sceneIds: ComponentId[] = folder.scenes,
+            const sceneIds: ElementId[] = folder.scenes,
               folderChildren: FolderChildRefs = []
 
             sceneIds.map((sceneId) =>
-              folderChildren.push([COMPONENT_TYPE.SCENE, sceneId])
+              folderChildren.push([ELEMENT_TYPE.SCENE, sceneId])
             )
 
             folder.children = folderChildren
@@ -63,14 +63,15 @@ export default (database: Dexie) => {
           const sceneTable = tx.table(LIBRARY_TABLE.SCENES)
 
           await sceneTable.toCollection().modify((scene) => {
-            scene.parent = [COMPONENT_TYPE.FOLDER, scene.chapterId]
+            scene.parent = [ELEMENT_TYPE.FOLDER, scene.chapterId]
             delete scene.chapterId
 
-            const passageIds: ComponentId[] = scene.passages,
+            const passageIds: ElementId[] = scene.passages,
               sceneChildren: SceneChildRefs = []
 
             passageIds.map((passageId) =>
-              sceneChildren.push([COMPONENT_TYPE.PASSAGE, passageId])
+              // @ts-ignore
+              sceneChildren.push(['PASSAGE', passageId])
             )
 
             scene.children = sceneChildren

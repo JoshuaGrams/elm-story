@@ -4,13 +4,13 @@ import ServiceWorker from './components/ServiceWorker'
 import Runtime from './Runtime'
 
 function main() {
-  let ___gameId: string = '___gameId___',
-    ___packedESGEngineData: string = '___engineData___'
+  let ___worldId: string = '___worldId___',
+    ___packedStoryworldData: string = '___storytellerData___'
 
   console.info(
-    `[ESRE] made with Elm Story ${String.fromCodePoint(
+    `[STORYTELLER] made with Elm Story ${String.fromCodePoint(
       0x1f4da
-    )} 0.5.1 | https://elmstory.com`
+    )} 0.6.0 | https://elmstory.com`
   )
 
   const rendererContainer = document.getElementById('runtime') || document.body
@@ -20,7 +20,11 @@ function main() {
       <>
         <ServiceWorker />
         <Runtime
-          game={{ id: ___gameId, data: ___packedESGEngineData, packed: true }}
+          world={{
+            id: ___worldId,
+            data: ___packedStoryworldData,
+            packed: true
+          }}
         />
       </>,
       rendererContainer
@@ -28,12 +32,16 @@ function main() {
   }
 
   if (import.meta.env.DEV) {
-    import('../data/terminal-access_0.0.1.json').then((data) =>
+    import('../data/wgc_0.0.3/wgc_0.0.3.json').then((data) =>
       render(
         <>
           <ServiceWorker />
           <Runtime
-            game={{ id: data._.id, data: JSON.stringify(data), packed: false }}
+            world={{
+              id: data._.id,
+              data: JSON.stringify(data),
+              packed: false
+            }}
           />
         </>,
         rendererContainer

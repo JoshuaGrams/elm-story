@@ -3,83 +3,83 @@ import { v4 as uuid } from 'uuid'
 
 import {
   Scene,
-  ComponentId,
+  ElementId,
   StudioId,
-  GameId,
+  WorldId,
   SceneParentRef,
   SceneChildRefs
 } from '../data/types'
 
-export async function getScene(studioId: StudioId, sceneId: ComponentId) {
+export async function getScene(studioId: StudioId, sceneId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getScene(sceneId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveScene(
   studioId: StudioId,
   scene: Scene
-): Promise<ComponentId> {
+): Promise<ElementId> {
   if (!scene.id) scene.id = uuid()
 
   try {
     return await new LibraryDatabase(studioId).saveScene(scene)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function removeScene(studioId: StudioId, sceneId: ComponentId) {
+export async function removeScene(studioId: StudioId, sceneId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removeScene(sceneId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getScenesByGameRef(
+export async function getScenesByWorldRef(
   studioId: StudioId,
-  gameId: GameId
+  worldId: WorldId
 ): Promise<Scene[]> {
   try {
-    return await new LibraryDatabase(studioId).getScenesByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getScenesByWorldRef(worldId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function getChildRefsBySceneRef(
   studioId: StudioId,
-  sceneId: ComponentId
+  sceneId: ElementId
 ): Promise<SceneChildRefs> {
   try {
     return await new LibraryDatabase(studioId).getChildRefsBySceneRef(sceneId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveSceneTitle(
   studioId: StudioId,
-  sceneId: ComponentId,
+  sceneId: ElementId,
   title: string
 ) {
   try {
-    await new LibraryDatabase(studioId).saveComponentTitle(
+    await new LibraryDatabase(studioId).saveElementTitle(
       sceneId,
       LIBRARY_TABLE.SCENES,
       title
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveSceneViewTransform(
   studioId: StudioId,
-  sceneId: ComponentId,
+  sceneId: ElementId,
   transform: { x: number; y: number; zoom: number }
 ) {
   try {
@@ -88,42 +88,42 @@ export async function saveSceneViewTransform(
       transform
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveParentRefToScene(
   studioId: StudioId,
   parent: SceneParentRef,
-  sceneId: ComponentId
+  sceneId: ElementId
 ) {
   try {
     await new LibraryDatabase(studioId).saveParentRefToScene(parent, sceneId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveChildRefsToScene(
   studioId: StudioId,
-  sceneId: ComponentId,
+  sceneId: ElementId,
   children: SceneChildRefs
 ) {
   try {
     await new LibraryDatabase(studioId).saveChildRefsToScene(sceneId, children)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveJumpRefsToScene(
   studioId: StudioId,
-  sceneId: ComponentId,
-  jumps: ComponentId[]
+  sceneId: ElementId,
+  jumps: ElementId[]
 ) {
   try {
     await new LibraryDatabase(studioId).saveJumpRefsToScene(sceneId, jumps)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

@@ -2,29 +2,31 @@
 import * as studios from './studios'
 
 // LIBRARY
-import * as games from './games'
-import * as jumps from './jumps'
-import * as folders from './folders'
-import * as scenes from './scenes'
-import * as routes from './routes'
+import * as characters from './characters'
+import * as choices from './choices'
 import * as conditions from './conditions'
 import * as effects from './effects'
-import * as passages from './passages'
-import * as choices from './choices'
+import * as events from './events'
+import * as folders from './folders'
 import * as inputs from './inputs'
+import * as jumps from './jumps'
+import * as paths from './paths'
 import * as variables from './variables'
+import * as scenes from './scenes'
+import * as worlds from './worlds'
 
 export default () => ({
-  studios,
-  games,
-  jumps,
-  folders,
-  scenes,
-  routes,
+  characters,
+  choices,
   conditions,
   effects,
-  passages,
-  choices,
+  events,
+  folders,
   inputs,
-  variables
+  jumps,
+  paths,
+  scenes,
+  studios,
+  variables,
+  worlds
 })

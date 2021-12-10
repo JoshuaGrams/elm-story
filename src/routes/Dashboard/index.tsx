@@ -1,74 +1,86 @@
-import React, { useEffect, useContext, useState, useRef } from 'react'
+import { ipcRenderer } from 'electron'
 
-import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
+import React, { useContext, useState } from 'react'
+
+import { WorldDataJSON } from '../../lib/transport/types/0.6.0'
+import { WINDOW_EVENT_TYPE } from '../../lib/events'
+
+import { AppContext } from '../../contexts/AppContext'
 
 import { Button } from 'antd'
 import { ImportOutlined } from '@ant-design/icons'
 
 import { ImportJSONModal } from '../../components/Modal'
 import StudioSelect from '../../components/StudioSelect'
-import GameLibrary from '../../components/GameLibrary'
+import WorldLibrary from '../../components/WorldLibrary'
 
 import styles from './styles.module.less'
 
 const Dashboard = () => {
-  const { app, appDispatch } = useContext(AppContext)
-
-  const importGameDataJSONInput = useRef<HTMLInputElement>(null)
+  const { app } = useContext(AppContext)
 
   const [importJSONModal, setImportJSONModal] = useState<{
     visible: boolean
-    file: File | null
-  }>({ visible: false, file: null })
+    worldData?: WorldDataJSON
+    jsonPath?: string
+    error?: boolean
+  }>({
+    visible: false,
+    worldData: undefined,
+    jsonPath: undefined,
+    error: false
+  })
 
-  function onImportGameDataJSON() {
-    if (importGameDataJSONInput.current?.files) {
+  async function importWorld() {
+    try {
+      const { worldData, jsonPath } = await ipcRenderer.invoke(
+        WINDOW_EVENT_TYPE.IMPORT_WORLD_GET_JSON
+      )
+
+      worldData &&
+        setImportJSONModal({
+          visible: true,
+          worldData,
+          jsonPath
+        })
+    } catch (error) {
       setImportJSONModal({
         visible: true,
-        file: importGameDataJSONInput.current?.files[0]
+        worldData: undefined,
+        jsonPath: undefined,
+        error: true
       })
     }
   }
-
-  function onImportGameDataJSONFinished() {
-    setImportJSONModal({ visible: false, file: null })
-
-    if (importGameDataJSONInput.current) {
-      importGameDataJSONInput.current.value = ''
-    }
-  }
-
-  useEffect(() => {
-    appDispatch({ type: APP_ACTION_TYPE.HEADER, header: 'Dashboard' })
-  }, [])
 
   return (
     <>
       <ImportJSONModal
         visible={importJSONModal.visible}
-        afterClose={onImportGameDataJSONFinished}
+        afterClose={() =>
+          setImportJSONModal({
+            visible: false,
+            worldData: undefined,
+            jsonPath: undefined,
+            error: false
+          })
+        }
         studioId={app.selectedStudioId}
-        file={importJSONModal.file}
-      />
-
-      <input
-        ref={importGameDataJSONInput}
-        type="file"
-        accept=".json"
-        style={{ display: 'none' }}
-        onChange={onImportGameDataJSON}
+        incomingWorldData={importJSONModal.worldData}
+        incomingJSONPath={importJSONModal.jsonPath}
+        incomingError={importJSONModal.error}
       />
 
       <div className={styles.Dashboard}>
         <div className={styles.studioSelectWrapper}>
           <StudioSelect />
-          <Button onClick={() => importGameDataJSONInput.current?.click()}>
+          <Button style={{ borderRadius: 2 }} onClick={importWorld}>
             <ImportOutlined />
           </Button>
         </div>
 
         {app.selectedStudioId && (
-          <GameLibrary studioId={app.selectedStudioId} />
+          <WorldLibrary studioId={app.selectedStudioId} />
         )}
       </div>
     </>

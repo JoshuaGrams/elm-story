@@ -1,23 +1,25 @@
-import { Choice, ComponentId, GameId, StudioId } from '../data/types'
 import { v4 as uuid } from 'uuid'
+
 import { LibraryDatabase } from '../db'
 
-export async function getChoice(studioId: StudioId, choiceId: ComponentId) {
+import { Choice, ElementId, WorldId, StudioId } from '../data/types'
+
+export async function getChoice(studioId: StudioId, choiceId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getChoice(choiceId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getChoicesByGameRef(
+export async function getChoicesByWorldRef(
   studioId: StudioId,
-  gameId: GameId
+  worldId: WorldId
 ): Promise<Choice[]> {
   try {
-    return await new LibraryDatabase(studioId).getChoicesByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getChoicesByWorldRef(worldId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -27,14 +29,14 @@ export async function saveChoice(studioId: StudioId, choice: Choice) {
   try {
     return await new LibraryDatabase(studioId).saveChoice(choice)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function removeChoice(studioId: StudioId, choiceId: ComponentId) {
+export async function removeChoice(studioId: StudioId, choiceId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removeChoice(choiceId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

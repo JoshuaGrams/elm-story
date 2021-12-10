@@ -1,181 +1,217 @@
-import { v4 as uuid } from 'uuid'
-
-import React, { useContext } from 'react'
+import React, { useCallback, useContext, useRef } from 'react'
+import useResizeObserver from '@react-hook/resize-observer'
+import { useSpring } from '@react-spring/core'
+import { animated } from '@react-spring/web'
 import { useLiveQuery } from 'dexie-react-hooks'
 
-import {
-  ComponentId,
-  PASSAGE_TYPE,
-  EngineEventData,
-  EngineEventStateCollection,
-  ENGINE_EVENT_TYPE,
-  EngineEventResult
-} from '../types/0.5.1'
-import {
-  AUTO_ENGINE_BOOKMARK_KEY,
-  ENGINE_EVENT_GAME_OVER_RESULT_VALUE,
-  ENGINE_EVENT_LOOPBACK_RESULT_VALUE
-} from '../lib'
-
+import { findDestinationEvent, getLiveEventInitial, getEvent } from '../lib/api'
 import { LibraryDatabase } from '../lib/db'
 
 import {
-  getEvent,
-  getEventInitial,
-  processEffectsByRoute,
-  saveBookmarkEvent,
-  saveEvent,
-  saveEventDate,
-  saveEventNext,
-  saveEventResult
-} from '../lib/api'
+  ElementId,
+  ELEMENT_TYPE,
+  EVENT_TYPE,
+  EngineLiveEventData,
+  EngineLiveEventStateCollection,
+  EngineEventData,
+  EnginePathData,
+  EngineLiveEventResult
+} from '../types'
+import {
+  ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE,
+  ENGINE_LIVE_EVENT_LOOPBACK_RESULT_VALUE,
+  ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE
+} from '../lib'
+import { NextLiveEventProcessor } from './LiveEvent'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
-import EventPassage from './EventPassage'
+import EventCharacterMask from './EventCharacterMask'
+import EventContent from './EventContent'
+import EventChoices from './EventChoices'
+import EventInput from './EventInput'
+import { LiveEventLoopbackButtonContent } from './LiveEventLoopbackButton'
 
-export type NextEventProcessor = ({
-  destinationId,
-  eventResult,
-  originId,
-  passageType,
-  routeId,
+export type PathProcessor = ({
+  originId: origin,
+  result,
+  path,
   state
 }: {
-  destinationId: ComponentId
-  eventResult: EngineEventResult
-  originId?: ComponentId
-  passageType: PASSAGE_TYPE
-  routeId?: ComponentId
-  state?: EngineEventStateCollection // override of event state for input type
+  originId?: ElementId
+  result: EngineLiveEventResult
+  path?: EnginePathData
+  state?: EngineLiveEventStateCollection
 }) => Promise<void>
 
-const Event: React.FC<{ data: EngineEventData }> = ({ data }) => {
+// TODO: move to event
+export function translateLiveEventResultValue(value: string) {
+  switch (value) {
+    case ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE:
+      return <>Continue</>
+    case ENGINE_LIVE_EVENT_LOOPBACK_RESULT_VALUE:
+      return <>{LiveEventLoopbackButtonContent}</>
+    case ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE:
+      return <>Restart</>
+    default:
+      return <>{value}</>
+  }
+}
+
+export const Event: React.FC<{
+  eventId: ElementId
+  liveEvent: EngineLiveEventData
+  onPathFound: NextLiveEventProcessor
+}> = React.memo(({ eventId, liveEvent, onPathFound }) => {
   const { engine, engineDispatch } = useContext(EngineContext)
 
-  if (!engine.gameInfo) return null
+  if (!engine.worldInfo) return null
 
-  const { studioId, id: gameId } = engine.gameInfo
+  const eventRef = useRef<HTMLDivElement>(null)
+
+  const { studioId, id: worldId } = engine.worldInfo
 
   const event = useLiveQuery(
-    () => new LibraryDatabase(studioId).events.get(data.id),
-    []
+    () => new LibraryDatabase(studioId).events.get(eventId),
+    [eventId]
   )
 
-  const gotoNextEvent: NextEventProcessor = async ({
-    destinationId,
-    eventResult,
-    originId,
-    passageType,
-    routeId,
-    state
-  }) => {
-    try {
-      await saveEventResult(studioId, data.id, eventResult)
+  const processPath: PathProcessor = useCallback(
+    async ({ originId, result, path, state }) => {
+      try {
+        let foundEvent: EngineEventData | undefined
 
-      const nextEventId = uuid()
+        if (path) {
+          foundEvent = await getEvent(
+            studioId,
+            await findDestinationEvent(
+              studioId,
+              path.destinationId,
+              path.destinationType
+            )
+          )
+        }
 
-      let eventType: ENGINE_EVENT_TYPE | undefined
+        if (!path) {
+          if (
+            result.value !== ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE &&
+            originId
+          ) {
+            foundEvent = await getEvent(studioId, originId)
+          }
 
-      switch (eventResult.value) {
-        case ENGINE_EVENT_GAME_OVER_RESULT_VALUE:
-          eventType = ENGINE_EVENT_TYPE.RESTART
-          break
-        case ENGINE_EVENT_LOOPBACK_RESULT_VALUE:
-          eventType =
-            ENGINE_EVENT_TYPE[
-              passageType === PASSAGE_TYPE.CHOICE
-                ? 'CHOICE_LOOPBACK'
-                : 'INPUT_LOOPBACK'
-            ]
-          break
-        default:
-          eventType = ENGINE_EVENT_TYPE[passageType]
-          break
-      }
+          if (result.value === ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE) {
+            const initialEvent = await getLiveEventInitial(studioId, worldId)
 
-      const initialEventFromRestart =
-        eventType === ENGINE_EVENT_TYPE.RESTART
-          ? await getEventInitial(studioId, gameId)
-          : undefined
-
-      if (eventType && engine.gameInfo) {
-        await Promise.all([
-          saveEventNext(studioId, data.id, nextEventId),
-          saveEvent(studioId, {
-            gameId,
-            id: nextEventId,
-            destination: destinationId,
-            origin: originId,
-            state:
-              initialEventFromRestart?.state ||
-              (routeId &&
-                (await processEffectsByRoute(
-                  studioId,
-                  routeId,
-                  state || event?.state || data.state
-                ))) ||
-              state || // TODO: handles input loopback
-              event?.state ||
-              data.state,
-            prev: data.id,
-            type: eventType,
-            updated: Date.now(),
-            version: engine.gameInfo?.version
-          })
-        ])
-
-        const updatedBookmark = await saveBookmarkEvent(
-          studioId,
-          `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`,
-          nextEventId
-        )
-
-        await saveEventDate(studioId, nextEventId, updatedBookmark?.updated)
-
-        const nextEvent = await getEvent(studioId, nextEventId)
-
-        if (nextEvent) {
-          const currentEvent = await getEvent(studioId, data.id)
-
-          if (currentEvent) {
-            engineDispatch({
-              type: ENGINE_ACTION_TYPE.UPDATE_EVENT_IN_STREAM,
-              event: currentEvent
-            })
-
-            engineDispatch({
-              type: ENGINE_ACTION_TYPE.APPEND_EVENTS_TO_STREAM,
-              events: [nextEvent],
-              reset: eventType === ENGINE_EVENT_TYPE.RESTART
-            })
-
-            engineDispatch({
-              type: ENGINE_ACTION_TYPE.SET_CURRENT_EVENT,
-              id: nextEventId
-            })
+            if (initialEvent) {
+              foundEvent = await getEvent(studioId, initialEvent.destination)
+            }
           }
         }
+
+        if (foundEvent) {
+          onPathFound({
+            destinationId: foundEvent.id,
+            liveEventResult: result,
+            originId:
+              path?.destinationType === ELEMENT_TYPE.EVENT
+                ? originId || liveEvent.destination
+                : undefined,
+            eventType: foundEvent.type,
+            pathId: path?.id,
+            state
+          })
+        } else {
+          throw 'Unable to process path. Could not find event.'
+        }
+      } catch (error) {
+        throw error
       }
-    } catch (error) {
-      throw error
-    }
-  }
+    },
+    [event, liveEvent]
+  )
+
+  const [styles, api] = useSpring(() => ({
+    height: 0,
+    overflow: 'hidden'
+  }))
+
+  useResizeObserver(eventRef, () => {
+    eventRef.current &&
+      api.start({
+        height: eventRef.current.getBoundingClientRect().height + 1 // handles border bottom change
+      })
+  })
 
   return (
-    <div className={`event ${event?.result ? 'event-past' : ''}`}>
-      {event && (
-        <>
-          <EventPassage
-            passageId={data.destination}
-            event={event}
-            onRouteFound={gotoNextEvent}
-          />
-        </>
-      )}
-    </div>
+    <animated.div style={styles}>
+      <div
+        className="event-content"
+        style={{
+          borderBottom:
+            liveEvent.id === engine.currentLiveEvent
+              ? 'none'
+              : 'var(--event-content-bottom-border)'
+        }}
+        ref={eventRef}
+      >
+        {event && (
+          <>
+            <div
+              style={{
+                display: event.persona ? 'grid' : 'unset',
+                gridTemplateColumns: event.persona ? '12.5rem auto' : 'unset'
+              }}
+            >
+              {event.persona && (
+                <EventCharacterMask eventId={eventId} persona={event.persona} />
+              )}
+
+              <EventContent
+                content={event.content}
+                persona={event.persona}
+                state={liveEvent.state}
+              />
+            </div>
+
+            {event.type === EVENT_TYPE.CHOICE && (
+              <EventChoices
+                event={event}
+                liveEvent={liveEvent}
+                onSubmitPath={processPath}
+              />
+            )}
+
+            {event.type === EVENT_TYPE.INPUT && (
+              <EventInput
+                event={event}
+                liveEvent={liveEvent}
+                onSubmitPath={processPath}
+              />
+            )}
+          </>
+        )}
+
+        {!event && (
+          <div className="engine-warning-message">
+            Event missing or has been removed.{' '}
+            <a
+              onClick={async () => {
+                engineDispatch({
+                  type: ENGINE_ACTION_TYPE.SET_INSTALLED,
+                  installed: false
+                })
+              }}
+            >
+              Refresh
+            </a>{' '}
+            event stream.
+          </div>
+        )}
+      </div>
+    </animated.div>
   )
-}
+})
 
 Event.displayName = 'Event'
 

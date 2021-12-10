@@ -2,76 +2,76 @@ import { LibraryDatabase } from '../db'
 import { v4 as uuid } from 'uuid'
 
 import {
-  ComponentId,
+  ElementId,
   Effect,
-  GameId,
+  WorldId,
   SET_OPERATOR_TYPE,
   StudioId
 } from '../data/types'
 
-export async function getEffect(studioId: StudioId, effectId: ComponentId) {
+export async function getEffect(studioId: StudioId, effectId: ElementId) {
   try {
     return await new LibraryDatabase(studioId).getEffect(effectId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getEffectsByGameRef(
+export async function getEffectsByWorldRef(
   studioId: StudioId,
-  gameId: GameId
+  worldId: WorldId
 ): Promise<Effect[]> {
   try {
-    return await new LibraryDatabase(studioId).getEffectsByGameRef(gameId)
+    return await new LibraryDatabase(studioId).getEffectsByWorldRef(worldId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function getEffectsByRouteRef(
+export async function getEffectsByPathRef(
   studioId: StudioId,
-  routeId: ComponentId,
+  pathId: ElementId,
   countOnly?: boolean
 ): Promise<number | Effect[]> {
   try {
-    return await new LibraryDatabase(studioId).getEffectsByRouteRef(
-      routeId,
+    return await new LibraryDatabase(studioId).getEffectsByPathRef(
+      pathId,
       countOnly || false
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function getEffectsByVariableRef(
   studioId: StudioId,
-  variableId: ComponentId
+  variableId: ElementId
 ): Promise<Effect[]> {
   try {
     return await new LibraryDatabase(studioId).getEffectsByVariableRef(
       variableId
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveEffect(
   studioId: StudioId,
   effect: Effect
-): Promise<ComponentId> {
+): Promise<ElementId> {
   if (!effect.id) effect.id = uuid()
 
   try {
     return await new LibraryDatabase(studioId).saveEffect(effect)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveEffectSetOperatorType(
   studioId: StudioId,
-  effectId: ComponentId,
+  effectId: ElementId,
   newSetOperatorType: SET_OPERATOR_TYPE
 ) {
   try {
@@ -80,26 +80,26 @@ export async function saveEffectSetOperatorType(
       newSetOperatorType
     )
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
 export async function saveEffectValue(
   studioId: StudioId,
-  effectId: ComponentId,
+  effectId: ElementId,
   newValue: string
 ) {
   try {
     await new LibraryDatabase(studioId).saveEffectValue(effectId, newValue)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
-export async function removeEffect(studioId: StudioId, effectId: ComponentId) {
+export async function removeEffect(studioId: StudioId, effectId: ElementId) {
   try {
     await new LibraryDatabase(studioId).removeEffect(effectId)
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }

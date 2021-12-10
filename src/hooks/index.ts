@@ -1,40 +1,47 @@
 import useDebouncedResizeObserver from './useDebouncedResizeObserver'
 
+import useCharacters, {
+  useCharacter,
+  useCharacterEvents
+} from './useCharacters'
 import useStudios, { useStudio } from './useStudios'
-import useGames, { useGame } from './useGames'
+import useWorlds, { useWorld } from './useWorlds'
 import useFolders, { useFolder } from './useFolders'
 import useJumps, { useJump, useJumpsBySceneRef } from './useJumps'
-import useScenes, { useScenesByChapterRef, useScene } from './useScenes'
-import useRoutes, {
-  useRoute,
-  useRoutesBySceneRef,
-  useRoutesByPassageRef,
-  useRoutesByChoiceRef,
-  useRoutesByInputRef,
-  useRoutePassthroughsByPassageRef
-} from './useRoutes'
-import useRouteConditions, {
-  useRouteCondition,
-  useRouteConditionsByRouteRef,
-  useRouteConditionsByRouteRefs,
-  useRouteConditionsCountByRouteRef
-} from './useRouteConditions'
-import useRouteEffects, {
-  useRouteEffect,
-  useRouteEffectsByRouteRef,
-  useRouteEffectsCountByRouteRef
-} from './useRouteEffects'
-import usePassages, { usePassagesBySceneRef, usePassage } from './usePassages'
-import useChoices, { useChoice, useChoicesByPassageRef } from './useChoices'
+import useScenes, { useScene } from './useScenes'
+import usePaths, {
+  usePath,
+  usePathsBySceneRef,
+  usePathsByEventRef,
+  usePathsByChoiceRef,
+  usePathsByInputRef,
+  usePathPassthroughsByEventRef
+} from './usePaths'
+import usePathConditions, {
+  usePathCondition,
+  usePathConditionsByPathRef,
+  usePathConditionsByPathRefs,
+  usePathConditionsCountByPathRef
+} from './usePathConditions'
+import usePathEffects, {
+  usePathEffect,
+  usePathEffectsByPathRef,
+  usePathEffectsCountByPathRef
+} from './usePathEffects'
+import useEvents, { useEventsBySceneRef, useEvent } from './useEvents'
+import useChoices, { useChoice, useChoicesByEventRef } from './useChoices'
 import useInputs, { useInput } from './useInputs'
 import useVariables, { useVariable } from './useVariables'
 
 export {
   useDebouncedResizeObserver,
+  useCharacters,
+  useCharacter,
+  useCharacterEvents,
   useStudios,
   useStudio,
-  useGames,
-  useGame,
+  useWorlds,
+  useWorld,
   useFolders,
   useFolder,
   useJumps,
@@ -42,29 +49,28 @@ export {
   useJumpsBySceneRef,
   useScenes,
   useScene,
-  useScenesByChapterRef,
-  useRoutes,
-  useRoute,
-  useRouteConditions,
-  useRouteCondition,
-  useRouteConditionsByRouteRef,
-  useRouteConditionsByRouteRefs,
-  useRouteConditionsCountByRouteRef,
-  useRouteEffects,
-  useRouteEffect,
-  useRouteEffectsByRouteRef,
-  useRouteEffectsCountByRouteRef,
-  useRoutesBySceneRef,
-  useRoutesByPassageRef,
-  useRoutesByChoiceRef,
-  useRoutesByInputRef,
-  useRoutePassthroughsByPassageRef,
-  usePassages,
-  usePassage,
-  usePassagesBySceneRef,
+  usePaths,
+  usePath,
+  usePathConditions,
+  usePathCondition,
+  usePathConditionsByPathRef,
+  usePathConditionsByPathRefs,
+  usePathConditionsCountByPathRef,
+  usePathEffects,
+  usePathEffect,
+  usePathEffectsByPathRef,
+  usePathEffectsCountByPathRef,
+  usePathsBySceneRef,
+  usePathsByEventRef,
+  usePathsByChoiceRef,
+  usePathsByInputRef,
+  usePathPassthroughsByEventRef,
+  useEvents,
+  useEvent,
+  useEventsBySceneRef,
   useChoices,
   useChoice,
-  useChoicesByPassageRef,
+  useChoicesByEventRef,
   useInputs,
   useInput,
   useVariables,

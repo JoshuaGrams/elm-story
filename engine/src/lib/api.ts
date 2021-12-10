@@ -9,43 +9,45 @@ import { DB_NAME, LibraryDatabase } from './db'
 
 import {
   COMPARE_OPERATOR_TYPE,
-  ComponentId,
-  COMPONENT_TYPE,
-  GameId,
+  ElementId,
+  ELEMENT_TYPE,
+  WorldId,
   SET_OPERATOR_TYPE,
   VARIABLE_TYPE,
   ESGEngineCollectionData,
   ENGINE_THEME,
-  EngineEventStateCollection,
+  EngineLiveEventStateCollection,
   EngineConditionData,
   EngineVariableData,
-  EngineEventData,
-  EngineRouteData,
-  ENGINE_EVENT_TYPE,
+  EngineLiveEventData,
+  EnginePathData,
+  ENGINE_LIVE_EVENT_TYPE,
   EngineChoiceData,
   EngineInputData,
   StudioId,
   EngineVariableCollection,
-  EngineGameData,
-  EnginePassageData,
-  EngineEventResult
-} from '../types/0.5.1'
+  EngineWorldData,
+  EngineEventData,
+  EngineLiveEventResult,
+  CHARACTER_MASK_TYPE,
+  CharacterMask,
+  PATH_CONDITIONS_TYPE
+} from '../types'
 import {
   AUTO_ENGINE_BOOKMARK_KEY,
   DEFAULT_ENGINE_SETTINGS_KEY,
-  INITIAL_ENGINE_EVENT_ORIGIN_KEY
+  INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY
 } from '../lib'
 
-export const getGameInfo = async (
+export const getWorldInfo = async (
   studioId: StudioId,
-
-  gameId: GameId
-): Promise<EngineGameData | null> => {
+  worldId: WorldId
+): Promise<EngineWorldData | null> => {
   try {
-    const foundGame = await new LibraryDatabase(studioId).games.get(gameId)
+    const foundWorld = await new LibraryDatabase(studioId).worlds.get(worldId)
 
-    if (foundGame) {
-      return foundGame
+    if (foundWorld) {
+      return foundWorld
     }
   } catch (error) {
     throw error
@@ -54,14 +56,18 @@ export const getGameInfo = async (
   return null
 }
 
-export const saveGameMeta = (studioId: StudioId, gameId: GameId) => {
-  if (!localStorage.getItem(gameId))
-    localStorage.setItem(gameId, JSON.stringify({ gameId, studioId }))
+export const saveWorldMeta = (studioId: StudioId, worldId: WorldId) => {
+  const worldMeta = localStorage.getItem(worldId)
+
+  // feedback#96
+  if (!worldMeta || (worldMeta && JSON.parse(worldMeta).gameId)) {
+    localStorage.setItem(worldId, JSON.stringify({ worldId, studioId }))
+  }
 }
 
 export const saveEngineCollectionData = async (
   engineData: ESGEngineCollectionData,
-  update: boolean // #373: when the game requires update, update engine defaults
+  update: boolean // #373: when the world requires update, update engine defaults
 ): Promise<boolean> => {
   const {
     children,
@@ -69,7 +75,7 @@ export const saveEngineCollectionData = async (
     description,
     designer,
     engine,
-    id: gameId,
+    id: worldId,
     jump,
     schema,
     studioId,
@@ -82,44 +88,57 @@ export const saveEngineCollectionData = async (
   } = engineData._
 
   const databaseExists = await Dexie.exists(`${DB_NAME}-${studioId}`)
-  let installedGame: EngineGameData | undefined
+  let installedWorld: EngineWorldData | undefined
 
   if (databaseExists) {
-    installedGame = await new LibraryDatabase(studioId).games.get(gameId)
+    installedWorld = await new LibraryDatabase(studioId).worlds.get(worldId)
   }
 
-  if (databaseExists && installedGame && !update) {
-    if (semver.gt(version, installedGame.version)) {
+  if (databaseExists && installedWorld && !update) {
+    if (semver.gt(version, installedWorld.version)) {
       return true
     }
 
-    if (semver.lt(version, installedGame.version)) {
+    if (semver.lt(version, installedWorld.version)) {
       console.error(
-        `[ESRE] unable to save game data to database.\n[ESRE] incoming: ${version}, installed: ${installedGame.version}\n[ESRE] more info: https://docs.elmstory.com/guides/data/pwa`
+        `[STORYTELLER] unable to save world data to database.\n[STORYTELLER] incoming: ${version}, installed: ${installedWorld.version}\n[STORYTELLER] more info: https://docs.elmstory.com/guides/data/pwa`
       )
     }
   }
 
-  if (!databaseExists || (databaseExists && !installedGame)) {
-    saveGameMeta(studioId, gameId)
+  if (!databaseExists || (databaseExists && !installedWorld)) {
+    saveWorldMeta(studioId, worldId)
 
     const libraryDatabase = new LibraryDatabase(studioId)
 
     try {
       await Promise.all([
-        libraryDatabase.saveChoiceCollectionData(gameId, engineData.choices),
+        libraryDatabase.saveCharacterCollectionData(
+          worldId,
+          engineData.characters
+        ),
+        libraryDatabase.saveChoiceCollectionData(worldId, engineData.choices),
         libraryDatabase.saveConditionCollectionData(
-          gameId,
+          worldId,
           engineData.conditions
         ),
-        libraryDatabase.saveEffectCollectionData(gameId, engineData.effects),
-        libraryDatabase.saveGameData({
+        libraryDatabase.saveEffectCollectionData(worldId, engineData.effects),
+        libraryDatabase.saveInputCollectionData(worldId, engineData.inputs),
+        libraryDatabase.saveJumpCollectionData(worldId, engineData.jumps),
+        libraryDatabase.saveEventCollectionData(worldId, engineData.events),
+        libraryDatabase.savePathCollectionData(worldId, engineData.paths),
+        libraryDatabase.saveSceneCollectionData(worldId, engineData.scenes),
+        libraryDatabase.saveVariableCollectionData(
+          worldId,
+          engineData.variables
+        ),
+        libraryDatabase.saveWorldData({
           children,
           copyright,
           description,
           designer,
           engine,
-          id: gameId,
+          id: worldId,
           jump,
           schema,
           studioId,
@@ -129,19 +148,14 @@ export const saveEngineCollectionData = async (
           updated,
           version,
           website
-        }),
-        libraryDatabase.saveInputCollectionData(gameId, engineData.inputs),
-        libraryDatabase.saveJumpCollectionData(gameId, engineData.jumps),
-        libraryDatabase.savePassageCollectionData(gameId, engineData.passages),
-        libraryDatabase.saveRouteCollectionData(gameId, engineData.routes),
-        libraryDatabase.saveSceneCollectionData(gameId, engineData.scenes),
-        libraryDatabase.saveVariableCollectionData(gameId, engineData.variables)
+        })
       ])
 
-      update && (await updateEngineDefaultGameCollectionData(studioId, gameId))
+      update &&
+        (await updateEngineDefaultWorldCollectionData(studioId, worldId))
 
       !update &&
-        (await saveEngineDefaultGameCollectionData(studioId, gameId, version))
+        (await saveEngineDefaultWorldCollectionData(studioId, worldId, version))
     } catch (error) {
       throw error
     }
@@ -150,10 +164,10 @@ export const saveEngineCollectionData = async (
   return false
 }
 
-export const saveEngineDefaultGameCollectionData = async (
+export const saveEngineDefaultWorldCollectionData = async (
   studioId: StudioId,
-  gameId: GameId,
-  gameVersion: string
+  worldId: WorldId,
+  worldVersion: string
 ) => {
   const libraryDatabase = new LibraryDatabase(studioId)
 
@@ -161,11 +175,13 @@ export const saveEngineDefaultGameCollectionData = async (
     const [
       existingAutoBookmark,
       existingDefaultSettings,
-      existingInitialEvent
+      existingInitialLiveEvent
     ] = await Promise.all([
-      libraryDatabase.bookmarks.get(`${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`),
-      libraryDatabase.settings.get(`${DEFAULT_ENGINE_SETTINGS_KEY}${gameId}`),
-      libraryDatabase.events.get(`${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`)
+      libraryDatabase.bookmarks.get(`${AUTO_ENGINE_BOOKMARK_KEY}${worldId}`),
+      libraryDatabase.settings.get(`${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`),
+      libraryDatabase.live_events.get(
+        `${INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY}${worldId}`
+      )
     ])
 
     let promises: Promise<void>[] = []
@@ -174,12 +190,12 @@ export const saveEngineDefaultGameCollectionData = async (
       promises.push(
         libraryDatabase.saveBookmarkCollectionData({
           AUTO_ENGINE_BOOKMARK_KEY: {
-            gameId,
-            id: `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`,
+            worldId,
+            id: `${AUTO_ENGINE_BOOKMARK_KEY}${worldId}`,
             title: AUTO_ENGINE_BOOKMARK_KEY,
-            event: undefined,
+            liveEventId: undefined,
             updated: Date.now(),
-            version: gameVersion
+            version: worldVersion
           }
         })
       )
@@ -189,8 +205,8 @@ export const saveEngineDefaultGameCollectionData = async (
       promises.push(
         libraryDatabase.saveSettingCollectionData({
           DEFAULT_ENGINE_SETTINGS: {
-            gameId,
-            id: `${DEFAULT_ENGINE_SETTINGS_KEY}${gameId}`,
+            worldId,
+            id: `${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`,
             theme: ENGINE_THEME.CONSOLE
           }
         })
@@ -199,9 +215,9 @@ export const saveEngineDefaultGameCollectionData = async (
 
     await Promise.all(promises)
 
-    if (!existingInitialEvent) {
+    if (!existingInitialLiveEvent) {
       const variablesArr = await libraryDatabase.variables
-        .where({ gameId })
+        .where({ worldId })
         .toArray()
 
       let variables: EngineVariableCollection = {}
@@ -210,8 +226,8 @@ export const saveEngineDefaultGameCollectionData = async (
         (variable) => (variables[variable.id] = cloneDeep(variable))
       )
 
-      // event is used when player first starts game
-      const initialGameState: EngineEventStateCollection = {}
+      // event is used when player first starts world
+      const initialWorldState: EngineLiveEventStateCollection = {}
 
       Object.keys(variables).map((key) => {
         const { title, type, initialValue } = pick(variables[key], [
@@ -220,24 +236,24 @@ export const saveEngineDefaultGameCollectionData = async (
           'initialValue'
         ])
 
-        initialGameState[key] = { gameId, title, type, value: initialValue }
+        initialWorldState[key] = { worldId, title, type, value: initialValue }
       })
 
-      const startingDestination = await findStartingDestinationPassage(
+      const startingDestination = await findStartingDestinationLiveEvent(
         studioId,
-        gameId
+        worldId
       )
 
       if (startingDestination) {
-        await libraryDatabase.saveEventCollectionData(gameId, {
+        await libraryDatabase.saveLiveEventCollectionData(worldId, {
           INITIAL_ENGINE_EVENT: {
-            gameId,
-            id: `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`,
+            worldId,
+            id: `${INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY}${worldId}`,
             destination: startingDestination,
-            state: initialGameState,
-            type: ENGINE_EVENT_TYPE.INITIAL,
+            state: initialWorldState,
+            type: ENGINE_LIVE_EVENT_TYPE.INITIAL,
             updated: Date.now(),
-            version: gameVersion
+            version: worldVersion
           }
         })
       }
@@ -248,27 +264,28 @@ export const saveEngineDefaultGameCollectionData = async (
 }
 
 // #373: recursive
-const findEventFromBookmarkWithExistingDestination = async (
+const findLiveEventFromBookmarkWithExistingDestination = async (
   studioId: StudioId,
-  eventId: ComponentId
-): Promise<EngineEventData | undefined> => {
+  liveEventId: ElementId
+): Promise<EngineLiveEventData | undefined> => {
   const libraryDatabase = new LibraryDatabase(studioId)
 
   try {
-    const foundEvent = await libraryDatabase.events.get(eventId)
+    const foundLiveEvent = await libraryDatabase.live_events.get(liveEventId)
 
-    if (foundEvent) {
-      const foundDestination = await libraryDatabase.passages.get(
-        foundEvent.destination
+    if (foundLiveEvent) {
+      // feedback#94
+      const foundDestination = await libraryDatabase.events.get(
+        foundLiveEvent.destination
       )
 
       if (foundDestination) {
-        return foundEvent
+        return foundLiveEvent
       } else {
-        if (foundEvent.prev) {
-          return findEventFromBookmarkWithExistingDestination(
+        if (foundLiveEvent.prev) {
+          return findLiveEventFromBookmarkWithExistingDestination(
             studioId,
-            foundEvent.prev
+            foundLiveEvent.prev
           )
         } else {
           return undefined
@@ -283,99 +300,101 @@ const findEventFromBookmarkWithExistingDestination = async (
 }
 
 // #373
-export const updateEngineDefaultGameCollectionData = async (
+export const updateEngineDefaultWorldCollectionData = async (
   studioId: StudioId,
-  gameId: GameId
+  worldId: WorldId
 ) => {
   const libraryDatabase = new LibraryDatabase(studioId)
 
   try {
     const foundBookmark = await libraryDatabase.bookmarks.get(
-      `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`
+      `${AUTO_ENGINE_BOOKMARK_KEY}${worldId}`
     )
 
-    const [foundGame, foundEvent] = await Promise.all([
-      libraryDatabase.games.get(gameId),
-      foundBookmark?.event
-        ? findEventFromBookmarkWithExistingDestination(
+    const [foundWorld, foundLiveEvent] = await Promise.all([
+      libraryDatabase.worlds.get(worldId),
+      foundBookmark?.liveEventId
+        ? findLiveEventFromBookmarkWithExistingDestination(
             studioId,
-            foundBookmark.event
+            foundBookmark.liveEventId
           )
         : undefined
     ])
 
-    if (foundGame) {
-      if (foundEvent) {
-        // create new event with patched game state and version
+    if (foundWorld) {
+      if (foundLiveEvent) {
+        // create new event with patched world state and version
         // update bookmark version and event
-        const newEventId = uuid()
+        const newLiveEventId = uuid()
 
         const variables = await libraryDatabase.variables.toArray()
 
-        let newEventState: EngineEventStateCollection = {}
+        let newLiveEventState: EngineLiveEventStateCollection = {}
 
         variables.map(({ id, title, type, initialValue }) => {
           // for each variable, add to new event state
-          newEventState[id] = {
-            gameId,
+          newLiveEventState[id] = {
+            worldId,
             title,
             type,
             value: initialValue
           }
 
-          // if the variable exists in the found game state, use original event state value
-          if (foundEvent.state[id]) {
-            newEventState[id] = {
-              ...newEventState[id],
-              value: foundEvent.state[id].value
+          // if the variable exists in the found world state, use original event state value
+          if (foundLiveEvent.state[id]) {
+            newLiveEventState[id] = {
+              ...newLiveEventState[id],
+              value: foundLiveEvent.state[id].value
             }
           }
         })
 
         await Promise.all([
-          libraryDatabase.events.add(
+          libraryDatabase.live_events.add(
             {
-              ...foundEvent,
-              id: newEventId,
-              state: newEventState,
+              ...foundLiveEvent,
+              id: newLiveEventId,
+              state: newLiveEventState,
               updated: Date.now(),
-              version: foundGame.version
+              version: foundWorld.version
             },
-            newEventId
+            newLiveEventId
           ),
           libraryDatabase.bookmarks.update(
-            `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`,
+            `${AUTO_ENGINE_BOOKMARK_KEY}${worldId}`,
             {
               ...foundBookmark,
-              event: newEventId,
+              liveEventId: newLiveEventId,
               updated: Date.now(),
-              version: foundGame.version
+              version: foundWorld.version
             }
           )
         ])
       }
 
-      if (!foundEvent) {
+      if (!foundLiveEvent) {
         // dump default bookmark and event and recreate
         await Promise.all([
           libraryDatabase.bookmarks.delete(
-            `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`
+            `${AUTO_ENGINE_BOOKMARK_KEY}${worldId}`
           ),
-          libraryDatabase.events.delete(
-            `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
+          libraryDatabase.live_events.delete(
+            `${INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY}${worldId}`
           )
         ])
 
-        await saveEngineDefaultGameCollectionData(
+        await saveEngineDefaultWorldCollectionData(
           studioId,
-          gameId,
-          foundGame.version
+          worldId,
+          foundWorld.version
         )
       }
 
-      console.info(`[ESRE] successfully updated game to ${foundGame.version}`)
+      console.info(
+        `[STORYTELLER] successfully updated world to ${foundWorld.version}`
+      )
     } else {
-      throw '[ESRE] unable to update game.\n[ESRE] missing game data.'
+      throw '[STORYTELLER] unable to update world.\n[STORYTELLER] missing world data.'
     }
   } catch (error) {
     throw error
@@ -386,21 +405,22 @@ export const unpackEngineData = (
   packedEngineData: string
 ): ESGEngineCollectionData => lzwCompress.unpack(packedEngineData)
 
-export const removeGameData = async (studioId: StudioId, gameId: GameId) => {
+export const removeWorldData = async (studioId: StudioId, worldId: WorldId) => {
   const libraryDatabase = new LibraryDatabase(studioId)
 
   try {
     await Promise.all([
-      libraryDatabase.choices.where({ gameId }).delete(),
-      libraryDatabase.conditions.where({ gameId }).delete(),
-      libraryDatabase.effects.where({ gameId }).delete(),
-      libraryDatabase.games.where({ id: gameId }).delete(),
-      libraryDatabase.inputs.where({ gameId }).delete(),
-      libraryDatabase.jumps.where({ gameId }).delete(),
-      libraryDatabase.passages.where({ gameId }).delete(),
-      libraryDatabase.routes.where({ gameId }).delete(),
-      libraryDatabase.scenes.where({ gameId }).delete(),
-      libraryDatabase.variables.where({ gameId }).delete()
+      libraryDatabase.characters.where({ worldId }).delete(),
+      libraryDatabase.choices.where({ worldId }).delete(),
+      libraryDatabase.conditions.where({ worldId }).delete(),
+      libraryDatabase.effects.where({ worldId }).delete(),
+      libraryDatabase.events.where({ worldId }).delete(),
+      libraryDatabase.inputs.where({ worldId }).delete(),
+      libraryDatabase.jumps.where({ worldId }).delete(),
+      libraryDatabase.paths.where({ worldId }).delete(),
+      libraryDatabase.scenes.where({ worldId }).delete(),
+      libraryDatabase.variables.where({ worldId }).delete(),
+      libraryDatabase.worlds.where({ id: worldId }).delete()
     ])
   } catch (error) {
     throw error
@@ -408,9 +428,9 @@ export const removeGameData = async (studioId: StudioId, gameId: GameId) => {
 }
 
 // #30
-export const resetGame = async (
+export const resetWorld = async (
   studioId: StudioId,
-  gameId: GameId,
+  worldId: WorldId,
   skipInstall?: boolean,
   isEditor?: boolean
 ) => {
@@ -419,16 +439,16 @@ export const resetGame = async (
 
     try {
       await Promise.all([
-        libraryDatabase.bookmarks.where({ gameId }).delete(),
-        libraryDatabase.events.where({ gameId }).delete(),
-        libraryDatabase.settings.where({ gameId }).delete()
+        libraryDatabase.bookmarks.where({ worldId }).delete(),
+        libraryDatabase.live_events.where({ worldId }).delete(),
+        libraryDatabase.settings.where({ worldId }).delete()
       ])
 
       // #412
       if (!isEditor) {
-        await removeGameData(studioId, gameId)
+        await removeWorldData(studioId, worldId)
 
-        !skipInstall && localStorage.removeItem(gameId)
+        !skipInstall && localStorage.removeItem(worldId)
       }
     } catch (error) {
       throw error
@@ -438,26 +458,26 @@ export const resetGame = async (
   }
 }
 
-export const findStartingDestinationPassage = async (
+export const findStartingDestinationLiveEvent = async (
   studioId: StudioId,
-  gameId: GameId
-): Promise<ComponentId | undefined> => {
+  worldId: WorldId
+): Promise<ElementId | undefined> => {
   const libraryDatabase = new LibraryDatabase(studioId),
-    game = await libraryDatabase.games.get(gameId)
+    world = await libraryDatabase.worlds.get(worldId)
 
-  if (game) {
+  if (world) {
     try {
-      if (game.jump) {
-        const foundJump = await libraryDatabase.jumps.get(game.jump)
+      if (world.jump) {
+        const foundJump = await libraryDatabase.jumps.get(world.jump)
 
         if (foundJump) {
-          if (foundJump.route[1]) {
-            return foundJump.route[1]
+          if (foundJump.path[1]) {
+            return foundJump.path[1]
           }
 
-          if (!foundJump.route[1] && foundJump.route[0]) {
+          if (!foundJump.path[1] && foundJump.path[0]) {
             const foundScene = await libraryDatabase.scenes.get(
-              foundJump.route[0]
+              foundJump.path[0]
             )
 
             if (!foundScene) return undefined
@@ -469,12 +489,12 @@ export const findStartingDestinationPassage = async (
         }
       }
 
-      if (!game.jump) {
+      if (!world.jump) {
         const libraryDatabase = new LibraryDatabase(studioId),
           foundScene =
-            game.children[0] && game.children[0][0] !== COMPONENT_TYPE.FOLDER
-              ? await libraryDatabase.scenes.get(game.children[0][1])
-              : await libraryDatabase.scenes.where({ gameId }).first()
+            world.children[0] && world.children[0][0] !== ELEMENT_TYPE.FOLDER
+              ? await libraryDatabase.scenes.get(world.children[0][1])
+              : await libraryDatabase.scenes.where({ worldId }).first()
 
         if (!foundScene) return undefined
 
@@ -489,36 +509,36 @@ export const findStartingDestinationPassage = async (
       throw error
     }
   } else {
-    throw 'Unable to find starting location. Missing game info.'
+    throw 'Unable to find starting location. Missing world info.'
   }
 }
 
-export const findDestinationPassage = async (
+export const findDestinationEvent = async (
   studioId: StudioId,
-  destinationId: ComponentId,
-  destinationType: COMPONENT_TYPE
+  destinationId: ElementId,
+  destinationType: ELEMENT_TYPE
 ) => {
-  let foundLocation: ComponentId | undefined
+  let foundLocation: ElementId | undefined
 
   switch (destinationType) {
-    case COMPONENT_TYPE.PASSAGE:
-      const foundPassage = await getPassage(studioId, destinationId)
+    case ELEMENT_TYPE.EVENT:
+      const foundEvent = await getEvent(studioId, destinationId)
 
-      if (foundPassage) {
-        foundLocation = foundPassage.id
+      if (foundEvent) {
+        foundLocation = foundEvent.id
       }
 
       break
-    case COMPONENT_TYPE.JUMP:
+    case ELEMENT_TYPE.JUMP:
       const foundJump = await getJump(studioId, destinationId)
 
-      if (foundJump && foundJump.route[0]) {
-        if (foundJump.route[1]) {
-          foundLocation = foundJump.route[1]
+      if (foundJump && foundJump.path[0]) {
+        if (foundJump.path[1]) {
+          foundLocation = foundJump.path[1]
         }
 
-        if (!foundJump.route[1]) {
-          const foundScene = await getScene(studioId, foundJump.route[0])
+        if (!foundJump.path[1]) {
+          const foundScene = await getScene(studioId, foundJump.path[0])
 
           if (foundScene?.children[0][1]) {
             foundLocation = foundScene.children[0][1]
@@ -538,10 +558,10 @@ export const findDestinationPassage = async (
   }
 }
 
-export const getBookmarkAuto = async (studioId: StudioId, gameId: GameId) => {
+export const getBookmarkAuto = async (studioId: StudioId, worldId: WorldId) => {
   try {
     return await new LibraryDatabase(studioId).bookmarks.get(
-      `${AUTO_ENGINE_BOOKMARK_KEY}${gameId}`
+      `${AUTO_ENGINE_BOOKMARK_KEY}${worldId}`
     )
   } catch (error) {
     throw error
@@ -550,7 +570,7 @@ export const getBookmarkAuto = async (studioId: StudioId, gameId: GameId) => {
 
 export const getBookmark = async (
   studioId: StudioId,
-  bookmarkId: ComponentId
+  bookmarkId: ElementId
 ) => {
   try {
     return await new LibraryDatabase(studioId).bookmarks.get(bookmarkId)
@@ -559,20 +579,20 @@ export const getBookmark = async (
   }
 }
 
-export const getBookmarks = async (studioId: StudioId, gameId: GameId) => {
+export const getBookmarks = async (studioId: StudioId, worldId: WorldId) => {
   try {
     return await new LibraryDatabase(studioId).bookmarks
-      .where({ gameId })
+      .where({ worldId })
       .toArray()
   } catch (error) {
     throw error
   }
 }
 
-export const saveBookmarkEvent = async (
+export const saveBookmarkLiveEvent = async (
   studioId: StudioId,
-  bookmarkId: ComponentId,
-  eventId: ComponentId
+  bookmarkId: ElementId,
+  liveEventId: ElementId
 ) => {
   try {
     const libraryDatabase = new LibraryDatabase(studioId),
@@ -583,7 +603,7 @@ export const saveBookmarkEvent = async (
     if (foundBookmark) {
       updatedBookmark = {
         ...foundBookmark,
-        event: eventId,
+        liveEventId,
         updated: Date.now()
       }
 
@@ -598,7 +618,7 @@ export const saveBookmarkEvent = async (
   }
 }
 
-export const getChoice = async (studioId: StudioId, choiceId: ComponentId) => {
+export const getChoice = async (studioId: StudioId, choiceId: ElementId) => {
   try {
     return await new LibraryDatabase(studioId).choices.get(choiceId)
   } catch (error) {
@@ -606,27 +626,27 @@ export const getChoice = async (studioId: StudioId, choiceId: ComponentId) => {
   }
 }
 
-export const getConditionsByRoutes = async (
+export const getConditionsByPaths = async (
   studioId: StudioId,
-  routeIds: ComponentId[]
+  pathIds: ElementId[]
 ) => {
   try {
     return await new LibraryDatabase(studioId).conditions
-      .where('routeId')
-      .anyOf(routeIds)
+      .where('pathId')
+      .anyOf(pathIds)
       .toArray()
   } catch (error) {
     throw error
   }
 }
 
-export const getEffectsByRouteRef = async (
+export const getEffectsByPathRef = async (
   studioId: StudioId,
-  routeId: ComponentId
+  pathId: ElementId
 ) => {
   try {
     return await new LibraryDatabase(studioId).effects
-      .where({ routeId })
+      .where({ pathId })
       .toArray()
   } catch (error) {
     throw error
@@ -635,13 +655,13 @@ export const getEffectsByRouteRef = async (
 
 export const processEffectsByRoute = async (
   studioId: StudioId,
-  routeId: ComponentId,
-  state: EngineEventStateCollection
+  pathId: ElementId,
+  state: EngineLiveEventStateCollection
 ) => {
-  const effects = await getEffectsByRouteRef(studioId, routeId)
+  const effects = await getEffectsByPathRef(studioId, pathId)
 
   if (effects.length > 0) {
-    const newState: EngineEventStateCollection = cloneDeep(state)
+    const newState: EngineLiveEventStateCollection = cloneDeep(state)
 
     effects.map((effect) => {
       if (effect.id && newState[effect.variableId]) {
@@ -681,214 +701,7 @@ export const processEffectsByRoute = async (
   }
 }
 
-export const saveEvent = async (
-  studioId: StudioId,
-  eventData: EngineEventData
-) => {
-  try {
-    await new LibraryDatabase(studioId).events.add(eventData)
-  } catch (error) {
-    throw error
-  }
-}
-
-export const saveEventDestination = async (
-  studioId: StudioId,
-  eventId: ComponentId,
-  destination: ComponentId
-) => {
-  try {
-    const libraryDatabase = new LibraryDatabase(studioId),
-      foundEvent = await libraryDatabase.events.get(eventId)
-
-    if (foundEvent) {
-      await libraryDatabase.events.update(eventId, {
-        ...foundEvent,
-        destination
-      })
-    }
-  } catch (error) {
-    throw error
-  }
-}
-
-export const saveEventNext = async (
-  studioId: StudioId,
-  eventId: ComponentId,
-  nextEventId: ComponentId
-) => {
-  try {
-    const libraryDatabase = new LibraryDatabase(studioId),
-      foundEvent = await libraryDatabase.events.get(eventId)
-
-    if (foundEvent) {
-      await libraryDatabase.events.update(eventId, {
-        ...foundEvent,
-        next: nextEventId
-      })
-    }
-  } catch (error) {
-    throw error
-  }
-}
-
-export const saveEventResult = async (
-  studioId: StudioId,
-  eventId: ComponentId,
-  result: EngineEventResult
-) => {
-  try {
-    const libraryDatabase = new LibraryDatabase(studioId),
-      foundEvent = await libraryDatabase.events.get(eventId)
-
-    if (foundEvent) {
-      await libraryDatabase.events.update(eventId, {
-        ...foundEvent,
-        result,
-        updated: Date.now()
-      })
-    }
-  } catch (error) {
-    throw error
-  }
-}
-
-export const saveEventState = async (
-  studioId: StudioId,
-  eventId: ComponentId,
-  state: EngineEventStateCollection
-) => {
-  try {
-    const libraryDatabase = new LibraryDatabase(studioId),
-      foundEvent = await libraryDatabase.events.get(eventId)
-
-    if (foundEvent) {
-      await libraryDatabase.events.update(eventId, {
-        ...foundEvent,
-        state,
-        updated: Date.now()
-      })
-    }
-  } catch (error) {
-    throw error
-  }
-}
-
-export const saveEventType = async (
-  studioId: StudioId,
-  eventId: ComponentId,
-  type: ENGINE_EVENT_TYPE
-) => {
-  try {
-    const libraryDatabase = new LibraryDatabase(studioId),
-      foundEvent = await libraryDatabase.events.get(eventId)
-
-    if (foundEvent) {
-      await libraryDatabase.events.update(eventId, {
-        ...foundEvent,
-        type,
-        updated: Date.now()
-      })
-    }
-  } catch (error) {
-    throw error
-  }
-}
-export const saveEventDate = async (
-  studioId: StudioId,
-  eventId: ComponentId,
-  date?: number
-) => {
-  try {
-    const libraryDatabase = new LibraryDatabase(studioId),
-      foundEvent = await libraryDatabase.events.get(eventId)
-
-    if (foundEvent) {
-      await libraryDatabase.events.update(eventId, {
-        ...foundEvent,
-        updated: date || Date.now()
-      })
-    }
-  } catch (error) {
-    throw error
-  }
-}
-
-export const getRecentEvents = async (
-  studioId: StudioId,
-  gameId: GameId,
-  fromEventId: ComponentId,
-  gameVersion: string,
-  history?: number
-): Promise<EngineEventData[]> => {
-  const libraryDatabase = new LibraryDatabase(studioId)
-
-  try {
-    let recentEvents: EngineEventData[] = []
-
-    // https://github.com/dfahlander/Dexie.js/issues/867#issuecomment-507865559
-    const orderedEvents = await libraryDatabase.events
-        .where('[gameId+updated]')
-        .between([gameId, Dexie.minKey], [gameId, Dexie.maxKey])
-        .filter((event) => event.version === gameVersion)
-        .limit(history || 10)
-        .reverse()
-        .toArray(),
-      mostRecentEventIndex = orderedEvents.findIndex(
-        (event) => event.id === fromEventId
-      )
-
-    // if restartIndex, trim recent events to restart
-    const restartIndex = orderedEvents.findIndex(
-      (event) => event.type === ENGINE_EVENT_TYPE.RESTART
-    )
-
-    if (mostRecentEventIndex !== -1) {
-      recentEvents =
-        restartIndex !== -1
-          ? orderedEvents.slice(mostRecentEventIndex, restartIndex + 1)
-          : orderedEvents
-    }
-
-    return recentEvents
-  } catch (error) {
-    throw error
-  }
-}
-
-export const checkEventDestinations = async (
-  studioId: StudioId,
-  gameId: GameId,
-  passages: EnginePassageData[]
-) => {
-  const passageIds = passages.map((passage) => passage.id),
-    eventDestinationIds = await (
-      await new LibraryDatabase(studioId).events.where({ gameId }).toArray()
-    ).map((event) => event.destination)
-
-  let destinationsValid = true
-
-  eventDestinationIds.map((eventDestinationId) => {
-    if (passageIds.indexOf(eventDestinationId) === -1) {
-      destinationsValid = false
-      return
-    }
-  })
-
-  return destinationsValid
-}
-
-export const getEventInitial = async (studioId: StudioId, gameId: GameId) => {
-  try {
-    return await new LibraryDatabase(studioId).events.get(
-      `${INITIAL_ENGINE_EVENT_ORIGIN_KEY}${gameId}`
-    )
-  } catch (error) {
-    throw error
-  }
-}
-
-export const getEvent = async (studioId: StudioId, eventId: ComponentId) => {
+export const getEvent = async (studioId: StudioId, eventId: ElementId) => {
   try {
     return await new LibraryDatabase(studioId).events.get(eventId)
   } catch (error) {
@@ -896,7 +709,57 @@ export const getEvent = async (studioId: StudioId, eventId: ComponentId) => {
   }
 }
 
-export const getJump = async (studioId: StudioId, jumpId: ComponentId) => {
+export const getCharacterMask = async (
+  studioId: StudioId,
+  characterId: ElementId,
+  maskType: CHARACTER_MASK_TYPE
+): Promise<CharacterMask | undefined> => {
+  try {
+    const foundCharacter = await new LibraryDatabase(studioId).characters.get(
+      characterId
+    )
+
+    if (foundCharacter) {
+      return foundCharacter.masks.find((mask) => mask.type === maskType)
+    }
+
+    return undefined
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getCharacterReference = async (
+  studioId: StudioId,
+  characterId: ElementId,
+  refId?: string
+): Promise<string | undefined> => {
+  try {
+    const foundCharacter = await new LibraryDatabase(studioId).characters.get(
+      characterId
+    )
+
+    if (foundCharacter) {
+      if (!refId) {
+        return foundCharacter.title
+      }
+
+      const foundRef = foundCharacter.refs.find((ref) => ref[0] === refId)
+
+      if (foundRef) {
+        return foundRef[1]
+      } else {
+        return foundCharacter.title
+      }
+    }
+
+    return undefined
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getJump = async (studioId: StudioId, jumpId: ElementId) => {
   try {
     return await new LibraryDatabase(studioId).jumps.get(jumpId)
   } catch (error) {
@@ -904,51 +767,40 @@ export const getJump = async (studioId: StudioId, jumpId: ComponentId) => {
   }
 }
 
-export const getPassage = async (
+export const getChoicesFromEvent = async (
   studioId: StudioId,
-  passageId: ComponentId
-) => {
-  try {
-    return await new LibraryDatabase(studioId).passages.get(passageId)
-  } catch (error) {
-    throw error
-  }
-}
-
-export const getChoicesFromPassage = async (
-  studioId: StudioId,
-  passageId: ComponentId
+  eventId: ElementId
 ): Promise<EngineChoiceData[]> => {
   try {
     return await new LibraryDatabase(studioId).choices
-      .where({ passageId })
+      .where({ eventId })
       .toArray()
   } catch (error) {
     throw error
   }
 }
 
-export const getChoicesFromPassageWithOpenRoute = async (
+export const getChoicesFromEventWithOpenPath = async (
   studioId: StudioId,
   choices: EngineChoiceData[],
-  state: EngineEventStateCollection,
+  state: EngineLiveEventStateCollection,
   includeAll?: boolean // editor can show choices with closed routes
 ): Promise<{
   filteredChoices: EngineChoiceData[]
-  openRoutes: { [choiceId: ComponentId]: EngineRouteData }
+  openPaths: { [choiceId: ElementId]: EnginePathData }
 }> => {
-  const choicesFromPassage = choices,
-    openRoutes: { [choiceId: ComponentId]: EngineRouteData } = {}
+  const choicesFromEvent = choices,
+    openPaths: { [choiceId: ElementId]: EnginePathData } = {}
 
   const _choices = await Promise.all(
-    choicesFromPassage.map(async (choice) => {
-      const routesFromChoice = await getRoutesFromChoice(studioId, choice.id)
+    choicesFromEvent.map(async (choice) => {
+      const pathsFromChoice = await getPathsFromChoice(studioId, choice.id)
 
-      if (routesFromChoice) {
-        const openRoute = await findOpenRoute(studioId, routesFromChoice, state)
+      if (pathsFromChoice) {
+        const openPath = await findOpenPath(studioId, pathsFromChoice, state)
 
-        if (openRoute) {
-          openRoutes[choice.id] = cloneDeep(openRoute)
+        if (openPath) {
+          openPaths[choice.id] = cloneDeep(openPath)
 
           return choice
         }
@@ -964,29 +816,247 @@ export const getChoicesFromPassageWithOpenRoute = async (
 
   return {
     filteredChoices,
-    openRoutes
+    openPaths
   }
 }
 
-export const getInputByPassage = async (
+export const getInputByEvent = async (
   studioId: StudioId,
-  passageId: ComponentId
+  pathId: ElementId
 ): Promise<EngineInputData | undefined> => {
   try {
-    return await new LibraryDatabase(studioId).inputs
-      .where({ passageId })
-      .first()
+    return await new LibraryDatabase(studioId).inputs.where({ pathId }).first()
   } catch (error) {
     throw error
   }
 }
 
-export const getRoutesFromChoice = async (
+export const saveLiveEvent = async (
   studioId: StudioId,
-  choiceId: ComponentId
-): Promise<EngineRouteData[]> => {
+  liveEventData: EngineLiveEventData
+) => {
   try {
-    return await new LibraryDatabase(studioId).routes
+    await new LibraryDatabase(studioId).live_events.add(liveEventData)
+  } catch (error) {
+    throw error
+  }
+}
+
+export const saveLiveEventDestination = async (
+  studioId: StudioId,
+  liveEventId: ElementId,
+  destination: ElementId
+) => {
+  try {
+    const libraryDatabase = new LibraryDatabase(studioId),
+      foundLiveEvent = await libraryDatabase.live_events.get(liveEventId)
+
+    if (foundLiveEvent) {
+      await libraryDatabase.live_events.update(liveEventId, {
+        ...foundLiveEvent,
+        destination
+      })
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+export const saveLiveEventNext = async (
+  studioId: StudioId,
+  liveEventId: ElementId,
+  nextLiveEventId: ElementId
+) => {
+  try {
+    const libraryDatabase = new LibraryDatabase(studioId),
+      foundLiveEvent = await libraryDatabase.live_events.get(liveEventId)
+
+    if (foundLiveEvent) {
+      await libraryDatabase.live_events.update(liveEventId, {
+        ...foundLiveEvent,
+        next: nextLiveEventId
+      })
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+export const saveLiveEventResult = async (
+  studioId: StudioId,
+  liveEventId: ElementId,
+  result: EngineLiveEventResult
+) => {
+  try {
+    const libraryDatabase = new LibraryDatabase(studioId),
+      foundLiveEvent = await libraryDatabase.live_events.get(liveEventId)
+
+    if (foundLiveEvent) {
+      await libraryDatabase.live_events.update(liveEventId, {
+        ...foundLiveEvent,
+        result,
+        updated: Date.now()
+      })
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+export const saveLiveEventState = async (
+  studioId: StudioId,
+  liveEventId: ElementId,
+  state: EngineLiveEventStateCollection
+) => {
+  try {
+    const libraryDatabase = new LibraryDatabase(studioId),
+      foundLiveEvent = await libraryDatabase.live_events.get(liveEventId)
+
+    if (foundLiveEvent) {
+      await libraryDatabase.live_events.update(liveEventId, {
+        ...foundLiveEvent,
+        state,
+        updated: Date.now()
+      })
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+export const saveLiveEventType = async (
+  studioId: StudioId,
+  liveEventId: ElementId,
+  type: ENGINE_LIVE_EVENT_TYPE
+) => {
+  try {
+    const libraryDatabase = new LibraryDatabase(studioId),
+      foundEvent = await libraryDatabase.live_events.get(liveEventId)
+
+    if (foundEvent) {
+      await libraryDatabase.live_events.update(liveEventId, {
+        ...foundEvent,
+        type,
+        updated: Date.now()
+      })
+    }
+  } catch (error) {
+    throw error
+  }
+}
+export const saveLiveEventDate = async (
+  studioId: StudioId,
+  liveEventId: ElementId,
+  date?: number
+) => {
+  try {
+    const libraryDatabase = new LibraryDatabase(studioId),
+      foundEvent = await libraryDatabase.live_events.get(liveEventId)
+
+    if (foundEvent) {
+      await libraryDatabase.live_events.update(liveEventId, {
+        ...foundEvent,
+        updated: date || Date.now()
+      })
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getRecentLiveEvents = async (
+  studioId: StudioId,
+  worldId: WorldId,
+  fromLiveEventId: ElementId,
+  worldVersion: string,
+  history?: number
+): Promise<EngineLiveEventData[]> => {
+  const libraryDatabase = new LibraryDatabase(studioId)
+
+  try {
+    let recentEvents: EngineLiveEventData[] = []
+
+    // https://github.com/dfahlander/Dexie.js/issues/867#issuecomment-507865559
+    const orderedLiveEvents = await libraryDatabase.live_events
+        .where('[worldId+updated]')
+        .between([worldId, Dexie.minKey], [worldId, Dexie.maxKey])
+        .filter((liveEvent) => liveEvent.version === worldVersion)
+        .limit(history || 10)
+        .reverse()
+        .toArray(),
+      mostRecentEventIndex = orderedLiveEvents.findIndex(
+        (liveEvent) => liveEvent.id === fromLiveEventId
+      )
+
+    // if restartIndex, trim recent live events to restart
+    const restartIndex = orderedLiveEvents.findIndex(
+      (liveEvent) => liveEvent.type === ENGINE_LIVE_EVENT_TYPE.RESTART
+    )
+
+    if (mostRecentEventIndex !== -1) {
+      recentEvents =
+        restartIndex !== -1
+          ? orderedLiveEvents.slice(mostRecentEventIndex, restartIndex + 1)
+          : orderedLiveEvents
+    }
+
+    return recentEvents
+  } catch (error) {
+    throw error
+  }
+}
+
+export const checkLiveEventDestinations = async (
+  studioId: StudioId,
+  worldId: WorldId,
+  events: EngineEventData[]
+) => {
+  const eventIds = events.map((event) => event.id),
+    liveEventDestinationIds = await (
+      await new LibraryDatabase(studioId).live_events
+        .where({ worldId })
+        .toArray()
+    ).map((liveEvent) => liveEvent.destination)
+
+  let destinationsValid = true
+
+  liveEventDestinationIds.map((eventDestinationId) => {
+    if (eventIds.indexOf(eventDestinationId) === -1) {
+      destinationsValid = false
+      return
+    }
+  })
+
+  return destinationsValid
+}
+
+export const getLiveEventInitial = async (
+  studioId: StudioId,
+  worldId: WorldId
+) => {
+  try {
+    return await new LibraryDatabase(studioId).live_events.get(
+      `${INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY}${worldId}`
+    )
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getLiveEvent = async (studioId: StudioId, eventId: ElementId) => {
+  try {
+    return await new LibraryDatabase(studioId).live_events.get(eventId)
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getPathsFromChoice = async (
+  studioId: StudioId,
+  choiceId: ElementId
+): Promise<EnginePathData[]> => {
+  try {
+    return await new LibraryDatabase(studioId).paths
       .where({ choiceId })
       .toArray()
   } catch (error) {
@@ -994,12 +1064,12 @@ export const getRoutesFromChoice = async (
   }
 }
 
-export const getRoutesFromChoices = async (
+export const getPathsFromChoices = async (
   studioId: StudioId,
-  choiceIds: ComponentId[]
+  choiceIds: ElementId[]
 ) => {
   try {
-    return await new LibraryDatabase(studioId).routes
+    return await new LibraryDatabase(studioId).paths
       .where('choiceId')
       .anyOf(choiceIds)
       .toArray()
@@ -1008,12 +1078,12 @@ export const getRoutesFromChoices = async (
   }
 }
 
-export const getRoutesFromInput = async (
+export const getPathsFromInput = async (
   studioId: StudioId,
-  inputId: ComponentId
+  inputId: ElementId
 ) => {
   try {
-    return await new LibraryDatabase(studioId).routes
+    return await new LibraryDatabase(studioId).paths
       .where({ inputId })
       .toArray()
   } catch (error) {
@@ -1021,53 +1091,64 @@ export const getRoutesFromInput = async (
   }
 }
 
-export const getRouteFromDestination = async (
+export const getPathFromDestination = async (
   studioId: StudioId,
-  destinationId: ComponentId
+  destinationId: ElementId
 ) => {
   try {
-    return new LibraryDatabase(studioId).routes.where({ destinationId }).first()
+    return new LibraryDatabase(studioId).paths.where({ destinationId }).first()
   } catch (error) {
     throw error
   }
 }
 
-export const findOpenRoute = async (
+export const findOpenPath = async (
   studioId: StudioId,
-  routes: EngineRouteData[],
-  eventState: EngineEventStateCollection
+  paths: EnginePathData[],
+  liveEventState: EngineLiveEventStateCollection
 ) => {
-  const routeIds = routes.map((route) => route.id),
-    conditionsByRoutes = await getConditionsByRoutes(studioId, routeIds),
-    openRoutes: EngineRouteData[] = []
+  const pathIds = paths.map((path) => path.id),
+    conditionsByPaths = await getConditionsByPaths(studioId, pathIds),
+    openPaths: [EnginePathData, number][] = []
 
-  if (conditionsByRoutes) {
+  if (conditionsByPaths) {
     await Promise.all(
-      routes.map(async (route) => {
-        const routeOpen = await isRouteOpen(
+      paths.map(async (path) => {
+        const pathOpen = await isPathOpen(
           studioId,
-          cloneDeep(eventState),
-          conditionsByRoutes.filter(
-            (condition) => condition.routeId === route.id
-          )
+          cloneDeep(liveEventState),
+          path.conditionsType,
+          conditionsByPaths.filter((condition) => condition.pathId === path.id)
         )
 
-        routeOpen && openRoutes.push(cloneDeep(route))
+        pathOpen[0] && openPaths.push([cloneDeep(path), pathOpen[1]])
       })
     )
   }
 
-  return openRoutes.length > 0
-    ? openRoutes[(openRoutes.length * Math.random()) | 0]
-    : undefined
+  if (openPaths.length > 0) {
+    const pathsWithConditions = openPaths.filter((path) => path[1] > 0)
+
+    return pathsWithConditions.length > 0
+      ? pathsWithConditions[(pathsWithConditions.length * Math.random()) | 0][0]
+      : openPaths[(openPaths.length * Math.random()) | 0][0]
+  } else {
+    return undefined
+  }
 }
 
-export const isRouteOpen = async (
+export const isPathOpen = async (
   studioId: StudioId,
-  eventState: EngineEventStateCollection,
+  liveEventState: EngineLiveEventStateCollection,
+  pathConditionsType: PATH_CONDITIONS_TYPE,
   conditions: EngineConditionData[]
-) => {
-  let isOpen = conditions.length === 0 ? true : false
+  // feedback#105
+): Promise<[boolean, number]> => {
+  const totalConditions = conditions.length
+
+  if (totalConditions === 0) return [true, 0]
+
+  const isOpenAgg: boolean[] = []
 
   const variableIdsFromConditions = conditions.map(
     (condition) => condition.variableId
@@ -1084,7 +1165,7 @@ export const isRouteOpen = async (
     throw error
   }
 
-  conditions.length > 0 &&
+  if (conditions.length) {
     conditions.map((condition) => {
       // #400
       const foundVariable = variablesFromConditions.find(
@@ -1094,18 +1175,18 @@ export const isRouteOpen = async (
       if (foundVariable) {
         const eventValue =
           foundVariable.type === VARIABLE_TYPE.NUMBER
-            ? Number(eventState[condition.compare[0]].value)
-            : eventState[condition.compare[0]].value.toLowerCase()
+            ? Number(liveEventState[condition.compare[0]].value)
+            : liveEventState[condition.compare[0]].value.toLowerCase()
 
         if (foundVariable.type !== VARIABLE_TYPE.NUMBER) {
           const conditionValueAsString = condition.compare[2].toLowerCase()
 
           switch (condition.compare[1]) {
             case COMPARE_OPERATOR_TYPE.EQ:
-              isOpen = eventValue === conditionValueAsString
+              isOpenAgg.push(eventValue === conditionValueAsString)
               break
             case COMPARE_OPERATOR_TYPE.NE:
-              isOpen = eventValue !== conditionValueAsString
+              isOpenAgg.push(eventValue !== conditionValueAsString)
               break
             default:
               break
@@ -1117,22 +1198,22 @@ export const isRouteOpen = async (
 
           switch (condition.compare[1]) {
             case COMPARE_OPERATOR_TYPE.EQ:
-              isOpen = eventValue === conditionValueAsNumber
+              isOpenAgg.push(eventValue === conditionValueAsNumber)
               break
             case COMPARE_OPERATOR_TYPE.GT:
-              isOpen = eventValue > conditionValueAsNumber
+              isOpenAgg.push(eventValue > conditionValueAsNumber)
               break
             case COMPARE_OPERATOR_TYPE.GTE:
-              isOpen = eventValue >= conditionValueAsNumber
+              isOpenAgg.push(eventValue >= conditionValueAsNumber)
               break
             case COMPARE_OPERATOR_TYPE.LT:
-              isOpen = eventValue < conditionValueAsNumber
+              isOpenAgg.push(eventValue < conditionValueAsNumber)
               break
             case COMPARE_OPERATOR_TYPE.LTE:
-              isOpen = eventValue <= conditionValueAsNumber
+              isOpenAgg.push(eventValue <= conditionValueAsNumber)
               break
             case COMPARE_OPERATOR_TYPE.NE:
-              isOpen = eventValue !== conditionValueAsNumber
+              isOpenAgg.push(eventValue !== conditionValueAsNumber)
               break
             default:
               break
@@ -1140,11 +1221,14 @@ export const isRouteOpen = async (
         }
       }
     })
+  }
 
-  return isOpen
+  return pathConditionsType === PATH_CONDITIONS_TYPE.ALL
+    ? [isOpenAgg.every((value) => value === true), totalConditions]
+    : [isOpenAgg.some((value) => value === true), totalConditions]
 }
 
-export const getScene = async (studioId: StudioId, sceneId: ComponentId) => {
+export const getScene = async (studioId: StudioId, sceneId: ElementId) => {
   try {
     return await new LibraryDatabase(studioId).scenes.get(sceneId)
   } catch (error) {
@@ -1154,7 +1238,7 @@ export const getScene = async (studioId: StudioId, sceneId: ComponentId) => {
 
 export const getVariable = async (
   studioId: StudioId,
-  variableId: ComponentId
+  variableId: ElementId
 ) => {
   try {
     return await new LibraryDatabase(studioId).variables.get(variableId)
@@ -1165,11 +1249,11 @@ export const getVariable = async (
 
 export const getSettingsDefault = async (
   studioId: StudioId,
-  gameId: GameId
+  worldId: WorldId
 ) => {
   try {
     return await new LibraryDatabase(studioId).settings.get(
-      `${DEFAULT_ENGINE_SETTINGS_KEY}${gameId}`
+      `${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`
     )
   } catch (error) {
     throw error
@@ -1178,18 +1262,18 @@ export const getSettingsDefault = async (
 
 export const saveThemeSetting = async (
   studioId: StudioId,
-  gameId: GameId,
+  worldId: WorldId,
   theme: ENGINE_THEME
 ) => {
   try {
     const libraryDatabase = new LibraryDatabase(studioId),
       foundSettings = await libraryDatabase.settings.get(
-        `${DEFAULT_ENGINE_SETTINGS_KEY}${gameId}`
+        `${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`
       )
 
     if (foundSettings) {
       await libraryDatabase.settings.update(
-        `${DEFAULT_ENGINE_SETTINGS_KEY}${gameId}`,
+        `${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`,
         {
           ...foundSettings,
           theme
@@ -1203,11 +1287,11 @@ export const saveThemeSetting = async (
   }
 }
 
-export const getThemeSetting = async (studioId: StudioId, gameId: GameId) => {
+export const getThemeSetting = async (studioId: StudioId, worldId: WorldId) => {
   try {
     return (
       await new LibraryDatabase(studioId).settings.get(
-        `${DEFAULT_ENGINE_SETTINGS_KEY}${gameId}`
+        `${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`
       )
     )?.theme
   } catch (error) {

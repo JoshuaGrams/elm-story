@@ -10,43 +10,45 @@ import {
 import { EngineContext } from '../contexts/EngineContext'
 
 const TitleCard: React.FC<{
-  onStartGame: () => void
-  onContinueGame: () => void
-}> = ({ onStartGame, onContinueGame }) => {
+  onStartWorld: () => void
+  onContinueWorld: () => void
+}> = ({ onStartWorld, onContinueWorld }) => {
   const { settingsDispatch } = useContext(SettingsContext),
     { engine } = useContext(EngineContext)
 
-  if (!engine.gameInfo) return null
+  if (!engine.worldInfo) return null
 
-  const { studioId, id: gameId } = engine.gameInfo
+  const { studioId, id: worldId } = engine.worldInfo
 
   const autoBookmark = useQuery(
     'autoBookmark',
-    async () => await getBookmarkAuto(studioId, gameId)
+    async () => await getBookmarkAuto(studioId, worldId)
   )
 
   return (
     <>
-      {engine.gameInfo && autoBookmark.data && (
+      {engine.worldInfo && autoBookmark.data && (
         <div id="title-card">
           <div id="title-card-studio-title">
-            {engine.gameInfo.studioTitle} presents...
+            {engine.worldInfo.studioTitle} presents...
           </div>
 
-          <div id="title-card-game-title">{engine.gameInfo.title}</div>
+          <div id="title-card-world-title">{engine.worldInfo.title}</div>
 
-          <div id="title-card-game-version">v{engine.gameInfo.version}</div>
+          <div id="title-card-world-version">v{engine.worldInfo.version}</div>
 
-          <div id="title-card-game-designer">
-            designed by {engine.gameInfo.designer}
+          <div id="title-card-world-designer">
+            designed by {engine.worldInfo.designer}
           </div>
 
           <div id="title-card-btns">
             <button
               id="title-card-start-btn"
-              onClick={!autoBookmark.data.event ? onStartGame : onContinueGame}
+              onClick={
+                !autoBookmark.data.liveEventId ? onStartWorld : onContinueWorld
+              }
             >
-              {!autoBookmark.data.event ? 'START' : 'CONTINUE'}
+              {!autoBookmark.data.liveEventId ? 'START' : 'CONTINUE'}
             </button>
 
             <button
