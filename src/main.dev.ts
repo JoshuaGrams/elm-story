@@ -376,18 +376,21 @@ const createWindow = async () => {
 
               if (worldType === WORLD_EXPORT_TYPE.JSON) {
                 try {
-                  await Promise.all([
-                    fs.outputFile(
-                      `${savePathFull}/${baseWorldFolderName}.json`,
-                      worldDataAsString
-                    ),
-                    fs.copy(
+                  await fs.outputFile(
+                    `${savePathFull}/${baseWorldFolderName}.json`,
+                    worldDataAsString
+                  )
+
+                  try {
+                    await fs.copy(
                       `${app.getPath('userData')}/assets/${
                         parsedWorldData._.studioId
                       }/${parsedWorldData._.id}`.replace(/\\/g, '/'),
                       `${savePathFull}/assets`
                     )
-                  ])
+                  } catch (error) {
+                    logger.info(`Assets don't exist. Skipping...`)
+                  }
                 } catch (error) {
                   throw error
                 }
