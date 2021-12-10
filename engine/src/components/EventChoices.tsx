@@ -8,7 +8,7 @@ import { findOpenPath, getChoicesFromEventWithOpenPath } from '../lib/api'
 import {
   ENGINE_LIVE_EVENT_LOOPBACK_RESULT_VALUE,
   ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE,
-  ENGINE_LIVE_EVENT_GAME_OVER_RESULT_VALUE,
+  ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE,
   INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY
 } from '../lib'
 import {
@@ -232,7 +232,7 @@ const EventChoices: React.FC<{
 
   const restartWorld = useCallback(async () => {
     onSubmitPath({
-      result: { value: ENGINE_LIVE_EVENT_GAME_OVER_RESULT_VALUE }
+      result: { value: ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE }
     })
   }, [liveEvent])
 

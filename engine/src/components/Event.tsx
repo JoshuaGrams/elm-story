@@ -18,7 +18,7 @@ import {
   EngineLiveEventResult
 } from '../types'
 import {
-  ENGINE_LIVE_EVENT_GAME_OVER_RESULT_VALUE,
+  ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE,
   ENGINE_LIVE_EVENT_LOOPBACK_RESULT_VALUE,
   ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE
 } from '../lib'
@@ -27,7 +27,6 @@ import { NextLiveEventProcessor } from './LiveEvent'
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
 import EventCharacterMask from './EventCharacterMask'
-import EventCharacterReference from './EventCharacterReference'
 import EventContent from './EventContent'
 import EventChoices from './EventChoices'
 import EventInput from './EventInput'
@@ -52,7 +51,7 @@ export function translateLiveEventResultValue(value: string) {
       return <>Continue</>
     case ENGINE_LIVE_EVENT_LOOPBACK_RESULT_VALUE:
       return <>{LiveEventLoopbackButtonContent}</>
-    case ENGINE_LIVE_EVENT_GAME_OVER_RESULT_VALUE:
+    case ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE:
       return <>Restart</>
     default:
       return <>{value}</>
@@ -95,13 +94,13 @@ export const Event: React.FC<{
 
         if (!path) {
           if (
-            result.value !== ENGINE_LIVE_EVENT_GAME_OVER_RESULT_VALUE &&
+            result.value !== ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE &&
             originId
           ) {
             foundEvent = await getEvent(studioId, originId)
           }
 
-          if (result.value === ENGINE_LIVE_EVENT_GAME_OVER_RESULT_VALUE) {
+          if (result.value === ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE) {
             const initialEvent = await getLiveEventInitial(studioId, worldId)
 
             if (initialEvent) {

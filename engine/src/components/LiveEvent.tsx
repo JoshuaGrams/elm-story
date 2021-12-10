@@ -13,7 +13,7 @@ import {
 } from '../types'
 import {
   AUTO_ENGINE_BOOKMARK_KEY,
-  ENGINE_LIVE_EVENT_GAME_OVER_RESULT_VALUE,
+  ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE,
   ENGINE_LIVE_EVENT_LOOPBACK_RESULT_VALUE
 } from '../lib'
 
@@ -78,7 +78,7 @@ const LiveEvent: React.FC<{ data: EngineLiveEventData }> = ({ data }) => {
       let liveEventType: ENGINE_LIVE_EVENT_TYPE | undefined
 
       switch (liveEventResult.value) {
-        case ENGINE_LIVE_EVENT_GAME_OVER_RESULT_VALUE:
+        case ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE:
           liveEventType = ENGINE_LIVE_EVENT_TYPE.RESTART
           break
         case ENGINE_LIVE_EVENT_LOOPBACK_RESULT_VALUE:
