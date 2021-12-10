@@ -130,7 +130,7 @@ const TitleBar: React.FC = () => {
             break
           case APP_LOCATION.COMPOSER:
             helpUrl =
-              'https://docs.elmstory.com/guides/production/editor/overview'
+              'https://docs.elmstory.com/guides/production/composer/overview'
             break
           default:
             helpUrl = 'https://docs.elmstory.com'

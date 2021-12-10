@@ -272,7 +272,7 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
               className={styles.additionalHelp}
               onClick={() =>
                 ipcRenderer.send(WINDOW_EVENT_TYPE.OPEN_EXTERNAL_LINK, [
-                  'https://docs.elmstory.com/guides/production/dashboard/importing-games'
+                  'https://docs.elmstory.com/guides/production/dashboard/importing-worlds'
                 ])
               }
             >

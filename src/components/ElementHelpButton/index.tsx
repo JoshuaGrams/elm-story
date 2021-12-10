@@ -14,7 +14,7 @@ const ElementHelpButton: React.FC<{ type: ELEMENT_TYPE }> = ({ type }) => {
     event.stopPropagation()
 
     let helpUrl =
-      'https://docs.elmstory.com/guides/production/editor/components'
+      'https://docs.elmstory.com/guides/production/composer/components'
 
     switch (type) {
       case ELEMENT_TYPE.CHARACTER:
@@ -33,16 +33,16 @@ const ElementHelpButton: React.FC<{ type: ELEMENT_TYPE }> = ({ type }) => {
         helpUrl = `${helpUrl}/folder-component/`
         break
       case ELEMENT_TYPE.WORLD:
-        helpUrl = `${helpUrl}/game-root-component/`
+        helpUrl = `${helpUrl}/world-root-component/`
         break
       case ELEMENT_TYPE.JUMP:
         helpUrl = `${helpUrl}/jump-component/`
         break
       case ELEMENT_TYPE.EVENT:
-        helpUrl = `${helpUrl}/passage-component/`
+        helpUrl = `${helpUrl}/event-component/`
         break
       case ELEMENT_TYPE.PATH:
-        helpUrl = `${helpUrl}/route-component/`
+        helpUrl = `${helpUrl}/path-component/`
         break
       case ELEMENT_TYPE.SCENE:
         helpUrl = `${helpUrl}/scene-component/`
