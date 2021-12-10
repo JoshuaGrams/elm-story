@@ -160,7 +160,7 @@ export const Event: React.FC<{
             <div
               style={{
                 display: event.persona ? 'grid' : 'unset',
-                gridTemplateColumns: event.persona ? '13.5rem auto' : 'unset'
+                gridTemplateColumns: event.persona ? '12.5rem auto' : 'unset'
               }}
             >
               {event.persona && (
