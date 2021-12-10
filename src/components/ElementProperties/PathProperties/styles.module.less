@@ -13,6 +13,21 @@
       padding-left: 10px;
       height: 32px;
       line-height: 32px;
+
+      .conditionsType {
+        cursor: pointer;
+        color: black;
+        padding: 0 2px;
+        border-radius: 2px !important;
+
+        &.all {
+          background: var(--path-conditions-type-all-color);
+        }
+
+        &.any {
+          background: var(--path-conditions-type-any-color);
+        }
+      }
     }
 
     .featureList {

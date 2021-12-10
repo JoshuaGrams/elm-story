@@ -1,6 +1,11 @@
 import React, { memo } from 'react'
 
-import { ElementId, ELEMENT_TYPE, StudioId } from '../../../data/types'
+import {
+  ElementId,
+  ELEMENT_TYPE,
+  PATH_CONDITIONS_TYPE,
+  StudioId
+} from '../../../data/types'
 
 import {
   usePathConditionsCountByPathRef,
@@ -31,6 +36,7 @@ export interface PathEdgeData {
   type: ELEMENT_TYPE.PATH
   studioId: StudioId
   pathId: ElementId
+  conditionsType: PATH_CONDITIONS_TYPE
 }
 
 export function getBezierPath({
@@ -129,6 +135,7 @@ export default memo(
           y={centerY}
           totalConditions={conditionsCount || 0}
           totalEffects={effectsCount || 0}
+          conditionsType={data?.conditionsType || PATH_CONDITIONS_TYPE.ALL}
         />
       </>
     )

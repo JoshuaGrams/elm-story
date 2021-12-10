@@ -30,7 +30,8 @@ import {
   EngineEventData,
   EngineLiveEventResult,
   CHARACTER_MASK_TYPE,
-  CharacterMask
+  CharacterMask,
+  PATH_CONDITIONS_TYPE
 } from '../types'
 import {
   AUTO_ENGINE_BOOKMARK_KEY,
@@ -1111,6 +1112,7 @@ export const findOpenPath = async (
         const pathOpen = await isPathOpen(
           studioId,
           cloneDeep(liveEventState),
+          path.conditionsType,
           conditionsByPaths.filter((condition) => condition.pathId === path.id)
         )
 
@@ -1127,9 +1129,12 @@ export const findOpenPath = async (
 export const isPathOpen = async (
   studioId: StudioId,
   liveEventState: EngineLiveEventStateCollection,
+  pathConditionsType: PATH_CONDITIONS_TYPE,
   conditions: EngineConditionData[]
 ) => {
-  let isOpen = conditions.length === 0 ? true : false
+  if (conditions.length === 0) return true
+
+  const isOpenAgg: boolean[] = []
 
   const variableIdsFromConditions = conditions.map(
     (condition) => condition.variableId
@@ -1146,7 +1151,7 @@ export const isPathOpen = async (
     throw error
   }
 
-  conditions.length > 0 &&
+  if (conditions.length) {
     conditions.map((condition) => {
       // #400
       const foundVariable = variablesFromConditions.find(
@@ -1164,10 +1169,10 @@ export const isPathOpen = async (
 
           switch (condition.compare[1]) {
             case COMPARE_OPERATOR_TYPE.EQ:
-              isOpen = eventValue === conditionValueAsString
+              isOpenAgg.push(eventValue === conditionValueAsString)
               break
             case COMPARE_OPERATOR_TYPE.NE:
-              isOpen = eventValue !== conditionValueAsString
+              isOpenAgg.push(eventValue !== conditionValueAsString)
               break
             default:
               break
@@ -1179,22 +1184,22 @@ export const isPathOpen = async (
 
           switch (condition.compare[1]) {
             case COMPARE_OPERATOR_TYPE.EQ:
-              isOpen = eventValue === conditionValueAsNumber
+              isOpenAgg.push(eventValue === conditionValueAsNumber)
               break
             case COMPARE_OPERATOR_TYPE.GT:
-              isOpen = eventValue > conditionValueAsNumber
+              isOpenAgg.push(eventValue > conditionValueAsNumber)
               break
             case COMPARE_OPERATOR_TYPE.GTE:
-              isOpen = eventValue >= conditionValueAsNumber
+              isOpenAgg.push(eventValue >= conditionValueAsNumber)
               break
             case COMPARE_OPERATOR_TYPE.LT:
-              isOpen = eventValue < conditionValueAsNumber
+              isOpenAgg.push(eventValue < conditionValueAsNumber)
               break
             case COMPARE_OPERATOR_TYPE.LTE:
-              isOpen = eventValue <= conditionValueAsNumber
+              isOpenAgg.push(eventValue <= conditionValueAsNumber)
               break
             case COMPARE_OPERATOR_TYPE.NE:
-              isOpen = eventValue !== conditionValueAsNumber
+              isOpenAgg.push(eventValue !== conditionValueAsNumber)
               break
             default:
               break
@@ -1202,8 +1207,11 @@ export const isPathOpen = async (
         }
       }
     })
+  }
 
-  return isOpen
+  return pathConditionsType === PATH_CONDITIONS_TYPE.ALL
+    ? isOpenAgg.every((value) => value === true)
+    : isOpenAgg.some((value) => value === true)
 }
 
 export const getScene = async (studioId: StudioId, sceneId: ElementId) => {

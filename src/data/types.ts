@@ -256,23 +256,29 @@ export interface Scene extends Element {
   jumps: ElementId[]
 }
 
+export enum PATH_CONDITIONS_TYPE {
+  ALL = 'ALL',
+  ANY = 'ANY'
+}
+
 export interface Path extends Element {
-  worldId: WorldId
-  sceneId: ElementId
-  originId: ElementId
   choiceId?: ElementId
-  inputId?: ElementId
-  originType: ELEMENT_TYPE | EVENT_TYPE
+  conditionsType: PATH_CONDITIONS_TYPE
   destinationId: ElementId
   destinationType: ELEMENT_TYPE
+  inputId?: ElementId
+  originId: ElementId
+  originType: ELEMENT_TYPE | EVENT_TYPE
+  sceneId: ElementId
+  worldId: WorldId
 }
 
 // Path Condition
 export interface Condition extends Element {
-  worldId: WorldId
+  compare: [ElementId, COMPARE_OPERATOR_TYPE, string, VARIABLE_TYPE] // variable ref
   pathId: ElementId
   variableId: ElementId
-  compare: [ElementId, COMPARE_OPERATOR_TYPE, string, VARIABLE_TYPE] // variable ref
+  worldId: WorldId
 }
 
 // Path Condition

@@ -2,7 +2,7 @@
 import Dexie from 'dexie'
 
 import { LIBRARY_TABLE } from '.'
-import { ELEMENT_TYPE } from '../data/types'
+import { ELEMENT_TYPE, PATH_CONDITIONS_TYPE } from '../data/types'
 
 // Must match editor version
 export default (database: Dexie) => {
@@ -21,7 +21,7 @@ export default (database: Dexie) => {
       live_events:
         '&id,worldId,destination,origin,prev,next,type,updated,[worldId+updated],version',
       paths:
-        '&id,worldId,sceneId,title,originId,choiceId,inputId,originType,destinationId,destinationType,*tags,updated',
+        '&id,worldId,sceneId,title,originId,choiceId,conditionsType,inputId,originType,destinationId,destinationType,*tags,updated',
       scenes: '&id,children,worldId,parent,title,*tags,updated',
       settings: '&id,worldId',
       variables: '&id,worldId,title,type,*tags,updated',
@@ -152,6 +152,8 @@ export default (database: Dexie) => {
 
             path.worldId = path.gameId
             delete path.gameId
+
+            path.conditionsType = PATH_CONDITIONS_TYPE.ALL
           }),
         tx
           .table(LIBRARY_TABLE.SCENES)

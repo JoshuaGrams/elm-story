@@ -13,7 +13,8 @@ import {
   JumpCollection,
   PathCollection,
   SceneCollection,
-  WorldDataJSON as WorldDataJSON_060
+  WorldDataJSON as WorldDataJSON_060,
+  PATH_CONDITIONS_TYPE
 } from '../types/0.6.0'
 
 export default ({
@@ -151,6 +152,7 @@ export default ({
         'title',
         'updated'
       ]),
+      conditionsType: PATH_CONDITIONS_TYPE.ALL,
       // @ts-ignore
       destinationType:
         route.destinationType === 'PASSAGE'

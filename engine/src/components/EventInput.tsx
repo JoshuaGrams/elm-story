@@ -26,7 +26,7 @@ const EventInput: React.FC<{
   event: EngineEventData
   liveEvent: EngineLiveEventData
   onSubmitPath: PathProcessor
-}> = React.memo(({ event, liveEvent, onSubmitPath: onSubmitRoute }) => {
+}> = React.memo(({ event, liveEvent, onSubmitPath }) => {
   const { engine } = useContext(EngineContext)
 
   if (!engine.worldInfo) return null
@@ -90,7 +90,7 @@ const EventInput: React.FC<{
         if (foundOpenRoute || liveEvent.origin) {
           setRouteError(false)
 
-          onSubmitRoute({
+          onSubmitPath({
             originId: liveEvent.origin,
             result: {
               id: input.id,

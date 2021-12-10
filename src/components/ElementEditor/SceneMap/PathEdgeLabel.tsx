@@ -2,11 +2,14 @@ import React, { memo, useRef, useState, useEffect, HTMLAttributes } from 'react'
 
 import { Rect } from 'react-flow-renderer'
 
+import { PATH_CONDITIONS_TYPE } from '../../../data/types'
+
 export interface PathEdgeLabelProps extends HTMLAttributes<SVGElement> {
   x: number
   y: number
   totalConditions: number
   totalEffects: number
+  conditionsType: PATH_CONDITIONS_TYPE
 }
 
 import styles from './styles.module.less'
@@ -16,6 +19,7 @@ const PathEdgeLabel: React.FC<PathEdgeLabelProps> = ({
   y,
   totalConditions = 0,
   totalEffects = 0,
+  conditionsType,
   children,
   ...rest
 }) => {
@@ -96,7 +100,7 @@ const PathEdgeLabel: React.FC<PathEdgeLabelProps> = ({
       <g
         transform={`translate(${x - rectBbox.width / 2} ${y - rectHeight / 2})`}
         {...rest}
-        className={styles.RouteEdgeLabel}
+        className={styles.PathEdgeLabel}
         style={{ cursor: 'pointer' }}
         clipPath="url(#round-corner)"
       >
@@ -111,6 +115,14 @@ const PathEdgeLabel: React.FC<PathEdgeLabelProps> = ({
         <rect
           className={`${styles.conditions} ${
             totalConditions === 0 ? styles.none : ''
+          } ${
+            totalConditions > 0 && conditionsType === PATH_CONDITIONS_TYPE.ALL
+              ? styles.all
+              : ''
+          } ${
+            totalConditions > 0 && conditionsType === PATH_CONDITIONS_TYPE.ANY
+              ? styles.any
+              : ''
           }`}
           width={
             horizontalPadding / 2 + conditionsTextBbox.width + textSpacing / 2

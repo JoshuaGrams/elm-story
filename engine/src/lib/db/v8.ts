@@ -1,7 +1,7 @@
 // #429
 import Dexie from 'dexie'
 
-import { ELEMENT_TYPE } from '../../types'
+import { ELEMENT_TYPE, PATH_CONDITIONS_TYPE } from '../../types'
 import { LIBRARY_TABLE } from '.'
 
 // Must match editor version
@@ -128,6 +128,8 @@ export default (database: Dexie) => {
 
             path.worldId = path.gameId
             delete path.gameId
+
+            path.conditionsType = PATH_CONDITIONS_TYPE.ALL
           }),
         tx
           .table(LIBRARY_TABLE.SCENES)

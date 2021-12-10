@@ -1,0 +1,1332 @@
+{
+  "_": {
+    "children": [
+      [
+        "SCENE",
+        "6aad46bb-ae9e-42f3-b339-56685bb6d0b9"
+      ]
+    ],
+    "description": "The wolf, goat and cabbage problem is a river crossing puzzle. It dates back to at least the 9th century, and has entered the folklore of several cultures. -Wikipedia",
+    "designer": "ritsuke",
+    "engine": "0.6.0",
+    "id": "087b699c-9cf4-44d0-b45c-0bb8ba95deb1",
+    "jump": null,
+    "schema": "https://elmstory.com/schema/elm-story-0.6.0.json",
+    "studioId": "e986dfaf-3cf6-4f3f-966a-2c893f1d8be6",
+    "studioTitle": "Elm Story Edu",
+    "tags": [],
+    "title": "The Wolf, Goat and Cabbage",
+    "updated": 1639112365057,
+    "version": "0.0.3",
+    "website": "https://elmstory.com"
+  },
+  "characters": {
+    "09357957-04bc-4b0c-872b-c009b2ee8009": {
+      "id": "09357957-04bc-4b0c-872b-c009b2ee8009",
+      "masks": [
+        {
+          "type": "NEUTRAL",
+          "active": true,
+          "assetId": "18364f25-e542-46f1-b450-45ee651348fc"
+        }
+      ],
+      "refs": [
+        [
+          "383f790c-b002-4094-be5e-57c5ca38010a",
+          "YOU"
+        ],
+        [
+          "03435bac-b913-4eab-afff-b0c0728b09db",
+          "SAM"
+        ]
+      ],
+      "tags": [],
+      "title": "Farmer Sam",
+      "updated": 1639112327185
+    },
+    "314bfb4e-1972-4718-935b-d371a88dab5a": {
+      "id": "314bfb4e-1972-4718-935b-d371a88dab5a",
+      "masks": [
+        {
+          "type": "NEUTRAL",
+          "active": true,
+          "assetId": "006479b8-2db1-47b2-b626-4ed7e78eb3ba"
+        },
+        {
+          "active": true,
+          "type": "HAPPY",
+          "assetId": "a4a33238-2d07-48b5-8665-01c84d07a355"
+        },
+        {
+          "active": true,
+          "type": "WEARY",
+          "assetId": "0f8abf4f-86ca-4614-8505-7daac2361d53"
+        }
+      ],
+      "refs": [
+        [
+          "8b5baed7-e5c5-450a-bc5d-a31fc3459ab6",
+          "JANE"
+        ]
+      ],
+      "tags": [],
+      "title": "Farmer Jane",
+      "updated": 1639115033132
+    }
+  },
+  "choices": {
+    "4afd4e00-d70b-4be9-9dda-b53b1198cdf4": {
+      "id": "4afd4e00-d70b-4be9-9dda-b53b1198cdf4",
+      "eventId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "tags": [],
+      "title": "Head home...",
+      "updated": 1638729588960
+    },
+    "92775ef6-837c-45d2-b71e-b2df038f2522": {
+      "id": "92775ef6-837c-45d2-b71e-b2df038f2522",
+      "eventId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "tags": [],
+      "title": "Ferry cabbage to market",
+      "updated": 1639089824251
+    },
+    "9a4d5fdd-a2b4-405d-86e1-43205c463669": {
+      "id": "9a4d5fdd-a2b4-405d-86e1-43205c463669",
+      "eventId": "de73069c-3d36-4877-a425-31ce0e2cf45c",
+      "tags": [],
+      "title": "Ferry goat to farm",
+      "updated": 1639089855155
+    },
+    "9c774b8b-004a-437c-8091-bdd98dc6e82e": {
+      "id": "9c774b8b-004a-437c-8091-bdd98dc6e82e",
+      "eventId": "de73069c-3d36-4877-a425-31ce0e2cf45c",
+      "tags": [],
+      "title": "Ferry cabbage to farm",
+      "updated": 1639089859544
+    },
+    "a7d06e69-6514-4ef2-a42a-f2c62e0a7662": {
+      "id": "a7d06e69-6514-4ef2-a42a-f2c62e0a7662",
+      "eventId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "tags": [],
+      "title": "Ferry to market",
+      "updated": 1639090436377
+    },
+    "a8aa5dce-f1cf-4e40-8dc8-bc8ea0fad5f7": {
+      "id": "a8aa5dce-f1cf-4e40-8dc8-bc8ea0fad5f7",
+      "eventId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "tags": [],
+      "title": "Ferry goat to market",
+      "updated": 1639089816437
+    },
+    "ab32e96e-169e-41af-be5b-7dcadfe3bf82": {
+      "id": "ab32e96e-169e-41af-be5b-7dcadfe3bf82",
+      "eventId": "de73069c-3d36-4877-a425-31ce0e2cf45c",
+      "tags": [],
+      "title": "Ferry wolf to farm",
+      "updated": 1639089852186
+    },
+    "f2ef9b9c-957c-45df-a449-3d7629750ddd": {
+      "id": "f2ef9b9c-957c-45df-a449-3d7629750ddd",
+      "eventId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "tags": [],
+      "title": "Ferry wolf to market",
+      "updated": 1639089809540
+    }
+  },
+  "conditions": {
+    "0977b6f4-5bce-4647-ab2a-298e7220cd20": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "false"
+      ],
+      "id": "0977b6f4-5bce-4647-ab2a-298e7220cd20",
+      "pathId": "d1ab4008-9e9e-4263-b1ec-4d752678af9a",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639111422647,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "13962bfb-7cde-493a-84c4-7f74607322b5": {
+      "compare": [
+        "41e712fb-784e-48ed-81f1-cd5250ea81a7",
+        "=",
+        "false"
+      ],
+      "id": "13962bfb-7cde-493a-84c4-7f74607322b5",
+      "pathId": "dfa5d67a-1837-4621-9040-2a2b77f1c593",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639093758044,
+      "variableId": "41e712fb-784e-48ed-81f1-cd5250ea81a7"
+    },
+    "14c77bdb-84e6-499a-bcbf-434984c5481a": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "true"
+      ],
+      "id": "14c77bdb-84e6-499a-bcbf-434984c5481a",
+      "pathId": "dd675872-42bc-44e3-84b4-50e387e7d4a1",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639090378589,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "1abcc85d-5cec-4fd1-ad03-6ce68accec86": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "false"
+      ],
+      "id": "1abcc85d-5cec-4fd1-ad03-6ce68accec86",
+      "pathId": "206e8608-fa3f-4982-946c-1119725109bd",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639093115068,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "1bc8a386-3e1e-491d-aebc-c740c2fc9557": {
+      "compare": [
+        "41e712fb-784e-48ed-81f1-cd5250ea81a7",
+        "=",
+        "true"
+      ],
+      "id": "1bc8a386-3e1e-491d-aebc-c740c2fc9557",
+      "pathId": "f71a761a-0956-47dc-a275-5bddd50c5d2d",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639111442589,
+      "variableId": "41e712fb-784e-48ed-81f1-cd5250ea81a7"
+    },
+    "27fd1a94-06a2-491a-91d1-50b1bc1b674e": {
+      "compare": [
+        "f01bfbfc-d9d3-4c54-bb92-7b807455f72e",
+        "=",
+        "true"
+      ],
+      "id": "27fd1a94-06a2-491a-91d1-50b1bc1b674e",
+      "pathId": "7631065b-ed12-46b2-b3c3-78a521675801",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639089602901,
+      "variableId": "f01bfbfc-d9d3-4c54-bb92-7b807455f72e"
+    },
+    "2a1eb9d3-f184-4a07-a13c-e76e3147dcae": {
+      "compare": [
+        "41e712fb-784e-48ed-81f1-cd5250ea81a7",
+        "=",
+        "false"
+      ],
+      "id": "2a1eb9d3-f184-4a07-a13c-e76e3147dcae",
+      "pathId": "d1ab4008-9e9e-4263-b1ec-4d752678af9a",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639111417175,
+      "variableId": "41e712fb-784e-48ed-81f1-cd5250ea81a7"
+    },
+    "2eea2702-d0c5-4e84-9af3-1b7fb535ea29": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "false"
+      ],
+      "id": "2eea2702-d0c5-4e84-9af3-1b7fb535ea29",
+      "pathId": "c6e40bcb-f8d1-4c17-9534-545940fbf922",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639093783878,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "2ff13d3e-d214-43ec-87cf-480cf54ecf6b": {
+      "compare": [
+        "f01bfbfc-d9d3-4c54-bb92-7b807455f72e",
+        "=",
+        "true"
+      ],
+      "id": "2ff13d3e-d214-43ec-87cf-480cf54ecf6b",
+      "pathId": "4aa75a66-29ec-42bd-8571-50aaca200481",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639111465328,
+      "variableId": "f01bfbfc-d9d3-4c54-bb92-7b807455f72e"
+    },
+    "360dd971-77e0-49e1-aaa9-dde433ceec34": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "true"
+      ],
+      "id": "360dd971-77e0-49e1-aaa9-dde433ceec34",
+      "pathId": "f71a761a-0956-47dc-a275-5bddd50c5d2d",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639111437933,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "3b79164c-5c37-4351-acd8-aefc8a461e6b": {
+      "compare": [
+        "41e712fb-784e-48ed-81f1-cd5250ea81a7",
+        "=",
+        "true"
+      ],
+      "id": "3b79164c-5c37-4351-acd8-aefc8a461e6b",
+      "pathId": "7631065b-ed12-46b2-b3c3-78a521675801",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639089594946,
+      "variableId": "41e712fb-784e-48ed-81f1-cd5250ea81a7"
+    },
+    "4162b7b2-7d75-480d-bb83-92ab01e99c4f": {
+      "compare": [
+        "41e712fb-784e-48ed-81f1-cd5250ea81a7",
+        "=",
+        "true"
+      ],
+      "id": "4162b7b2-7d75-480d-bb83-92ab01e99c4f",
+      "pathId": "b8df13af-592a-46d6-b3b3-1a1aa29f7994",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639114180379,
+      "variableId": "41e712fb-784e-48ed-81f1-cd5250ea81a7"
+    },
+    "44dfb06c-bbf3-4a9d-8b8a-fc31dedcbbb5": {
+      "compare": [
+        "f01bfbfc-d9d3-4c54-bb92-7b807455f72e",
+        "=",
+        "false"
+      ],
+      "id": "44dfb06c-bbf3-4a9d-8b8a-fc31dedcbbb5",
+      "pathId": "5508c389-f399-4d02-ba9b-0d873723c2c5",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639090613250,
+      "variableId": "f01bfbfc-d9d3-4c54-bb92-7b807455f72e"
+    },
+    "45bb5413-b103-401b-b6c3-47163cd4e0bb": {
+      "compare": [
+        "f01bfbfc-d9d3-4c54-bb92-7b807455f72e",
+        "=",
+        "false"
+      ],
+      "id": "45bb5413-b103-401b-b6c3-47163cd4e0bb",
+      "pathId": "c6e40bcb-f8d1-4c17-9534-545940fbf922",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639093781591,
+      "variableId": "f01bfbfc-d9d3-4c54-bb92-7b807455f72e"
+    },
+    "50af2d8a-f9b1-4ddd-84d3-db09a976a102": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "true"
+      ],
+      "id": "50af2d8a-f9b1-4ddd-84d3-db09a976a102",
+      "pathId": "4f8f0a08-c9df-4ff0-adfe-ba20692dcd05",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639114192122,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "731a3d36-d1c3-46f3-9703-e8a6b00f1359": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "true"
+      ],
+      "id": "731a3d36-d1c3-46f3-9703-e8a6b00f1359",
+      "pathId": "4aa75a66-29ec-42bd-8571-50aaca200481",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639111468453,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "757453d2-d6e0-4e15-b038-7a1e55404593": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "true"
+      ],
+      "id": "757453d2-d6e0-4e15-b038-7a1e55404593",
+      "pathId": "4a20809b-6f85-49bf-aa6e-ad007464b0fd",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639114023846,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "84fb2b40-68e8-49fa-bfb0-13d6b32337e0": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "true"
+      ],
+      "id": "84fb2b40-68e8-49fa-bfb0-13d6b32337e0",
+      "pathId": "7631065b-ed12-46b2-b3c3-78a521675801",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639089598777,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "87cb56f9-17ff-4732-93ca-132d785231c3": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "false"
+      ],
+      "id": "87cb56f9-17ff-4732-93ca-132d785231c3",
+      "pathId": "dfa5d67a-1837-4621-9040-2a2b77f1c593",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639093760706,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "88404af3-f76c-467e-a891-7769bc96eb72": {
+      "compare": [
+        "41e712fb-784e-48ed-81f1-cd5250ea81a7",
+        "=",
+        "false"
+      ],
+      "id": "88404af3-f76c-467e-a891-7769bc96eb72",
+      "pathId": "bf7bdb7f-d9a2-4290-9e56-06ba06a696ca",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639093151984,
+      "variableId": "41e712fb-784e-48ed-81f1-cd5250ea81a7"
+    },
+    "8c086dbe-bcae-4f14-8937-3c1aba7dd636": {
+      "compare": [
+        "f01bfbfc-d9d3-4c54-bb92-7b807455f72e",
+        "=",
+        "true"
+      ],
+      "id": "8c086dbe-bcae-4f14-8937-3c1aba7dd636",
+      "pathId": "4a20809b-6f85-49bf-aa6e-ad007464b0fd",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639114029172,
+      "variableId": "f01bfbfc-d9d3-4c54-bb92-7b807455f72e"
+    },
+    "9cec4d88-bdd4-4781-8e1a-ae8e89d7d357": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "true"
+      ],
+      "id": "9cec4d88-bdd4-4781-8e1a-ae8e89d7d357",
+      "pathId": "334c2082-f8a9-4150-8d0a-00eb66732ad3",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639114034081,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "c4469f99-6e8c-4ab4-9fa1-78d518f401eb": {
+      "compare": [
+        "41e712fb-784e-48ed-81f1-cd5250ea81a7",
+        "=",
+        "true"
+      ],
+      "id": "c4469f99-6e8c-4ab4-9fa1-78d518f401eb",
+      "pathId": "4f8f0a08-c9df-4ff0-adfe-ba20692dcd05",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639114188735,
+      "variableId": "41e712fb-784e-48ed-81f1-cd5250ea81a7"
+    },
+    "c5106d4b-a6af-44f5-987c-15493ff4f1e1": {
+      "compare": [
+        "f01bfbfc-d9d3-4c54-bb92-7b807455f72e",
+        "=",
+        "true"
+      ],
+      "id": "c5106d4b-a6af-44f5-987c-15493ff4f1e1",
+      "pathId": "334c2082-f8a9-4150-8d0a-00eb66732ad3",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639114037159,
+      "variableId": "f01bfbfc-d9d3-4c54-bb92-7b807455f72e"
+    },
+    "c88b7e2d-47d2-49cb-9f61-751466cf36af": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "true"
+      ],
+      "id": "c88b7e2d-47d2-49cb-9f61-751466cf36af",
+      "pathId": "b8df13af-592a-46d6-b3b3-1a1aa29f7994",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639114184074,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "cdd421d8-f908-459c-abad-c58a3a53a315": {
+      "compare": [
+        "f01bfbfc-d9d3-4c54-bb92-7b807455f72e",
+        "=",
+        "true"
+      ],
+      "id": "cdd421d8-f908-459c-abad-c58a3a53a315",
+      "pathId": "55bfa95b-46a8-4708-bf00-718969450c24",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639090372357,
+      "variableId": "f01bfbfc-d9d3-4c54-bb92-7b807455f72e"
+    },
+    "e93cdf63-e82e-4af9-bf65-0b41934b38fd": {
+      "compare": [
+        "f01bfbfc-d9d3-4c54-bb92-7b807455f72e",
+        "=",
+        "false"
+      ],
+      "id": "e93cdf63-e82e-4af9-bf65-0b41934b38fd",
+      "pathId": "8b5f23c9-f948-4db8-8c98-1d9de4d1dbcf",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639111482541,
+      "variableId": "f01bfbfc-d9d3-4c54-bb92-7b807455f72e"
+    },
+    "f4633992-a501-4228-9090-09b3be89e787": {
+      "compare": [
+        "41e712fb-784e-48ed-81f1-cd5250ea81a7",
+        "=",
+        "true"
+      ],
+      "id": "f4633992-a501-4228-9090-09b3be89e787",
+      "pathId": "80936566-f3c1-4cec-8620-3ddc1818954e",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639090384869,
+      "variableId": "41e712fb-784e-48ed-81f1-cd5250ea81a7"
+    },
+    "f756a23f-7603-4fa6-88a2-311f254055c8": {
+      "compare": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "false"
+      ],
+      "id": "f756a23f-7603-4fa6-88a2-311f254055c8",
+      "pathId": "8b5f23c9-f948-4db8-8c98-1d9de4d1dbcf",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1639111485296,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    }
+  },
+  "effects": {
+    "6885fccd-db4c-4d9d-a332-0080b3365be3": {
+      "id": "6885fccd-db4c-4d9d-a332-0080b3365be3",
+      "pathId": "80936566-f3c1-4cec-8620-3ddc1818954e",
+      "set": [
+        "41e712fb-784e-48ed-81f1-cd5250ea81a7",
+        "=",
+        "false"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1639089654343,
+      "variableId": "41e712fb-784e-48ed-81f1-cd5250ea81a7"
+    },
+    "80430a40-7056-42ef-9a2f-a5ed6cf07d42": {
+      "id": "80430a40-7056-42ef-9a2f-a5ed6cf07d42",
+      "pathId": "bf7bdb7f-d9a2-4290-9e56-06ba06a696ca",
+      "set": [
+        "41e712fb-784e-48ed-81f1-cd5250ea81a7",
+        "=",
+        "true"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1639089494233,
+      "variableId": "41e712fb-784e-48ed-81f1-cd5250ea81a7"
+    },
+    "a3b08891-fb4e-40b6-a175-743f976f162b": {
+      "id": "a3b08891-fb4e-40b6-a175-743f976f162b",
+      "pathId": "5508c389-f399-4d02-ba9b-0d873723c2c5",
+      "set": [
+        "f01bfbfc-d9d3-4c54-bb92-7b807455f72e",
+        "=",
+        "true"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1639092891433,
+      "variableId": "f01bfbfc-d9d3-4c54-bb92-7b807455f72e"
+    },
+    "add2566c-87d6-4d4f-99c5-7715c95be588": {
+      "id": "add2566c-87d6-4d4f-99c5-7715c95be588",
+      "pathId": "dd675872-42bc-44e3-84b4-50e387e7d4a1",
+      "set": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "false"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1639089648045,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    },
+    "b9ca2399-3121-4dcb-9a9b-f6d32a2a1656": {
+      "id": "b9ca2399-3121-4dcb-9a9b-f6d32a2a1656",
+      "pathId": "55bfa95b-46a8-4708-bf00-718969450c24",
+      "set": [
+        "f01bfbfc-d9d3-4c54-bb92-7b807455f72e",
+        "=",
+        "false"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1639089623780,
+      "variableId": "f01bfbfc-d9d3-4c54-bb92-7b807455f72e"
+    },
+    "c69c8f46-a39c-4933-861b-a27ad3f92d65": {
+      "id": "c69c8f46-a39c-4933-861b-a27ad3f92d65",
+      "pathId": "206e8608-fa3f-4982-946c-1119725109bd",
+      "set": [
+        "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+        "=",
+        "true"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1639089485271,
+      "variableId": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70"
+    }
+  },
+  "events": {
+    "0af73e8d-8665-4000-a467-7f4b2970fe41": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry the wolf to your farm.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 885.7150689709362,
+        "sceneMapPosY": 430.55687327845635
+      },
+      "ending": false,
+      "id": "0af73e8d-8665-4000-a467-7f4b2970fe41",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Ferry wolf to farm",
+      "type": "CHOICE",
+      "updated": 1639113880608
+    },
+    "1c6e3703-f0d1-444f-8150-0571ba3b763b": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry your wolf to the market.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1602.7073163034104,
+        "sceneMapPosY": 513.3059313261161
+      },
+      "ending": false,
+      "id": "1c6e3703-f0d1-444f-8150-0571ba3b763b",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Ferry wolf to market",
+      "type": "CHOICE",
+      "updated": 1639114441523
+    },
+    "3abc2e48-f90d-471a-9a1a-6489ba8b7e57": {
+      "choices": [
+        "4afd4e00-d70b-4be9-9dda-b53b1198cdf4",
+        "a7d06e69-6514-4ef2-a42a-f2c62e0a7662",
+        "f2ef9b9c-957c-45df-a449-3d7629750ddd",
+        "a8aa5dce-f1cf-4e40-8dc8-bc8ea0fad5f7",
+        "92775ef6-837c-45d2-b71e-b2df038f2522"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You arrive at the river bank close to your farm.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1234.2685813726002,
+        "sceneMapPosY": 468.0568804468014
+      },
+      "ending": false,
+      "id": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Farm",
+      "type": "CHOICE",
+      "updated": 1639114560968
+    },
+    "424b8086-b8fc-4818-8a83-fac60c0d8742": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"While away, the wolf devoured your goat...\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Not a pretty sight!\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1231.372912649759,
+        "sceneMapPosY": 665.9902548841352
+      },
+      "ending": false,
+      "id": "424b8086-b8fc-4818-8a83-fac60c0d8742",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Wolf eats goat",
+      "type": "CHOICE",
+      "updated": 1639114537746
+    },
+    "60dc6336-16c8-4d55-88fc-e87cebbd0068": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry back to the market, alone.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1603.9906697658896,
+        "sceneMapPosY": 434.7297645195882
+      },
+      "ending": false,
+      "id": "60dc6336-16c8-4d55-88fc-e87cebbd0068",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Ferry to market",
+      "type": "CHOICE",
+      "updated": 1639114441843
+    },
+    "7072da8f-6906-49c3-93d7-9ac205b08b1a": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\\\"That was a long day at the market. Time to return to the farm with my wolf, goat and cabbage. I sure hope nothing goes wrong!\\\"\"}]}]",
+      "composer": {
+        "sceneMapPosX": 248,
+        "sceneMapPosY": 300
+      },
+      "ending": false,
+      "id": "7072da8f-6906-49c3-93d7-9ac205b08b1a",
+      "persona": [
+        "09357957-04bc-4b0c-872b-c009b2ee8009",
+        "NEUTRAL",
+        "383f790c-b002-4094-be5e-57c5ca38010a"
+      ],
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Intro",
+      "type": "CHOICE",
+      "updated": 1639081772553
+    },
+    "8582b249-61fe-4bdc-b243-45c2afd339b5": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry your goat to the market.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1602.7073163034108,
+        "sceneMapPosY": 578.088495481309
+      },
+      "ending": false,
+      "id": "8582b249-61fe-4bdc-b243-45c2afd339b5",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Ferry goat to market",
+      "type": "CHOICE",
+      "updated": 1639114441877
+    },
+    "98f7f5ad-ed05-453a-b171-4c6d43fb3e31": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry your cabbage to the market.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1601.7385249141755,
+        "sceneMapPosY": 637.157359311102
+      },
+      "ending": false,
+      "id": "98f7f5ad-ed05-453a-b171-4c6d43fb3e31",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Ferry cabbage to market",
+      "type": "CHOICE",
+      "updated": 1639114441907
+    },
+    "aa817981-4ec8-451d-9f3c-7fa4bd9e363a": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\\\"Let's put on the stew!\\\"\"}]}]",
+      "composer": {
+        "sceneMapPosX": 2434.992182300197,
+        "sceneMapPosY": -258.6312583603851
+      },
+      "ending": true,
+      "id": "aa817981-4ec8-451d-9f3c-7fa4bd9e363a",
+      "persona": [
+        "314bfb4e-1972-4718-935b-d371a88dab5a",
+        "HAPPY",
+        "8b5baed7-e5c5-450a-bc5d-a31fc3459ab6"
+      ],
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Good Ending",
+      "type": "CHOICE",
+      "updated": 1639114968345
+    },
+    "b85b9b19-0db2-468e-9bf9-f4f3d2aa7607": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"While away, the goat ate your cabbage...\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Tonight's stew is ruined!\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1231.732253071465,
+        "sceneMapPosY": 374.77069183363864
+      },
+      "ending": false,
+      "id": "b85b9b19-0db2-468e-9bf9-f4f3d2aa7607",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Goat eats cabbage",
+      "type": "CHOICE",
+      "updated": 1639114536261
+    },
+    "ba29862c-0031-4cd1-9ff0-e656e324ed3d": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry the cabbage to your farm.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 880.7462775817012,
+        "sceneMapPosY": 593.6257371082496
+      },
+      "ending": false,
+      "id": "ba29862c-0031-4cd1-9ff0-e656e324ed3d",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Ferry cabbage to farm",
+      "type": "CHOICE",
+      "updated": 1639090334971
+    },
+    "bda1ed8b-abbd-43e8-b591-935676b95740": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\\\"You've lost something, haven't you?\\\"\"}]}]",
+      "composer": {
+        "sceneMapPosX": 2434.6012071450973,
+        "sceneMapPosY": 1101.8907504858823
+      },
+      "ending": true,
+      "id": "bda1ed8b-abbd-43e8-b591-935676b95740",
+      "persona": [
+        "314bfb4e-1972-4718-935b-d371a88dab5a",
+        "WEARY",
+        "8b5baed7-e5c5-450a-bc5d-a31fc3459ab6"
+      ],
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Bad Ending",
+      "type": "CHOICE",
+      "updated": 1639115038968
+    },
+    "d464b8c0-33f6-4c58-b5db-9a86fb229a15": {
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry the goat to your farm.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 881.7150689709362,
+        "sceneMapPosY": 513.7743091232627
+      },
+      "ending": false,
+      "id": "d464b8c0-33f6-4c58-b5db-9a86fb229a15",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Ferry goat to farm",
+      "type": "CHOICE",
+      "updated": 1639090320627
+    },
+    "de73069c-3d36-4877-a425-31ce0e2cf45c": {
+      "choices": [
+        "ab32e96e-169e-41af-be5b-7dcadfe3bf82",
+        "9a4d5fdd-a2b4-405d-86e1-43205c463669",
+        "9c774b8b-004a-437c-8091-bdd98dc6e82e"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You arrive at the river bank close to the market.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 572,
+        "sceneMapPosY": 456
+      },
+      "ending": false,
+      "id": "de73069c-3d36-4877-a425-31ce0e2cf45c",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Market",
+      "type": "CHOICE",
+      "updated": 1639114423931
+    }
+  },
+  "folders": {},
+  "inputs": {},
+  "jumps": {
+    "28dfd6a0-21d4-44c8-9103-77e46fe438ab": {
+      "composer": {
+        "sceneMapPosX": 2066.8448182066923,
+        "sceneMapPosY": 541.3154172336544
+      },
+      "id": "28dfd6a0-21d4-44c8-9103-77e46fe438ab",
+      "path": [
+        "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+        "de73069c-3d36-4877-a425-31ce0e2cf45c"
+      ],
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Return to market",
+      "updated": 1639114441419
+    },
+    "5e9199fd-4408-45fa-bb5e-e9e847366a7d": {
+      "composer": {
+        "sceneMapPosX": 2065.011933496474,
+        "sceneMapPosY": 816.6950807241783
+      },
+      "id": "5e9199fd-4408-45fa-bb5e-e9e847366a7d",
+      "path": [
+        "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+        "424b8086-b8fc-4818-8a83-fac60c0d8742"
+      ],
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Wolf eats goat",
+      "updated": 1639114441457
+    },
+    "8b8fd7a7-6b4a-4fcd-bc60-1d3e4079ecef": {
+      "composer": {
+        "sceneMapPosX": 2065.011933496474,
+        "sceneMapPosY": 260.69508072417847
+      },
+      "id": "8b8fd7a7-6b4a-4fcd-bc60-1d3e4079ecef",
+      "path": [
+        "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+        "b85b9b19-0db2-468e-9bf9-f4f3d2aa7607"
+      ],
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Goat eats cabbage",
+      "updated": 1639114441489
+    }
+  },
+  "paths": {
+    "206e8608-fa3f-4982-946c-1119725109bd": {
+      "conditionsType": "ALL",
+      "choiceId": "9a4d5fdd-a2b4-405d-86e1-43205c463669",
+      "destinationId": "d464b8c0-33f6-4c58-b5db-9a86fb229a15",
+      "destinationType": "EVENT",
+      "id": "206e8608-fa3f-4982-946c-1119725109bd",
+      "originId": "de73069c-3d36-4877-a425-31ce0e2cf45c",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639111117231
+    },
+    "334c2082-f8a9-4150-8d0a-00eb66732ad3": {
+      "conditionsType": "ALL",
+      "destinationId": "5e9199fd-4408-45fa-bb5e-e9e847366a7d",
+      "destinationType": "JUMP",
+      "id": "334c2082-f8a9-4150-8d0a-00eb66732ad3",
+      "originId": "98f7f5ad-ed05-453a-b171-4c6d43fb3e31",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639114016700
+    },
+    "3a3b3c52-03ea-4e3f-938b-7cf81079407e": {
+      "conditionsType": "ALL",
+      "destinationId": "bda1ed8b-abbd-43e8-b591-935676b95740",
+      "destinationType": "EVENT",
+      "id": "3a3b3c52-03ea-4e3f-938b-7cf81079407e",
+      "originId": "704dd5ff-3aab-4ec4-b8e1-292f314485ff",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639081137508
+    },
+    "45f275e0-81c8-48f1-9081-8c3f3381d883": {
+      "conditionsType": "ALL",
+      "destinationId": "28dfd6a0-21d4-44c8-9103-77e46fe438ab",
+      "destinationType": "JUMP",
+      "id": "45f275e0-81c8-48f1-9081-8c3f3381d883",
+      "originId": "d2fe153d-ee08-4851-8034-4a296638a5a2",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639081853790
+    },
+    "4a20809b-6f85-49bf-aa6e-ad007464b0fd": {
+      "conditionsType": "ALL",
+      "destinationId": "5e9199fd-4408-45fa-bb5e-e9e847366a7d",
+      "destinationType": "JUMP",
+      "id": "4a20809b-6f85-49bf-aa6e-ad007464b0fd",
+      "originId": "60dc6336-16c8-4d55-88fc-e87cebbd0068",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639114013450
+    },
+    "4aa75a66-29ec-42bd-8571-50aaca200481": {
+      "conditionsType": "ANY",
+      "destinationId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "destinationType": "EVENT",
+      "id": "4aa75a66-29ec-42bd-8571-50aaca200481",
+      "originId": "ba29862c-0031-4cd1-9ff0-e656e324ed3d",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639111461992
+    },
+    "4f8f0a08-c9df-4ff0-adfe-ba20692dcd05": {
+      "conditionsType": "ALL",
+      "destinationId": "8b8fd7a7-6b4a-4fcd-bc60-1d3e4079ecef",
+      "destinationType": "JUMP",
+      "id": "4f8f0a08-c9df-4ff0-adfe-ba20692dcd05",
+      "originId": "1c6e3703-f0d1-444f-8150-0571ba3b763b",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639114154996
+    },
+    "5508c389-f399-4d02-ba9b-0d873723c2c5": {
+      "conditionsType": "ALL",
+      "choiceId": "ab32e96e-169e-41af-be5b-7dcadfe3bf82",
+      "destinationId": "0af73e8d-8665-4000-a467-7f4b2970fe41",
+      "destinationType": "EVENT",
+      "id": "5508c389-f399-4d02-ba9b-0d873723c2c5",
+      "originId": "de73069c-3d36-4877-a425-31ce0e2cf45c",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639111245543
+    },
+    "55bfa95b-46a8-4708-bf00-718969450c24": {
+      "conditionsType": "ALL",
+      "choiceId": "f2ef9b9c-957c-45df-a449-3d7629750ddd",
+      "destinationId": "1c6e3703-f0d1-444f-8150-0571ba3b763b",
+      "destinationType": "EVENT",
+      "id": "55bfa95b-46a8-4708-bf00-718969450c24",
+      "originId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639081189446
+    },
+    "7631065b-ed12-46b2-b3c3-78a521675801": {
+      "conditionsType": "ALL",
+      "choiceId": "4afd4e00-d70b-4be9-9dda-b53b1198cdf4",
+      "destinationId": "aa817981-4ec8-451d-9f3c-7fa4bd9e363a",
+      "destinationType": "EVENT",
+      "id": "7631065b-ed12-46b2-b3c3-78a521675801",
+      "originId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639081245441
+    },
+    "80936566-f3c1-4cec-8620-3ddc1818954e": {
+      "conditionsType": "ALL",
+      "choiceId": "92775ef6-837c-45d2-b71e-b2df038f2522",
+      "destinationId": "98f7f5ad-ed05-453a-b171-4c6d43fb3e31",
+      "destinationType": "EVENT",
+      "id": "80936566-f3c1-4cec-8620-3ddc1818954e",
+      "originId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639081208405
+    },
+    "8b5f23c9-f948-4db8-8c98-1d9de4d1dbcf": {
+      "conditionsType": "ALL",
+      "destinationId": "424b8086-b8fc-4818-8a83-fac60c0d8742",
+      "destinationType": "EVENT",
+      "id": "8b5f23c9-f948-4db8-8c98-1d9de4d1dbcf",
+      "originId": "ba29862c-0031-4cd1-9ff0-e656e324ed3d",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639081004788
+    },
+    "8c2c335d-ed40-4f2d-85f7-4f6fcb0beb43": {
+      "conditionsType": "ALL",
+      "destinationId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "destinationType": "EVENT",
+      "id": "8c2c335d-ed40-4f2d-85f7-4f6fcb0beb43",
+      "originId": "d464b8c0-33f6-4c58-b5db-9a86fb229a15",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639081064831
+    },
+    "95312ace-399b-43c2-8553-b4376cc93f43": {
+      "conditionsType": "ALL",
+      "destinationId": "bda1ed8b-abbd-43e8-b591-935676b95740",
+      "destinationType": "EVENT",
+      "id": "95312ace-399b-43c2-8553-b4376cc93f43",
+      "originId": "62d21d2e-9b43-479a-8d18-182c04c4a9ed",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639081163024
+    },
+    "961d323d-1afb-4caf-99b8-6aafe1d9c592": {
+      "conditionsType": "ALL",
+      "destinationId": "bda1ed8b-abbd-43e8-b591-935676b95740",
+      "destinationType": "EVENT",
+      "id": "961d323d-1afb-4caf-99b8-6aafe1d9c592",
+      "originId": "b85b9b19-0db2-468e-9bf9-f4f3d2aa7607",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639111532381
+    },
+    "9b6c2b90-5983-47e8-b5f3-36e9e6e8c919": {
+      "conditionsType": "ALL",
+      "choiceId": "a7d06e69-6514-4ef2-a42a-f2c62e0a7662",
+      "destinationId": "60dc6336-16c8-4d55-88fc-e87cebbd0068",
+      "destinationType": "EVENT",
+      "id": "9b6c2b90-5983-47e8-b5f3-36e9e6e8c919",
+      "originId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639090555597
+    },
+    "b6b62526-9e6e-4ecb-b604-192be5d82086": {
+      "conditionsType": "ALL",
+      "destinationId": "28dfd6a0-21d4-44c8-9103-77e46fe438ab",
+      "destinationType": "JUMP",
+      "id": "b6b62526-9e6e-4ecb-b604-192be5d82086",
+      "originId": "8582b249-61fe-4bdc-b243-45c2afd339b5",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639081221191
+    },
+    "b8df13af-592a-46d6-b3b3-1a1aa29f7994": {
+      "conditionsType": "ALL",
+      "destinationId": "8b8fd7a7-6b4a-4fcd-bc60-1d3e4079ecef",
+      "destinationType": "JUMP",
+      "id": "b8df13af-592a-46d6-b3b3-1a1aa29f7994",
+      "originId": "60dc6336-16c8-4d55-88fc-e87cebbd0068",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639114149957
+    },
+    "bf7bdb7f-d9a2-4290-9e56-06ba06a696ca": {
+      "conditionsType": "ALL",
+      "choiceId": "9c774b8b-004a-437c-8091-bdd98dc6e82e",
+      "destinationId": "ba29862c-0031-4cd1-9ff0-e656e324ed3d",
+      "destinationType": "EVENT",
+      "id": "bf7bdb7f-d9a2-4290-9e56-06ba06a696ca",
+      "originId": "de73069c-3d36-4877-a425-31ce0e2cf45c",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639080472921
+    },
+    "c35ca100-b7f0-4baa-8aef-834976bf0616": {
+      "conditionsType": "ALL",
+      "destinationId": "28dfd6a0-21d4-44c8-9103-77e46fe438ab",
+      "destinationType": "JUMP",
+      "id": "c35ca100-b7f0-4baa-8aef-834976bf0616",
+      "originId": "60dc6336-16c8-4d55-88fc-e87cebbd0068",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639090462486
+    },
+    "c6e40bcb-f8d1-4c17-9534-545940fbf922": {
+      "conditionsType": "ANY",
+      "destinationId": "28dfd6a0-21d4-44c8-9103-77e46fe438ab",
+      "destinationType": "JUMP",
+      "id": "c6e40bcb-f8d1-4c17-9534-545940fbf922",
+      "originId": "98f7f5ad-ed05-453a-b171-4c6d43fb3e31",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639111664137
+    },
+    "cbeecd4f-529f-4afc-ac6d-c43caddba1d9": {
+      "conditionsType": "ALL",
+      "destinationId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "destinationType": "EVENT",
+      "id": "cbeecd4f-529f-4afc-ac6d-c43caddba1d9",
+      "originId": "0e0cc8ac-e9f2-42fd-9ae3-f6bcb3c9cb32",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639082244812
+    },
+    "d1ab4008-9e9e-4263-b1ec-4d752678af9a": {
+      "conditionsType": "ALL",
+      "destinationId": "b85b9b19-0db2-468e-9bf9-f4f3d2aa7607",
+      "destinationType": "EVENT",
+      "id": "d1ab4008-9e9e-4263-b1ec-4d752678af9a",
+      "originId": "0af73e8d-8665-4000-a467-7f4b2970fe41",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639111770930
+    },
+    "dd675872-42bc-44e3-84b4-50e387e7d4a1": {
+      "conditionsType": "ALL",
+      "choiceId": "a8aa5dce-f1cf-4e40-8dc8-bc8ea0fad5f7",
+      "destinationId": "8582b249-61fe-4bdc-b243-45c2afd339b5",
+      "destinationType": "EVENT",
+      "id": "dd675872-42bc-44e3-84b4-50e387e7d4a1",
+      "originId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639081195803
+    },
+    "dfa5d67a-1837-4621-9040-2a2b77f1c593": {
+      "conditionsType": "ANY",
+      "destinationId": "28dfd6a0-21d4-44c8-9103-77e46fe438ab",
+      "destinationType": "JUMP",
+      "id": "dfa5d67a-1837-4621-9040-2a2b77f1c593",
+      "originId": "1c6e3703-f0d1-444f-8150-0571ba3b763b",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639111658395
+    },
+    "e94537b8-b4eb-4f51-957c-2c69ac6c8a8d": {
+      "conditionsType": "ALL",
+      "destinationId": "de73069c-3d36-4877-a425-31ce0e2cf45c",
+      "destinationType": "EVENT",
+      "id": "e94537b8-b4eb-4f51-957c-2c69ac6c8a8d",
+      "originId": "7072da8f-6906-49c3-93d7-9ac205b08b1a",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Route",
+      "updated": 1638728990482
+    },
+    "f1782dbe-5b74-409a-af6c-8bb6214a9565": {
+      "conditionsType": "ALL",
+      "destinationId": "bda1ed8b-abbd-43e8-b591-935676b95740",
+      "destinationType": "EVENT",
+      "id": "f1782dbe-5b74-409a-af6c-8bb6214a9565",
+      "originId": "424b8086-b8fc-4818-8a83-fac60c0d8742",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639081089375
+    },
+    "f71a761a-0956-47dc-a275-5bddd50c5d2d": {
+      "conditionsType": "ANY",
+      "destinationId": "3abc2e48-f90d-471a-9a1a-6489ba8b7e57",
+      "destinationType": "EVENT",
+      "id": "f71a761a-0956-47dc-a275-5bddd50c5d2d",
+      "originId": "0af73e8d-8665-4000-a467-7f4b2970fe41",
+      "originType": "CHOICE",
+      "sceneId": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1639111427860
+    }
+  },
+  "scenes": {
+    "6aad46bb-ae9e-42f3-b339-56685bb6d0b9": {
+      "children": [
+        [
+          "EVENT",
+          "7072da8f-6906-49c3-93d7-9ac205b08b1a"
+        ],
+        [
+          "EVENT",
+          "de73069c-3d36-4877-a425-31ce0e2cf45c"
+        ],
+        [
+          "EVENT",
+          "0af73e8d-8665-4000-a467-7f4b2970fe41"
+        ],
+        [
+          "EVENT",
+          "d464b8c0-33f6-4c58-b5db-9a86fb229a15"
+        ],
+        [
+          "EVENT",
+          "ba29862c-0031-4cd1-9ff0-e656e324ed3d"
+        ],
+        [
+          "EVENT",
+          "b85b9b19-0db2-468e-9bf9-f4f3d2aa7607"
+        ],
+        [
+          "EVENT",
+          "3abc2e48-f90d-471a-9a1a-6489ba8b7e57"
+        ],
+        [
+          "EVENT",
+          "424b8086-b8fc-4818-8a83-fac60c0d8742"
+        ],
+        [
+          "EVENT",
+          "60dc6336-16c8-4d55-88fc-e87cebbd0068"
+        ],
+        [
+          "EVENT",
+          "1c6e3703-f0d1-444f-8150-0571ba3b763b"
+        ],
+        [
+          "EVENT",
+          "8582b249-61fe-4bdc-b243-45c2afd339b5"
+        ],
+        [
+          "EVENT",
+          "98f7f5ad-ed05-453a-b171-4c6d43fb3e31"
+        ],
+        [
+          "EVENT",
+          "aa817981-4ec8-451d-9f3c-7fa4bd9e363a"
+        ],
+        [
+          "EVENT",
+          "bda1ed8b-abbd-43e8-b591-935676b95740"
+        ]
+      ],
+      "composer": {
+        "sceneMapTransformX": 377.90459581222854,
+        "sceneMapTransformY": 243.05582104396512,
+        "sceneMapTransformZoom": 0.7060294132543605
+      },
+      "id": "6aad46bb-ae9e-42f3-b339-56685bb6d0b9",
+      "jumps": [
+        "28dfd6a0-21d4-44c8-9103-77e46fe438ab",
+        "5e9199fd-4408-45fa-bb5e-e9e847366a7d",
+        "8b8fd7a7-6b4a-4fcd-bc60-1d3e4079ecef"
+      ],
+      "parent": [
+        "WORLD",
+        null
+      ],
+      "tags": [],
+      "title": "Complete Story",
+      "updated": 1639115043141
+    }
+  },
+  "variables": {
+    "41e712fb-784e-48ed-81f1-cd5250ea81a7": {
+      "id": "41e712fb-784e-48ed-81f1-cd5250ea81a7",
+      "initialValue": "false",
+      "tags": [],
+      "title": "cabbageDelivered",
+      "type": "BOOLEAN",
+      "updated": 1639111273728
+    },
+    "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70": {
+      "id": "9fcf1a12-aa1b-4e5a-a04d-1ba0d494ea70",
+      "initialValue": "false",
+      "tags": [],
+      "title": "goatDelivered",
+      "type": "BOOLEAN",
+      "updated": 1639111261736
+    },
+    "f01bfbfc-d9d3-4c54-bb92-7b807455f72e": {
+      "id": "f01bfbfc-d9d3-4c54-bb92-7b807455f72e",
+      "initialValue": "false",
+      "tags": [],
+      "title": "wolfDelivered",
+      "type": "BOOLEAN",
+      "updated": 1639111268700
+    }
+  }
+}

@@ -96,6 +96,7 @@ function format(worldData: WorldDataJSON): string {
     jumps: filterCollectionChildProps(jumps, ['id', 'path', 'sceneId']),
     paths: filterCollectionChildProps(paths, [
       'choiceId',
+      'conditionsType',
       'destinationId',
       'destinationType',
       'id',

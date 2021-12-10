@@ -268,8 +268,14 @@ export interface JumpCollection {
   [jumpId: string]: JumpData
 }
 
+export enum PATH_CONDITIONS_TYPE {
+  ALL = 'ALL',
+  ANY = 'ANY'
+}
+
 export interface PathData {
   choiceId?: ElementId
+  conditionsType: PATH_CONDITIONS_TYPE
   destinationId: ElementId
   destinationType: ELEMENT_TYPE
   id: ElementId

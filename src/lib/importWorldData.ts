@@ -198,6 +198,7 @@ export default (
               ending,
               id,
               input,
+              persona,
               sceneId,
               tags,
               title,
@@ -212,6 +213,7 @@ export default (
               ending,
               id,
               input,
+              persona,
               sceneId,
               tags,
               title,
@@ -274,6 +276,7 @@ export default (
           for await (const [
             __,
             {
+              conditionsType,
               choiceId,
               destinationId,
               destinationType,
@@ -288,6 +291,7 @@ export default (
             }
           ] of Object.entries(paths)) {
             await api().paths.savePath(_.studioId, {
+              conditionsType,
               choiceId,
               destinationId,
               destinationType,

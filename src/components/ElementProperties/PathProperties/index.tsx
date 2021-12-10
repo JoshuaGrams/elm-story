@@ -9,7 +9,8 @@ import {
   WorldId,
   SET_OPERATOR_TYPE,
   StudioId,
-  VARIABLE_TYPE
+  VARIABLE_TYPE,
+  PATH_CONDITIONS_TYPE
 } from '../../../data/types'
 
 import {
@@ -250,6 +251,10 @@ const PathDetails: React.FC<{
       }))
   }
 
+  const setPathConditionsType = async (type: PATH_CONDITIONS_TYPE) =>
+    path &&
+    (await api().paths.savePath(studioId, { ...path, conditionsType: type }))
+
   useEffect(() => {
     logger.info(variables)
   }, [variables])
@@ -280,7 +285,27 @@ const PathDetails: React.FC<{
             {/* ROUTE CONDITIONS */}
             <div className={styles.routeFeature}>
               <div className={styles.featureHeader}>
-                Conditions <ElementHelpButton type={ELEMENT_TYPE.CONDITION} />
+                Conditions <span style={{ color: 'hsl(0, 0%, 20%)' }}>|</span>{' '}
+                Match{' '}
+                <span
+                  className={`${styles.conditionsType} ${
+                    path.conditionsType === PATH_CONDITIONS_TYPE.ALL
+                      ? styles.all
+                      : styles.any
+                  } `}
+                  onClick={() =>
+                    setPathConditionsType(
+                      path.conditionsType === PATH_CONDITIONS_TYPE.ALL
+                        ? PATH_CONDITIONS_TYPE.ANY
+                        : PATH_CONDITIONS_TYPE.ALL
+                    )
+                  }
+                >
+                  {path.conditionsType === PATH_CONDITIONS_TYPE.ALL
+                    ? 'All'
+                    : 'Any'}
+                </span>
+                <ElementHelpButton type={ELEMENT_TYPE.CONDITION} />
               </div>
 
               <div className={styles.featureList}>

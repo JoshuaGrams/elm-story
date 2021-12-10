@@ -133,9 +133,15 @@
   }
 }
 
-.RouteEdgeLabel {
+.PathEdgeLabel {
   .conditions {
-    fill: hsl(339, 100%, 55%);
+    &.all {
+      fill: var(--path-conditions-type-all-color);
+    }
+
+    &.any {
+      fill: var(--path-conditions-type-any-color);
+    }
   }
 
   .effects {
@@ -157,8 +163,8 @@
 }
 
 .jumpNode {
-  min-width: 200px;
-  max-width: 400px;
+  min-width: 250px;
+  max-width: 250px;
 
   .jumpHandle {
     width: 8px;
@@ -194,8 +200,8 @@
 }
 
 .EventNode {
-  min-width: 200px;
-  max-width: 200px;
+  min-width: 250px;
+  max-width: 250px;
 
   .passageTargetHandle,
   .passageSourceHandle {

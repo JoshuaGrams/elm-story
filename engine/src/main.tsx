@@ -32,21 +32,20 @@ function main() {
   }
 
   if (import.meta.env.DEV) {
-    import('../data/terminal-access_0.0.2/terminal-access_0.0.2.json').then(
-      (data) =>
-        render(
-          <>
-            <ServiceWorker />
-            <Runtime
-              world={{
-                id: data._.id,
-                data: JSON.stringify(data),
-                packed: false
-              }}
-            />
-          </>,
-          rendererContainer
-        )
+    import('../data/wgc_0.0.3/wgc_0.0.3.json').then((data) =>
+      render(
+        <>
+          <ServiceWorker />
+          <Runtime
+            world={{
+              id: data._.id,
+              data: JSON.stringify(data),
+              packed: false
+            }}
+          />
+        </>,
+        rendererContainer
+      )
     )
   }
 }

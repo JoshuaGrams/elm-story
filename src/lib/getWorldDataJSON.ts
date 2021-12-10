@@ -196,6 +196,7 @@ export default async (
     paths.map(
       ({
         choiceId,
+        conditionsType,
         destinationId,
         destinationType,
         id,
@@ -209,6 +210,7 @@ export default async (
       }) =>
         (worldData.paths[id as string] = {
           choiceId,
+          conditionsType,
           destinationId,
           destinationType: destinationType as ELEMENT_TYPE,
           id: id as string,

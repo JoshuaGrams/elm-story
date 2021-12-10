@@ -196,6 +196,16 @@
           "ending": { "type": "boolean" },
           "id": { "type": "string" },
           "input": { "type": "string" },
+          "persona": {
+            "type": "array",
+            "items": [
+              { "type": "string" },
+              { "type": "string" },
+              { "type": ["string", "null"] }
+            ],
+            "minItems": 2,
+            "additionalItems": false
+          },
           "sceneId": { "type": "string" },
           "tags": { "type": "array", "items": { "type": "string" } },
           "title": { "type": "string" },
@@ -301,6 +311,7 @@
         "type": "object",
         "properties": {
           "choiceId": { "type": "string" },
+          "conditionsType": { "type": "string" },
           "destinationId": { "type": "string" },
           "destinationType": { "type": "string" },
           "id": { "type": "string" },
@@ -313,6 +324,7 @@
           "updated": { "type": "number" }
         },
         "required": [
+          "conditionsType",
           "destinationId",
           "destinationType",
           "id",

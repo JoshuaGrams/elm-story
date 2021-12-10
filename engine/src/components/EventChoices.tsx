@@ -31,12 +31,7 @@ const EventPassthroughChoice: React.FC<{
   onSubmitPath: PathProcessor
   originId?: ElementId
 }> = React.memo(
-  ({
-    paths: routes,
-    liveEvent: event,
-    onSubmitPath: onSubmitRoute,
-    originId
-  }) => {
+  ({ paths: routes, liveEvent: event, onSubmitPath, originId }) => {
     const { engine } = useContext(EngineContext)
 
     if (!engine.worldInfo) return null
@@ -55,7 +50,7 @@ const EventPassthroughChoice: React.FC<{
       []
     )
 
-    const { data: openRoute, isLoading: openRouteIsLoading } = useQuery(
+    const { data: openPath, isLoading: openRouteIsLoading } = useQuery(
       [`passthrough-${event.id}`, routes, conditions, variables],
       async () => {
         return await findOpenPath(studioId, routes, event.state)
@@ -64,16 +59,16 @@ const EventPassthroughChoice: React.FC<{
 
     const submitChoice = useCallback(
       async () =>
-        openRoute &&
+        openPath &&
         !openRouteIsLoading &&
-        (await onSubmitRoute({
+        (await onSubmitPath({
           originId,
-          path: openRoute,
+          path: openPath,
           result: {
             value: ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE
           }
         })),
-      [openRoute]
+      [openPath]
     )
 
     return (
@@ -88,10 +83,10 @@ const EventPassthroughChoice: React.FC<{
           <button
             onClick={submitChoice}
             disabled={
-              event.result || (!openRoute && !openRouteIsLoading) ? true : false
+              event.result || (!openPath && !openRouteIsLoading) ? true : false
             }
             className={
-              !event.result && !openRoute && !openRouteIsLoading
+              !event.result && !openPath && !openRouteIsLoading
                 ? 'closed-route'
                 : ''
             }
@@ -99,7 +94,7 @@ const EventPassthroughChoice: React.FC<{
             {event.result?.value === ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE
               ? 'Continue'
               : engine.currentLiveEvent === event.id &&
-                !openRoute &&
+                !openPath &&
                 !openRouteIsLoading
               ? 'Route Required'
               : 'Continue'}
@@ -122,27 +117,27 @@ const EventChoice: React.FC<{
   ({
     data,
     liveEventResult: eventResult,
-    onSubmitPath: onSubmitRoute,
-    openPath: openRoute,
+    onSubmitPath,
+    openPath,
     originId
   }) => {
     const submitChoice = useCallback(
       async () =>
-        openRoute &&
-        (await onSubmitRoute({
+        openPath &&
+        (await onSubmitPath({
           originId,
-          path: openRoute,
+          path: openPath,
           result: {
             id: data.id,
             value: data.title
           }
         })),
-      [openRoute]
+      [openPath]
     )
 
     return (
       <>
-        {(!eventResult || openRoute) && (
+        {(!eventResult || openPath) && (
           <div
             className={`event-content-choice ${
               eventResult?.id === data.id ? 'event-content-choice-result' : ''
@@ -150,8 +145,8 @@ const EventChoice: React.FC<{
           >
             <button
               onClick={submitChoice}
-              disabled={eventResult || !openRoute ? true : false}
-              className={!openRoute ? 'closed-route' : ''}
+              disabled={eventResult || !openPath ? true : false}
+              className={!openPath ? 'closed-route' : ''}
             >
               {data.title}
             </button>

@@ -9,7 +9,8 @@ import {
   DEFAULT_EVENT_CONTENT,
   EVENT_TYPE,
   Scene,
-  StudioId
+  StudioId,
+  PATH_CONDITIONS_TYPE
 } from '../../../data/types'
 
 import {
@@ -575,6 +576,7 @@ const SceneMap: React.FC<{
         await api().paths.savePath(studioId, {
           title: 'Untitled Path',
           worldId: scene.worldId,
+          conditionsType: PATH_CONDITIONS_TYPE.ALL,
           sceneId,
           originId: connection.source,
           choiceId:
@@ -977,7 +979,8 @@ const SceneMap: React.FC<{
           data: {
             type: ELEMENT_TYPE.PATH,
             studioId,
-            pathId: path.id
+            pathId: path.id,
+            conditionsType: path.conditionsType
           }
         }
       })
