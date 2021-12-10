@@ -312,7 +312,7 @@ const PathDetails: React.FC<{
                 <>
                   {conditions && variables && variables.length > 0 && (
                     <Select
-                      value="Select New Condition..."
+                      value="Define New Condition..."
                       className={`${styles.select} ${
                         conditions.length === 0 ? styles.noConditions : ''
                       }`}
@@ -375,7 +375,7 @@ const PathDetails: React.FC<{
                 <>
                   {effects && variables && variables.length > 0 && (
                     <Select
-                      value="Select New Effect..."
+                      value="Define New Effect..."
                       className={`${styles.select} ${
                         effects.length === 0 ? styles.noEffects : ''
                       }`}
