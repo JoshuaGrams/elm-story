@@ -143,6 +143,13 @@ export default (database: Dexie) => {
             delete jump.gameId
           }),
         tx
+          .table(LIBRARY_TABLE.LIVE_EVENTS)
+          .toCollection()
+          .modify((liveEvent) => {
+            liveEvent.worldId = liveEvent.gameId
+            delete liveEvent.gameId
+          }),
+        tx
           .table(LIBRARY_TABLE.PATHS)
           .toCollection()
           .modify((path) => {
