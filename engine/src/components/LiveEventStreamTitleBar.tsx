@@ -31,7 +31,7 @@ const EventStreamTitleBar: React.FC = () => {
             </svg>
           </button>
           <span
-            id="live-event-stream-title-bar-game-title"
+            id="live-event-stream-title-bar-world-title"
             className="title-bar-title"
           >
             {engine.worldInfo.title}

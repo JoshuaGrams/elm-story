@@ -38,14 +38,14 @@ interface EngineState {
 export enum ENGINE_ACTION_TYPE {
   APPEND_LIVE_EVENTS_TO_STREAM = 'APPEND_EVENTS_TO_STREAM',
   CLEAR_EVENT_STREAM = 'CLEAR_EVENT_STREAM',
-  SET_GAME_INFO = 'SET_GAME_INFO',
+  SET_WORLD_INFO = 'SET_GAME_INFO',
   HIDE_RESET_NOTIFICATION = 'HIDE_RESET_NOTIFICATION',
   PLAY = 'PLAY', // sets currentEvent
   SET_INSTALLED = 'SET_INSTALLED',
   SET_INSTALL_ID = 'SET_INSTALL_ID',
-  SET_IS_EDITOR = 'SET_EDITOR',
+  SET_IS_COMPOSER = 'SET_COMPOSER',
   SET_CURRENT_LIVE_EVENT = 'SET_CURRENT_EVENT',
-  SET_UPDATE_GAME = 'UPDATE_GAME',
+  SET_UPDATE_WORLD = 'SET_UPDATE_WORLD',
   STOP = 'STOP',
   SHOW_RESET_NOTIFICATION = 'SHOW_RESET_NOTIFICATION',
   TOGGLE_DEVTOOLS_BLOCKED_CHOICES = 'TOGGLE_DEVTOOLS_BLOCKED_CHOICES',
@@ -57,7 +57,7 @@ export enum ENGINE_ACTION_TYPE {
 type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.SET_INSTALLED; installed: boolean }
   | { type: ENGINE_ACTION_TYPE.SET_INSTALL_ID; id?: string }
-  | { type: ENGINE_ACTION_TYPE.SET_IS_EDITOR }
+  | { type: ENGINE_ACTION_TYPE.SET_IS_COMPOSER }
   | {
       type: ENGINE_ACTION_TYPE.SET_CURRENT_LIVE_EVENT
       id?: ElementId
@@ -73,7 +73,7 @@ type EngineActionType =
       liveEvent: EngineLiveEventData
     }
   | {
-      type: ENGINE_ACTION_TYPE.SET_GAME_INFO
+      type: ENGINE_ACTION_TYPE.SET_WORLD_INFO
       gameInfo?: {
         copyright?: string
         description?: string
@@ -87,7 +87,7 @@ type EngineActionType =
         website?: string
       }
     }
-  | { type: ENGINE_ACTION_TYPE.SET_UPDATE_GAME; updating: boolean }
+  | { type: ENGINE_ACTION_TYPE.SET_UPDATE_WORLD; updating: boolean }
   | { type: ENGINE_ACTION_TYPE.PLAY; fromEvent: ElementId | undefined }
   | { type: ENGINE_ACTION_TYPE.STOP }
   | { type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION }
@@ -111,7 +111,7 @@ const engineReducer = (
         ...state,
         installId: action.id
       }
-    case ENGINE_ACTION_TYPE.SET_IS_EDITOR:
+    case ENGINE_ACTION_TYPE.SET_IS_COMPOSER:
       return {
         ...state,
         isComposer: true
@@ -155,7 +155,7 @@ const engineReducer = (
       } else {
         return state
       }
-    case ENGINE_ACTION_TYPE.SET_GAME_INFO:
+    case ENGINE_ACTION_TYPE.SET_WORLD_INFO:
       return {
         ...state,
         worldInfo: action.gameInfo
@@ -182,7 +182,7 @@ const engineReducer = (
         ...state,
         resetNotification: { message: action.message, showing: true }
       }
-    case ENGINE_ACTION_TYPE.SET_UPDATE_GAME:
+    case ENGINE_ACTION_TYPE.SET_UPDATE_WORLD:
       return {
         ...state,
         updating: action.updating

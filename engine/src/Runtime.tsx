@@ -55,7 +55,7 @@ const Runtime: React.FC<{
                   studioId={_studioId}
                   worldId={id}
                   data={engineData}
-                  isEditor={isEditor}
+                  isComposer={isEditor}
                 >
                   <DevTools />
                   <Renderer />
@@ -68,7 +68,7 @@ const Runtime: React.FC<{
                 studioId={_studioId}
                 worldId={id}
                 data={engineData}
-                isEditor={isEditor}
+                isComposer={isEditor}
               >
                 <SettingsProvider>
                   <Theme>

@@ -39,15 +39,15 @@ import {
   INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY
 } from '../lib'
 
-export const getGameInfo = async (
+export const getWorldInfo = async (
   studioId: StudioId,
   worldId: WorldId
 ): Promise<EngineWorldData | null> => {
   try {
-    const foundGame = await new LibraryDatabase(studioId).worlds.get(worldId)
+    const foundWorld = await new LibraryDatabase(studioId).worlds.get(worldId)
 
-    if (foundGame) {
-      return foundGame
+    if (foundWorld) {
+      return foundWorld
     }
   } catch (error) {
     throw error
@@ -57,8 +57,12 @@ export const getGameInfo = async (
 }
 
 export const saveWorldMeta = (studioId: StudioId, worldId: WorldId) => {
-  if (!localStorage.getItem(worldId))
+  const worldMeta = localStorage.getItem(worldId)
+
+  // feedback#96
+  if (!worldMeta || (worldMeta && JSON.parse(worldMeta).gameId)) {
     localStorage.setItem(worldId, JSON.stringify({ worldId, studioId }))
+  }
 }
 
 export const saveEngineCollectionData = async (
@@ -97,7 +101,7 @@ export const saveEngineCollectionData = async (
 
     if (semver.lt(version, installedWorld.version)) {
       console.error(
-        `[STORYTELLER] unable to save game data to database.\n[STORYTELLER] incoming: ${version}, installed: ${installedWorld.version}\n[STORYTELLER] more info: https://docs.elmstory.com/guides/data/pwa`
+        `[STORYTELLER] unable to save world data to database.\n[STORYTELLER] incoming: ${version}, installed: ${installedWorld.version}\n[STORYTELLER] more info: https://docs.elmstory.com/guides/data/pwa`
       )
     }
   }
@@ -222,7 +226,7 @@ export const saveEngineDefaultWorldCollectionData = async (
         (variable) => (variables[variable.id] = cloneDeep(variable))
       )
 
-      // event is used when player first starts game
+      // event is used when player first starts world
       const initialWorldState: EngineLiveEventStateCollection = {}
 
       Object.keys(variables).map((key) => {
@@ -270,7 +274,8 @@ const findLiveEventFromBookmarkWithExistingDestination = async (
     const foundLiveEvent = await libraryDatabase.live_events.get(liveEventId)
 
     if (foundLiveEvent) {
-      const foundDestination = await libraryDatabase.live_events.get(
+      // feedback#94
+      const foundDestination = await libraryDatabase.events.get(
         foundLiveEvent.destination
       )
 
@@ -359,7 +364,7 @@ export const updateEngineDefaultWorldCollectionData = async (
             `${AUTO_ENGINE_BOOKMARK_KEY}${worldId}`,
             {
               ...foundBookmark,
-              newLiveEventId,
+              liveEventId: newLiveEventId,
               updated: Date.now(),
               version: foundWorld.version
             }
@@ -1104,7 +1109,7 @@ export const findOpenPath = async (
 ) => {
   const pathIds = paths.map((path) => path.id),
     conditionsByPaths = await getConditionsByPaths(studioId, pathIds),
-    openPaths: EnginePathData[] = []
+    openPaths: [EnginePathData, number][] = []
 
   if (conditionsByPaths) {
     await Promise.all(
@@ -1116,14 +1121,20 @@ export const findOpenPath = async (
           conditionsByPaths.filter((condition) => condition.pathId === path.id)
         )
 
-        pathOpen && openPaths.push(cloneDeep(path))
+        pathOpen[0] && openPaths.push([cloneDeep(path), pathOpen[1]])
       })
     )
   }
 
-  return openPaths.length > 0
-    ? openPaths[(openPaths.length * Math.random()) | 0]
-    : undefined
+  if (openPaths.length > 0) {
+    const pathsWithConditions = openPaths.filter((path) => path[1] > 0)
+
+    return pathsWithConditions.length > 0
+      ? pathsWithConditions[(pathsWithConditions.length * Math.random()) | 0][0]
+      : openPaths[(openPaths.length * Math.random()) | 0][0]
+  } else {
+    return undefined
+  }
 }
 
 export const isPathOpen = async (
@@ -1131,8 +1142,11 @@ export const isPathOpen = async (
   liveEventState: EngineLiveEventStateCollection,
   pathConditionsType: PATH_CONDITIONS_TYPE,
   conditions: EngineConditionData[]
-) => {
-  if (conditions.length === 0) return true
+  // feedback#105
+): Promise<[boolean, number]> => {
+  const totalConditions = conditions.length
+
+  if (totalConditions === 0) return [true, 0]
 
   const isOpenAgg: boolean[] = []
 
@@ -1210,8 +1224,8 @@ export const isPathOpen = async (
   }
 
   return pathConditionsType === PATH_CONDITIONS_TYPE.ALL
-    ? isOpenAgg.every((value) => value === true)
-    : isOpenAgg.some((value) => value === true)
+    ? [isOpenAgg.every((value) => value === true), totalConditions]
+    : [isOpenAgg.some((value) => value === true), totalConditions]
 }
 
 export const getScene = async (studioId: StudioId, sceneId: ElementId) => {

@@ -1,10 +1,10 @@
 {
-  "name": "@elmstorygames/engine",
+  "name": "@elmstorygames/storyteller",
   "version": "0.6.0",
-  "description": "The Elm Story game engine.",
+  "description": "The ESG Storyteller engine.",
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/elmstorygames/engine.git"
+    "url": "git+https://gitlab.com/elmstorygames/storyteller.git"
   },
   "author": {
     "name": "Elm Story Games",
@@ -19,9 +19,9 @@
     "https": "yarn build && serve ../assets/engine-dist"
   },
   "bugs": {
-    "url": "https://gitlab.com/elmstorygames/engine/issues"
+    "url": "https://gitlab.com/elmstorygames/storyteller/issues"
   },
-  "homepage": "https://gitlab.com/elmstorygames/engine",
+  "homepage": "https://gitlab.com/elmstorygames/storyteller",
   "devDependencies": {
     "@types/lodash": "^4.14.173",
     "@types/node": "^16.9.6",

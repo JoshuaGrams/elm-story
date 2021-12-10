@@ -174,11 +174,11 @@ function processCallExpression(
         type: NODE_TYPES.EXPRESSION_ERROR,
         message: `Unable to process call expression. ${
           !gameVariables[callee.object.name]
-            ? `Missing game variable: '${callee.object.name}' `
+            ? `Missing world variable: '${callee.object.name}' `
             : ''
         }${
           !gameMethods[callee.property.name]
-            ? `Missing game method: '${callee.property.name}`
+            ? `Missing world method: '${callee.property.name}`
             : ''
         }`
       }

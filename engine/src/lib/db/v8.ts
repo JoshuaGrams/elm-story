@@ -56,8 +56,9 @@ export default (database: Dexie) => {
           .table(LIBRARY_TABLE.CHOICES)
           .toCollection()
           .modify((choice) => {
-            choice.worldId = choice.worldId
-            delete choice.worldId
+            // feedback#95
+            choice.worldId = choice.gameId
+            delete choice.gameId
 
             choice.eventId = choice.passageId
             delete choice.passageId

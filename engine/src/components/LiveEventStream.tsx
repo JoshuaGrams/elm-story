@@ -229,7 +229,7 @@ const LiveEventStream: React.FC = React.memo(() => {
 
               engineDispatch({
                 type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION,
-                message: 'On game start jump has changed.'
+                message: 'On world start jump has changed.'
               })
             }
 
