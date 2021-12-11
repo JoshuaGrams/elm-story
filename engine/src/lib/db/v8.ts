@@ -70,8 +70,8 @@ export default (database: Dexie) => {
             condition.worldId = condition.gameId
             delete condition.gameId
 
-            condition.pathId = condition.pathId
-            delete condition.pathId
+            condition.pathId = condition.routeId
+            delete condition.routeId
           }),
         tx
           .table(LIBRARY_TABLE.EFFECTS)

@@ -25,7 +25,12 @@ import md5 from 'md5'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
 
-import { WorldId, StudioId, WORLD_EXPORT_TYPE } from './data/types'
+import {
+  WorldId,
+  StudioId,
+  WORLD_EXPORT_TYPE,
+  PLATFORM_TYPE
+} from './data/types'
 import { WorldDataJSON } from './lib/transport/types/0.6.0'
 
 export default class AppUpdater {
@@ -272,17 +277,27 @@ const createWindow = async () => {
             ext
           }: { studioId: StudioId; worldId: WorldId; id: string; ext: 'jpeg' }
         ) => {
-          const exists = await fs.pathExists(
-            `${app.getPath(
-              'userData'
-            )}/assets/${studioId}/${worldId}/${id}.${ext}`.replace(/\\/g, '/')
-          )
+          let platformPath: string
 
-          return exists
-            ? `${app.getPath(
+          switch (os.platform()) {
+            case PLATFORM_TYPE.WINDOWS:
+              platformPath = `${app.getPath(
                 'userData'
               )}/assets/${studioId}/${worldId}/${id}.${ext}`.replace(/\\/g, '/')
-            : null
+              break
+            case PLATFORM_TYPE.MACOS:
+            case PLATFORM_TYPE.LINUX:
+            default:
+              platformPath = `${app.getPath(
+                'userData'
+              )}/assets/${studioId}/${worldId}/${id}.${ext}`
+
+              break
+          }
+
+          const exists = await fs.pathExists(platformPath)
+
+          return exists ? `"${platformPath}"` : null
         }
       )
 
