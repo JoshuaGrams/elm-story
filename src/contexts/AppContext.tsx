@@ -80,7 +80,7 @@ interface AppContextType {
 
 const defaultAppState: AppState = {
   version: '0.6.0',
-  build: 'a3497592',
+  build: 'b7316553',
   platform: undefined,
   fullscreen: false,
   location: APP_LOCATION.DASHBOARD,
