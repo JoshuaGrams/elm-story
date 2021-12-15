@@ -69,6 +69,17 @@ export async function removePathsByEventRef(
   }
 }
 
+export async function removePathsByJumpRef(
+  studioId: StudioId,
+  eventId: ElementId
+) {
+  try {
+    await new LibraryDatabase(studioId).removePathsByJumpRef(eventId)
+  } catch (error) {
+    throw error
+  }
+}
+
 export async function removePathsByChoiceRef(
   studioId: StudioId,
   choiceId: ElementId

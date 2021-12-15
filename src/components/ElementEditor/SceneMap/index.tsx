@@ -259,9 +259,9 @@ async function addElementToScene(
         })
 
         jump.id &&
-          (await api().scenes.saveJumpRefsToScene(studioId, scene.id, [
-            ...scene.jumps,
-            jump.id
+          (await api().scenes.saveChildRefsToScene(studioId, scene.id, [
+            ...scene.children,
+            [ELEMENT_TYPE.JUMP, jump.id]
           ]))
 
         return jump.id

@@ -401,6 +401,42 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                   ])
                 )
               ])
+
+              break
+            case ELEMENT_TYPE.JUMP:
+              if (sourceParent.id !== destinationParent.id) {
+                await api().paths.removePathsByJumpRef(
+                  studioId,
+                  movingElement.id as ElementId
+                )
+              }
+
+              await Promise.all([
+                api().jumps.saveSceneRefToJump(
+                  studioId,
+                  destinationParent.id as ElementId,
+                  movingElement.id as ElementId
+                ),
+                api().scenes.saveChildRefsToScene(
+                  studioId,
+                  sourceParent.id as ElementId,
+                  newTreeData.items[sourceParent.id].children.map((childId) => [
+                    ELEMENT_TYPE.EVENT,
+                    childId as ElementId
+                  ])
+                ),
+                api().scenes.saveChildRefsToScene(
+                  studioId,
+                  destinationParent.id as ElementId,
+                  newTreeData.items[
+                    destinationParent.id
+                  ].children.map((childId) => [
+                    ELEMENT_TYPE.EVENT,
+                    childId as ElementId
+                  ])
+                )
+              ])
+
               break
             default:
               return
@@ -510,7 +546,6 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                   ? await api().scenes.saveScene(studioId, {
                       children: [],
                       worldId: world.id,
-                      jumps: [],
                       parent: [ELEMENT_TYPE.WORLD, null],
                       tags: [],
                       title: childTitle,
@@ -599,7 +634,6 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
               childId = await api().scenes.saveScene(studioId, {
                 children: [],
                 worldId: world.id,
-                jumps: [],
                 title: childTitle,
                 parent: [parentItem.data.type, parentItem.id as ElementId],
                 tags: []
@@ -725,10 +759,10 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
     }
   }
 
-  async function onRemove(componentId: ElementId) {
-    logger.info(`WorldOutline->onRemove->${componentId}`)
+  async function onRemove(elementId: ElementId) {
+    logger.info(`WorldOutline->onRemove->${elementId}`)
 
-    const item = treeData?.items[componentId],
+    const item = treeData?.items[elementId],
       data = item?.data
 
     if (world.id && item && treeData) {
@@ -755,7 +789,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
       composerDispatch({
         type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
-        removedElement: { id: componentId, type: data.type }
+        removedElement: { id: elementId, type: data.type }
       })
 
       try {
@@ -770,7 +804,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                   childId as ElementId
                 ])
               ),
-              await api().folders.removeFolder(studioId, componentId)
+              await api().folders.removeFolder(studioId, elementId)
             ])
             break
           case ELEMENT_TYPE.SCENE:
@@ -803,7 +837,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
             }
 
             sceneRemovePromises.push(
-              api().scenes.removeScene(studioId, componentId)
+              api().scenes.removeScene(studioId, elementId)
             )
 
             await Promise.all(sceneRemovePromises)
@@ -831,29 +865,32 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
     }
   }
 
-  async function OnEditComponentTitle(
-    componentId: ElementId,
+  async function OnEditElementTitle(
+    elementId: ElementId,
     title: string | undefined,
     complete: boolean
   ) {
-    logger.info(`WorldOutline->OnEditComponentTitle`)
+    logger.info(`WorldOutline->OnEditElementTitle`)
 
     if (treeData) {
       if (complete && title) {
         logger.info(
-          `WorldOutline->OnEditComponentTitle->complete && title:'${title}'`
+          `WorldOutline->OnEditElementTitle->complete && title:'${title}'`
         )
 
         try {
-          switch (treeData.items[componentId].data.type) {
+          switch (treeData.items[elementId].data.type) {
             case ELEMENT_TYPE.FOLDER:
-              await api().folders.saveFolderTitle(studioId, componentId, title)
+              await api().folders.saveFolderTitle(studioId, elementId, title)
               break
             case ELEMENT_TYPE.SCENE:
-              await api().scenes.saveSceneTitle(studioId, componentId, title)
+              await api().scenes.saveSceneTitle(studioId, elementId, title)
               break
             case ELEMENT_TYPE.EVENT:
-              await api().events.saveEventTitle(studioId, componentId, title)
+              await api().events.saveEventTitle(studioId, elementId, title)
+              break
+            case ELEMENT_TYPE.JUMP:
+              await api().jumps.saveJumpTitle(studioId, elementId, title)
               break
             default:
               break
@@ -866,41 +903,41 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
         composerDispatch({
           type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
           renamedElement: {
-            id: componentId,
-            newTitle: title || treeData.items[componentId].data.title
+            id: elementId,
+            newTitle: title || treeData.items[elementId].data.title
           }
         })
 
         if (
-          componentId === composer.selectedWorldOutlineElement.id &&
+          elementId === composer.selectedWorldOutlineElement.id &&
           title !== composer.selectedWorldOutlineElement.title
         ) {
           composerDispatch({
             type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
             selectedWorldOutlineElement: {
               ...composer.selectedWorldOutlineElement,
-              title: title || treeData.items[componentId].data.title
+              title: title || treeData.items[elementId].data.title
             }
           })
         }
       } else {
-        logger.info(`WorldOutline->OnEditComponentTitle->else`)
+        logger.info(`WorldOutline->OnEditElementTitle->else`)
 
         setTreeData(
-          mutateTree(treeData, componentId, {
-            data: { ...treeData.items[componentId].data, renaming: true }
+          mutateTree(treeData, elementId, {
+            data: { ...treeData.items[elementId].data, renaming: true }
           })
         )
 
         composerDispatch({
           type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_RENAME,
-          renamingWorldOutlineElement: { id: componentId, renaming: true }
+          renamingWorldOutlineElement: { id: elementId, renaming: true }
         })
       }
     }
   }
 
-  function selectComponent() {
+  function selectElement() {
     if (treeData) {
       const clonedTreeData = cloneDeep(treeData)
 
@@ -959,7 +996,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
       })
   }
 
-  useEffect(selectComponent, [composer.selectedWorldOutlineElement])
+  useEffect(selectElement, [composer.selectedWorldOutlineElement])
 
   useEffect(() => {
     async function updateTree() {
@@ -971,11 +1008,11 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
         switch (type) {
           case ELEMENT_TYPE.EVENT:
-            const passage = await api().events.getEvent(studioId, id)
+            const event = await api().events.getEvent(studioId, id)
 
-            if (passage.id) {
+            if (event.id) {
               // #414
-              const newTreeData = addItemToTree(treeData, passage.sceneId, {
+              const newTreeData = addItemToTree(treeData, event.sceneId, {
                 id,
                 children: [],
                 isExpanded: false,
@@ -985,17 +1022,57 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                   title: 'Untitled Event',
                   type: ELEMENT_TYPE.EVENT,
                   selected: false,
-                  parentId: passage.sceneId,
+                  parentId: event.sceneId,
                   renaming: true
                 }
               })
 
-              newTreeData.items[passage.sceneId].data.selected = true
+              newTreeData.items[event.sceneId].data.selected = true
 
               setTreeData(newTreeData)
 
-              if (composer.selectedWorldOutlineElement.id !== passage.sceneId) {
-                const parentScene = treeData.items[passage.sceneId]
+              if (composer.selectedWorldOutlineElement.id !== event.sceneId) {
+                const parentScene = treeData.items[event.sceneId]
+
+                // TODO: sets tree data twice
+                composerDispatch({
+                  type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+                  selectedWorldOutlineElement: {
+                    id: parentScene.id as ElementId,
+                    expanded: true,
+                    type: ELEMENT_TYPE.SCENE,
+                    title: parentScene.data.title
+                  }
+                })
+              }
+            }
+
+            break
+          case ELEMENT_TYPE.JUMP:
+            const jump = await api().jumps.getJump(studioId, id)
+
+            if (jump.id && jump.sceneId) {
+              const newTreeData = addItemToTree(treeData, jump.sceneId, {
+                id,
+                children: [],
+                isExpanded: false,
+                hasChildren: false,
+                isChildrenLoading: false,
+                data: {
+                  title: 'Untitled Jump',
+                  type: ELEMENT_TYPE.JUMP,
+                  selected: false,
+                  parentId: jump.sceneId,
+                  renaming: true
+                }
+              })
+
+              newTreeData.items[jump.sceneId].data.selected = true
+
+              setTreeData(newTreeData)
+
+              if (composer.selectedWorldOutlineElement.id !== jump.sceneId) {
+                const parentScene = treeData.items[jump.sceneId]
 
                 // TODO: sets tree data twice
                 composerDispatch({
@@ -1074,18 +1151,18 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
   }, [treeData])
 
   useEffect(() => {
-    async function getGameComponents() {
+    async function getWorldComponents() {
       if (world.id) {
-        const folders = await api().folders.getFoldersByWorldRef(
-            studioId,
-            world.id
-          ),
-          scenes = await api().scenes.getScenesByWorldRef(studioId, world.id),
-          events = await api().events.getEventsByWorldRef(studioId, world.id)
+        const [folders, scenes, events, jumps] = await Promise.all([
+          api().folders.getFoldersByWorldRef(studioId, world.id),
+          api().scenes.getScenesByWorldRef(studioId, world.id),
+          api().events.getEventsByWorldRef(studioId, world.id),
+          api().jumps.getJumpsByWorldRef(studioId, world.id)
+        ])
 
         if (folders && scenes && events) {
           setTreeData(
-            createWorldOutlineTreeData(world, folders, scenes, events)
+            createWorldOutlineTreeData(world, folders, scenes, events, jumps)
           )
         } else {
           throw new Error('Unable to build tree data.')
@@ -1093,7 +1170,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
       }
     }
 
-    getGameComponents()
+    getWorldComponents()
   }, [])
 
   return (
@@ -1120,7 +1197,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                     onSelect={onSelect}
                     onAdd={onAdd}
                     onRemove={onRemove}
-                    OnEditElementTitle={OnEditComponentTitle}
+                    OnEditElementTitle={OnEditElementTitle}
                   />
                 )}
                 onExpand={onExpand}

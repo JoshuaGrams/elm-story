@@ -1,4 +1,4 @@
-import { LibraryDatabase } from '../db'
+import { LibraryDatabase, LIBRARY_TABLE } from '../db'
 import { v4 as uuid } from 'uuid'
 
 import { ElementId, WorldId, Jump, JumpPath, StudioId } from '../data/types'
@@ -54,6 +54,22 @@ export async function saveJump(studioId: StudioId, jump: Jump): Promise<Jump> {
   }
 }
 
+export async function saveJumpTitle(
+  studioId: StudioId,
+  eventId: ElementId,
+  title: string
+) {
+  try {
+    await new LibraryDatabase(studioId).saveElementTitle(
+      eventId,
+      LIBRARY_TABLE.JUMPS,
+      title
+    )
+  } catch (error) {
+    throw error
+  }
+}
+
 export async function saveJumpPath(
   studioId: StudioId,
   jumpId: ElementId,
@@ -61,6 +77,18 @@ export async function saveJumpPath(
 ): Promise<void> {
   try {
     await new LibraryDatabase(studioId).saveJumpPath(jumpId, jumpPath)
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function saveSceneRefToJump(
+  studioId: StudioId,
+  sceneId: ElementId,
+  eventId: ElementId
+) {
+  try {
+    await new LibraryDatabase(studioId).saveSceneRefToJump(sceneId, eventId)
   } catch (error) {
     throw error
   }

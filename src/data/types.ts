@@ -246,14 +246,13 @@ export type SceneParentRef = [
   ELEMENT_TYPE.WORLD | ELEMENT_TYPE.FOLDER,
   ElementId | null
 ]
-export type SceneChildRef = [ELEMENT_TYPE.EVENT, ElementId]
+export type SceneChildRef = [ELEMENT_TYPE.EVENT | ELEMENT_TYPE.JUMP, ElementId]
 export type SceneChildRefs = Array<SceneChildRef>
 
 export interface Scene extends Element {
   children: SceneChildRefs
   worldId: WorldId
   parent: SceneParentRef
-  jumps: ElementId[]
 }
 
 export enum PATH_CONDITIONS_TYPE {

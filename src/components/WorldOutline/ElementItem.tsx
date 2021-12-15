@@ -16,6 +16,7 @@ import { Badge, Button, Typography } from 'antd'
 import {
   AlignLeftOutlined,
   DownOutlined,
+  FastForwardFilled,
   FolderOpenOutlined,
   FolderOutlined,
   PartitionOutlined,
@@ -47,7 +48,7 @@ const ElementItem = ({
   const elementType: ELEMENT_TYPE = item.data.type,
     elementTitle: string = item.data.title
 
-  const elementIconClassNames = `${styles.itemIcon} ${styles.component}`
+  const elementIconClassNames = `${styles.itemIcon} ${styles.element}`
 
   let ExpandedIcon = () =>
       item.isExpanded ? (
@@ -55,23 +56,40 @@ const ElementItem = ({
       ) : (
         <RightOutlined className={`${styles.itemIcon}`} />
       ),
-    ElementIcon =
-      elementType === ELEMENT_TYPE.FOLDER
-        ? () =>
-            item.isExpanded ? (
-              <FolderOpenOutlined className={elementIconClassNames} />
-            ) : (
-              <FolderOutlined className={elementIconClassNames} />
-            )
-        : elementType === ELEMENT_TYPE.SCENE
-        ? () => <PartitionOutlined className={elementIconClassNames} />
-        : elementType === ELEMENT_TYPE.EVENT
-        ? () => (
-            <AlignLeftOutlined
-              className={`${elementIconClassNames} ${styles.passage}`}
-            />
-          )
-        : () => <QuestionOutlined className={elementIconClassNames} />
+    ElementIcon: () => JSX.Element
+
+  switch (elementType) {
+    case ELEMENT_TYPE.FOLDER:
+      ElementIcon = () =>
+        item.isExpanded ? (
+          <FolderOpenOutlined className={elementIconClassNames} />
+        ) : (
+          <FolderOutlined className={elementIconClassNames} />
+        )
+      break
+    case ELEMENT_TYPE.SCENE:
+      ElementIcon = () => (
+        <PartitionOutlined className={elementIconClassNames} />
+      )
+      break
+    case ELEMENT_TYPE.EVENT:
+      ElementIcon = () => (
+        <AlignLeftOutlined
+          className={`${elementIconClassNames} ${styles.event}`}
+        />
+      )
+      break
+    case ELEMENT_TYPE.JUMP:
+      ElementIcon = () => (
+        <FastForwardFilled
+          className={`${elementIconClassNames} ${styles.event}`}
+        />
+      )
+      break
+    default:
+      ElementIcon = () => <QuestionOutlined className={elementIconClassNames} />
+      break
+  }
 
   let compositeSelectionStyles: string[] = []
 
@@ -112,19 +130,20 @@ const ElementItem = ({
           }}
         >
           <div>
-            {elementType !== ELEMENT_TYPE.EVENT && (
-              <Button
-                type="text"
-                size="small"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  if (!item.data.renaming)
-                    item.isExpanded ? onCollapse(item.id) : onExpand(item.id)
-                }}
-              >
-                <ExpandedIcon />
-              </Button>
-            )}
+            {elementType !== ELEMENT_TYPE.EVENT &&
+              elementType !== ELEMENT_TYPE.JUMP && (
+                <Button
+                  type="text"
+                  size="small"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    if (!item.data.renaming)
+                      item.isExpanded ? onCollapse(item.id) : onExpand(item.id)
+                  }}
+                >
+                  <ExpandedIcon />
+                </Button>
+              )}
             <ElementIcon />
             {item.data.renaming && (
               <Text

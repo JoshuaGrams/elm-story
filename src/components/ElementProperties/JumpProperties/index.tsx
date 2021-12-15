@@ -1,8 +1,13 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
 import { ElementId, StudioId } from '../../../data/types'
 
 import { useJump } from '../../../hooks'
+
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../../contexts/ComposerContext'
 
 import ElementTitle from '../ElementTitle'
 
@@ -15,6 +20,8 @@ const JumpDetails: React.FC<{
   jumpId: ElementId
 }> = ({ studioId, jumpId }) => {
   const jump = useJump(studioId, jumpId, [jumpId])
+
+  const { composerDispatch } = useContext(ComposerContext)
 
   return (
     <>
@@ -30,14 +37,13 @@ const JumpDetails: React.FC<{
                     title
                   })
 
-                  // TODO: This is not yet needed.
-                  // composerDispatch({
-                  //   type: EDITOR_ACTION_TYPE.COMPONENT_RENAME,
-                  //   renamedElement: {
-                  //     id: jump.id,
-                  //     newTitle: title
-                  //   }
-                  // })
+                  composerDispatch({
+                    type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
+                    renamedElement: {
+                      id: jump.id,
+                      newTitle: title
+                    }
+                  })
                 }
               }}
             />

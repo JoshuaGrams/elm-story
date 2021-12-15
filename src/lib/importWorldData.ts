@@ -316,7 +316,6 @@ export default (
               children,
               composer,
               id,
-              jumps,
               parent,
               tags,
               title,

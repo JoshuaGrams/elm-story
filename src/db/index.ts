@@ -50,6 +50,7 @@ import v6 from './v6'
 import v7 from './v7'
 import v8 from './v8'
 import v9 from './v9'
+import v10 from './v10'
 
 export enum DB_NAME {
   APP = 'esg-app',
@@ -195,6 +196,7 @@ export class LibraryDatabase extends Dexie {
     v7(this)
     v8(this)
     v9(this)
+    v10(this)
 
     this.tables.map((table) => table.name)
 
@@ -768,6 +770,28 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
+  public async saveSceneRefToJump(sceneId: ElementId, jumpId: ElementId) {
+    logger.info(
+      `LibraryDatabase->saveSceneRefToJump->scene: ${sceneId}->jump: ${jumpId}`
+    )
+
+    try {
+      const jump = await this.getElement(LIBRARY_TABLE.JUMPS, jumpId)
+
+      if (jump && jump.id) {
+        await this.jumps.update(jump.id, {
+          ...jump,
+          sceneId,
+          updated: Date.now()
+        })
+      } else {
+        throw new Error('Unable to save scene ID. Missing jump.')
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
   public async removeJump(jumpId: ElementId) {
     logger.info(`LibraryDatabase->removeJump:${jumpId}`)
 
@@ -998,7 +1022,7 @@ export class LibraryDatabase extends Dexie {
         ))
 
       const jumpsRefScene = await this.jumps.where({ path: sceneId }).toArray(),
-        passages = await this.events.where({ sceneId }).toArray()
+        events = await this.events.where({ sceneId }).toArray()
 
       if (jumpsRefScene.length > 0) {
         logger.info(
@@ -1016,14 +1040,14 @@ export class LibraryDatabase extends Dexie {
         })
       )
 
-      if (passages.length > 0) {
+      if (events.length > 0) {
         logger.info(
-          `LibraryDatabase->removeScene->Removing ${passages.length} event(s) from scene with ID: ${sceneId}`
+          `LibraryDatabase->removeScene->Removing ${events.length} event(s) from scene with ID: ${sceneId}`
         )
       }
 
       await Promise.all(
-        passages.map(
+        events.map(
           async (event) => event.id && (await this.removeEvent(event.id))
         )
       )
@@ -1182,6 +1206,23 @@ export class LibraryDatabase extends Dexie {
             destinationRoute.id && (await this.removePath(destinationRoute.id))
         )
       ])
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public async removePathsByJumpRef(jumpId: ElementId) {
+    logger.info(`LibraryDatabase->removeRoutesByJumpRef`)
+
+    try {
+      const destinationRoutes = await this.paths
+        .where({ destinationId: jumpId })
+        .toArray()
+
+      await destinationRoutes.map(
+        async (destinationRoute) =>
+          destinationRoute.id && (await this.removePath(destinationRoute.id))
+      )
     } catch (error) {
       throw error
     }

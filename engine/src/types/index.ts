@@ -66,7 +66,9 @@ export type SceneParentRef = [
   ElementId | null
 ]
 
-export type SceneChildRefs = Array<[ELEMENT_TYPE.EVENT, ElementId]>
+export type SceneChildRefs = Array<
+  [ELEMENT_TYPE.EVENT | ELEMENT_TYPE.JUMP, ElementId]
+>
 
 export interface RootData {
   children: WorldChildRefs

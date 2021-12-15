@@ -1,4 +1,4 @@
-import { ELEMENT_TYPE, Folder, World, Event, Scene } from '../data/types'
+import { ELEMENT_TYPE, Folder, World, Event, Scene, Jump } from '../data/types'
 
 import { TreeData } from '@atlaskit/tree'
 
@@ -6,15 +6,16 @@ const createWorldOutlineTreeData = (
   game: World,
   folders: Folder[],
   scenes: Scene[],
-  events: Event[]
+  events: Event[],
+  jumps: Jump[]
 ): TreeData => {
   if (game.id) {
-    const gameOutlineTreeData: TreeData = {
+    const worldOutlineTreeData: TreeData = {
       rootId: game.id,
       items: {}
     }
 
-    gameOutlineTreeData.items[game.id] = {
+    worldOutlineTreeData.items[game.id] = {
       id: game.id,
       children: game.children.map((child) => child[1]),
       hasChildren: game.children.length > 0,
@@ -31,7 +32,7 @@ const createWorldOutlineTreeData = (
 
     folders.map((folder) => {
       if (folder.id) {
-        gameOutlineTreeData.items[folder.id] = {
+        worldOutlineTreeData.items[folder.id] = {
           id: folder.id,
           children: folder.children.map((child) => child[1]),
           hasChildren: false,
@@ -46,14 +47,14 @@ const createWorldOutlineTreeData = (
           }
         }
 
-        gameOutlineTreeData.items[folder.id].hasChildren =
-          gameOutlineTreeData.items[folder.id].children.length > 0
+        worldOutlineTreeData.items[folder.id].hasChildren =
+          worldOutlineTreeData.items[folder.id].children.length > 0
       }
     })
 
     scenes.map((scene) => {
       if (scene.id) {
-        gameOutlineTreeData.items[scene.id] = {
+        worldOutlineTreeData.items[scene.id] = {
           id: scene.id,
           children: scene.children.map((child) => child[1]),
           hasChildren: false,
@@ -68,14 +69,14 @@ const createWorldOutlineTreeData = (
           }
         }
 
-        gameOutlineTreeData.items[scene.id].hasChildren =
-          gameOutlineTreeData.items[scene.id].children.length > 0
+        worldOutlineTreeData.items[scene.id].hasChildren =
+          worldOutlineTreeData.items[scene.id].children.length > 0
       }
     })
 
     events.map((event) => {
       if (event.id) {
-        gameOutlineTreeData.items[event.id] = {
+        worldOutlineTreeData.items[event.id] = {
           id: event.id,
           children: [],
           hasChildren: false,
@@ -92,7 +93,26 @@ const createWorldOutlineTreeData = (
       }
     })
 
-    return gameOutlineTreeData
+    jumps.map((jump) => {
+      if (jump.id) {
+        worldOutlineTreeData.items[jump.id] = {
+          id: jump.id,
+          children: [],
+          hasChildren: false,
+          isExpanded: false,
+          isChildrenLoading: false,
+          data: {
+            title: jump.title,
+            type: ELEMENT_TYPE.JUMP,
+            selected: false,
+            parentId: jump.sceneId,
+            renaming: false
+          }
+        }
+      }
+    })
+
+    return worldOutlineTreeData
   } else {
     throw new Error(
       'Unable to create world outline tree data. Missing world ID.'
