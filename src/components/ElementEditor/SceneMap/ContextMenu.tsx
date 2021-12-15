@@ -13,7 +13,7 @@ interface MenuItemReturnData {
     x: number
     y: number
   }
-  componentId: ElementId | null
+  elementId: ElementId | null
 }
 
 const CONTEXT_MENU_CLASS_NAME = 'sv-cm',
@@ -25,7 +25,7 @@ const ContextMenu: React.FC<{
   features: {
     className: string
     items: [
-      ((componentId: string | null) => string) | string,
+      ((elementId: string | null) => string) | string,
       (featureReturn: MenuItemReturnData) => void
     ][]
   }[]
@@ -45,7 +45,7 @@ const ContextMenu: React.FC<{
       x: 0,
       y: 0
     }),
-    [byComponentId, setByComponentId] = useState<ElementId | null>(null)
+    [byElementId, setByElementId] = useState<ElementId | null>(null)
 
   const whitelistByClassName = features.map((feature) => feature.className)
 
@@ -101,9 +101,7 @@ const ContextMenu: React.FC<{
           })
 
         setClickPosition({ x: event.offsetX, y: event.offsetY })
-        setByComponentId(
-          targetElement.getAttribute(COMPONENT_ID_ATTRIBUTE_NAME)
-        )
+        setByElementId(targetElement.getAttribute(COMPONENT_ID_ATTRIBUTE_NAME))
 
         setMenuVisible(true)
       }
@@ -130,7 +128,7 @@ const ContextMenu: React.FC<{
 
     setMenuContents(undefined)
     setClickPosition({ x: 0, y: 0 })
-    setByComponentId(null)
+    setByElementId(null)
   }
 
   useEffect(() => {
@@ -174,7 +172,7 @@ const ContextMenu: React.FC<{
                 x: clickPosition.x,
                 y: clickPosition.y
               },
-              componentId: byComponentId
+              elementId: byElementId
             })
 
             hideContextMenu()
