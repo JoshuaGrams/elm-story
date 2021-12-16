@@ -121,6 +121,44 @@
         color: hsl(0, 0%, 60%);
       }
 
+      .extraInfo {
+        display: flex;
+        align-items: center;
+
+        .persona {
+          transition: color 0.2s;
+        }
+
+        .ending {
+          display: inline-block;
+          height: 12px;
+          width: 12px;
+          display: grid;
+          align-items: center;
+          justify-content: center;
+          margin-left: 4px;
+
+          &.isEnding {
+            div {
+              background: var(--warning-color);
+            }
+          }
+
+          div {
+            background: #222;
+            height: 5px;
+            width: 5px;
+            display: inline-block;
+            border-radius: 10px;
+            transition: background 0.2s;
+          }
+        }
+
+        .jumpLink {
+          color: var(--jump-node-color);
+        }
+      }
+
       .dragging {
         padding-left: 47px;
 
@@ -163,7 +201,7 @@
         }
       }
 
-      &.sceneComponentSelected {
+      &.sceneElementSelected {
         .itemIcon {
           &.element {
             color: var(--highlight-color) !important;

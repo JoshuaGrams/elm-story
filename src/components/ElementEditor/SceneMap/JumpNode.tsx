@@ -18,7 +18,7 @@ import {
   useStoreState
 } from 'react-flow-renderer'
 
-import { FastForwardOutlined } from '@ant-design/icons'
+import { SendOutlined } from '@ant-design/icons'
 
 import JumpTo from '../../JumpTo'
 
@@ -61,7 +61,7 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
             <JumpHandle jumpId={jump.id} />
 
             <h1 className="nodeJumpHeader" data-component-id={jump.id}>
-              <FastForwardOutlined className={styles.headerIcon} />
+              <SendOutlined className={styles.headerIcon} />
               {jump.title}
             </h1>
           </div>
@@ -74,11 +74,6 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
                   setSelectedElement([
                     cloneDeep(jumps.find((jumpNode) => jumpNode.id === jump.id))
                   ])
-
-                  composerDispatch({
-                    type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
-                    totalSceneMapSelectedJumps: 1
-                  })
 
                   composerDispatch({
                     type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,

@@ -114,7 +114,7 @@ export const PassageViewTools: React.FC<{
             ])
           }}
         >
-          Remove Passage
+          Remove Event
         </Button>
       )}
     </div>

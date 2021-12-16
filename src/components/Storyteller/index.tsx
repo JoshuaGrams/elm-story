@@ -36,10 +36,10 @@ const Storyteller: React.FC<{
     switch (detail.eventType) {
       case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.OPEN_EVENT:
         if (detail.eventId) {
-          const passage = await api().events.getEvent(studioId, detail.eventId)
+          const events = await api().events.getEvent(studioId, detail.eventId)
 
-          if (passage) {
-            const scene = await api().scenes.getScene(studioId, passage.sceneId)
+          if (events) {
+            const scene = await api().scenes.getScene(studioId, events.sceneId)
 
             if (scene?.id) {
               composerDispatch({

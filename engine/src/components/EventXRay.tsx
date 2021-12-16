@@ -29,7 +29,7 @@ const EventXRay: React.FC<{
     []
   )
 
-  const gotoPassage = () => {
+  const gotoEvent = () => {
     window.dispatchEvent(
       new CustomEvent<EngineDevToolsLiveEvent>(
         ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_COMPOSER,
@@ -48,7 +48,7 @@ const EventXRay: React.FC<{
       <table className="event-data">
         <thead>
           <tr>
-            <th colSpan={2}>Current Event | XRAY</th>
+            <th colSpan={2}>Current Live Event | XRAY</th>
           </tr>
         </thead>
 
@@ -62,9 +62,9 @@ const EventXRay: React.FC<{
             <td>{event.type}</td>
           </tr>
           <tr>
-            <td>Passage</td>
+            <td>Event</td>
             <td>
-              <a title="Goto Passage" onClick={gotoPassage}>
+              <a title="Goto Event" onClick={gotoEvent}>
                 {event.destination}
               </a>
             </td>

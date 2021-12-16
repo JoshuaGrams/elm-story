@@ -303,11 +303,18 @@ const ElementEditor: React.FC<{ studioId: StudioId; world: World }> = ({
         if (
           clonedTabIndex !== -1 &&
           tabs[clonedTabIndex].type === ELEMENT_TYPE.WORLD &&
-          composer.selectedSceneMapEvent
+          (composer.selectedSceneMapEvent || composer.selectedSceneMapJump)
         )
+          composer.selectedSceneMapEvent &&
+            composerDispatch({
+              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+              selectedSceneMapEvent: null
+            })
+
+        composer.selectedSceneMapJump &&
           composerDispatch({
-            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
-            selectedSceneMapEvent: null
+            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+            selectedSceneMapJump: null
           })
       }
 

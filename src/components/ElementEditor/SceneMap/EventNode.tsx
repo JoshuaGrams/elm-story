@@ -35,8 +35,7 @@ import { Dropdown, Menu, Typography } from 'antd'
 import {
   AlignLeftOutlined,
   BranchesOutlined,
-  PlusOutlined,
-  VerticalLeftOutlined
+  PlusOutlined
 } from '@ant-design/icons'
 
 import styles from './styles.module.less'
@@ -81,7 +80,7 @@ const ChoiceSourceHandle: React.FC<{
           )
         ) {
           logger.info(
-            `Path possible from choice: ${connection.sourceHandle} to passage: ${connection.target}`
+            `Path possible from choice: ${connection.sourceHandle} to event: ${connection.target}`
           )
           return true
         } else {
@@ -300,7 +299,7 @@ const EventTargetHandle: React.FC<{
   sceneId: ElementId
   eventId: ElementId
 }> = ({ studioId, sceneId, eventId }) => {
-  // TODO: do we really need to get access to paths on every passage?
+  // TODO: do we really need to get access to paths on every event?
   const paths = usePathsBySceneRef(studioId, sceneId)
 
   return (
@@ -322,7 +321,7 @@ const EventTargetHandle: React.FC<{
           )
         ) {
           logger.info(
-            `Path possible from choice: ${connection.sourceHandle} to passage: ${connection.target}`
+            `Path possible from choice: ${connection.sourceHandle} to event: ${connection.target}`
           )
           return true
         } else {
@@ -508,13 +507,11 @@ const EventNode: React.FC<NodeProps<{
                 onDoubleClick={() => event.id && data.onEditEvent(event.id)}
               >
                 {/* #395 */}
-                {event.ending ? (
-                  <VerticalLeftOutlined
-                    className={`${styles.headerIcon} ${styles.warning}`}
-                  />
-                ) : (
-                  <AlignLeftOutlined className={styles.headerIcon} />
-                )}
+                <AlignLeftOutlined
+                  className={`${styles.headerIcon} ${
+                    event.ending ? styles.warning : ''
+                  }`}
+                />
 
                 {event.title}
               </h1>

@@ -203,7 +203,7 @@ export const SceneMapTools: React.FC<{
               }
             >
               <CloseOutlined />
-              Close Passage
+              Close Event
             </Menu.Item>
           )}
         </Menu>
@@ -462,12 +462,12 @@ const SceneMap: React.FC<{
                   edge.target === selectedPassage.id
                 ) {
                   if (events) {
-                    const foundPassage = events.find(
-                      (passage) => selectedPassage.id === passage.id
+                    const foundEvent = events.find(
+                      (event) => selectedPassage.id === event.id
                     )
 
                     edge.className =
-                      foundPassage && foundPassage.ending
+                      foundEvent && foundEvent.ending
                         ? 'selected ending'
                         : 'selected event'
                   }
@@ -526,13 +526,11 @@ const SceneMap: React.FC<{
         break
       case ELEMENT_TYPE.EVENT:
         if (events) {
-          const clonedPassage = cloneDeep(
-            events.find((passage) => passage.id === id)
-          )
+          const clonedEvent = cloneDeep(events.find((event) => event.id === id))
 
-          clonedPassage &&
+          clonedEvent &&
             (await api().events.saveEvent(studioId, {
-              ...clonedPassage,
+              ...clonedEvent,
               composer: {
                 sceneMapPosX: position.x,
                 sceneMapPosY: position.y
@@ -570,7 +568,7 @@ const SceneMap: React.FC<{
       ) {
         // #398, #397: as effect may fire before routePassthroughs is updated,
         // need to do a check on originId as may be referencing previously
-        // selected passage node
+        // selected event node
         if (events) {
           const foundEvent = events.find(
             (event) => event.id === connection.source
@@ -690,8 +688,8 @@ const SceneMap: React.FC<{
         clonedPassages =
           cloneDeep(
             events.filter(
-              (passage) =>
-                nodes.find((node) => node.id === passage.id) !== undefined
+              (event) =>
+                nodes.find((node) => node.id === event.id) !== undefined
             )
           ) || []
 
@@ -793,7 +791,7 @@ const SceneMap: React.FC<{
     }
   }
 
-  // When selecting a nested component e.g. passage from the WorldOutline
+  // When selecting a nested component e.g. event from the WorldOutline
   function selectElement(componentId: ElementId | null) {
     const foundElement = findElement(elements, componentId || null)
 
@@ -912,6 +910,7 @@ const SceneMap: React.FC<{
         jump.id &&
           nodes.push({
             id: jump.id,
+            // TODO
             data: { studioId, jumpId: jump.id, type: ELEMENT_TYPE.JUMP },
             type: 'jumpNode',
             position: jump.composer
@@ -923,9 +922,9 @@ const SceneMap: React.FC<{
           })
       })
 
-      events.map((passage) => {
-        if (scene.id && passage.id) {
-          let passageNodeData: NodeData = {
+      events.map((event) => {
+        if (scene.id && event.id) {
+          let eventNodeData: NodeData = {
             studioId,
             sceneId: scene.id,
             onEditEvent: (id: ElementId) =>
@@ -933,25 +932,25 @@ const SceneMap: React.FC<{
                 type: ELEMENT_EDITOR_TAB_ACTION_TYPE.EDIT_EVENT,
                 eventForEditing: { id, visible: true }
               }),
-            eventId: passage.id,
-            eventType: passage.type,
-            totalChoices: passage.choices.length,
+            eventId: event.id,
+            eventType: event.type,
+            totalChoices: event.choices.length,
             type: ELEMENT_TYPE.EVENT
           }
 
-          switch (passage.type) {
+          switch (event.type) {
             case EVENT_TYPE.CHOICE:
-              passageNodeData = {
-                ...passageNodeData,
+              eventNodeData = {
+                ...eventNodeData,
                 selectedChoice: null,
                 onChoiceSelect
               }
               break
             case EVENT_TYPE.INPUT:
-              if (passage.input)
-                passageNodeData = {
-                  ...passageNodeData,
-                  inputId: passage.input
+              if (event.input)
+                eventNodeData = {
+                  ...eventNodeData,
+                  inputId: event.input
                 }
               break
             default:
@@ -959,13 +958,13 @@ const SceneMap: React.FC<{
           }
 
           nodes.push({
-            id: passage.id,
-            data: passageNodeData,
+            id: event.id,
+            data: eventNodeData,
             type: 'passageNode',
-            position: passage.composer
+            position: event.composer
               ? {
-                  x: passage.composer.sceneMapPosX || 0,
-                  y: passage.composer.sceneMapPosY || 0
+                  x: event.composer.sceneMapPosX || 0,
+                  y: event.composer.sceneMapPosY || 0
                 }
               : { x: 0, y: 0 }
           })
@@ -1088,7 +1087,7 @@ const SceneMap: React.FC<{
 
   useEffect(() => {
     logger.info(
-      `SceneMap->composer.selectedComponentEditorSceneViewPassage/Jump->useEffects`
+      `SceneMap->composer.selectedComponentEditorSceneViewMap/Jump->useEffects`
     )
 
     selectElement(
@@ -1299,7 +1298,7 @@ const SceneMap: React.FC<{
                     // #292
                     (elementId) => {
                       const foundEvent = events.find(
-                        (passage) => passage.id === elementId
+                        (event) => event.id === elementId
                       )
 
                       if (foundEvent)
@@ -1312,11 +1311,11 @@ const SceneMap: React.FC<{
                             break
                         }
 
-                      return 'Unknown Passage Type'
+                      return 'Unknown Event Type'
                     },
                     async ({ elementId }) => {
                       const foundEvent = events.find(
-                        (passage) => passage.id === elementId
+                        (event) => event.id === elementId
                       )
 
                       if (foundEvent && foundEvent.id) {
@@ -1442,9 +1441,9 @@ const SceneMap: React.FC<{
               event: React.MouseEvent<Element, MouseEvent>,
               params: OnConnectStartParams
             ) => {
-              // nodeId: passage ID
-              // handleId: passage ID or choice ID
-              // handleType: 'target' passage ID / 'source' choice ID
+              // nodeId: event ID
+              // handleId: event ID or choice ID
+              // handleType: 'target' event ID / 'source' choice ID
               logger.info('onConnectStart')
 
               // elmstorygames/feedback#109
@@ -1574,11 +1573,11 @@ const SceneMap: React.FC<{
                 switch (node.type) {
                   case 'passageNode':
                     if (events) {
-                      const foundPassage = events.find(
-                        (passage) => node.id === passage.id
+                      const foundEvent = events.find(
+                        (event) => node.id === event.id
                       )
 
-                      if (foundPassage && foundPassage.ending) {
+                      if (foundEvent && foundEvent.ending) {
                         return `hsl(350, 100%, 65%)`
                       }
                     }

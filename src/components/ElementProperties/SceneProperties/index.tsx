@@ -147,7 +147,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                   'choice-details-panel'
                 ]}
               >
-                {/* Passage Panel */}
+                {/* Event Panel */}
                 {composer.selectedSceneMapEvent && (
                   <Collapse.Panel
                     header={

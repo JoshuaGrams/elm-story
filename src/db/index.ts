@@ -1624,7 +1624,7 @@ export class LibraryDatabase extends Dexie {
               updated: Date.now()
             })
           } else {
-            throw new Error('Unable to save type to event. Passage missing.')
+            throw new Error('Unable to save type to event. Event missing.')
           }
         } else {
           throw new Error('Unable to save type to event. Missing ID.')
@@ -1648,7 +1648,7 @@ export class LibraryDatabase extends Dexie {
               updated: Date.now()
             })
           } else {
-            throw new Error('Unable to save input to event. Passage missing.')
+            throw new Error('Unable to save input to event. Event missing.')
           }
         } else {
           throw new Error('Unable to save input to event. Missing ID.')
@@ -1672,7 +1672,7 @@ export class LibraryDatabase extends Dexie {
               updated: Date.now()
             })
           } else {
-            throw new Error('Unable to save content to event. Passage missing.')
+            throw new Error('Unable to save content to event. Event missing.')
           }
         } else {
           throw new Error('Unable to save content to event. Missing ID.')

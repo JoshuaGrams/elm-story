@@ -8,27 +8,130 @@ import {
   OnSelectElement
 } from '.'
 
-import { ComposerContext } from '../../contexts/ComposerContext'
+import { AppContext } from '../../contexts/AppContext'
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../contexts/ComposerContext'
 
 import { RenderItemParams } from '@atlaskit/tree'
 
 import { Badge, Button, Typography } from 'antd'
 import {
   AlignLeftOutlined,
+  ArrowRightOutlined,
   DownOutlined,
-  FastForwardFilled,
   FolderOpenOutlined,
   FolderOutlined,
   PartitionOutlined,
   QuestionOutlined,
-  RightOutlined
+  RightOutlined,
+  SendOutlined,
+  UserOutlined
 } from '@ant-design/icons'
 
 import ContextMenu from './ContextMenu'
 
 import styles from './styles.module.less'
+import { useEvent, useJump } from '../../hooks'
+import api from '../../api'
 
 const { Text } = Typography
+
+const ParentBadge: React.FC<{
+  type: ELEMENT_TYPE
+  elementId: ElementId
+}> = React.memo(({ type, elementId }) => {})
+
+const EventBadge: React.FC<{ eventId: ElementId }> = React.memo(
+  ({ eventId }) => {
+    const { app } = useContext(AppContext)
+
+    if (!app.selectedStudioId) return null
+
+    const event = useEvent(app.selectedStudioId, eventId, [eventId])
+
+    return (
+      <Badge
+        children={
+          <div className={styles.extraInfo}>
+            <UserOutlined
+              className={styles.persona}
+              style={{ color: event?.persona ? '#999' : '#222' }}
+            />
+            <div
+              className={`${styles.ending} ${
+                event?.ending ? styles.isEnding : ''
+              }`}
+            >
+              <div />
+            </div>
+          </div>
+        }
+        size="small"
+        className={styles.badge}
+      />
+    )
+  }
+)
+
+const JumpBadge: React.FC<{
+  jumpId: ElementId
+}> = React.memo(({ jumpId }) => {
+  const { app } = useContext(AppContext)
+
+  if (!app.selectedStudioId) return null
+
+  const { composerDispatch } = useContext(ComposerContext)
+
+  const jump = useJump(app.selectedStudioId, jumpId, [jumpId])
+
+  const jumpTo = async (
+    event: React.MouseEvent<HTMLSpanElement, MouseEvent>
+  ) => {
+    event.stopPropagation()
+
+    if (!app.selectedStudioId || !jump?.path[0]) return
+
+    const scene = await api().scenes.getScene(
+      app.selectedStudioId,
+      jump.path[0]
+    )
+
+    if (scene.id) {
+      composerDispatch({
+        type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+        selectedWorldOutlineElement: {
+          expanded: true,
+          id: jump.path[0],
+          title: scene.title,
+          type: ELEMENT_TYPE.SCENE
+        }
+      })
+
+      setTimeout(
+        () =>
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+            selectedSceneMapEvent: jump.path[1] || null
+          }),
+        1
+      )
+    }
+  }
+
+  return (
+    <Badge
+      children={
+        <div className={styles.extraInfo}>
+          <ArrowRightOutlined className={styles.jumpLink} onClick={jumpTo} />
+        </div>
+      }
+      size="small"
+      className={styles.badge}
+    />
+  )
+})
 
 const ElementItem = ({
   item: { item, provided, onExpand, onCollapse, snapshot },
@@ -81,9 +184,7 @@ const ElementItem = ({
       break
     case ELEMENT_TYPE.JUMP:
       ElementIcon = () => (
-        <FastForwardFilled
-          className={`${elementIconClassNames} ${styles.event}`}
-        />
+        <SendOutlined className={`${elementIconClassNames} ${styles.event}`} />
       )
       break
     default:
@@ -95,8 +196,13 @@ const ElementItem = ({
 
   if (item.data.selected && !snapshot.isDragging)
     compositeSelectionStyles.push(styles.selected)
-  if (item.id === composer.selectedSceneMapEvent)
-    compositeSelectionStyles.push(styles.sceneComponentSelected)
+  if (
+    (item.id === composer.selectedSceneMapEvent &&
+      elementType === ELEMENT_TYPE.EVENT) ||
+    (item.id === composer.selectedSceneMapJump &&
+      elementType === ELEMENT_TYPE.JUMP)
+  )
+    compositeSelectionStyles.push(styles.sceneElementSelected)
 
   return (
     <div
@@ -161,12 +267,23 @@ const ElementItem = ({
                 {elementTitle}
               </Text>
             )}{' '}
-            {!item.isExpanded && !item.data.renaming && (
-              <Badge
-                count={item.children.length}
-                size="small"
-                className={styles.badge}
-              />
+            {!item.data.renaming && (
+              <>
+                {elementType === ELEMENT_TYPE.EVENT && (
+                  <EventBadge eventId={item.id as string} />
+                )}
+                {elementType === ELEMENT_TYPE.JUMP && (
+                  <JumpBadge jumpId={item.id as string} />
+                )}
+                {/* folders and scenes */}
+                {!item.isExpanded && (
+                  <Badge
+                    count={item.children.length}
+                    size="small"
+                    className={styles.badge}
+                  />
+                )}
+              </>
             )}
           </div>
         </ContextMenu>

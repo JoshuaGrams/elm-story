@@ -2,7 +2,7 @@ import logger from '../../lib/logger'
 import { cloneDeep } from 'lodash-es'
 import createWorldOutlineTreeData from '../../lib/createWorldOutlineTreeData'
 
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 
 import {
   ElementId,
@@ -460,7 +460,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
         data: { type, title, parentId }
       } = treeData.items[elementId]
 
-      if (type === ELEMENT_TYPE.EVENT) {
+      if (type === ELEMENT_TYPE.EVENT || type === ELEMENT_TYPE.JUMP) {
         const parentItem = treeData.items[parentId]
 
         if (composer.selectedWorldOutlineElement.id !== parentItem.id)
@@ -474,20 +474,47 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
             }
           })
 
-        if (composer.selectedSceneMapEvent !== id)
+        // TODO: stack hack
+        setTimeout(() => {
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+            selectedSceneMapJump: null
+          })
+
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+            selectedSceneMapEvent: null
+          })
+        }, 1)
+
+        if (
+          type === ELEMENT_TYPE.EVENT &&
+          composer.selectedSceneMapEvent !== id
+        ) {
           // TODO: prevent infinite loop when selecting an unselected in an unselected scene
           // from a selected scene by hacking event stackO__O
-          setTimeout(
-            () =>
-              composerDispatch({
-                type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
-                selectedSceneMapEvent: id as ElementId
-              }),
-            1
-          )
+          setTimeout(() => {
+            composerDispatch({
+              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+              selectedSceneMapEvent: id as ElementId
+            })
+          }, 2)
+        }
+
+        if (
+          type === ELEMENT_TYPE.JUMP &&
+          composer.selectedSceneMapJump !== id
+        ) {
+          setTimeout(() => {
+            composerDispatch({
+              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+              selectedSceneMapJump: id as ElementId
+            })
+          }, 2)
+        }
       }
 
-      if (type !== ELEMENT_TYPE.EVENT) {
+      if (type !== ELEMENT_TYPE.EVENT && type !== ELEMENT_TYPE.JUMP) {
         if (ELEMENT_TYPE.WORLD || ELEMENT_TYPE.FOLDER) {
           composer.selectedSceneMapEvent &&
             composerDispatch({
@@ -971,7 +998,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
     }
   }
 
-  const selectStoryworld = () => {
+  const selectStoryworld = useCallback(() => {
     composer.selectedSceneMapEvent &&
       composerDispatch({
         type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
@@ -994,7 +1021,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
           type: ELEMENT_TYPE.WORLD
         }
       })
-  }
+  }, [composer.selectedSceneMapEvent, composer.selectedSceneMapJump])
 
   useEffect(selectElement, [composer.selectedWorldOutlineElement])
 

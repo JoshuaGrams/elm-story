@@ -114,10 +114,10 @@ const JumpSelect: React.FC<{
               <>
                 <Select value={selectedEventId} onChange={onChange}>
                   {events.map(
-                    (passage) =>
-                      passage.id && (
-                        <Select.Option value={passage.id} key={passage.id}>
-                          {passage.title}
+                    (event) =>
+                      event.id && (
+                        <Select.Option value={event.id} key={event.id}>
+                          {event.title}
                         </Select.Option>
                       )
                   )}
@@ -221,7 +221,7 @@ const JumpTo: React.FC<{
             />
           )}
 
-          {/* Passage */}
+          {/* Event */}
           {jump.path[0] && (
             <JumpSelect
               studioId={studioId}
