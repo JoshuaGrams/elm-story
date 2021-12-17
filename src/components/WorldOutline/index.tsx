@@ -640,6 +640,20 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
           setTreeData(newTreeData)
 
+          // elmstorygames/feedback#135
+          composer.selectedSceneMapEvent &&
+            composerDispatch({
+              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+              selectedSceneMapEvent: null
+            })
+
+          // elmstorygames/feedback#135
+          composer.selectedSceneMapJump &&
+            composerDispatch({
+              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+              selectedSceneMapJump: null
+            })
+
           composerDispatch({
             type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
             selectedWorldOutlineElement: {
