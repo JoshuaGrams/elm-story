@@ -485,16 +485,25 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
         }
 
         // TODO: stack hack
+        // elmstorygames/feedback#132
         setTimeout(() => {
-          composerDispatch({
-            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
-            selectedSceneMapJump: null
-          })
+          if (
+            type === ELEMENT_TYPE.EVENT ||
+            composer.selectedSceneMapJump !== id
+          )
+            composerDispatch({
+              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+              selectedSceneMapJump: null
+            })
 
-          composerDispatch({
-            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
-            selectedSceneMapEvent: null
-          })
+          if (
+            type === ELEMENT_TYPE.JUMP ||
+            composer.selectedSceneMapEvent !== id
+          )
+            composerDispatch({
+              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+              selectedSceneMapEvent: null
+            })
         }, 1)
 
         if (
