@@ -1262,6 +1262,9 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
           await Promise.all(
             jumpIds.map(async (jumpId) => {
+              // elmstorygames/feedback#134
+              if (!newTreeData.items[jumpId]) return
+
               const jump = await api().jumps.getJump(studioId, jumpId)
 
               if (!jump || jump.path[0] === composer.removedElement.id) {
