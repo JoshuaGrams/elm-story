@@ -65,10 +65,19 @@ const ContextMenu: React.FC<{
     case ELEMENT_TYPE.SCENE:
       menuItems.push(
         <Menu.Item
-          key={`${id}-add`}
+          key={`${id}-add-event`}
           onClick={() => onAdd(id, ELEMENT_TYPE.EVENT)}
         >
           Add Event to '{title}'
+        </Menu.Item>
+      )
+
+      menuItems.push(
+        <Menu.Item
+          key={`${id}-add-jump`}
+          onClick={() => onAdd(id, ELEMENT_TYPE.JUMP)}
+        >
+          Add Jump to '{title}'
         </Menu.Item>
       )
 

@@ -386,7 +386,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                   studioId,
                   sourceParent.id as ElementId,
                   newTreeData.items[sourceParent.id].children.map((childId) => [
-                    ELEMENT_TYPE.EVENT,
+                    newTreeData.items[childId].data.type,
                     childId as ElementId
                   ])
                 ),
@@ -396,7 +396,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                   newTreeData.items[
                     destinationParent.id
                   ].children.map((childId) => [
-                    ELEMENT_TYPE.EVENT,
+                    newTreeData.items[childId].data.type,
                     childId as ElementId
                   ])
                 )
@@ -421,7 +421,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                   studioId,
                   sourceParent.id as ElementId,
                   newTreeData.items[sourceParent.id].children.map((childId) => [
-                    ELEMENT_TYPE.EVENT,
+                    newTreeData.items[childId].data.type,
                     childId as ElementId
                   ])
                 ),
@@ -431,7 +431,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                   newTreeData.items[
                     destinationParent.id
                   ].children.map((childId) => [
-                    ELEMENT_TYPE.EVENT,
+                    newTreeData.items[childId].data.type,
                     childId as ElementId
                   ])
                 )
@@ -736,64 +736,124 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
           break
         // add event
         case ELEMENT_TYPE.SCENE:
-          let event = undefined
+          if (childType === ELEMENT_TYPE.EVENT) {
+            let event = undefined
 
-          try {
-            event = await api().events.saveEvent(studioId, {
-              choices: [],
-              content: JSON.stringify([...DEFAULT_EVENT_CONTENT]),
-              composer: {
-                sceneMapPosX:
-                  composer.selectedSceneMapCenter.x -
-                  DEFAULT_NODE_SIZE.EVENT_WIDTH / 2,
-                sceneMapPosY:
-                  composer.selectedSceneMapCenter.y -
-                  DEFAULT_NODE_SIZE.EVENT_HEIGHT / 2
-              },
-              ending: false,
-              worldId: world.id,
-              sceneId: parentItem.id as string,
-              title: 'Untitled Event',
-              type: EVENT_TYPE.CHOICE,
-              tags: []
-            })
-          } catch (error) {
-            throw error
-          }
-
-          parentItem.hasChildren = true
-
-          if (event.id) {
             try {
-              // #414
-              const sceneChildren: SceneChildRefs = treeData.items[
-                parentItem.id
-              ].children.map((childId) => [
-                ELEMENT_TYPE.EVENT,
-                childId as ElementId
-              ])
-
-              await api().scenes.saveChildRefsToScene(
-                studioId,
-                parentItem.id as ElementId,
-                [...sceneChildren, [ELEMENT_TYPE.EVENT, event.id]]
-              )
+              event = await api().events.saveEvent(studioId, {
+                choices: [],
+                content: JSON.stringify([...DEFAULT_EVENT_CONTENT]),
+                composer: {
+                  sceneMapPosX:
+                    composer.selectedSceneMapCenter.x -
+                    DEFAULT_NODE_SIZE.EVENT_WIDTH / 2,
+                  sceneMapPosY:
+                    composer.selectedSceneMapCenter.y -
+                    DEFAULT_NODE_SIZE.EVENT_HEIGHT / 2
+                },
+                ending: false,
+                worldId: world.id,
+                sceneId: parentItem.id as string,
+                title: 'Untitled Event',
+                type: EVENT_TYPE.CHOICE,
+                tags: []
+              })
             } catch (error) {
               throw error
             }
 
-            composerDispatch({
-              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
-              selectedSceneMapEvent: event.id
-            })
+            parentItem.hasChildren = true
 
-            composerDispatch({
-              type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
-              savedElement: {
-                id: event.id,
-                type: ELEMENT_TYPE.EVENT
+            if (event.id) {
+              try {
+                // #414
+                const sceneChildren: SceneChildRefs = treeData.items[
+                  parentItem.id
+                ].children.map((childId) => [
+                  treeData.items[childId].data.type,
+                  childId as ElementId
+                ])
+
+                await api().scenes.saveChildRefsToScene(
+                  studioId,
+                  parentItem.id as ElementId,
+                  [...sceneChildren, [ELEMENT_TYPE.EVENT, event.id]]
+                )
+              } catch (error) {
+                throw error
               }
-            })
+
+              composerDispatch({
+                type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+                selectedSceneMapEvent: event.id
+              })
+
+              composerDispatch({
+                type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
+                savedElement: {
+                  id: event.id,
+                  type: ELEMENT_TYPE.EVENT
+                }
+              })
+            }
+          }
+
+          if (childType === ELEMENT_TYPE.JUMP) {
+            let jump = undefined
+
+            try {
+              jump = await api().jumps.saveJump(studioId, {
+                composer: {
+                  sceneMapPosX:
+                    composer.selectedSceneMapCenter.x -
+                    DEFAULT_NODE_SIZE.JUMP_WIDTH / 2,
+                  sceneMapPosY:
+                    composer.selectedSceneMapCenter.y -
+                    DEFAULT_NODE_SIZE.JUMP_HEIGHT / 2
+                },
+                path: [parentItem.id as string],
+                sceneId: parentItem.id as string,
+                tags: [],
+                title: 'Untitled Jump',
+                worldId: world.id
+              })
+            } catch (error) {
+              throw error
+            }
+
+            parentItem.hasChildren = true
+
+            if (jump.id) {
+              try {
+                const sceneChildren: SceneChildRefs = treeData.items[
+                  parentItem.id
+                ].children.map((childId) => [
+                  treeData.items[childId].data.type,
+                  childId as ElementId
+                ])
+
+                await api().scenes.saveChildRefsToScene(
+                  studioId,
+                  parentItem.id as ElementId,
+                  [...sceneChildren, [ELEMENT_TYPE.JUMP, jump.id]]
+                )
+              } catch (error) {
+                throw error
+              }
+
+              composerDispatch({
+                type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+                selectedSceneMapJump: jump.id
+              })
+
+              composerDispatch({
+                type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
+                savedElement: {
+                  id: jump.id,
+                  type: ELEMENT_TYPE.JUMP
+                }
+              })
+            }
           }
 
           break
