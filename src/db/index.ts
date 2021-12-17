@@ -811,17 +811,16 @@ export class LibraryDatabase extends Dexie {
       const jump: Jump | undefined = await this.jumps.get(jumpId)
 
       if (jump?.sceneId) {
-        const updatedSceneJumpRefs: ElementId[] | undefined = (
-            await this.scenes.get(jump.sceneId)
-          )?.jumps,
-          foundJumpIndex = updatedSceneJumpRefs
-            ? updatedSceneJumpRefs.findIndex((id) => id === jumpId)
-            : -1
+        const updatedSceneChildRefs: SceneChildRefs =
+            (await this.scenes.get(jump.sceneId))?.children || [],
+          foundJumpIndex = updatedSceneChildRefs.findIndex(
+            (childRef) => childRef[1] === jump.id
+          )
 
-        if (updatedSceneJumpRefs && foundJumpIndex !== -1) {
-          updatedSceneJumpRefs.splice(foundJumpIndex, 1)
+        if (updatedSceneChildRefs && foundJumpIndex !== -1) {
+          updatedSceneChildRefs.splice(foundJumpIndex, 1)
 
-          await this.saveJumpRefsToScene(jump.sceneId, updatedSceneJumpRefs)
+          await this.saveChildRefsToScene(jump.sceneId, updatedSceneChildRefs)
         }
       }
 
@@ -953,28 +952,6 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async saveJumpRefsToScene(sceneId: ElementId, jumps: ElementId[]) {
-    try {
-      await this.transaction('rw', this.scenes, async () => {
-        if (sceneId) {
-          const scene = await this.getElement(LIBRARY_TABLE.SCENES, sceneId)
-
-          if (scene) {
-            this.scenes.update(sceneId, {
-              ...scene,
-              jumps,
-              updated: Date.now()
-            })
-          } else {
-            throw new Error('Unable to save jump refs. Scene missing.')
-          }
-        }
-      })
-    } catch (error) {
-      throw error
-    }
-  }
-
   public async saveSceneViewTransform(
     sceneId: ElementId,
     transform: { x: number; y: number; zoom: number }
@@ -1013,44 +990,43 @@ export class LibraryDatabase extends Dexie {
       const scene = await this.scenes.get(sceneId),
         game = scene?.id ? await this.worlds.get(scene.worldId) : undefined
 
-      scene?.jumps &&
-        logger.info(
-          `LibraryDatabase->removeScene->Removing ${scene.jumps.length} jump(s) from scene with ID: ${sceneId}`
-        ) &&
-        (await Promise.all(
-          scene.jumps.map(async (jumpId) => await this.removeJump(jumpId))
-        ))
+      const eventIds: string[] = [],
+        jumpIds: string[] = [],
+        // used for world start jump and any jumps pointing to this scene
+        jumpsByPath = await this.jumps.where({ path: sceneId }).toArray()
 
-      const jumpsRefScene = await this.jumps.where({ path: sceneId }).toArray(),
-        events = await this.events.where({ sceneId }).toArray()
+      scene?.children.map((childRef) => {
+        switch (childRef[0]) {
+          case ELEMENT_TYPE.EVENT:
+            eventIds.push(childRef[1])
+            break
+          case ELEMENT_TYPE.JUMP:
+            jumpIds.push(childRef[1])
+            break
+          default:
+            break
+        }
+      })
 
-      if (jumpsRefScene.length > 0) {
-        logger.info(
-          `LibraryDatabase->removeScene->Updating ${jumpsRefScene.length} jumpsRefScene(s) from scene with ID: ${sceneId}`
-        )
-      }
+      logger.info(
+        `LibraryDatabase->removeScene->Removing ${eventIds.length} event(s) from scene with ID: ${sceneId}`
+      )
 
-      await Promise.all(
-        jumpsRefScene.map(async (jump) => {
+      logger.info(
+        `LibraryDatabase->removeScene->Removing ${jumpIds.length} jumps(s) from scene with ID: ${sceneId}`
+      )
+
+      await Promise.all([
+        eventIds.map(async (eventId) => await this.removeEvent(eventId)),
+        jumpIds.map(async (jumpId) => await this.removeJump(jumpId)),
+        jumpsByPath.map(async (jump) => {
           game?.id &&
-            jump?.id === game.jump &&
-            this.saveJumpRefToWorld(game.id, null)
+            jump.id === game.jump &&
+            (await this.saveJumpRefToWorld(game.id, null))
 
           jump.id && (await this.removeJump(jump.id))
         })
-      )
-
-      if (events.length > 0) {
-        logger.info(
-          `LibraryDatabase->removeScene->Removing ${events.length} event(s) from scene with ID: ${sceneId}`
-        )
-      }
-
-      await Promise.all(
-        events.map(
-          async (event) => event.id && (await this.removeEvent(event.id))
-        )
-      )
+      ])
 
       await this.transaction('rw', this.scenes, async () => {
         if (await this.getElement(LIBRARY_TABLE.SCENES, sceneId)) {
@@ -1751,18 +1727,34 @@ export class LibraryDatabase extends Dexie {
 
   public async removeEvent(eventId: ElementId) {
     try {
-      logger.info('LibraryDatabase->removePassage')
+      logger.info('LibraryDatabase->removeEvent')
+
+      const event: Event | undefined = await this.events.get(eventId)
+
+      if (event?.sceneId) {
+        const updatedSceneChildRefs: SceneChildRefs =
+            (await this.scenes.get(event.sceneId))?.children || [],
+          foundEventIndex = updatedSceneChildRefs.findIndex(
+            (childRef) => childRef[1] === event.id
+          )
+
+        if (updatedSceneChildRefs && foundEventIndex !== -1) {
+          updatedSceneChildRefs.splice(foundEventIndex, 1)
+
+          await this.saveChildRefsToScene(event.sceneId, updatedSceneChildRefs)
+        }
+      }
 
       await this.transaction('rw', this.events, async () => {
         if (await this.getElement(LIBRARY_TABLE.EVENTS, eventId)) {
           logger.info(
-            `LibraryDatabase->removePassage->Removing event with ID: ${eventId}`
+            `LibraryDatabase->removeEvent->Removing event with ID: ${eventId}`
           )
 
           await this.events.delete(eventId)
         } else {
           logger.error(
-            `LibraryDatabase->removePassage->Unable to remove event with ID: '${eventId}'. Does not exist.`
+            `LibraryDatabase->removeEvent->Unable to remove event with ID: '${eventId}'. Does not exist.`
           )
         }
       })
@@ -1774,22 +1766,22 @@ export class LibraryDatabase extends Dexie {
 
       jumps.length > 0 &&
         logger.info(
-          `LibraryDatabase->removePassage->Updating ${jumps.length} jump(s) from event with ID: ${eventId}`
+          `LibraryDatabase->removeEvent->Updating ${jumps.length} jump(s) from event with ID: ${eventId}`
         )
 
       routes.length > 0 &&
         logger.info(
-          `LibraryDatabase->removePassage->Removing ${routes.length} path(s) from event with ID: ${eventId}`
+          `LibraryDatabase->removeEvent->Removing ${routes.length} path(s) from event with ID: ${eventId}`
         )
 
       choices.length > 0 &&
         logger.info(
-          `LibraryDatabase->removePassage->Removing ${choices.length} choice(s) from event with ID: ${eventId}`
+          `LibraryDatabase->removeEvent->Removing ${choices.length} choice(s) from event with ID: ${eventId}`
         )
 
       inputs.length > 0 &&
         logger.info(
-          `LibraryDatabase->removePassage->Removing ${inputs.length} input(s) from event with ID: ${eventId}`
+          `LibraryDatabase->removeEvent->Removing ${inputs.length} input(s) from event with ID: ${eventId}`
         )
 
       await Promise.all([

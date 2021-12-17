@@ -30,11 +30,11 @@ const JumpSelect: React.FC<{
   worldId?: WorldId
   sceneId?: ElementId
   selectedId: ElementId | undefined
-  onChangeRoutePart: (
+  onChangePathPart: (
     componentType: ELEMENT_TYPE,
     componentId: ElementId | null
   ) => Promise<void>
-}> = ({ studioId, worldId, sceneId, selectedId, onChangeRoutePart }) => {
+}> = ({ studioId, worldId, sceneId, selectedId, onChangePathPart }) => {
   let scenes: Scene[] | undefined = worldId
       ? useScenes(studioId, worldId, [worldId])
       : undefined,
@@ -50,9 +50,9 @@ const JumpSelect: React.FC<{
     )
 
   async function onChange(componentId: string) {
-    worldId && (await onChangeRoutePart(ELEMENT_TYPE.SCENE, componentId))
+    worldId && (await onChangePathPart(ELEMENT_TYPE.SCENE, componentId))
 
-    sceneId && (await onChangeRoutePart(ELEMENT_TYPE.EVENT, componentId))
+    sceneId && (await onChangePathPart(ELEMENT_TYPE.EVENT, componentId))
   }
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const JumpSelect: React.FC<{
 
                 <Button className={styles.rollBackBtn}>
                   <RollbackOutlined
-                    onClick={() => onChangeRoutePart(ELEMENT_TYPE.SCENE, null)}
+                    onClick={() => onChangePathPart(ELEMENT_TYPE.SCENE, null)}
                   />
                 </Button>
               </>
@@ -125,7 +125,7 @@ const JumpSelect: React.FC<{
 
                 <Button className={styles.rollBackBtn}>
                   <RollbackOutlined
-                    onClick={() => onChangeRoutePart(ELEMENT_TYPE.EVENT, null)}
+                    onClick={() => onChangePathPart(ELEMENT_TYPE.EVENT, null)}
                   />
                 </Button>
               </>
@@ -164,7 +164,7 @@ const JumpTo: React.FC<{
 
   const { composer, composerDispatch } = useContext(ComposerContext)
 
-  async function onChangeRoutePart(
+  async function onChangePathPart(
     componentType: ELEMENT_TYPE,
     componentId: ElementId | null
   ) {
@@ -217,7 +217,7 @@ const JumpTo: React.FC<{
               studioId={studioId}
               worldId={jump.worldId}
               selectedId={jump.path[0]}
-              onChangeRoutePart={onChangeRoutePart}
+              onChangePathPart={onChangePathPart}
             />
           )}
 
@@ -227,7 +227,7 @@ const JumpTo: React.FC<{
               studioId={studioId}
               sceneId={jump.path[0]}
               selectedId={jump.path[1]}
-              onChangeRoutePart={onChangeRoutePart}
+              onChangePathPart={onChangePathPart}
             />
           )}
         </>

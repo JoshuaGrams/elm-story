@@ -76,51 +76,6 @@ declare module 'slate' {
   }
 }
 
-export const PassageViewTools: React.FC<{
-  studioId: StudioId
-  eventId: ElementId
-}> = ({ studioId, eventId }) => {
-  const event = useEvent(studioId, eventId, [studioId, eventId])
-
-  const { composerDispatch } = useContext(ComposerContext)
-
-  return (
-    <div>
-      {event && (
-        <Button
-          danger
-          onClick={async () => {
-            composerDispatch({
-              type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
-              removedElement: { type: ELEMENT_TYPE.EVENT, id: eventId }
-            })
-
-            const updatedSceneChildren = (
-                await api().scenes.getScene(studioId, event.sceneId)
-              ).children,
-              foundPassageIndex = updatedSceneChildren.findIndex(
-                (child) => child[1] === event.id
-              )
-
-            updatedSceneChildren.splice(foundPassageIndex, 1)
-
-            await Promise.all([
-              api().scenes.saveChildRefsToScene(
-                studioId,
-                event.sceneId,
-                updatedSceneChildren
-              ),
-              api().events.removeEvent(studioId, eventId)
-            ])
-          }}
-        >
-          Remove Event
-        </Button>
-      )}
-    </div>
-  )
-}
-
 export const initialPassageContent: Descendant[] = [...DEFAULT_EVENT_CONTENT]
 
 const ParagraphElement: React.FC<RenderElementProps> = (props) => {
@@ -366,7 +321,7 @@ const EventView: React.FC<{
                   renderElement={renderElement}
                   renderLeaf={renderLeaf}
                   decorate={decorate}
-                  placeholder="Enter passage text..."
+                  placeholder="Enter event content..."
                   onKeyDown={(event) => {
                     const { selection } = slateEditor
 

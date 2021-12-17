@@ -115,15 +115,3 @@ export async function saveChildRefsToScene(
     throw error
   }
 }
-
-export async function saveJumpRefsToScene(
-  studioId: StudioId,
-  sceneId: ElementId,
-  jumps: ElementId[]
-) {
-  try {
-    await new LibraryDatabase(studioId).saveJumpRefsToScene(sceneId, jumps)
-  } catch (error) {
-    throw error
-  }
-}

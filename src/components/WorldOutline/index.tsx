@@ -814,6 +814,24 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
         })
       }
 
+      if (
+        (data.type === ELEMENT_TYPE.JUMP &&
+          item.id === composer.selectedSceneMapJump) ||
+        (data.type === ELEMENT_TYPE.SCENE &&
+          composer.selectedSceneMapJump &&
+          item.children.includes(composer.selectedSceneMapJump))
+      ) {
+        composerDispatch({
+          type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+          selectedSceneMapJump: null
+        })
+
+        composerDispatch({
+          type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
+          totalSceneMapSelectedJumps: 0
+        })
+      }
+
       composerDispatch({
         type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
         removedElement: { id: elementId, type: data.type }
@@ -871,17 +889,12 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
             break
           case ELEMENT_TYPE.EVENT:
-            await Promise.all([
-              api().scenes.saveChildRefsToScene(
-                studioId,
-                item.data.parentId,
-                parent.children.map((childId) => [
-                  ELEMENT_TYPE.EVENT,
-                  childId as ElementId
-                ])
-              ),
-              api().events.removeEvent(studioId, item?.id as ElementId)
-            ])
+            await api().events.removeEvent(studioId, item?.id as ElementId)
+
+            break
+          case ELEMENT_TYPE.JUMP:
+            await api().jumps.removeJump(studioId, item?.id as ElementId)
+
             break
           default:
             break
@@ -1151,24 +1164,53 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
   useEffect(() => {
     logger.info(`WorldOutline->composer.removedComponent->useEffect`)
 
-    if (treeData && composer.removedElement.id) {
-      logger.info(
-        `Removing element from outline with ID: ${composer.removedElement.id}`
-      )
+    async function updateTree() {
+      if (treeData && composer.removedElement.id) {
+        logger.info(
+          `Removing element from outline with ID: ${composer.removedElement.id}`
+        )
 
-      setTreeData(removeItemFromTree(treeData, composer.removedElement.id))
+        let newTreeData: TreeData = removeItemFromTree(
+          treeData,
+          composer.removedElement.id
+        )
 
-      if (composer.removedElement.type !== ELEMENT_TYPE.EVENT)
-        composerDispatch({
-          type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
-          selectedWorldOutlineElement: {
-            id: undefined,
-            expanded: false,
-            type: undefined,
-            title: undefined
-          }
-        })
+        // check jumps to see if they should still exist in outline
+        if (composer.removedElement.type === ELEMENT_TYPE.SCENE) {
+          const jumpIds = Object.keys(treeData.items).filter(
+            (id) => treeData.items[id].data.type === ELEMENT_TYPE.JUMP
+          )
+
+          await Promise.all(
+            jumpIds.map(async (jumpId) => {
+              const jump = await api().jumps.getJump(studioId, jumpId)
+
+              if (!jump || jump.path[0] === composer.removedElement.id) {
+                newTreeData = removeItemFromTree(newTreeData, jumpId)
+              }
+            })
+          )
+        }
+
+        setTreeData(newTreeData)
+
+        if (
+          composer.removedElement.type !== ELEMENT_TYPE.EVENT &&
+          composer.removedElement.type !== ELEMENT_TYPE.JUMP
+        )
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+            selectedWorldOutlineElement: {
+              id: undefined,
+              expanded: false,
+              type: undefined,
+              title: undefined
+            }
+          })
+      }
     }
+
+    updateTree()
   }, [composer.removedElement])
 
   useEffect(() => {

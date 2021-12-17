@@ -282,40 +282,10 @@ async function removeElementFromScene(
   if (scene.id) {
     switch (type) {
       case ELEMENT_TYPE.EVENT:
-        const clonedChildRefs = [...scene.children],
-          passageRefIndex = clonedChildRefs.findIndex(
-            (clonedPassageRef) => clonedPassageRef[1] === id
-          )
-
-        if (passageRefIndex !== -1) {
-          clonedChildRefs.splice(passageRefIndex, 1)
-
-          await api().scenes.saveChildRefsToScene(
-            studioId,
-            scene.id,
-            clonedChildRefs
-          )
-        }
-
         await api().events.removeEvent(studioId, id)
 
         break
       case ELEMENT_TYPE.JUMP:
-        const clonedJumpRefs = [...scene.jumps],
-          jumpRefIndex = clonedJumpRefs.findIndex(
-            (clonedJumpRef) => clonedJumpRef === id
-          )
-
-        if (jumpRefIndex !== -1) {
-          clonedJumpRefs.splice(jumpRefIndex, 1)
-
-          await api().scenes.saveJumpRefsToScene(
-            studioId,
-            scene.id,
-            clonedJumpRefs
-          )
-        }
-
         await api().jumps.removeJump(studioId, id)
 
         break
@@ -1400,6 +1370,14 @@ const SceneMap: React.FC<{
                               selectedSceneMapJump: null
                             })
                           }
+
+                          composerDispatch({
+                            type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
+                            removedElement: {
+                              type: ELEMENT_TYPE.JUMP,
+                              id: elementId
+                            }
+                          })
                         } catch (error) {
                           throw error
                         }
