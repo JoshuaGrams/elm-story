@@ -573,126 +573,149 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
           composer.selectedWorldOutlineElement.id
         ].data.selected = false
 
-      switch (data.type) {
-        // add folder or scene
-        case ELEMENT_TYPE.WORLD:
-          if (
-            childType === ELEMENT_TYPE.SCENE ||
-            childType === ELEMENT_TYPE.FOLDER
-          ) {
-            let childId: ElementId,
-              childTitle: string =
-                childType === ELEMENT_TYPE.SCENE
-                  ? 'Untitled Scene'
-                  : 'Untitled Folder'
+      const addElementToWorld = async () => {
+        if (!world.id) return
 
-            try {
-              childId =
-                childType === ELEMENT_TYPE.SCENE
-                  ? await api().scenes.saveScene(studioId, {
-                      children: [],
-                      worldId: world.id,
-                      parent: [ELEMENT_TYPE.WORLD, null],
-                      tags: [],
-                      title: childTitle,
-                      composer: {}
-                    })
-                  : await api().folders.saveFolder(studioId, {
-                      children: [],
-                      worldId: world.id,
-                      parent: [ELEMENT_TYPE.WORLD, null],
-                      tags: [],
-                      title: childTitle
-                    })
-            } catch (error) {
-              throw error
-            }
-
-            parentItem.hasChildren = true
-
-            newTreeData = addItemToTree(treeData, parentItem.id as ElementId, {
-              id: childId,
-              children: [],
-              isExpanded: false,
-              hasChildren: false,
-              isChildrenLoading: false,
-              data: {
-                title: childTitle,
-                type: childType,
-                selected: false,
-                parentId: parentItem.id,
-                renaming: true
-              }
-            })
-
-            try {
-              await api().worlds.saveChildRefsToWorld(
-                studioId,
-                world.id,
-                newTreeData.items[parentItem.id].children.map((childId) => [
-                  newTreeData.items[childId].data.type,
-                  childId as ElementId
-                ])
-              )
-            } catch (error) {
-              throw error
-            }
-
-            setTreeData(newTreeData)
-
-            composerDispatch({
-              type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
-              selectedWorldOutlineElement: {
-                id: childId,
-                expanded: true,
-                type: childType,
-                title: childTitle
-              }
-            })
-          } else {
-            throw new Error(
-              `Unable to add to game. Component type: ${childType} is not supported.`
-            )
-          }
-
-          break
-        // add scene
-        case ELEMENT_TYPE.FOLDER:
-          let childId: ElementId | undefined = undefined,
-            childTitle: string | undefined = undefined
+        if (
+          childType === ELEMENT_TYPE.SCENE ||
+          childType === ELEMENT_TYPE.FOLDER
+        ) {
+          let childId: ElementId,
+            childTitle: string =
+              childType === ELEMENT_TYPE.SCENE
+                ? 'Untitled Scene'
+                : 'Untitled Folder'
 
           try {
-            if (childType === ELEMENT_TYPE.FOLDER) {
-              childTitle = 'Untitled Folder'
-
-              childId = await api().folders.saveFolder(studioId, {
-                children: [],
-                worldId: world.id,
-                parent: [parentItem.data.type, parentItem.id as ElementId],
-                tags: [],
-                title: childTitle
-              })
-            }
-
-            if (childType === ELEMENT_TYPE.SCENE) {
-              childTitle = 'Untitled Scene'
-
-              childId = await api().scenes.saveScene(studioId, {
-                children: [],
-                worldId: world.id,
-                title: childTitle,
-                parent: [parentItem.data.type, parentItem.id as ElementId],
-                tags: []
-              })
-            }
+            childId =
+              childType === ELEMENT_TYPE.SCENE
+                ? await api().scenes.saveScene(studioId, {
+                    children: [],
+                    worldId: world.id,
+                    parent: [ELEMENT_TYPE.WORLD, null],
+                    tags: [],
+                    title: childTitle,
+                    composer: {}
+                  })
+                : await api().folders.saveFolder(studioId, {
+                    children: [],
+                    worldId: world.id,
+                    parent: [ELEMENT_TYPE.WORLD, null],
+                    tags: [],
+                    title: childTitle
+                  })
           } catch (error) {
             throw error
           }
 
-          parentItem.hasChildren = true
+          treeData.items[world.id].hasChildren = true
 
-          if (childId && childTitle) {
-            newTreeData = addItemToTree(treeData, parentItem.id as ElementId, {
+          newTreeData = addItemToTree(treeData, world.id, {
+            id: childId,
+            children: [],
+            isExpanded: false,
+            hasChildren: false,
+            isChildrenLoading: false,
+            data: {
+              title: childTitle,
+              type: childType,
+              selected: false,
+              parentId: world.id,
+              renaming: true
+            }
+          })
+
+          try {
+            await api().worlds.saveChildRefsToWorld(
+              studioId,
+              world.id,
+              newTreeData.items[world.id].children.map((childId) => [
+                newTreeData.items[childId].data.type,
+                childId as ElementId
+              ])
+            )
+          } catch (error) {
+            throw error
+          }
+
+          setTreeData(newTreeData)
+
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+            selectedWorldOutlineElement: {
+              id: childId,
+              expanded: true,
+              type: childType,
+              title: childTitle
+            }
+          })
+        } else {
+          throw new Error(
+            `Unable to add to game. Component type: ${childType} is not supported.`
+          )
+        }
+      }
+
+      const addFolderOrSceneToFolder = async (
+        overrideParent: boolean = false
+      ) => {
+        if (!world.id) return
+
+        let childId: ElementId | undefined = undefined,
+          childTitle: string | undefined = undefined
+
+        const overrideParentItem = overrideParent
+          ? treeData.items[parentItem.data.parentId]
+          : undefined
+
+        try {
+          if (childType === ELEMENT_TYPE.FOLDER) {
+            childTitle = 'Untitled Folder'
+
+            childId = await api().folders.saveFolder(studioId, {
+              children: [],
+              worldId: world.id,
+              parent: [
+                overrideParentItem?.data.type || parentItem.data.type,
+                (overrideParentItem?.id as ElementId) ||
+                  (parentItem.id as ElementId)
+              ],
+              tags: [],
+              title: childTitle
+            })
+          }
+
+          if (childType === ELEMENT_TYPE.SCENE) {
+            childTitle = 'Untitled Scene'
+
+            childId = await api().scenes.saveScene(studioId, {
+              children: [],
+              worldId: world.id,
+              title: childTitle,
+              parent: [
+                overrideParentItem?.data.type || parentItem.data.type,
+                (overrideParentItem?.id as ElementId) ||
+                  (parentItem.id as ElementId)
+              ],
+              tags: []
+            })
+          }
+        } catch (error) {
+          throw error
+        }
+
+        if (overrideParentItem) {
+          overrideParentItem.hasChildren = true
+        } else {
+          parentItem.hasChildren = true
+        }
+
+        if (childId && childTitle) {
+          newTreeData = addItemToTree(
+            treeData,
+            (overrideParentItem?.id as ElementId) ||
+              (parentItem.id as ElementId),
+            {
               id: childId,
               children: [],
               isExpanded: false,
@@ -702,36 +725,51 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                 title: childTitle,
                 type: childType,
                 selected: false,
-                parentId: parentItem.id,
+                parentId: overrideParentItem?.id || parentItem.id,
                 renaming: true
               }
-            })
-
-            try {
-              await api().folders.saveChildRefsToFolder(
-                studioId,
-                parentItem.id as ElementId,
-                newTreeData.items[parentItem.id].children.map((childId) => [
-                  newTreeData.items[childId].data.type,
-                  childId as ElementId
-                ])
-              )
-            } catch (error) {
-              throw error
             }
+          )
 
-            setTreeData(newTreeData)
-
-            composerDispatch({
-              type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
-              selectedWorldOutlineElement: {
-                id: childId,
-                expanded: true,
-                type: childType,
-                title: childTitle
-              }
-            })
+          try {
+            await api().folders.saveChildRefsToFolder(
+              studioId,
+              (overrideParentItem?.id as ElementId) ||
+                (parentItem.id as ElementId),
+              newTreeData.items[
+                overrideParentItem?.id || parentItem.id
+              ].children.map((childId) => [
+                newTreeData.items[childId].data.type,
+                childId as ElementId
+              ])
+            )
+          } catch (error) {
+            throw error
           }
+
+          setTreeData(newTreeData)
+
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+            selectedWorldOutlineElement: {
+              id: childId,
+              expanded: true,
+              type: childType,
+              title: childTitle
+            }
+          })
+        }
+      }
+
+      switch (data.type) {
+        // add folder or scene
+        case ELEMENT_TYPE.WORLD:
+          await addElementToWorld()
+
+          break
+        // add scene
+        case ELEMENT_TYPE.FOLDER:
+          await addFolderOrSceneToFolder()
 
           break
         // add event
@@ -853,6 +891,25 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                   type: ELEMENT_TYPE.JUMP
                 }
               })
+            }
+          }
+
+          // elmstorygames/feedback#130
+          if (
+            childType === ELEMENT_TYPE.FOLDER ||
+            childType === ELEMENT_TYPE.SCENE
+          ) {
+            const overrideParentItem =
+              treeData.items[treeData.items[parentElementId].data.parentId]
+
+            if (
+              (childType === ELEMENT_TYPE.FOLDER ||
+                childType === ELEMENT_TYPE.SCENE) &&
+              overrideParentItem.data.type === ELEMENT_TYPE.FOLDER
+            ) {
+              await addFolderOrSceneToFolder(true)
+            } else {
+              await addElementToWorld()
             }
           }
 
