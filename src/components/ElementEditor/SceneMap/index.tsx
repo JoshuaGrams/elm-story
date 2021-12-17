@@ -881,7 +881,12 @@ const SceneMap: React.FC<{
           nodes.push({
             id: jump.id,
             // TODO
-            data: { studioId, jumpId: jump.id, type: ELEMENT_TYPE.JUMP },
+            data: {
+              studioId,
+              sceneId,
+              jumpId: jump.id,
+              type: ELEMENT_TYPE.JUMP
+            },
             type: 'jumpNode',
             position: jump.composer
               ? {
@@ -930,7 +935,7 @@ const SceneMap: React.FC<{
           nodes.push({
             id: event.id,
             data: eventNodeData,
-            type: 'passageNode',
+            type: 'eventNode',
             position: event.composer
               ? {
                   x: event.composer.sceneMapPosX || 0,
@@ -951,7 +956,7 @@ const SceneMap: React.FC<{
           sourceHandle: path.choiceId,
           target: path.destinationId,
           targetHandle: path.destinationId,
-          type: 'routeEdge',
+          type: 'pathEdge',
           animated: true,
           data: {
             type: ELEMENT_TYPE.PATH,
@@ -1393,11 +1398,11 @@ const SceneMap: React.FC<{
           <ReactFlow
             snapToGrid
             nodeTypes={{
-              passageNode: EventNode,
+              eventNode: EventNode,
               jumpNode: JumpNode
             }}
             edgeTypes={{
-              routeEdge: PathEdge
+              pathEdge: PathEdge
             }}
             snapGrid={[4, 4]}
             onlyRenderVisibleElements={false}
@@ -1549,7 +1554,7 @@ const SceneMap: React.FC<{
             <MiniMap
               nodeColor={(node) => {
                 switch (node.type) {
-                  case 'passageNode':
+                  case 'eventNode':
                     if (events) {
                       const foundEvent = events.find(
                         (event) => node.id === event.id

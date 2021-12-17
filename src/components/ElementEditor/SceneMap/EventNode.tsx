@@ -52,13 +52,79 @@ interface MenuInfo {
   domEvent: React.MouseEvent<HTMLElement>
 }
 
+export const isConnectionValid = (
+  connection: Connection,
+  paths: Path[],
+  handleType: 'CHOICE' | 'INPUT' | 'JUMP' | 'ORIGIN'
+): boolean => {
+  logger.info('isConnectionValid')
+  logger.info(`handleType: ${handleType}`)
+
+  if (connection.source === connection.target) {
+    logger.info('Unable to make connection. Source is equal to target.')
+    return false
+  }
+
+  if (
+    paths.find((path) => {
+      switch (handleType) {
+        case 'CHOICE':
+          logger.info(
+            'Unable to make connection. Path choice is equal to source handle and path destination is equal to target.'
+          )
+          return (
+            path.choiceId === connection.sourceHandle &&
+            path.destinationId === connection.target
+          )
+        case 'INPUT':
+          logger.info(
+            'Unable to make connection. Path input is equal to source handle and path destination is equal to target.'
+          )
+          return (
+            path.inputId === connection.sourceHandle &&
+            path.destinationId === connection.target
+          )
+        case 'JUMP':
+          logger.info(
+            'Unable to make connection. Path choice is equal to source handle and path destination is equal to target or path input is equal to source handle and path destination is equal to target '
+          )
+          return (
+            (path.choiceId === connection.sourceHandle &&
+              path.destinationId === connection.target) ||
+            (path.inputId === connection.sourceHandle &&
+              path.destinationId === connection.target)
+          )
+        case 'ORIGIN':
+          logger.info(
+            'Unable to make connection. Path origin is equal to source handle and destination is equal to target.'
+          )
+          return (
+            path.originId === connection.sourceHandle &&
+            path.destinationId === connection.target
+          )
+        default:
+          logger.info('Unable to make connection. Reason unknown.')
+          return true
+      }
+    })
+  ) {
+    return false
+  }
+
+  logger.info(
+    `Path possible from source: ${connection.sourceHandle} to target: ${connection.target}`
+  )
+
+  return true
+}
+
 const ChoiceSourceHandle: React.FC<{
   studioId: StudioId
   sceneId: ElementId
   choiceId: ElementId
 }> = ({ studioId, sceneId, choiceId }) => {
   // TODO: do we really need to get access to paths on every choice?
-  const paths = usePathsBySceneRef(studioId, sceneId)
+  const paths = usePathsBySceneRef(studioId, sceneId) || []
 
   return (
     <Handle
@@ -68,26 +134,9 @@ const ChoiceSourceHandle: React.FC<{
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Right}
       id={choiceId}
-      isValidConnection={(connection: Connection): boolean => {
-        logger.info('isValidConnection')
-
-        if (
-          paths &&
-          !paths.find(
-            (path) =>
-              path.choiceId === connection.sourceHandle &&
-              path.destinationId === connection.target
-          )
-        ) {
-          logger.info(
-            `Path possible from choice: ${connection.sourceHandle} to event: ${connection.target}`
-          )
-          return true
-        } else {
-          logger.info('Duplicate path not possible.')
-          return false
-        }
-      }}
+      isValidConnection={(connection: Connection) =>
+        isConnectionValid(connection, paths, 'CHOICE')
+      }
     />
   )
 }
@@ -238,7 +287,7 @@ const InputSourceHandle: React.FC<{
   sceneId: ElementId
   inputId: ElementId
 }> = ({ studioId, sceneId, inputId }) => {
-  const paths = usePathsBySceneRef(studioId, sceneId)
+  const paths = usePathsBySceneRef(studioId, sceneId) || []
 
   return (
     <Handle
@@ -248,26 +297,9 @@ const InputSourceHandle: React.FC<{
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Right}
       id={inputId}
-      isValidConnection={(connection: Connection): boolean => {
-        logger.info('isValidConnection')
-
-        if (
-          paths &&
-          !paths.find(
-            (path) =>
-              path.inputId === connection.sourceHandle &&
-              path.destinationId === connection.target
-          )
-        ) {
-          logger.info(
-            `Path possible from input: ${connection.sourceHandle} to event: ${connection.target}`
-          )
-          return true
-        } else {
-          logger.info('Duplicate path not possible.')
-          return false
-        }
-      }}
+      isValidConnection={(connection: Connection) =>
+        isConnectionValid(connection, paths, 'INPUT')
+      }
     />
   )
 }
@@ -300,7 +332,7 @@ const EventTargetHandle: React.FC<{
   eventId: ElementId
 }> = ({ studioId, sceneId, eventId }) => {
   // TODO: do we really need to get access to paths on every event?
-  const paths = usePathsBySceneRef(studioId, sceneId)
+  const paths = usePathsBySceneRef(studioId, sceneId) || []
 
   return (
     <Handle
@@ -309,26 +341,9 @@ const EventTargetHandle: React.FC<{
       className={styles.passageTargetHandle}
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Left}
-      isValidConnection={(connection: Connection): boolean => {
-        logger.info('isValidConnection')
-
-        if (
-          paths &&
-          !paths.find(
-            (path) =>
-              path.choiceId === connection.sourceHandle &&
-              path.destinationId === connection.target
-          )
-        ) {
-          logger.info(
-            `Path possible from choice: ${connection.sourceHandle} to event: ${connection.target}`
-          )
-          return true
-        } else {
-          logger.info('Duplicate path not possible.')
-          return false
-        }
-      }}
+      isValidConnection={(connection: Connection) =>
+        isConnectionValid(connection, paths, 'CHOICE')
+      }
     />
   )
 }
@@ -340,7 +355,7 @@ const EventSourceHandle: React.FC<{
   sceneId: ElementId
   eventId: ElementId
 }> = ({ studioId, sceneId, eventId }) => {
-  const events = usePathsBySceneRef(studioId, sceneId)
+  const paths = usePathsBySceneRef(studioId, sceneId) || []
 
   return (
     <Handle
@@ -350,26 +365,9 @@ const EventSourceHandle: React.FC<{
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Right}
       id={eventId}
-      isValidConnection={(connection: Connection): boolean => {
-        logger.info('isValidConnection')
-
-        if (
-          events &&
-          !events.find(
-            (path) =>
-              path.originId === connection.sourceHandle &&
-              path.destinationId === connection.target
-          )
-        ) {
-          logger.info(
-            `Path possible from input: ${connection.sourceHandle} to event: ${connection.target}`
-          )
-          return true
-        } else {
-          logger.info('Duplicate path not possible.')
-          return false
-        }
-      }}
+      isValidConnection={(connection: Connection) =>
+        isConnectionValid(connection, paths, 'ORIGIN')
+      }
     />
   )
 }
@@ -696,7 +694,7 @@ const EventNode: React.FC<NodeProps<{
                           setSelectedElement([
                             cloneDeep(
                               events.find(
-                                (passageNode) => passageNode.id === event.id
+                                (eventNode) => eventNode.id === event.id
                               )
                             )
                           ]) &&

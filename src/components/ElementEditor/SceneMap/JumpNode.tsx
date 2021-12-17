@@ -1,8 +1,8 @@
 import React, { memo, useContext } from 'react'
 
-import { ElementId, ELEMENT_TYPE } from '../../../data/types'
+import { StudioId, ElementId, ELEMENT_TYPE } from '../../../data/types'
 
-import { useJump } from '../../../hooks'
+import { useJump, usePathsBySceneRef } from '../../../hooks'
 
 import {
   ComposerContext,
@@ -10,6 +10,7 @@ import {
 } from '../../../contexts/ComposerContext'
 
 import {
+  Connection,
   Handle,
   Node,
   NodeProps,
@@ -26,7 +27,15 @@ import styles from './styles.module.less'
 
 import { cloneDeep } from 'lodash'
 
-const JumpHandle: React.FC<{ jumpId: ElementId }> = ({ jumpId }) => {
+import { isConnectionValid } from './EventNode'
+
+const JumpHandle: React.FC<{
+  studioId: StudioId
+  sceneId: ElementId
+  jumpId: ElementId
+}> = ({ studioId, sceneId, jumpId }) => {
+  const paths = usePathsBySceneRef(studioId, sceneId) || []
+
   return (
     <Handle
       type="target"
@@ -34,6 +43,9 @@ const JumpHandle: React.FC<{ jumpId: ElementId }> = ({ jumpId }) => {
       style={{ top: '50%', bottom: '50%' }}
       position={Position.Left}
       className={styles.jumpHandle}
+      isValidConnection={(connection: Connection) =>
+        isConnectionValid(connection, paths, 'JUMP')
+      }
     />
   )
 }
@@ -58,7 +70,11 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
       {jump?.id && (
         <>
           <div>
-            <JumpHandle jumpId={jump.id} />
+            <JumpHandle
+              studioId={data.studioId}
+              sceneId={data.sceneId}
+              jumpId={jump.id}
+            />
 
             <h1 className="nodeJumpHeader" data-component-id={jump.id}>
               <SendOutlined className={styles.headerIcon} />
