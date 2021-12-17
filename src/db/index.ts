@@ -795,17 +795,21 @@ export class LibraryDatabase extends Dexie {
   public async removeJump(jumpId: ElementId) {
     logger.info(`LibraryDatabase->removeJump:${jumpId}`)
 
-    const paths = await this.paths.where({ destinationId: jumpId }).toArray()
+    try {
+      const paths = await this.paths.where({ destinationId: jumpId }).toArray()
 
-    if (paths.length > 0) {
-      logger.info(
-        `removeJump->Removing ${paths.length} path(s) from jump with ID: ${jumpId}`
+      if (paths.length > 0) {
+        logger.info(
+          `removeJump->Removing ${paths.length} path(s) from jump with ID: ${jumpId}`
+        )
+      }
+
+      await Promise.all(
+        paths.map(async (path) => path.id && (await this.removePath(path.id)))
       )
+    } catch (error) {
+      throw error
     }
-
-    await Promise.all(
-      paths.map(async (path) => path.id && (await this.removePath(path.id)))
-    )
 
     try {
       const jump: Jump | undefined = await this.jumps.get(jumpId)
@@ -1016,16 +1020,18 @@ export class LibraryDatabase extends Dexie {
         `LibraryDatabase->removeScene->Removing ${jumpIds.length} jumps(s) from scene with ID: ${sceneId}`
       )
 
+      // elmstorygames/feedback#131
+      for (const jump of jumpsByPath) {
+        game?.id &&
+          jump.id === game.jump &&
+          (await this.saveJumpRefToWorld(game.id, null))
+
+        jump.id && (await this.removeJump(jump.id))
+      }
+
       await Promise.all([
         eventIds.map(async (eventId) => await this.removeEvent(eventId)),
-        jumpIds.map(async (jumpId) => await this.removeJump(jumpId)),
-        jumpsByPath.map(async (jump) => {
-          game?.id &&
-            jump.id === game.jump &&
-            (await this.saveJumpRefToWorld(game.id, null))
-
-          jump.id && (await this.removeJump(jump.id))
-        })
+        jumpIds.map(async (jumpId) => await this.removeJump(jumpId))
       ])
 
       await this.transaction('rw', this.scenes, async () => {
