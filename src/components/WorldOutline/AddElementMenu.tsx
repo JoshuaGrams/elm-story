@@ -9,7 +9,8 @@ import { Dropdown, Menu } from 'antd'
 import {
   AlignLeftOutlined,
   FolderOutlined,
-  PartitionOutlined
+  PartitionOutlined,
+  SendOutlined
 } from '@ant-design/icons'
 
 const AddElementMenu: React.FC<{
@@ -25,11 +26,6 @@ const AddElementMenu: React.FC<{
           <Menu.Item
             key={'add-folder'}
             onClick={() => onAdd(worldId, ELEMENT_TYPE.FOLDER)}
-            disabled={
-              composer.selectedWorldOutlineElement.type ===
-                ELEMENT_TYPE.SCENE ||
-              composer.selectedWorldOutlineElement.type === ELEMENT_TYPE.EVENT
-            }
           >
             <FolderOutlined />
             Folder
@@ -37,11 +33,6 @@ const AddElementMenu: React.FC<{
           <Menu.Item
             key={'add-scene'}
             onClick={() => onAdd(worldId, ELEMENT_TYPE.SCENE)}
-            disabled={
-              composer.selectedWorldOutlineElement.type ===
-                ELEMENT_TYPE.SCENE ||
-              composer.selectedWorldOutlineElement.type === ELEMENT_TYPE.EVENT
-            }
           >
             <PartitionOutlined />
             Scene
@@ -57,6 +48,18 @@ const AddElementMenu: React.FC<{
           >
             <AlignLeftOutlined />
             Event
+          </Menu.Item>
+          <Menu.Item
+            key={'add-jump'}
+            onClick={() => onAdd(worldId, ELEMENT_TYPE.JUMP)}
+            disabled={
+              composer.selectedWorldOutlineElement.type ===
+                ELEMENT_TYPE.WORLD ||
+              composer.selectedWorldOutlineElement.type === ELEMENT_TYPE.FOLDER
+            }
+          >
+            <SendOutlined />
+            Jump
           </Menu.Item>
         </Menu>
       }
