@@ -463,7 +463,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
       if (type === ELEMENT_TYPE.EVENT || type === ELEMENT_TYPE.JUMP) {
         const parentItem = treeData.items[parentId]
 
-        if (composer.selectedWorldOutlineElement.id !== parentItem.id)
+        if (composer.selectedWorldOutlineElement.id !== parentItem.id) {
           composerDispatch({
             type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
             selectedWorldOutlineElement: {
@@ -473,6 +473,16 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
               title: parentItem.data.title
             }
           })
+        } else {
+          // elmstorygames/feedback#129
+          const newTreeData = cloneDeep(treeData)
+
+          Object.keys(treeData.items).map((itemId) => {
+            newTreeData.items[itemId].data.renaming = false
+          })
+
+          setTreeData(newTreeData)
+        }
 
         // TODO: stack hack
         setTimeout(() => {
