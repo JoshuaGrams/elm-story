@@ -109,14 +109,15 @@ const JumpBadge: React.FC<{
         }
       })
 
-      setTimeout(
-        () =>
-          composerDispatch({
-            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
-            selectedSceneMapEvent: jump.path[1] || null
-          }),
-        1
-      )
+      if (jump.path[1])
+        setTimeout(
+          () =>
+            composerDispatch({
+              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+              selectedSceneMapEvent: jump.path[1] || null
+            }),
+          1
+        )
     }
   }
 

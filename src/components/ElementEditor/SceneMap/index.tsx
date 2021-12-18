@@ -63,9 +63,9 @@ import api from '../../../api'
 
 export enum DEFAULT_NODE_SIZE {
   // elmstorygames/feedback#126
-  EVENT_WIDTH = 250,
+  EVENT_WIDTH = 200,
   EVENT_HEIGHT = 69,
-  JUMP_WIDTH = 250,
+  JUMP_WIDTH = 200,
   JUMP_HEIGHT = 117,
   JUMP_HEIGHT_EXTENDED = 171
 }
@@ -1464,7 +1464,9 @@ const SceneMap: React.FC<{
                   project({
                     x:
                       event.nativeEvent.offsetX -
-                      (connectStartData.handleType === 'target' ? 250 : 2) *
+                      (connectStartData.handleType === 'target'
+                        ? DEFAULT_NODE_SIZE.EVENT_WIDTH
+                        : 2) *
                         composer.selectedSceneMapCenter.zoom,
                     y:
                       event.nativeEvent.offsetY -

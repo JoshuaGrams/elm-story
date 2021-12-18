@@ -162,9 +162,9 @@
   }
 }
 
-.jumpNode {
-  min-width: 250px;
-  max-width: 250px;
+.JumpNode {
+  min-width: 200px;
+  max-width: 200px;
 
   .jumpHandle {
     width: 8px;
@@ -196,12 +196,36 @@
     background: hsla(0, 0%, 20%, 80%);
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+
+    .jumpDetails {
+      h2 {
+        margin: 0px;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: hsl(0, 0%, 50%);
+      }
+
+      :global .ant-divider {
+        margin: 0px !important;
+        margin-bottom: 4px !important;
+      }
+
+      .jumpLink {
+        display: inline-block;
+        text-decoration: underline;
+        cursor: pointer;
+
+        &:hover {
+          color: var(--jump-node-color);
+        }
+      }
+    }
   }
 }
 
 .EventNode {
-  min-width: 250px;
-  max-width: 250px;
+  min-width: 200px;
+  max-width: 200px;
 
   .passageTargetHandle,
   .passageSourceHandle {

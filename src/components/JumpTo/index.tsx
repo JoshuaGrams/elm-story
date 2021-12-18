@@ -19,7 +19,11 @@ import {
 } from '../../contexts/ComposerContext'
 
 import { Button, Divider, Select } from 'antd'
-import { RollbackOutlined } from '@ant-design/icons'
+import {
+  AlignLeftOutlined,
+  PartitionOutlined,
+  RollbackOutlined
+} from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
@@ -75,7 +79,9 @@ const JumpSelect: React.FC<{
       {scenes && scenes.length > 0 && (
         <>
           <Divider>
-            <h2>Scene</h2>
+            <h2>
+              <PartitionOutlined /> Scene
+            </h2>
           </Divider>
 
           <div className={`${styles.selectWrapper} nodrag`}>
@@ -106,7 +112,9 @@ const JumpSelect: React.FC<{
       {events && events.length > 0 && (
         <>
           <Divider>
-            <h2>Event</h2>
+            <h2>
+              <AlignLeftOutlined /> Event
+            </h2>
           </Divider>
 
           <div className={`${styles.selectWrapper} nodrag`}>
@@ -140,7 +148,11 @@ const JumpSelect: React.FC<{
                       events[0].sceneId
                     )
 
-                    onChange(scene.children[0][1])
+                    const firstEventFound = scene.children.find(
+                      (child) => child[0] === ELEMENT_TYPE.EVENT
+                    )
+
+                    firstEventFound && onChange(firstEventFound[1])
                   }
                 }}
                 className={`${styles.jumpToBtn} nodrag`}
