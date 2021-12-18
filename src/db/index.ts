@@ -1766,7 +1766,12 @@ export class LibraryDatabase extends Dexie {
       })
 
       const jumps = await this.jumps.where({ path: eventId }).toArray(),
-        routes = await this.paths.where({ destinationId: eventId }).toArray(),
+        pathsWithOrigin = await this.paths
+          .where({ originId: eventId })
+          .toArray(),
+        pathsWithDestination = await this.paths
+          .where({ destinationId: eventId })
+          .toArray(),
         choices = await this.choices.where({ eventId }).toArray(),
         inputs = await this.inputs.where({ eventId }).toArray()
 
@@ -1775,9 +1780,14 @@ export class LibraryDatabase extends Dexie {
           `LibraryDatabase->removeEvent->Updating ${jumps.length} jump(s) from event with ID: ${eventId}`
         )
 
-      routes.length > 0 &&
+      pathsWithOrigin.length > 0 &&
         logger.info(
-          `LibraryDatabase->removeEvent->Removing ${routes.length} path(s) from event with ID: ${eventId}`
+          `LibraryDatabase->removeEvent->Removing ${pathsWithDestination.length} path(s) with origin from event with ID: ${eventId}`
+        )
+
+      pathsWithDestination.length > 0 &&
+        logger.info(
+          `LibraryDatabase->removeEvent->Removing ${pathsWithDestination.length} path(s) with destination from event with ID: ${eventId}`
         )
 
       choices.length > 0 &&
@@ -1795,7 +1805,12 @@ export class LibraryDatabase extends Dexie {
           async (jump) =>
             jump.id && (await this.saveJumpPath(jump.id, [jump.path[0]]))
         ),
-        routes.map(async (path) => path.id && (await this.removePath(path.id))),
+        pathsWithOrigin.map(
+          async (path) => path.id && (await this.removePath(path.id))
+        ),
+        pathsWithDestination.map(
+          async (path) => path.id && (await this.removePath(path.id))
+        ),
         choices.map(
           async (choice) => choice.id && (await this.removeChoice(choice.id))
         ),
