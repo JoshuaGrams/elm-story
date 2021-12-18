@@ -1,8 +1,13 @@
 import React, { useContext } from 'react'
 
-import { ElementId, ELEMENT_TYPE, StudioId } from '../../../data/types'
+import {
+  ElementId,
+  ELEMENT_TYPE,
+  EVENT_TYPE,
+  StudioId
+} from '../../../data/types'
 
-import { useScene } from '../../../hooks'
+import { useEvent, useScene } from '../../../hooks'
 
 import {
   ComposerContext,
@@ -28,6 +33,20 @@ import styles from '../styles.module.less'
 
 import api from '../../../api'
 
+const getEventTypeString = (eventType: EVENT_TYPE) => {
+  console.log(eventType)
+  switch (eventType) {
+    case EVENT_TYPE.CHOICE:
+      return 'Choice'
+    case EVENT_TYPE.INPUT:
+      return 'Input'
+    case EVENT_TYPE.JUMP:
+      return 'Jump'
+    default:
+      return undefined
+  }
+}
+
 const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
   studioId,
   sceneId
@@ -35,6 +54,10 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
   const scene = useScene(studioId, sceneId, [sceneId])
 
   const { composer, composerDispatch } = useContext(ComposerContext)
+
+  const event = useEvent(studioId, composer.selectedSceneMapEvent, [
+    composer.selectedSceneMapEvent
+  ])
 
   return (
     <>
@@ -104,7 +127,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                   header={
                     <>
                       <ForwardOutlined className={styles.headerIcon} /> Selected
-                      Jump
+                      Jump Event
                       <ElementHelpButton type={ELEMENT_TYPE.JUMP} />
                     </>
                   }
@@ -148,12 +171,12 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                 ]}
               >
                 {/* Event Panel */}
-                {composer.selectedSceneMapEvent && (
+                {composer.selectedSceneMapEvent && event?.id && (
                   <Collapse.Panel
                     header={
                       <>
                         <AlignLeftOutlined className={styles.headerIcon} />{' '}
-                        Selected Event
+                        Selected {getEventTypeString(event.type)} Event
                         <ElementHelpButton type={ELEMENT_TYPE.EVENT} />
                       </>
                     }

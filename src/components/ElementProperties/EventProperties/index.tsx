@@ -270,7 +270,7 @@ const Persona: React.FC<{
 
 Persona.displayName = 'EventPersona'
 
-const EventEndingToggle: React.FC<{
+const StoryworldEndingToggle: React.FC<{
   studioId: StudioId
   event: Event
 }> = React.memo(({ studioId, event }) => {
@@ -317,13 +317,13 @@ const EventEndingToggle: React.FC<{
           event.type === EVENT_TYPE.INPUT
         }
       >
-        Ending Event
+        Storyworld Ending
       </Checkbox>
     </div>
   )
 })
 
-EventEndingToggle.displayName = 'EventEndingToggle'
+StoryworldEndingToggle.displayName = 'StoryworldEndingToggle'
 
 const EventProperties: React.FC<{
   studioId: StudioId
@@ -361,10 +361,6 @@ const EventProperties: React.FC<{
             />
             <div className={parentStyles.componentId}>{event.id}</div>
 
-            {event.id && (
-              <EventEndingToggle studioId={studioId} event={event} />
-            )}
-
             <EventType studioId={studioId} event={event} />
 
             <Persona
@@ -372,6 +368,10 @@ const EventProperties: React.FC<{
               worldId={event.worldId}
               event={event}
             />
+
+            {event.id && (
+              <StoryworldEndingToggle studioId={studioId} event={event} />
+            )}
           </div>
         </div>
       )}
