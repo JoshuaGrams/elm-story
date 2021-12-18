@@ -25,7 +25,6 @@ import {
 
 import { Select } from 'antd'
 
-import ElementTitle from '../ElementTitle'
 import ElementHelpButton from '../../ElementHelpButton'
 import { VariableRow, VARIABLE_ROW_TYPE } from '../../WorldVariables'
 
@@ -94,15 +93,45 @@ const RouteConditionRow: React.FC<{
 
               setConditionCompareOperatorType(newCompareOperatorType)
             }}
-            onChangeValue={async (newValue: string) => {
+            onChangeValue={async (newValue, variableType, reset) => {
+              let valueToSet = '',
+                shouldReset = false
+
+              switch (variableType) {
+                case VARIABLE_TYPE.BOOLEAN:
+                  valueToSet = newValue
+                  break
+                case VARIABLE_TYPE.STRING:
+                  valueToSet = newValue ? `${newValue}` : ''
+                  break
+                case VARIABLE_TYPE.NUMBER:
+                  if (isNaN(newValue as any)) {
+                    reset?.()
+                    return
+                  }
+
+                  if (!isNaN(newValue as any) || newValue === '' || !newValue) {
+                    valueToSet = `${newValue || 0}`
+
+                    if (newValue === null) shouldReset = true
+                  } else {
+                  }
+
+                  break
+                default:
+                  valueToSet = newValue
+              }
+
               condition.id &&
                 (await api().conditions.saveConditionValue(
                   studioId,
                   condition.id,
-                  newValue !== null ? `${newValue}` : ''
+                  valueToSet
                 ))
 
-              setConditionValue(newValue)
+              setConditionValue(valueToSet)
+
+              shouldReset && reset?.()
             }}
             onDelete={onRemoveCondition}
           />
@@ -171,15 +200,45 @@ const RouteEffectRow: React.FC<{
 
               setEffectSetOperatorType(newSetOperatorType)
             }}
-            onChangeValue={async (newValue: string) => {
+            onChangeValue={async (newValue, variableType, reset) => {
+              let valueToSet = '',
+                shouldReset = false
+
+              switch (variableType) {
+                case VARIABLE_TYPE.BOOLEAN:
+                  valueToSet = newValue
+                  break
+                case VARIABLE_TYPE.STRING:
+                  valueToSet = newValue ? `${newValue}` : ''
+                  break
+                case VARIABLE_TYPE.NUMBER:
+                  if (isNaN(newValue as any)) {
+                    reset?.()
+                    return
+                  }
+
+                  if (!isNaN(newValue as any) || newValue === '' || !newValue) {
+                    valueToSet = `${newValue || 0}`
+
+                    if (newValue === null) shouldReset = true
+                  } else {
+                  }
+
+                  break
+                default:
+                  valueToSet = newValue
+              }
+
               effect.id &&
                 (await api().effects.saveEffectValue(
                   studioId,
                   effect.id,
-                  newValue !== null ? `${newValue}` : ''
+                  valueToSet
                 ))
 
-              setEffectValue(newValue)
+              setEffectValue(valueToSet)
+
+              shouldReset && reset?.()
             }}
             onDelete={onRemoveEffect}
           />

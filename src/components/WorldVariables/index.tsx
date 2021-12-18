@@ -40,7 +40,11 @@ export const VariableRow: React.FC<{
   value?: string
   compareOperatorType?: COMPARE_OPERATOR_TYPE
   setOperatorType?: SET_OPERATOR_TYPE
-  onChangeValue?: (newValue: string) => void
+  onChangeValue?: (
+    newValue: string,
+    variableType: VARIABLE_TYPE,
+    reset?: () => void
+  ) => void
   onCompareOperatorTypeChange?: (
     newCompareOperatorType: COMPARE_OPERATOR_TYPE
   ) => void
@@ -394,7 +398,11 @@ export const VariableRow: React.FC<{
               {variable.type === VARIABLE_TYPE.BOOLEAN && (
                 <Select
                   value={value || variableInitialValue}
-                  onChange={onChangeValue || onInitialValueChangeFromSelect}
+                  onChange={(value) =>
+                    onChangeValue
+                      ? onChangeValue(value, variable.type)
+                      : onInitialValueChangeFromSelect(value)
+                  }
                 >
                   <Option value={'true'}>true</Option>
                   <Option value={'false'}>false</Option>
@@ -411,7 +419,14 @@ export const VariableRow: React.FC<{
                   onValuesChange={debounce(
                     onChangeValue
                       ? (changedValues: { initialValue: string }) => {
-                          onChangeValue(changedValues.initialValue)
+                          onChangeValue(
+                            changedValues.initialValue,
+                            variable.type,
+                            () => {
+                              editVariableInitialValueForm.resetFields()
+                              variableInitialValueInputRef.current?.focus()
+                            }
+                          )
                         }
                       : onVariableInitialValueChangeFromInput,
                     100
