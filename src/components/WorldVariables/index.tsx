@@ -201,7 +201,7 @@ export const VariableRow: React.FC<{
 
       if (variableType === VARIABLE_TYPE.NUMBER) {
         if (
-          typeof changedValues.initialValue === 'number' ||
+          !isNaN(changedValues.initialValue as any) ||
           changedValues.initialValue === '' ||
           !changedValues.initialValue
         ) {
