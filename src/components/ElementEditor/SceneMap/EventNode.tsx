@@ -72,28 +72,57 @@ export const isConnectionValid = (
           logger.info(
             'Unable to make connection. Path choice is equal to source handle and path destination is equal to target.'
           )
-          return (
+
+          if (
             path.choiceId === connection.sourceHandle &&
             path.destinationId === connection.target
-          )
+          ) {
+            return true
+          }
+
+          if (
+            !path.choiceId &&
+            path.originId === connection.source &&
+            path.destinationId === connection.target
+          ) {
+            return true
+          }
+
+          return false
         case 'INPUT':
           logger.info(
             'Unable to make connection. Path input is equal to source handle and path destination is equal to target.'
           )
-          return (
+          if (
             path.inputId === connection.sourceHandle &&
             path.destinationId === connection.target
-          )
+          ) {
+            return true
+          }
+
+          return false
         case 'JUMP':
           logger.info(
             'Unable to make connection. Path choice is equal to source handle and path destination is equal to target or path input is equal to source handle and path destination is equal to target '
           )
-          return (
+          if (
             (path.choiceId === connection.sourceHandle &&
               path.destinationId === connection.target) ||
             (path.inputId === connection.sourceHandle &&
               path.destinationId === connection.target)
-          )
+          ) {
+            return true
+          }
+
+          if (
+            !path.choiceId &&
+            path.originId === connection.source &&
+            path.destinationId === connection.target
+          ) {
+            return true
+          }
+
+          return false
         case 'ORIGIN':
           logger.info(
             'Unable to make connection. Path origin is equal to source handle and destination is equal to target.'
