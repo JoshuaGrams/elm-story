@@ -13,12 +13,11 @@
     }
 
     .selectWrapper {
-      display: flex;
+      display: grid;
+      grid-template-columns: 224px 32px;
 
       :global .ant-select {
-        width: 100%;
         margin-bottom: 4px !important;
-        flex-grow: 1;
       }
 
       :global .ant-btn {
@@ -30,7 +29,6 @@
         margin: 0px;
         padding: 0px;
         border: none;
-        flex-grow: 0;
       }
 
       .jumpToBtn {

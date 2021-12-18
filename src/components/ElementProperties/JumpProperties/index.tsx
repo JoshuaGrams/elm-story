@@ -10,6 +10,7 @@ import {
 } from '../../../contexts/ComposerContext'
 
 import ElementTitle from '../ElementTitle'
+import EventTypeSelect from '../../EventTypeSelect'
 import JumpTo from '../../JumpTo'
 
 import rootStyles from '../styles.module.less'
@@ -51,29 +52,34 @@ const JumpDetails: React.FC<{
             />
             <div className={rootStyles.componentId}>{jump.id}</div>
 
-            <div className={styles.jumpTo}>
-              {jump.id && (
-                <JumpTo
-                  studioId={studioId}
-                  jumpId={jump.id}
-                  onRemove={async (jumpId) => {
-                    if (jumpId === composer.selectedSceneMapJump) {
-                      composerDispatch({
-                        type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
-                        selectedSceneMapJump: null
-                      })
-                    }
+            <EventTypeSelect studioId={studioId} jump={jump} />
 
-                    composerDispatch({
-                      type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
-                      removedElement: {
-                        type: ELEMENT_TYPE.JUMP,
-                        id: jumpId
+            <div className={styles.JumpPath}>
+              <div className={styles.header}>Path</div>
+              <div className={styles.wrapper}>
+                {jump.id && (
+                  <JumpTo
+                    studioId={studioId}
+                    jumpId={jump.id}
+                    onRemove={async (jumpId) => {
+                      if (jumpId === composer.selectedSceneMapJump) {
+                        composerDispatch({
+                          type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+                          selectedSceneMapJump: null
+                        })
                       }
-                    })
-                  }}
-                />
-              )}
+
+                      composerDispatch({
+                        type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
+                        removedElement: {
+                          type: ELEMENT_TYPE.JUMP,
+                          id: jumpId
+                        }
+                      })
+                    }}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>

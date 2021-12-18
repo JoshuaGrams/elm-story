@@ -290,7 +290,8 @@ export interface Effect extends Element {
 
 export enum EVENT_TYPE {
   CHOICE = 'CHOICE',
-  INPUT = 'INPUT'
+  INPUT = 'INPUT',
+  JUMP = 'JUMP'
 }
 
 export type EventPersona = [ElementId, CHARACTER_MASK_TYPE, string | undefined] // [characterId, mask, reference ID]

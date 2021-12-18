@@ -1,0 +1,28 @@
+.EventType {
+  // TODO: combine with duplicates in in other property panels
+  margin-top: 10px;
+  border: 1px solid hsl(0, 0%, 15%);
+  border-radius: 2px !important;
+
+  .header {
+    border-bottom: 1px solid hsl(0, 0%, 15%);
+    font-size: 12px;
+    text-transform: uppercase;
+    text-align: left;
+    background: hsl(0, 0%, 0%);
+    padding: 0px 4px;
+    padding-left: 10px;
+    height: 32px;
+    line-height: 32px;
+  }
+
+  .select {
+    width: 100%;
+    font-size: 12px;
+
+    :global .ant-select-selector {
+      border: none !important;
+      border-radius: 0px !important;
+    }
+  }
+}

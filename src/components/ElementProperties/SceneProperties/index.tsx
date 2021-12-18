@@ -34,7 +34,6 @@ import styles from '../styles.module.less'
 import api from '../../../api'
 
 const getEventTypeString = (eventType: EVENT_TYPE) => {
-  console.log(eventType)
   switch (eventType) {
     case EVENT_TYPE.CHOICE:
       return 'Choice'

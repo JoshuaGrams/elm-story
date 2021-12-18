@@ -28,63 +28,12 @@ import { RollbackOutlined } from '@ant-design/icons'
 import { CheckboxChangeEvent } from 'antd/lib/checkbox'
 
 import ElementTitle from '../ElementTitle'
+import EventTypeSelect from '../../EventTypeSelect'
 
 import parentStyles from '../styles.module.less'
 import styles from './styles.module.less'
 
 import api from '../../../api'
-
-const EventType: React.FC<{
-  studioId: StudioId
-  event: Event
-}> = React.memo(({ studioId, event }) => {
-  const { composer, composerDispatch } = useContext(ComposerContext)
-
-  const changeType = useCallback(
-    async (type: EVENT_TYPE) => {
-      if (event.id) {
-        // Change to input
-        if (event.type === EVENT_TYPE.CHOICE && type === EVENT_TYPE.INPUT) {
-          composer.selectedWorldOutlineElement.id === event.sceneId &&
-            composerDispatch({
-              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
-              selectedSceneMapChoice: null
-            })
-
-          await api().events.switchEventFromChoiceToInputType(studioId, event)
-        }
-
-        // Change to choice
-        if (event.type === EVENT_TYPE.INPUT && type === EVENT_TYPE.CHOICE) {
-          // It will be necessary to remove input and associated routes
-          if (event.input)
-            await api().events.switchEventFromInputToChoiceType(studioId, event)
-        }
-      }
-    },
-    [studioId, event.type, event.choices]
-  )
-
-  return (
-    <div className={styles.EventType}>
-      <div className={styles.header}>Type</div>
-      <Select
-        value={event.type}
-        onChange={changeType}
-        className={styles.select}
-      >
-        <Select.Option value={EVENT_TYPE.CHOICE} key="choice">
-          Choice
-        </Select.Option>
-        <Select.Option value={EVENT_TYPE.INPUT} key="input">
-          Input
-        </Select.Option>
-      </Select>
-    </div>
-  )
-})
-
-EventType.displayName = 'EventType'
 
 const Persona: React.FC<{
   studioId: StudioId
@@ -361,7 +310,7 @@ const EventProperties: React.FC<{
             />
             <div className={parentStyles.componentId}>{event.id}</div>
 
-            <EventType studioId={studioId} event={event} />
+            <EventTypeSelect studioId={studioId} event={event} />
 
             <Persona
               studioId={studioId}

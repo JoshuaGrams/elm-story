@@ -326,6 +326,8 @@ export interface VariableCollection {
   [variableId: string]: VariableData
 }
 
+// TODO: following duped from Storyteller
+
 export interface WorldDataJSON {
   _: RootData
   characters: CharacterCollection
@@ -517,7 +519,6 @@ export interface EngineJumpCollection {
 
 export interface EnginePathData {
   choiceId?: ElementId
-  conditionsType: PATH_CONDITIONS_TYPE
   destinationId: ElementId
   destinationType: ELEMENT_TYPE
   id: ElementId
