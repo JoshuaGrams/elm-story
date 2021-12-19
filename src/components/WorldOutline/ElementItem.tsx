@@ -293,9 +293,9 @@ const ElementItem = ({
                 {(elementType === ELEMENT_TYPE.FOLDER ||
                   elementType === ELEMENT_TYPE.SCENE) && (
                   <Badge
+                    overflowCount={99}
                     count={item.children.length}
                     size="small"
-                    style={{ width: '28px' }}
                     className={styles.badge}
                   />
                 )}
