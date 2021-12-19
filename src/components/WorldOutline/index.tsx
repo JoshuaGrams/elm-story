@@ -1063,6 +1063,34 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
     logger.info(`WorldOutline->OnEditElementTitle`)
 
     if (treeData) {
+      if (!complete && !title) {
+        logger.info(`WorldOutline->OnEditElementTitle->not complete, no title`)
+
+        setTreeData(
+          mutateTree(treeData, elementId, {
+            data: { ...treeData.items[elementId].data, renaming: true }
+          })
+        )
+
+        composerDispatch({
+          type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_RENAME,
+          renamingWorldOutlineElement: { id: elementId, renaming: true }
+        })
+      }
+
+      // elmstorygames/feedback#151
+      if (complete && !title) {
+        logger.info(
+          `WorldOutline->OnEditElementTitle->complete, no title->reset`
+        )
+
+        setTreeData(
+          mutateTree(treeData, elementId, {
+            data: { ...treeData.items[elementId].data, renaming: false }
+          })
+        )
+      }
+
       if (complete && title) {
         logger.info(
           `WorldOutline->OnEditElementTitle->complete && title:'${title}'`
@@ -1110,19 +1138,6 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
             }
           })
         }
-      } else {
-        logger.info(`WorldOutline->OnEditElementTitle->else`)
-
-        setTreeData(
-          mutateTree(treeData, elementId, {
-            data: { ...treeData.items[elementId].data, renaming: true }
-          })
-        )
-
-        composerDispatch({
-          type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_RENAME,
-          renamingWorldOutlineElement: { id: elementId, renaming: true }
-        })
       }
     }
   }

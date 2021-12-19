@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 
 import { ElementId, ELEMENT_TYPE } from '../../data/types'
 import {
@@ -205,6 +205,17 @@ const ElementItem = ({
   )
     compositeSelectionStyles.push(styles.sceneElementSelected)
 
+  useEffect(() => {
+    // elmstorygames/feedback#150
+    if (item.data.renaming) {
+      const textarea = document.querySelector(
+        '.ant-typography-edit-content .ant-input'
+      ) as HTMLTextAreaElement | null
+
+      textarea?.select()
+    }
+  }, [item.data.renaming])
+
   return (
     <div
       ref={provided.innerRef}
@@ -259,6 +270,8 @@ const ElementItem = ({
                   onChange: (title) =>
                     OnEditElementTitle(item.id as string, title, true)
                 }}
+                // elmstorygames/feedback#149
+                className={styles.titleEdit}
               >
                 {elementTitle || `New ${elementType}`}
               </Text>
@@ -277,10 +290,12 @@ const ElementItem = ({
                   <JumpBadge jumpId={item.id as string} />
                 )}
                 {/* folders and scenes */}
-                {!item.isExpanded && (
+                {(elementType === ELEMENT_TYPE.FOLDER ||
+                  elementType === ELEMENT_TYPE.SCENE) && (
                   <Badge
                     count={item.children.length}
                     size="small"
+                    style={{ width: '28px' }}
                     className={styles.badge}
                   />
                 )}
