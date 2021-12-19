@@ -1318,6 +1318,40 @@ const SceneMap: React.FC<{
                     }
                   ],
                   [
+                    'Switch to Jump',
+                    async ({ elementId }) => {
+                      if (elementId) {
+                        const foundEvent = await api().events.getEvent(
+                          studioId,
+                          elementId
+                        )
+
+                        const jumpId = await api().events.switchEventFromChoiceOrInputToJumpType(
+                          studioId,
+                          foundEvent
+                        )
+
+                        if (jumpId) {
+                          composerDispatch({
+                            type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
+                            removedElement: {
+                              id: foundEvent.id,
+                              type: ELEMENT_TYPE.EVENT
+                            }
+                          })
+
+                          composerDispatch({
+                            type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
+                            savedElement: {
+                              id: jumpId,
+                              type: ELEMENT_TYPE.JUMP
+                            }
+                          })
+                        }
+                      }
+                    }
+                  ],
+                  [
                     'Remove Event',
                     async ({ elementId }) => {
                       if (scene && elementId)
@@ -1355,6 +1389,76 @@ const SceneMap: React.FC<{
               {
                 className: 'nodeJumpHeader',
                 items: [
+                  [
+                    'Switch to Choice',
+                    async ({ elementId }) => {
+                      if (elementId) {
+                        const foundJump = await api().jumps.getJump(
+                          studioId,
+                          elementId
+                        )
+
+                        const eventId = await api().jumps.switchJumpToChoiceOrInputEventType(
+                          studioId,
+                          foundJump,
+                          EVENT_TYPE.CHOICE
+                        )
+
+                        if (eventId) {
+                          composerDispatch({
+                            type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
+                            removedElement: {
+                              id: foundJump.id,
+                              type: ELEMENT_TYPE.JUMP
+                            }
+                          })
+
+                          composerDispatch({
+                            type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
+                            savedElement: {
+                              id: eventId,
+                              type: ELEMENT_TYPE.EVENT
+                            }
+                          })
+                        }
+                      }
+                    }
+                  ],
+                  [
+                    'Switch to Input',
+                    async ({ elementId }) => {
+                      if (elementId) {
+                        const foundJump = await api().jumps.getJump(
+                          studioId,
+                          elementId
+                        )
+
+                        const eventId = await api().jumps.switchJumpToChoiceOrInputEventType(
+                          studioId,
+                          foundJump,
+                          EVENT_TYPE.INPUT
+                        )
+
+                        if (eventId) {
+                          composerDispatch({
+                            type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
+                            removedElement: {
+                              id: foundJump.id,
+                              type: ELEMENT_TYPE.JUMP
+                            }
+                          })
+
+                          composerDispatch({
+                            type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
+                            savedElement: {
+                              id: eventId,
+                              type: ELEMENT_TYPE.EVENT
+                            }
+                          })
+                        }
+                      }
+                    }
+                  ],
                   [
                     'Remove Jump',
                     async ({ elementId }) => {
