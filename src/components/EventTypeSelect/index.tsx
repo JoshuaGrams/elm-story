@@ -39,9 +39,13 @@ const EventTypeSelect: React.FC<{
         await api().events.switchEventFromChoiceToInputType(studioId, event)
       }
 
-      // Change from choice to jump
-      if (event?.type === EVENT_TYPE.CHOICE && type === EVENT_TYPE.JUMP) {
-        const jumpId = await api().events.switchEventFromChoiceToJumpType(
+      // Change from choice or input to jump
+      if (
+        (event?.type === EVENT_TYPE.CHOICE ||
+          event?.type === EVENT_TYPE.INPUT) &&
+        type === EVENT_TYPE.JUMP
+      ) {
+        const jumpId = await api().events.switchEventFromChoiceOrInputToJumpType(
           studioId,
           event
         )
@@ -69,11 +73,6 @@ const EventTypeSelect: React.FC<{
         // It will be necessary to remove input and associated paths
         if (event.input)
           await api().events.switchEventFromInputToChoiceType(studioId, event)
-      }
-
-      // Change from input to jump
-      if (event?.type === EVENT_TYPE.INPUT && type === EVENT_TYPE.JUMP) {
-        console.log('change from input to jump')
       }
 
       // Change from jump to input

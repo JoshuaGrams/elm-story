@@ -189,7 +189,7 @@ export async function switchEventFromChoiceToInputType(
   }
 }
 
-export async function switchEventFromChoiceToJumpType(
+export async function switchEventFromChoiceOrInputToJumpType(
   studioId: StudioId,
   event: Event
 ): Promise<ElementId | undefined> {
