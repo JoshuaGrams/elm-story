@@ -799,7 +799,7 @@ export class LibraryDatabase extends Dexie {
     logger.info(`LibraryDatabase->removeJump:${jumpId}`)
 
     try {
-      if (!skipDestinationPaths && paths.length > 0) {
+      if (!skipDestinationPaths) {
         const paths = await this.paths
           .where({ destinationId: jumpId })
           .toArray()
