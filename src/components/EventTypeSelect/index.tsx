@@ -63,9 +63,28 @@ const EventTypeSelect: React.FC<{
         }
       }
 
-      // Change from jump to choice
-      if (jump?.id && type === EVENT_TYPE.CHOICE) {
-        console.log('change from jump to choice')
+      // Change from jump to choice or input
+      if (
+        jump?.id &&
+        (type === EVENT_TYPE.CHOICE || type === EVENT_TYPE.INPUT)
+      ) {
+        const eventId = await api().jumps.switchJumpToChoiceOrInputEventType(
+          studioId,
+          jump,
+          type
+        )
+
+        if (eventId) {
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
+            removedElement: { id: jump.id, type: ELEMENT_TYPE.JUMP }
+          })
+
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
+            savedElement: { id: eventId, type: ELEMENT_TYPE.EVENT }
+          })
+        }
       }
 
       // Change from input to choice
@@ -73,11 +92,6 @@ const EventTypeSelect: React.FC<{
         // It will be necessary to remove input and associated paths
         if (event.input)
           await api().events.switchEventFromInputToChoiceType(studioId, event)
-      }
-
-      // Change from jump to input
-      if (jump?.id && type === EVENT_TYPE.INPUT) {
-        console.log('change from jump to input')
       }
     },
     [studioId, event?.type, event?.choices]

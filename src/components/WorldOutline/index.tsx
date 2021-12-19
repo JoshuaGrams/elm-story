@@ -1216,6 +1216,11 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
             const event = await api().events.getEvent(studioId, id)
 
             if (event.id) {
+              const sceneChildRefs = await api().scenes.getChildRefsBySceneRef(
+                studioId,
+                event.sceneId
+              )
+
               // #414
               const newTreeData = addItemToTree(treeData, event.sceneId, {
                 id,
@@ -1233,6 +1238,10 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
               })
 
               newTreeData.items[event.sceneId].data.selected = true
+
+              newTreeData.items[event.sceneId].children = sceneChildRefs.map(
+                (child) => child[1]
+              )
 
               setTreeData(newTreeData)
 

@@ -792,21 +792,26 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeJump(jumpId: ElementId) {
+  public async removeJump(
+    jumpId: ElementId,
+    skipDestinationPaths: boolean = false
+  ) {
     logger.info(`LibraryDatabase->removeJump:${jumpId}`)
 
     try {
-      const paths = await this.paths.where({ destinationId: jumpId }).toArray()
+      if (!skipDestinationPaths && paths.length > 0) {
+        const paths = await this.paths
+          .where({ destinationId: jumpId })
+          .toArray()
 
-      if (paths.length > 0) {
         logger.info(
           `removeJump->Removing ${paths.length} path(s) from jump with ID: ${jumpId}`
         )
-      }
 
-      await Promise.all(
-        paths.map(async (path) => path.id && (await this.removePath(path.id)))
-      )
+        await Promise.all(
+          paths.map(async (path) => path.id && (await this.removePath(path.id)))
+        )
+      }
     } catch (error) {
       throw error
     }
@@ -1731,7 +1736,11 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeEvent(eventId: ElementId, skipOriginPaths: boolean = false, skipDestinationPaths: boolean = false) {
+  public async removeEvent(
+    eventId: ElementId,
+    skipOriginPaths: boolean = false,
+    skipDestinationPaths: boolean = false
+  ) {
     try {
       logger.info('LibraryDatabase->removeEvent')
 

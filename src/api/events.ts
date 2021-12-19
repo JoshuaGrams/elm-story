@@ -194,47 +194,54 @@ export async function switchEventFromChoiceOrInputToJumpType(
   event: Event
 ): Promise<ElementId | undefined> {
   if (event?.id) {
-    const [jump, updatedSceneChildRefs, pathsToPatch] = await Promise.all([
-      api().jumps.saveJump(studioId, {
-        composer: event.composer,
-        path: [event.sceneId],
-        sceneId: event.sceneId,
-        tags: [],
-        title: 'Untitled Jump',
-        worldId: event.worldId
-      }),
-      api().scenes.getChildRefsBySceneRef(studioId, event.sceneId),
-      api().paths.getPathsByDestinationRef(studioId, event.id),
-      api().events.removeEvent(studioId, event.id, false, true)
-    ])
+    try {
+      const [jump, updatedSceneChildRefs, pathsToPatch] = await Promise.all([
+        api().jumps.saveJump(studioId, {
+          composer: event.composer,
+          path: [event.sceneId],
+          sceneId: event.sceneId,
+          tags: [],
+          title: 'Untitled Jump',
+          worldId: event.worldId
+        }),
+        api().scenes.getChildRefsBySceneRef(studioId, event.sceneId),
+        api().paths.getPathsByDestinationRef(studioId, event.id),
+        api().events.removeEvent(studioId, event.id, false, true)
+      ])
 
-    if (jump?.id) {
-      const foundEventPosition = updatedSceneChildRefs.findIndex(
-        (child) => child[1] === event.id
-      )
+      if (jump?.id) {
+        const foundEventPosition = updatedSceneChildRefs.findIndex(
+          (child) => child[1] === event.id
+        )
 
-      if (foundEventPosition !== -1) {
-        updatedSceneChildRefs[foundEventPosition] = [ELEMENT_TYPE.JUMP, jump.id]
+        if (foundEventPosition !== -1) {
+          updatedSceneChildRefs[foundEventPosition] = [
+            ELEMENT_TYPE.JUMP,
+            jump.id
+          ]
 
-        await Promise.all([
-          pathsToPatch.map(async (path) => {
-            jump?.id &&
-              (await api().paths.savePath(studioId, {
-                ...path,
-                destinationId: jump.id,
-                destinationType: ELEMENT_TYPE.JUMP
-              }))
-          }),
-          api().scenes.saveChildRefsToScene(
-            studioId,
-            event.sceneId,
-            updatedSceneChildRefs
-          )
-        ])
+          await Promise.all([
+            pathsToPatch.map(async (path) => {
+              jump?.id &&
+                (await api().paths.savePath(studioId, {
+                  ...path,
+                  destinationId: jump.id,
+                  destinationType: ELEMENT_TYPE.JUMP
+                }))
+            }),
+            api().scenes.saveChildRefsToScene(
+              studioId,
+              event.sceneId,
+              updatedSceneChildRefs
+            )
+          ])
+        }
       }
-    }
 
-    return jump?.id
+      return jump?.id
+    } catch (error) {
+      throw error
+    }
   } else {
     throw 'Unable to switch event type from choice to jump. Missing event or event ID.'
   }
@@ -256,7 +263,7 @@ export async function switchEventFromInputToChoiceType(
     }
   } else {
     throw new Error(
-      'Unable to switch event type from input to choice. Missing event, event ID or input ID.'
+      'Unable to switch event type from input to choice or input. Missing event, event ID or input ID.'
     )
   }
 }

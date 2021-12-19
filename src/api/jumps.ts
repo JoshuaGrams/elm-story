@@ -1,7 +1,18 @@
 import { LibraryDatabase, LIBRARY_TABLE } from '../db'
 import { v4 as uuid } from 'uuid'
 
-import { ElementId, WorldId, Jump, JumpPath, StudioId } from '../data/types'
+import {
+  ElementId,
+  WorldId,
+  Jump,
+  JumpPath,
+  StudioId,
+  DEFAULT_EVENT_CONTENT,
+  EVENT_TYPE,
+  ELEMENT_TYPE
+} from '../data/types'
+
+import api from '.'
 
 export async function getJump(studioId: StudioId, jumpId: ElementId) {
   try {
@@ -94,9 +105,88 @@ export async function saveSceneRefToJump(
   }
 }
 
-export async function removeJump(studioId: StudioId, jumpId: ElementId) {
+export async function switchJumpToChoiceOrInputEventType(
+  studioId: StudioId,
+  jump: Jump,
+  eventType: EVENT_TYPE.CHOICE | EVENT_TYPE.INPUT
+) {
+  if (jump?.id && jump.sceneId) {
+    const newEventId = uuid()
+
+    let inputId: string | undefined
+
+    if (eventType === EVENT_TYPE.INPUT) {
+      inputId = (
+        await api().inputs.saveInput(studioId, {
+          eventId: newEventId,
+          tags: [],
+          title: 'Untitled Input',
+          worldId: jump.worldId
+        })
+      ).id
+    }
+
+    const [event, updatedSceneChildRefs, pathsToPatch] = await Promise.all([
+      api().events.saveEvent(studioId, {
+        choices: [],
+        composer: jump.composer,
+        content: JSON.stringify([...DEFAULT_EVENT_CONTENT]),
+        ending: false,
+        id: newEventId,
+        input: inputId,
+        sceneId: jump.sceneId,
+        tags: [],
+        title: 'Untitled Event',
+        type: eventType,
+        worldId: jump.worldId
+      }),
+      api().scenes.getChildRefsBySceneRef(studioId, jump.sceneId),
+      api().paths.getPathsByDestinationRef(studioId, jump.id),
+      api().jumps.removeJump(studioId, jump.id, true)
+    ])
+
+    if (event?.id) {
+      const foundJumpPosition = updatedSceneChildRefs.findIndex(
+        (child) => child[1] === jump.id
+      )
+
+      if (foundJumpPosition !== -1) {
+        updatedSceneChildRefs[foundJumpPosition] = [
+          ELEMENT_TYPE.EVENT,
+          event.id
+        ]
+
+        await Promise.all([
+          pathsToPatch.map(async (path) => {
+            event?.id &&
+              (await api().paths.savePath(studioId, {
+                ...path,
+                destinationId: event.id,
+                destinationType: ELEMENT_TYPE.EVENT
+              }))
+          }),
+          api().scenes.saveChildRefsToScene(
+            studioId,
+            jump.sceneId,
+            updatedSceneChildRefs
+          )
+        ])
+      }
+    }
+
+    return event?.id
+  } else {
+    throw 'Unable to switch event type from jump to choice. Missing jump or jump ID.'
+  }
+}
+
+export async function removeJump(
+  studioId: StudioId,
+  jumpId: ElementId,
+  skipDestinationPaths: boolean = false
+) {
   try {
-    await new LibraryDatabase(studioId).removeJump(jumpId)
+    await new LibraryDatabase(studioId).removeJump(jumpId, skipDestinationPaths)
   } catch (error) {
     throw error
   }
