@@ -10,7 +10,8 @@ import {
   EVENT_TYPE,
   CharacterRefs,
   CharacterMask,
-  CHARACTER_MASK_TYPE
+  CHARACTER_MASK_TYPE,
+  ELEMENT_TYPE
 } from '../data/types'
 
 import api from '.'
@@ -176,6 +177,46 @@ export async function switchEventFromChoiceToInputType(
     throw new Error(
       'Unable to switch event type from choice to input. Missing event or event ID.'
     )
+  }
+}
+
+export async function switchEventFromChoiceToJumpType(
+  studioId: StudioId,
+  event: Event
+): Promise<ElementId | undefined> {
+  if (event?.id) {
+    const [jump, updatedSceneChildRefs] = await Promise.all([
+      api().jumps.saveJump(studioId, {
+        composer: event.composer,
+        path: [event.sceneId],
+        sceneId: event.sceneId,
+        tags: [],
+        title: 'Untitled Jump',
+        worldId: event.worldId
+      }),
+      await api().scenes.getChildRefsBySceneRef(studioId, event.sceneId),
+      api().events.removeEvent(studioId, event.id)
+    ])
+
+    if (jump?.id) {
+      const foundEventPosition = updatedSceneChildRefs.findIndex(
+        (child) => child[1] === event.id
+      )
+
+      if (foundEventPosition !== -1) {
+        updatedSceneChildRefs[foundEventPosition] = [ELEMENT_TYPE.JUMP, jump.id]
+
+        await api().scenes.saveChildRefsToScene(
+          studioId,
+          event.sceneId,
+          updatedSceneChildRefs
+        )
+      }
+    }
+
+    return jump?.id
+  } else {
+    throw 'Unable to switch event type from choice to jump. Missing event or event ID.'
   }
 }
 

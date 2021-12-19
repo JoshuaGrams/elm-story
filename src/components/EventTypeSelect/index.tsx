@@ -1,6 +1,12 @@
 import React, { useCallback, useContext } from 'react'
 
-import { EVENT_TYPE, Event, Jump, StudioId } from '../../data/types'
+import {
+  EVENT_TYPE,
+  Event,
+  Jump,
+  StudioId,
+  ELEMENT_TYPE
+} from '../../data/types'
 
 import {
   ComposerContext,
@@ -35,7 +41,22 @@ const EventTypeSelect: React.FC<{
 
       // Change from choice to jump
       if (event?.type === EVENT_TYPE.CHOICE && type === EVENT_TYPE.JUMP) {
-        console.log('change from choice to jump')
+        const jumpId = await api().events.switchEventFromChoiceToJumpType(
+          studioId,
+          event
+        )
+
+        if (jumpId) {
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
+            removedElement: { id: event.id, type: ELEMENT_TYPE.EVENT }
+          })
+
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,
+            savedElement: { id: jumpId, type: ELEMENT_TYPE.JUMP }
+          })
+        }
       }
 
       // Change from jump to choice
