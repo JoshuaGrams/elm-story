@@ -37,9 +37,18 @@ export async function saveEvent(
   }
 }
 
-export async function removeEvent(studioId: StudioId, eventId: ElementId) {
+export async function removeEvent(
+  studioId: StudioId,
+  eventId: ElementId,
+  skipOriginPaths: boolean = false,
+  skipDestinationPaths: boolean = false
+) {
   try {
-    await new LibraryDatabase(studioId).removeEvent(eventId)
+    await new LibraryDatabase(studioId).removeEvent(
+      eventId,
+      skipOriginPaths,
+      skipDestinationPaths
+    )
   } catch (error) {
     throw error
   }
@@ -185,7 +194,7 @@ export async function switchEventFromChoiceToJumpType(
   event: Event
 ): Promise<ElementId | undefined> {
   if (event?.id) {
-    const [jump, updatedSceneChildRefs] = await Promise.all([
+    const [jump, updatedSceneChildRefs, pathsToPatch] = await Promise.all([
       api().jumps.saveJump(studioId, {
         composer: event.composer,
         path: [event.sceneId],
@@ -194,8 +203,9 @@ export async function switchEventFromChoiceToJumpType(
         title: 'Untitled Jump',
         worldId: event.worldId
       }),
-      await api().scenes.getChildRefsBySceneRef(studioId, event.sceneId),
-      api().events.removeEvent(studioId, event.id)
+      api().scenes.getChildRefsBySceneRef(studioId, event.sceneId),
+      api().paths.getPathsByDestinationRef(studioId, event.id),
+      api().events.removeEvent(studioId, event.id, false, true)
     ])
 
     if (jump?.id) {
@@ -206,11 +216,21 @@ export async function switchEventFromChoiceToJumpType(
       if (foundEventPosition !== -1) {
         updatedSceneChildRefs[foundEventPosition] = [ELEMENT_TYPE.JUMP, jump.id]
 
-        await api().scenes.saveChildRefsToScene(
-          studioId,
-          event.sceneId,
-          updatedSceneChildRefs
-        )
+        await Promise.all([
+          pathsToPatch.map(async (path) => {
+            jump?.id &&
+              (await api().paths.savePath(studioId, {
+                ...path,
+                destinationId: jump.id,
+                destinationType: ELEMENT_TYPE.JUMP
+              }))
+          }),
+          api().scenes.saveChildRefsToScene(
+            studioId,
+            event.sceneId,
+            updatedSceneChildRefs
+          )
+        ])
       }
     }
 

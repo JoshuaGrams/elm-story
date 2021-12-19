@@ -37,6 +37,19 @@ export async function getPassthroughPathsByEventRef(
   }
 }
 
+export async function getPathsByDestinationRef(
+  studioId: StudioId,
+  destinationId: ElementId
+) {
+  try {
+    return await new LibraryDatabase(studioId).paths
+      .where({ destinationId })
+      .toArray()
+  } catch (error) {
+    throw error
+  }
+}
+
 export async function savePath(
   studioId: StudioId,
   path: Path

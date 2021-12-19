@@ -1731,7 +1731,7 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async removeEvent(eventId: ElementId) {
+  public async removeEvent(eventId: ElementId, skipOriginPaths: boolean = false, skipDestinationPaths: boolean = false) {
     try {
       logger.info('LibraryDatabase->removeEvent')
 
@@ -1775,20 +1775,47 @@ export class LibraryDatabase extends Dexie {
         choices = await this.choices.where({ eventId }).toArray(),
         inputs = await this.inputs.where({ eventId }).toArray()
 
+      const removeEventPromises = [
+        jumps.map(
+          async (jump) =>
+            jump.id && (await this.saveJumpPath(jump.id, [jump.path[0]]))
+        ),
+        choices.map(
+          async (choice) => choice.id && (await this.removeChoice(choice.id))
+        ),
+        inputs.map(
+          async (input) => input.id && (await this.removeInput(input.id))
+        )
+      ]
+
       jumps.length > 0 &&
         logger.info(
           `LibraryDatabase->removeEvent->Updating ${jumps.length} jump(s) from event with ID: ${eventId}`
         )
 
-      pathsWithOrigin.length > 0 &&
+      if (!skipOriginPaths && pathsWithOrigin.length > 0) {
         logger.info(
           `LibraryDatabase->removeEvent->Removing ${pathsWithDestination.length} path(s) with origin from event with ID: ${eventId}`
         )
 
-      pathsWithDestination.length > 0 &&
+        removeEventPromises.push(
+          pathsWithOrigin.map(
+            async (path) => path.id && (await this.removePath(path.id))
+          )
+        )
+      }
+
+      if (!skipDestinationPaths && pathsWithDestination.length > 0) {
         logger.info(
           `LibraryDatabase->removeEvent->Removing ${pathsWithDestination.length} path(s) with destination from event with ID: ${eventId}`
         )
+
+        removeEventPromises.push(
+          pathsWithDestination.map(
+            async (path) => path.id && (await this.removePath(path.id))
+          )
+        )
+      }
 
       choices.length > 0 &&
         logger.info(
@@ -1800,24 +1827,7 @@ export class LibraryDatabase extends Dexie {
           `LibraryDatabase->removeEvent->Removing ${inputs.length} input(s) from event with ID: ${eventId}`
         )
 
-      await Promise.all([
-        jumps.map(
-          async (jump) =>
-            jump.id && (await this.saveJumpPath(jump.id, [jump.path[0]]))
-        ),
-        pathsWithOrigin.map(
-          async (path) => path.id && (await this.removePath(path.id))
-        ),
-        pathsWithDestination.map(
-          async (path) => path.id && (await this.removePath(path.id))
-        ),
-        choices.map(
-          async (choice) => choice.id && (await this.removeChoice(choice.id))
-        ),
-        inputs.map(
-          async (input) => input.id && (await this.removeInput(input.id))
-        )
-      ])
+      await Promise.all(removeEventPromises)
     } catch (error) {
       throw error
     }
