@@ -218,6 +218,17 @@ const ChoiceRow: React.FC<{
     setRenamingChoice(false)
   }, [title])
 
+  useEffect(() => {
+    // elmstorygames/feedback#152
+    if (renamingChoice) {
+      const textarea = document.querySelector(
+        '.ant-typography-edit-content .ant-input'
+      ) as HTMLTextAreaElement | null
+
+      textarea?.select()
+    }
+  }, [renamingChoice])
+
   return (
     <div
       className={`${styles.ChoiceRow} nodrag ${
