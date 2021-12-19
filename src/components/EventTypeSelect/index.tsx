@@ -22,31 +22,42 @@ const EventTypeSelect: React.FC<{
 
   const changeType = useCallback(
     async (type: EVENT_TYPE) => {
-      if (
-        (type === EVENT_TYPE.CHOICE || type === EVENT_TYPE.INPUT) &&
-        event?.id
-      ) {
-        // Change to input
-        if (event.type === EVENT_TYPE.CHOICE && type === EVENT_TYPE.INPUT) {
-          composer.selectedWorldOutlineElement.id === event.sceneId &&
-            composerDispatch({
-              type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
-              selectedSceneMapChoice: null
-            })
+      // Change from choice to input
+      if (event?.type === EVENT_TYPE.CHOICE && type === EVENT_TYPE.INPUT) {
+        composer.selectedWorldOutlineElement.id === event.sceneId &&
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
+            selectedSceneMapChoice: null
+          })
 
-          await api().events.switchEventFromChoiceToInputType(studioId, event)
-        }
-
-        // Change to choice
-        if (event.type === EVENT_TYPE.INPUT && type === EVENT_TYPE.CHOICE) {
-          // It will be necessary to remove input and associated routes
-          if (event.input)
-            await api().events.switchEventFromInputToChoiceType(studioId, event)
-        }
+        await api().events.switchEventFromChoiceToInputType(studioId, event)
       }
 
-      if (type === EVENT_TYPE.JUMP && jump?.id) {
-        console.log('change type to jump')
+      // Change from choice to jump
+      if (event?.type === EVENT_TYPE.CHOICE && type === EVENT_TYPE.JUMP) {
+        console.log('change from choice to jump')
+      }
+
+      // Change from jump to choice
+      if (jump?.id && type === EVENT_TYPE.CHOICE) {
+        console.log('change from jump to choice')
+      }
+
+      // Change from input to choice
+      if (event?.type === EVENT_TYPE.INPUT && type === EVENT_TYPE.CHOICE) {
+        // It will be necessary to remove input and associated paths
+        if (event.input)
+          await api().events.switchEventFromInputToChoiceType(studioId, event)
+      }
+
+      // Change from input to jump
+      if (event?.type === EVENT_TYPE.INPUT && type === EVENT_TYPE.JUMP) {
+        console.log('change from input to jump')
+      }
+
+      // Change from jump to input
+      if (jump?.id && type === EVENT_TYPE.INPUT) {
+        console.log('change from jump to input')
       }
     },
     [studioId, event?.type, event?.choices]

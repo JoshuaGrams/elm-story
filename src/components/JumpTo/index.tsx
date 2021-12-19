@@ -117,10 +117,18 @@ const JumpSelect: React.FC<{
             </h2>
           </Divider>
 
-          <div className={`${styles.selectWrapper} nodrag`}>
+          <div
+            className={`${styles.selectWrapper} ${
+              !selectedEventId ? styles.fullWidth : ''
+            } nodrag`}
+          >
             {selectedEventId && (
               <>
-                <Select value={selectedEventId} onChange={onChange}>
+                <Select
+                  value={selectedEventId}
+                  onChange={onChange}
+                  className="jumpEventSelect"
+                >
                   {events.map(
                     (event) =>
                       event.id && (
