@@ -371,33 +371,34 @@
 }
 
 .EventPersona {
+  background: hsla(0, 0%, 8%, 0.8);
   width: 100%;
   height: auto;
+  display: grid;
+  grid-template-columns: 80px auto;
 
-  &:hover .info {
-    left: 10px;
-    opacity: 1;
+  .maskWrapper {
+    &:hover {
+      .maskType {
+        opacity: 1;
+        bottom: 0;
+      }
+    }
+
+    .maskType {
+      transition: opacity 0.2s, bottom 0.2s;
+      opacity: 0;
+      width: 100%;
+      bottom: -10px;
+      position: absolute;
+      text-align: center;
+      font-size: 12px;
+      background: hsla(0, 0%, 0%, 0.8);
+    }
   }
 
   .info {
-    opacity: 0;
-    position: absolute;
-    width: 120px;
-    left: 0;
-    bottom: 10px;
-    background: hsla(0, 0%, 0%, 0.8);
-    transition: opacity 0.2s, left 0.2s;
     padding: 5px 10px;
-    border-radius: 2px;
-    backdrop-filter: blur(10px);
-
-    h1 {
-      padding: 0;
-      background: none;
-      margin-bottom: 10px;
-      border-bottom: 1px solid hsl(0, 0%, 40%);
-      color: hsl(0, 0%, 80%);
-    }
 
     h2 {
       font-size: 10px;

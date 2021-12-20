@@ -48,21 +48,23 @@ const EventPersonaPane: React.FC<{
       {persona && (
         <div className={styles.EventPersona}>
           {character?.id && (
-            <div>
-              <CharacterMask
-                studioId={studioId}
-                worldId={worldId}
-                characterId={character.id}
-                type={persona[1]}
-                width="100%"
-                active
-                assetId={maskAssetId}
-                fill
-              />
+            <>
+              <div className={styles.maskWrapper}>
+                <CharacterMask
+                  studioId={studioId}
+                  worldId={worldId}
+                  characterId={character.id}
+                  type={persona[1]}
+                  width="80px"
+                  active
+                  assetId={maskAssetId}
+                  fill
+                />
+
+                <div className={styles.maskType}>{persona[1]}</div>
+              </div>
 
               <div className={styles.info}>
-                <h1>Persona</h1>
-
                 <h2>Character</h2>
                 <p
                   className={`${styles.title} nodrag`}
@@ -77,17 +79,19 @@ const EventPersonaPane: React.FC<{
                   {character.title}
                 </p>
 
-                {refValue && (
-                  <>
-                    <h2>Reference</h2>
-                    <p>{refValue}</p>
-                  </>
-                )}
-
-                <h2>Mask</h2>
-                <p>{persona[1]}</p>
+                <h2>Reference</h2>
+                <p>
+                  {refValue ? (
+                    refValue
+                  ) : (
+                    <span style={{ textTransform: 'uppercase' }}>
+                      {' '}
+                      {character.title}
+                    </span>
+                  )}
+                </p>
               </div>
-            </div>
+            </>
           )}
         </div>
       )}
