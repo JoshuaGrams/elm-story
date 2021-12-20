@@ -1122,16 +1122,17 @@ const SceneMap: React.FC<{
       composer.selectedWorldOutlineElement.id === sceneId &&
       editorTab.eventForEditing.visible
     ) {
-      composer.selectedSceneMapEvent &&
-        composer.selectedSceneMapEvent !== editorTab.eventForEditing.id &&
-        editorTabDispatch({
-          type: ELEMENT_EDITOR_TAB_ACTION_TYPE.EDIT_EVENT,
-          eventForEditing: {
-            id: composer.selectedSceneMapEvent,
-            visible: true
-          }
-        })
+      // composer.selectedSceneMapEvent &&
+      //   composer.selectedSceneMapEvent !== editorTab.eventForEditing.id &&
+      //   editorTabDispatch({
+      //     type: ELEMENT_EDITOR_TAB_ACTION_TYPE.EDIT_EVENT,
+      //     eventForEditing: {
+      //       id: editorTab.eventForEditing.id,
+      //       visible: true
+      //     }
+      //   })
 
+      // elmstorygames/feedback#2
       editorTabDispatch({
         type: ELEMENT_EDITOR_TAB_ACTION_TYPE.SCENE_MAP_CONTEXT,
         sceneMapContext: SCENE_MAP_CONTEXT.EVENT

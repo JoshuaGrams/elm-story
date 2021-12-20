@@ -11,10 +11,14 @@ import {
   StudioId,
   WorldId,
   WorldState,
-  VARIABLE_TYPE
+  VARIABLE_TYPE,
+  ElementId
 } from '../../../data/types'
 
 import { useVariables } from '../../../hooks'
+
+import { Button } from 'antd'
+import { EditOutlined, FormOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
@@ -81,12 +85,13 @@ const decorate = (template: string, state: WorldState) => {
 const EventSnippet: React.FC<{
   studioId: StudioId
   worldId: WorldId
+  eventId: ElementId
   content: string
-  onEditPassage: () => void
-}> = ({ studioId, worldId, content, onEditPassage }) => {
+  onEditPassage: (eventId: ElementId) => void
+}> = ({ studioId, worldId, eventId, content, onEditPassage }) => {
   const variables = useVariables(studioId, worldId, [])
 
-  const [initialGameState, setInitialGameState] = useState<
+  const [initialWorldState, setInitialWorldState] = useState<
     WorldState | undefined
   >(undefined)
 
@@ -109,20 +114,46 @@ const EventSnippet: React.FC<{
           }
       })
 
-      setInitialGameState(updatedInitialGameState)
+      setInitialWorldState(updatedInitialGameState)
     }
   }, [variables])
 
   return (
-    <div className={styles.EventSnippet} onDoubleClick={onEditPassage}>
-      {initialGameState && parsedContent[0].children[0].text && (
+    <div
+      className={styles.EventSnippet}
+      onDoubleClick={() => onEditPassage(eventId)}
+    >
+      {initialWorldState && (
         <>
-          <p>
-            {decorate(parsedContent[0].children[0].text, initialGameState)}
-            {parsedContent.length > 1 && (
-              <span className={styles.moreContent}> ...</span>
-            )}
-          </p>
+          {parsedContent[0].children[0].text && (
+            <>
+              <p>
+                {decorate(
+                  parsedContent[0].children[0].text.substring(0, 100),
+                  initialWorldState
+                )}
+                {parsedContent[0].children[0].text.length > 100 && '...'}{' '}
+                <div
+                  className={`${styles.edit} nodrag`}
+                  onClick={() => onEditPassage(eventId)}
+                >
+                  <FormOutlined />
+                </div>
+              </p>
+            </>
+          )}
+
+          {!parsedContent[0].children[0].text && parsedContent.length === 1 && (
+            <p className={styles.missingContent}>
+              Missing content...{' '}
+              <div
+                className={`${styles.edit} nodrag`}
+                onClick={() => onEditPassage(eventId)}
+              >
+                <FormOutlined />
+              </div>
+            </p>
+          )}
         </>
       )}
     </div>

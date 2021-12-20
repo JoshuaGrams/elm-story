@@ -47,6 +47,7 @@ import {
 } from '../../../contexts/ComposerContext'
 import VariableSelectForInput from '../../VariableSelectForInput'
 import EventPersonaPane from './EventPersona'
+import EventSnippet from './EventSnippet'
 
 interface MenuInfo {
   domEvent: React.MouseEvent<HTMLElement>
@@ -542,7 +543,6 @@ const EventNode: React.FC<NodeProps<{
                 // TODO: make class list work in ContextMenu
                 className="nodeEventHeader"
                 data-component-id={event.id}
-                onDoubleClick={() => event.id && data.onEditEvent(event.id)}
               >
                 {/* #395 */}
                 <AlignLeftOutlined
@@ -553,12 +553,6 @@ const EventNode: React.FC<NodeProps<{
 
                 {event.title}
               </h1>
-
-              <EventPersonaPane
-                studioId={data.studioId}
-                worldId={event.worldId}
-                persona={event.persona}
-              />
             </div>
 
             {choices.length === 0 && event.type !== EVENT_TYPE.INPUT && (
@@ -568,6 +562,22 @@ const EventNode: React.FC<NodeProps<{
                 eventId={event.id}
               />
             )}
+          </div>
+
+          <div className={styles.eventContentWrapper}>
+            <EventPersonaPane
+              studioId={data.studioId}
+              worldId={event.worldId}
+              persona={event.persona}
+            />
+
+            <EventSnippet
+              worldId={event.worldId}
+              studioId={data.studioId}
+              eventId={event.id}
+              content={event.content}
+              onEditPassage={(eventId) => data.onEditEvent(eventId)}
+            />
           </div>
 
           {event.type === EVENT_TYPE.CHOICE && (

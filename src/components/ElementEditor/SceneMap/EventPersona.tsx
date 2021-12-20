@@ -46,7 +46,16 @@ const EventPersonaPane: React.FC<{
   return (
     <>
       {persona && (
-        <div className={styles.EventPersona}>
+        <div
+          className={styles.EventPersona}
+          onDoubleClick={() =>
+            character.id &&
+            composerDispatch({
+              type: COMPOSER_ACTION_TYPE.OPEN_CHARACTER_MODAL,
+              characterId: character.id
+            })
+          }
+        >
           {character?.id && (
             <>
               <div className={styles.maskWrapper}>
