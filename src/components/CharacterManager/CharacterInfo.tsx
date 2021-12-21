@@ -263,11 +263,11 @@ const ReferencesSelect: React.FC<{
                   ? '1.0'
                   : '0.4'
                 : '1.0',
-              borderColor: data.editing ? 'hsl(265, 100%, 60%) !important' : '',
+              borderColor: data.editing ? 'hsl(262, 100%, 65%) !important' : '',
               borderStyle: data.pronoun ? 'dashed !important' : 'solid',
               ':hover': {
                 borderColor: !data.pronoun
-                  ? 'hsl(265, 100%, 60%) !important'
+                  ? 'hsl(262, 100%, 65%) !important'
                   : ''
               }
             }

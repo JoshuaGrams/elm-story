@@ -23,12 +23,14 @@ const useVariables = (
 
 const useVariable = (
   studioId: StudioId,
-  variableId: ElementId,
+  variableId?: ElementId,
   deps?: any[]
 ): Variable | undefined =>
   useLiveQuery(
     () =>
-      new LibraryDatabase(studioId).variables.where({ id: variableId }).first(),
+      new LibraryDatabase(studioId).variables
+        .where({ id: variableId || '' })
+        .first(),
     deps || [],
     undefined
   )

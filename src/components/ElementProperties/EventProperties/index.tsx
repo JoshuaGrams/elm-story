@@ -29,6 +29,7 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox'
 
 import ElementTitle from '../ElementTitle'
 import EventTypeSelect from '../../EventTypeSelect'
+import VariableSelectForInput from '../../VariableSelectForInput'
 
 import parentStyles from '../styles.module.less'
 import styles from './styles.module.less'
@@ -219,6 +220,26 @@ const Persona: React.FC<{
 
 Persona.displayName = 'EventPersona'
 
+const EventInput: React.FC<{
+  studioId: StudioId
+  worldId: WorldId
+  inputId: ElementId
+}> = ({ studioId, worldId, inputId }) => {
+  return (
+    <div className={styles.EventInput}>
+      <div className={styles.header}>Input</div>
+
+      <div>
+        <VariableSelectForInput
+          studioId={studioId}
+          worldId={worldId}
+          inputId={inputId}
+        />
+      </div>
+    </div>
+  )
+}
+
 const StoryworldEndingToggle: React.FC<{
   studioId: StudioId
   event: Event
@@ -286,7 +307,7 @@ const EventProperties: React.FC<{
     <>
       {event && (
         <div
-          className={`${parentStyles.componentDetailViewWrapper} ${styles.PassageDetails}`}
+          className={`${parentStyles.componentDetailViewWrapper} ${styles.EventDetails}`}
         >
           <div className={parentStyles.content}>
             <ElementTitle
@@ -317,6 +338,14 @@ const EventProperties: React.FC<{
               worldId={event.worldId}
               event={event}
             />
+
+            {event.type === EVENT_TYPE.INPUT && event.input && (
+              <EventInput
+                studioId={studioId}
+                worldId={event.worldId}
+                inputId={event.input}
+              />
+            )}
 
             {event.id && (
               <StoryworldEndingToggle studioId={studioId} event={event} />

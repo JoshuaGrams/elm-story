@@ -15,7 +15,6 @@ import {
   Choice,
   ElementId,
   ELEMENT_TYPE,
-  WorldId,
   EVENT_TYPE,
   Path,
   StudioId
@@ -25,29 +24,29 @@ import {
   useChoice,
   useChoicesByEventRef,
   useEvent,
+  useInput,
   usePathsByChoiceRef,
-  usePathsBySceneRef
+  usePathsBySceneRef,
+  useVariable
 } from '../../../hooks'
 
-import { Handle, Position, NodeProps, Connection } from 'react-flow-renderer'
-
-import { Dropdown, Menu, Typography } from 'antd'
-import {
-  AlignLeftOutlined,
-  BranchesOutlined,
-  PlusOutlined
-} from '@ant-design/icons'
-
-import styles from './styles.module.less'
-
-import api from '../../../api'
 import {
   ComposerContext,
   COMPOSER_ACTION_TYPE
 } from '../../../contexts/ComposerContext'
-import VariableSelectForInput from '../../VariableSelectForInput'
+
+import { Handle, Position, NodeProps, Connection } from 'react-flow-renderer'
+
+import { Dropdown, Menu, Typography } from 'antd'
+import { BranchesOutlined, PlusOutlined } from '@ant-design/icons'
+
+import NodeTitle from './NodeTitle'
 import EventPersonaPane from './EventPersona'
 import EventSnippet from './EventSnippet'
+
+import styles from './styles.module.less'
+
+import api from '../../../api'
 
 interface MenuInfo {
   domEvent: React.MouseEvent<HTMLElement>
@@ -161,7 +160,13 @@ const ChoiceSourceHandle: React.FC<{
       key={choiceId}
       type="source"
       className={styles.choiceHandle}
-      style={{ top: '50%', bottom: '50%' }}
+      style={{
+        top: '50%',
+        bottom: '50%',
+        background: paths.find((path) => path.choiceId === choiceId)
+          ? 'white'
+          : 'black'
+      }}
       position={Position.Right}
       id={choiceId}
       isValidConnection={(connection: Connection) =>
@@ -248,9 +253,7 @@ const ChoiceRow: React.FC<{
         choice?.id &&
         onSelect(choice.eventId, choice.id)
       }
-      onDoubleClick={() => {
-        !renamingChoice && setRenamingChoice(true)
-      }}
+      onDoubleClick={() => !renamingChoice && setRenamingChoice(true)}
     >
       <Dropdown
         trigger={['contextMenu']}
@@ -335,7 +338,13 @@ const InputSourceHandle: React.FC<{
       key={inputId}
       type="source"
       className={styles.inputHandle}
-      style={{ top: '50%', bottom: '50%' }}
+      style={{
+        top: '50%',
+        bottom: '50%',
+        background: paths.find((path) => path.inputId === inputId)
+          ? 'white'
+          : 'black'
+      }}
       position={Position.Right}
       id={inputId}
       isValidConnection={(connection: Connection) =>
@@ -349,17 +358,29 @@ InputSourceHandle.displayName = 'InputSourceHandle'
 
 const InputRow: React.FC<{
   studioId: StudioId
-  worldId: WorldId
   inputId: ElementId
   handle: JSX.Element
-}> = ({ studioId, worldId, inputId, handle }) => {
+}> = ({ studioId, inputId, handle }) => {
+  const input = useInput(studioId, inputId, [inputId]),
+    variable = useVariable(studioId, input?.variableId, [input?.variableId])
+
   return (
     <>
-      <VariableSelectForInput
-        studioId={studioId}
-        worldId={worldId}
-        inputId={inputId}
-      />{' '}
+      {variable ? (
+        <div className={styles.info}>
+          <h2>Input Variable</h2>
+          <p>{variable.title}</p>
+
+          <h2>Variable Type</h2>
+          <p>{variable.type}</p>
+
+          <h2>Initial Value</h2>
+          <p>{variable.initialValue || 'undefined'}</p>
+        </div>
+      ) : (
+        <span className={styles.warning}>Missing input variable...</span>
+      )}
+
       {handle}
     </>
   )
@@ -380,7 +401,13 @@ const EventTargetHandle: React.FC<{
       type="target"
       id={eventId}
       className={styles.passageTargetHandle}
-      style={{ top: '50%', bottom: '50%' }}
+      style={{
+        top: '50%',
+        bottom: '50%',
+        background: paths.find((path) => path.destinationId === eventId)
+          ? 'white'
+          : 'black'
+      }}
       position={Position.Left}
       isValidConnection={(connection: Connection) =>
         isConnectionValid(connection, paths, 'CHOICE')
@@ -403,7 +430,13 @@ const EventSourceHandle: React.FC<{
       key={eventId}
       type="source"
       className={styles.passageSourceHandle}
-      style={{ top: '50%', bottom: '50%' }}
+      style={{
+        top: '50%',
+        bottom: '50%',
+        background: paths.find((path) => path.originId === eventId)
+          ? 'white'
+          : 'black'
+      }}
       position={Position.Right}
       id={eventId}
       isValidConnection={(connection: Connection) =>
@@ -518,41 +551,8 @@ const EventNode: React.FC<NodeProps<{
               eventId={event.id}
             />
 
-            <div
-              style={{
-                overflow: 'hidden',
-                borderBottomLeftRadius:
-                  (composer.selectedSceneMapEvent === event.id &&
-                    composer.selectedWorldOutlineElement.id ===
-                      event.sceneId) ||
-                  event.choices.length > 0 ||
-                  event.type === EVENT_TYPE.INPUT
-                    ? '0px'
-                    : '5px',
-                borderBottomRightRadius:
-                  (composer.selectedSceneMapEvent === event.id &&
-                    composer.selectedWorldOutlineElement.id ===
-                      event.sceneId) ||
-                  event.choices.length > 0 ||
-                  event.type === EVENT_TYPE.INPUT
-                    ? '0px'
-                    : '5px'
-              }}
-            >
-              <h1
-                // TODO: make class list work in ContextMenu
-                className="nodeEventHeader"
-                data-component-id={event.id}
-              >
-                {/* #395 */}
-                <AlignLeftOutlined
-                  className={`${styles.headerIcon} ${
-                    event.ending ? styles.warning : ''
-                  }`}
-                />
-
-                {event.title}
-              </h1>
+            <div>
+              <NodeTitle studioId={data.studioId} event={event} />
             </div>
 
             {choices.length === 0 && event.type !== EVENT_TYPE.INPUT && (
@@ -564,7 +564,29 @@ const EventNode: React.FC<NodeProps<{
             )}
           </div>
 
-          <div className={styles.eventContentWrapper}>
+          <div
+            className={styles.eventContentWrapper}
+            style={{
+              borderBottomLeftRadius:
+                (composer.selectedSceneMapEvent === event.id &&
+                  composer.selectedWorldOutlineElement.id === event.sceneId) ||
+                event.choices.length > 0 ||
+                event.type === EVENT_TYPE.INPUT
+                  ? '0px'
+                  : '5px',
+              borderBottomRightRadius:
+                (composer.selectedSceneMapEvent === event.id &&
+                  composer.selectedWorldOutlineElement.id === event.sceneId) ||
+                event.choices.length > 0 ||
+                event.type === EVENT_TYPE.INPUT
+                  ? '0px'
+                  : '5px',
+              borderBottom:
+                event.choices.length > 0 || event.input
+                  ? '1px solid hsl(0, 0%, 10%)'
+                  : 'none'
+            }}
+          >
             <EventPersonaPane
               studioId={data.studioId}
               worldId={event.worldId}
@@ -773,7 +795,6 @@ const EventNode: React.FC<NodeProps<{
             <div className={`${styles.input} ${styles.bottomRadius}`}>
               <InputRow
                 studioId={data.studioId}
-                worldId={event.worldId}
                 inputId={event.input}
                 handle={
                   <InputSourceHandle

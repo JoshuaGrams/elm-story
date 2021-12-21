@@ -9,26 +9,14 @@ import {
   COMPOSER_ACTION_TYPE
 } from '../../../contexts/ComposerContext'
 
-import {
-  Connection,
-  Handle,
-  Node,
-  NodeProps,
-  Position,
-  useStoreActions,
-  useStoreState
-} from 'react-flow-renderer'
+import { Connection, Handle, NodeProps, Position } from 'react-flow-renderer'
 
 import { Divider } from 'antd'
-import {
-  AlignLeftOutlined,
-  PartitionOutlined,
-  SendOutlined
-} from '@ant-design/icons'
+import { AlignLeftOutlined, PartitionOutlined } from '@ant-design/icons'
+
+import NodeTitle from './NodeTitle'
 
 import styles from './styles.module.less'
-
-import { cloneDeep } from 'lodash'
 
 import { isConnectionValid } from './EventNode'
 
@@ -43,7 +31,13 @@ const JumpHandle: React.FC<{
     <Handle
       type="target"
       id={jumpId}
-      style={{ top: '50%', bottom: '50%' }}
+      style={{
+        top: '50%',
+        bottom: '50%',
+        background: paths.find((path) => path.destinationId === jumpId)
+          ? 'white'
+          : 'black'
+      }}
       position={Position.Left}
       className={styles.jumpHandle}
       isValidConnection={(connection: Connection) =>
@@ -58,17 +52,17 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
     scene = useScene(data.studioId, jump?.path[0], [jump?.path]),
     event = useEvent(data.studioId, jump?.path[1], [jump?.path])
 
-  const jumps = useStoreState((state) =>
-      state.nodes.filter(
-        (node: Node<{ type: ELEMENT_TYPE }>) =>
-          node?.data?.type === ELEMENT_TYPE.JUMP
-      )
-    ),
-    setSelectedElement = useStoreActions(
-      (actions) => actions.setSelectedElements
-    )
+  // const jumps = useStoreState((state) =>
+  //     state.nodes.filter(
+  //       (node: Node<{ type: ELEMENT_TYPE }>) =>
+  //         node?.data?.type === ELEMENT_TYPE.JUMP
+  //     )
+  //   ),
+  //   setSelectedElement = useStoreActions(
+  //     (actions) => actions.setSelectedElements
+  //   )
 
-  const { composer, composerDispatch } = useContext(ComposerContext)
+  const { composerDispatch } = useContext(ComposerContext)
 
   const jumpToLink = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -104,48 +98,19 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
       {jump?.id && (
         <>
           <div>
+            <div>
+              <NodeTitle studioId={data.studioId} jump={jump} />
+            </div>
+
             <JumpHandle
               studioId={data.studioId}
               sceneId={data.sceneId}
               jumpId={jump.id}
             />
-
-            <h1 className="nodeJumpHeader" data-component-id={jump.id}>
-              <SendOutlined className={styles.headerIcon} />
-              {jump.title}
-            </h1>
           </div>
 
           {jump?.id && (
-            <div
-              className={`${styles.jumpToContainer}`}
-              onMouseDown={(event) => {
-                const classList = (event.target as Element).classList
-
-                if (classList.contains('nodrag')) return
-
-                if (jump.id && composer.selectedSceneMapJump !== jump.id) {
-                  setSelectedElement([
-                    cloneDeep(jumps.find((jumpNode) => jumpNode.id === jump.id))
-                  ])
-
-                  composerDispatch({
-                    type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
-                    selectedSceneMapJump: jump.id
-                  })
-
-                  composerDispatch({
-                    type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
-                    selectedSceneMapEvent: null
-                  })
-
-                  composerDispatch({
-                    type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE,
-                    selectedSceneMapChoice: null
-                  })
-                }
-              }}
-            >
+            <div className={`${styles.jumpToContainer}`}>
               <div className={styles.jumpDetails}>
                 {scene?.id && (
                   <>

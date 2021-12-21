@@ -53,7 +53,7 @@ const VariableSelectForInput: React.FC<{
       )}
 
       {variables && variables.length === 0 && (
-        <div className="warningMessage">
+        <div className={styles.warningMessage}>
           To modify event input, define at least 1 variable.
         </div>
       )}

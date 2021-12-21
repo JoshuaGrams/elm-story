@@ -1,4 +1,4 @@
-.PassageDetails {
+.EventDetails {
   .EventPersona {
     // TODO: combine with duplicates in other property panels
     border: 1px solid hsl(0, 0%, 15%);
@@ -16,9 +16,7 @@
       height: 32px;
       line-height: 32px;
     }
-  }
 
-  .EventPersona {
     .noCharacters {
       color: var(--warning-message-color);
       font-size: 10px;
@@ -61,6 +59,25 @@
           flex-grow: 0;
         }
       }
+    }
+  }
+
+  .EventInput {
+    // TODO: combine with duplicates in other property panels
+    border: 1px solid hsl(0, 0%, 15%);
+    border-radius: 2px !important;
+    margin-top: 10px;
+
+    .header {
+      font-size: 12px;
+      text-transform: uppercase;
+      text-align: left;
+      background: hsl(0, 0%, 0%);
+      border-bottom: 1px solid hsl(0, 0%, 15%);
+      padding: 0px 4px;
+      padding-left: 10px;
+      height: 32px;
+      line-height: 32px;
     }
   }
 

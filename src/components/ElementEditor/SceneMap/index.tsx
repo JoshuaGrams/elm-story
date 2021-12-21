@@ -1672,7 +1672,7 @@ const SceneMap: React.FC<{
                       }
                     }
 
-                    return 'hsl(265, 100%, 60%)'
+                    return 'hsl(262, 100%, 65%)'
                   case 'jumpNode':
                     return 'hsl(160, 100%, 60%)'
                   default:

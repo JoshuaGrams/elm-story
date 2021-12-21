@@ -153,6 +153,7 @@
   }
 
   .label {
+    font-family: 'Fira Code';
     font-size: 10px;
     fill: black;
   }
@@ -170,25 +171,6 @@
     width: 8px;
     height: 8px;
     background: black;
-  }
-
-  h1 {
-    * {
-      pointer-events: none !important;
-    }
-
-    .headerIcon {
-      color: var(--jump-node-color);
-      margin-right: 6px;
-    }
-
-    margin: 0px;
-    padding: 6px 10px;
-    font-size: 16px;
-    text-align: left;
-    border-top-right-radius: 5px;
-    border-top-left-radius: 5px;
-    background: hsla(0, 0%, 5%, 80%);
   }
 
   .jumpToContainer {
@@ -240,29 +222,6 @@
     border-bottom-right-radius: 5px;
   }
 
-  h1 {
-    * {
-      pointer-events: none !important;
-    }
-
-    .headerIcon {
-      color: var(--highlight-color);
-      margin-right: 6px;
-
-      &.warning {
-        color: var(--warning-color);
-      }
-    }
-
-    margin: 0px;
-    padding: 6px 10px;
-    font-size: 16px;
-    text-align: left;
-    background: hsla(0, 0%, 5%, 80%);
-    border-top-right-radius: 5px;
-    border-top-left-radius: 5px;
-  }
-
   .divider {
     margin: 4px 0px;
   }
@@ -279,7 +238,7 @@
     .ChoiceRow {
       cursor: default;
       padding: 4px 10px;
-      font-size: 12px;
+      font-size: 14px;
       cursor: pointer;
       transition: background-color 0.25s;
 
@@ -302,6 +261,7 @@
         grid-template-columns: auto 1fr;
 
         :global .ant-typography {
+          color: white;
           grid-column: 2;
           margin-left: 6px;
           margin-bottom: 0px !important;
@@ -360,7 +320,31 @@
   }
 
   .input {
-    background: hsla(0, 0%, 10%, 80%);
+    background: hsla(0, 0%, 20%, 80%);
+    padding: 10px;
+
+    .info {
+      overflow: hidden;
+
+      h2 {
+        font-size: 10px;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+        color: hsl(0, 0%, 60%);
+      }
+
+      p {
+        font-size: 12px;
+        &:last-of-type {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    .warning {
+      color: var(--warning-message-color);
+      font-style: italic;
+    }
 
     .inputHandle {
       width: 8px;
@@ -370,16 +354,101 @@
   }
 }
 
+.EventNode,
+.JumpNode {
+  h1 {
+    font-weight: bold;
+    margin: 0px;
+    padding: 6px 10px;
+    font-size: 16px;
+    text-align: left;
+    background: hsla(0, 0%, 5%, 80%);
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+
+    .disablePointer {
+      pointer-events: none;
+    }
+
+    .headerIcon {
+      pointer-events: none;
+      margin-right: 6px;
+
+      &.event {
+        color: var(--highlight-color);
+      }
+
+      &.jump {
+        color: var(--jump-node-color);
+      }
+
+      &.warning {
+        color: var(--warning-color);
+      }
+    }
+
+    :global .ant-typography {
+      color: white;
+      grid-column: 2;
+      margin-left: 0px;
+      margin-bottom: 0px !important;
+      overflow-wrap: break-word;
+      word-break: break-word;
+
+      textarea {
+        padding: 0px;
+        margin-top: 5px;
+        margin-left: 12px;
+        color: white !important;
+        box-shadow: none !important;
+        overflow: hidden;
+        border: none !important;
+        font-weight: bold;
+
+        &:focus::selection {
+          background: var(--highlight-color-dark) !important;
+        }
+      }
+
+      .ant-typography-edit-content {
+        left: unset !important;
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+      }
+
+      .ant-typography-edit,
+      .ant-typography-edit-content-confirm {
+        display: none !important;
+      }
+
+      .ant-input {
+        font-size: unset !important;
+        min-height: unset !important;
+      }
+    }
+  }
+}
+
 .eventContentWrapper {
-  background: hsla(0, 0%, 8%, 80%);
+  background: hsla(0, 0%, 20%, 80%);
 
   .EventPersona {
     width: 100%;
     height: auto;
     display: grid;
     grid-template-columns: 80px auto;
+    background: linear-gradient(
+      0deg,
+      hsla(0, 0%, 3%, 80%) 0%,
+      hsla(0, 0%, 3%, 0%) 100%
+    );
 
     .maskWrapper {
+      overflow: hidden;
+
       &:hover {
         .maskType {
           opacity: 1;
@@ -401,6 +470,7 @@
 
     .info {
       padding: 5px 10px;
+      overflow: hidden;
 
       h2 {
         font-size: 10px;
@@ -412,7 +482,13 @@
       p {
         font-size: 12px;
 
-        &.title {
+        .title,
+        .reference {
+          height: 16px;
+          width: 100%;
+        }
+
+        .title {
           cursor: pointer;
           text-decoration: underline;
 
@@ -421,56 +497,61 @@
           }
         }
 
+        .reference {
+          text-transform: uppercase;
+        }
+
         &:last-of-type {
           margin-bottom: 0;
         }
-      }
-
-      button {
-        width: 100%;
       }
     }
   }
 
   .EventSnippet {
-    background: hsla(0, 0%, 3%, 80%);
     padding: 4px 10px;
 
+    &:hover .edit {
+      opacity: 1;
+      right: -10px;
+    }
+
     p {
-      font-family: 'Literata';
       font-size: 16px;
+      margin-bottom: 0;
+      font-style: italic;
+      font-family: 'Literata';
+
+      .expression {
+        font-family: 'Literata';
+      }
 
       &.missingContent {
         font-family: 'Inter';
         font-style: italic;
         color: var(--warning-message-color);
       }
+    }
 
-      &:last-child {
-        margin-bottom: 0;
-      }
+    .edit {
+      transition: opacity 0.2s, right 0.2s;
+      opacity: 0;
+      font-size: 10px;
+      color: white;
+      background: var(--highlight-color);
+      width: 19px;
+      height: 19px;
+      position: absolute;
+      border-radius: 20px;
+      top: 7px;
+      right: -6px;
+      display: grid;
+      align-items: center;
+      text-decoration: underline;
 
-      div {
-        &.edit {
-          font-size: 10px;
-          color: white;
-          background: var(--highlight-color);
-          width: 20px;
-          height: 20px;
-          position: absolute;
-          border-radius: 20px;
-          top: 7px;
-          right: -10px;
-          display: grid;
-          align-items: center;
-          text-decoration: underline;
-          box-shadow: 0px 0px 4px 2px hsla(0, 0%, 0%, 0.6);
-
-          &:hover {
-            cursor: pointer;
-            background: var(--highlight-color-bright);
-          }
-        }
+      &:hover {
+        cursor: pointer;
+        background: var(--highlight-color-bright);
       }
     }
   }

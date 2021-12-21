@@ -12,6 +12,7 @@ import {
 import CharacterMask from '../../CharacterManager/CharacterMask'
 
 import styles from './styles.module.less'
+import { Typography } from 'antd'
 
 const EventPersonaPane: React.FC<{
   studioId: StudioId
@@ -49,7 +50,7 @@ const EventPersonaPane: React.FC<{
         <div
           className={styles.EventPersona}
           onDoubleClick={() =>
-            character.id &&
+            character?.id &&
             composerDispatch({
               type: COMPOSER_ACTION_TYPE.OPEN_CHARACTER_MODAL,
               characterId: character.id
@@ -64,7 +65,6 @@ const EventPersonaPane: React.FC<{
                   worldId={worldId}
                   characterId={character.id}
                   type={persona[1]}
-                  width="80px"
                   active
                   assetId={maskAssetId}
                   fill
@@ -76,7 +76,7 @@ const EventPersonaPane: React.FC<{
               <div className={styles.info}>
                 <h2>Character</h2>
                 <p
-                  className={`${styles.title} nodrag`}
+                  className={`nodrag`}
                   onClick={() =>
                     character.id &&
                     composerDispatch({
@@ -85,19 +85,24 @@ const EventPersonaPane: React.FC<{
                     })
                   }
                 >
-                  {character.title}
+                  <Typography.Text
+                    ellipsis
+                    className={styles.title}
+                    title={character.title}
+                  >
+                    {character.title}
+                  </Typography.Text>
                 </p>
 
                 <h2>Reference</h2>
                 <p>
-                  {refValue ? (
-                    refValue
-                  ) : (
-                    <span style={{ textTransform: 'uppercase' }}>
-                      {' '}
-                      {character.title}
-                    </span>
-                  )}
+                  <Typography.Text
+                    ellipsis
+                    className={styles.reference}
+                    title={character.title}
+                  >
+                    {refValue ? refValue : character.title}
+                  </Typography.Text>
                 </p>
               </div>
             </>

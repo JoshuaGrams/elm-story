@@ -17,8 +17,7 @@ import {
 
 import { useVariables } from '../../../hooks'
 
-import { Button } from 'antd'
-import { EditOutlined, FormOutlined } from '@ant-design/icons'
+import { FormOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
@@ -119,44 +118,35 @@ const EventSnippet: React.FC<{
   }, [variables])
 
   return (
-    <div
-      className={styles.EventSnippet}
-      onDoubleClick={() => onEditPassage(eventId)}
-    >
+    <>
       {initialWorldState && (
-        <>
+        <div
+          className={styles.EventSnippet}
+          onDoubleClick={() => onEditPassage(eventId)}
+        >
+          <div
+            className={`${styles.edit} nodrag`}
+            onClick={() => onEditPassage(eventId)}
+          >
+            <FormOutlined />
+          </div>
+
           {parsedContent[0].children[0].text && (
-            <>
-              <p>
-                {decorate(
-                  parsedContent[0].children[0].text.substring(0, 100),
-                  initialWorldState
-                )}
-                {parsedContent[0].children[0].text.length > 100 && '...'}{' '}
-                <div
-                  className={`${styles.edit} nodrag`}
-                  onClick={() => onEditPassage(eventId)}
-                >
-                  <FormOutlined />
-                </div>
-              </p>
-            </>
+            <p>
+              {decorate(
+                parsedContent[0].children[0].text.substring(0, 100),
+                initialWorldState
+              )}
+              {parsedContent[0].children[0].text.length > 100 && '...'}{' '}
+            </p>
           )}
 
           {!parsedContent[0].children[0].text && parsedContent.length === 1 && (
-            <p className={styles.missingContent}>
-              Missing content...{' '}
-              <div
-                className={`${styles.edit} nodrag`}
-                onClick={() => onEditPassage(eventId)}
-              >
-                <FormOutlined />
-              </div>
-            </p>
+            <p className={styles.missingContent}>Missing content...</p>
           )}
-        </>
+        </div>
       )}
-    </div>
+    </>
   )
 }
 
