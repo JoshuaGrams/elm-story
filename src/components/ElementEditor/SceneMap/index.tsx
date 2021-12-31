@@ -55,7 +55,7 @@ import ContextMenu from './ContextMenu'
 import PathEdge, { PathEdgeData } from './PathEdge'
 import EventNode from './EventNode'
 import JumpNode from './JumpNode'
-import EventView from '../EventContent'
+import EventContent from '../EventContent'
 
 import styles from './styles.module.less'
 
@@ -1173,7 +1173,7 @@ const SceneMap: React.FC<{
           }}
         >
           {scene && editorTab.eventForEditing.id && (
-            <EventView
+            <EventContent
               studioId={studioId}
               scene={scene}
               eventId={editorTab.eventForEditing.id}

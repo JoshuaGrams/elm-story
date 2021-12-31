@@ -120,7 +120,7 @@ const Leaf = (props: RenderLeafProps) => {
   return leaf || <span {...props.attributes}>{props.children}</span>
 }
 
-const EventView: React.FC<{
+const EventContent: React.FC<{
   studioId: StudioId
   scene: Scene
   eventId: ElementId
@@ -378,4 +378,4 @@ const EventView: React.FC<{
   )
 }
 
-export default EventView
+export default EventContent
