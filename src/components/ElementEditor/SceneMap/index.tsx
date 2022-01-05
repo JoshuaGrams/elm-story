@@ -6,12 +6,12 @@ import { cloneDeep } from 'lodash-es'
 import {
   ElementId,
   ELEMENT_TYPE,
-  DEFAULT_EVENT_CONTENT,
   EVENT_TYPE,
   Scene,
   StudioId,
   PATH_CONDITIONS_TYPE
 } from '../../../data/types'
+import { DEFAULT_EVENT_CONTENT } from '../../../data/eventContentTypes'
 
 import {
   ComposerContext,

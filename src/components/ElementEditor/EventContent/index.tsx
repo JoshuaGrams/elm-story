@@ -1,6 +1,4 @@
-import logger from '../../../lib/logger'
-
-import { debounce } from 'lodash-es'
+import { debounce } from 'lodash'
 import useEventListener from '@use-it/event-listener'
 
 import { getTemplateExpressionRanges } from '../../../lib/templates'
@@ -9,37 +7,39 @@ import React, {
   useMemo,
   useState,
   useEffect,
-  useContext,
-  useCallback
+  useCallback,
+  useContext
 } from 'react'
 
+import { ElementId, ELEMENT_TYPE, Scene, StudioId } from '../../../data/types'
 import {
-  ElementId,
-  ELEMENT_TYPE,
-  DEFAULT_EVENT_CONTENT,
-  Scene,
-  StudioId
-} from '../../../data/types'
+  CustomRange,
+  EventContentElement as EventContentElementType,
+  EventContentLeaf as EventContentLeafType,
+  HOTKEY_EXPRESSION,
+  HOTKEYS
+} from '../../../data/eventContentTypes'
+
+import { DropResult } from 'react-beautiful-dnd'
+
+import { useEvent } from '../../../hooks'
 
 import {
   ComposerContext,
   COMPOSER_ACTION_TYPE
 } from '../../../contexts/ComposerContext'
 
-import { useEvent } from '../../../hooks'
-
 import {
-  BaseEditor,
   createEditor,
   Descendant,
   Editor,
   Transforms,
   Text,
-  Range
+  Range,
+  BaseSelection
 } from 'slate'
-import { withHistory } from 'slate-history'
 import {
-  Slate,
+  Slate as SlateContext,
   Editable,
   withReact,
   ReactEditor,
@@ -47,78 +47,29 @@ import {
   useFocused,
   RenderLeafProps
 } from 'slate-react'
+import { withHistory } from 'slate-history'
 
-import { Button } from 'antd'
+import {
+  withCorrectVoidBehavior,
+  withEmbeds,
+  withImages
+} from '../../../lib/contentEditor/plugins'
 
-import styles from './styles.module.less'
+import DragDropWrapper from '../../DragDropWrapper'
+import EventContentElement from './EventContentElement'
+import EventContentLeaf from './EventContentLeaf'
 
 import api from '../../../api'
 
-export type CustomText = {
-  text: string
-  expression?: boolean
-  expressionStart?: boolean
-  expressionEnd?: boolean
-}
-export type CustomElement = { type: 'paragraph'; children: CustomText[] }
+import styles from './styles.module.less'
+import isHotkey from 'is-hotkey'
 
-export interface CustomRange extends Range {
-  expression?: boolean
-  expressionStart?: boolean
-  expressionEnd?: boolean
-}
-
-declare module 'slate' {
-  interface CustomTypes {
-    Editor: BaseEditor & ReactEditor
-    Element: CustomElement
-    Text: CustomText
-  }
-}
-
-export const initialPassageContent: Descendant[] = [...DEFAULT_EVENT_CONTENT]
-
-const ParagraphElement: React.FC<RenderElementProps> = (props) => {
-  return (
-    <p
-      className={`${'es-engine-passage-p'} ${
-        !props.element.children[0].text ? 'es-engine-passage-p-empty' : ''
-      }`}
-      {...props.attributes}
-    >
-      {props.children}
-    </p>
-  )
-}
-
-const Leaf = (props: RenderLeafProps) => {
-  let leaf: JSX.Element | undefined = undefined
-
-  if (props.leaf.expression) {
-    leaf = (
-      <span
-        {...props.attributes}
-        className={styles.expression}
-        spellCheck="false"
-      >
-        {props.children}
-      </span>
-    )
-  }
-
-  if (props.leaf.expressionStart || props.leaf.expressionEnd) {
-    leaf = (
-      <span
-        {...props.attributes}
-        className={`${styles.expression} ${styles.expressionCap}`}
-      >
-        {props.children}
-      </span>
-    )
-  }
-
-  return leaf || <span {...props.attributes}>{props.children}</span>
-}
+const saveContent = debounce(
+  async (studioId: StudioId, eventId: ElementId, content) => {
+    await api().events.saveEventContent(studioId, eventId, content)
+  },
+  100
+)
 
 const EventContent: React.FC<{
   studioId: StudioId
@@ -128,36 +79,35 @@ const EventContent: React.FC<{
 }> = ({ studioId, scene, eventId, onClose }) => {
   const event = useEvent(studioId, eventId, [studioId, eventId])
 
-  const slateEditor = useMemo<ReactEditor>(
-    () => withHistory(withReact(createEditor())),
+  const editor = useMemo<ReactEditor>(
+    () =>
+      withHistory(
+        withImages(
+          withEmbeds(withCorrectVoidBehavior(withReact(createEditor())))
+        )
+      ),
     []
   )
 
-  const isFocused = useFocused()
-
   const { composer, composerDispatch } = useContext(ComposerContext)
 
-  const [passageContent, setPassageContent] = useState<Descendant[]>(
-      initialPassageContent
-    ),
-    [selectedExpression, setSelectedExpression] = useState({
+  const [selectedExpression, setSelectedExpression] = useState({
       isInside: false,
       outsideOffset: 0
     }),
     [ready, setReady] = useState(false)
 
-  const renderElement = useCallback((props: RenderElementProps) => {
-    switch (props.element.type) {
-      case 'paragraph':
-        return <ParagraphElement {...props} />
-      default:
-        return <></>
-    }
-  }, [])
+  const debounceSaveContent = useCallback(
+    (content) => saveContent(studioId, eventId, content),
+    [studioId, eventId]
+  )
 
-  const renderLeaf = useCallback((props) => {
-    return <Leaf {...props} />
-  }, [])
+  const renderElement = useCallback(
+    (props) => <EventContentElement {...props} />,
+    []
+  )
+
+  const renderLeaf = useCallback((props) => <EventContentLeaf {...props} />, [])
 
   const decorate = useCallback(([node, path]) => {
     const ranges: CustomRange[] = []
@@ -189,190 +139,190 @@ const EventContent: React.FC<{
     return ranges
   }, [])
 
-  function close() {
+  const moveElement = useCallback((result: DropResult) => {
+    if (result.destination?.index !== undefined) {
+      Transforms.moveNodes(editor, {
+        at: [result.source.index],
+        to: [result.destination.index]
+      })
+    }
+  }, [])
+
+  const close = () => {
     if (composer.selectedWorldOutlineElement.id === scene.id || !scene.id)
       onClose()
   }
 
-  const onKeyDown = useCallback(
+  const processHotkey = useCallback(
+    (hotkey: string) => {
+      let selection: BaseSelection | undefined = undefined
+
+      switch (hotkey) {
+        case 'mod+b':
+        case 'mod+i':
+        case 'mod+u':
+        case 'mod+`':
+        case 'mod+a':
+        case HOTKEY_EXPRESSION.OPEN_BRACKET:
+          if (selectedExpression.isInside) return
+
+          selection = editor.selection
+
+          if (selection) {
+            Transforms.insertText(editor, '{  }')
+
+            // TODO: stack hack
+            setTimeout(
+              () =>
+                Transforms.move(editor, {
+                  distance: 2,
+                  unit: 'offset',
+                  reverse: true
+                }),
+              1
+            )
+          }
+
+          break
+        case HOTKEY_EXPRESSION.CLOSE_BRACKET:
+          if (selectedExpression.isInside) return
+
+          break
+        case HOTKEY_EXPRESSION.EXIT:
+          if (selectedExpression.isInside) {
+            Transforms.move(editor, {
+              distance: selectedExpression.outsideOffset,
+              unit: 'offset'
+            })
+          }
+
+          break
+        case 'esc':
+          close()
+          break
+        default:
+          break
+      }
+    },
+    [editor]
+  )
+
+  useEventListener(
+    'keydown',
     (event: KeyboardEvent) => {
       if (event) {
         switch (event.key) {
           case 'Escape':
-            close()
+            processHotkey('esc')
             break
           default:
             break
         }
       }
     },
-    [composer.selectedWorldOutlineElement.id, scene, passageContent]
+    document
   )
 
-  const saveContent = debounce(
-    async (studioId: StudioId, eventId: ElementId, content) => {
-      await api().events.saveEventContent(studioId, eventId, content)
-    },
-    100
-  )
-
-  const debounceSaveContent = useCallback(
-    (content) => saveContent(studioId, eventId, content),
-    [studioId, eventId]
-  )
-
-  useEventListener('keydown', onKeyDown, document)
-
   useEffect(() => {
-    logger.info(`PassageView->isFocused->useEffect: ${isFocused}`)
-  }, [isFocused])
-
-  useEffect(() => {
-    if (ready && event && event.id !== eventId) setReady(false)
-
-    if (!ready && slateEditor && event && event.id === eventId) {
-      ReactEditor.deselect(slateEditor)
-
-      setPassageContent(
-        event.content ? JSON.parse(event.content) : initialPassageContent
-      )
-
-      // TODO: stack hack
-      setTimeout(() => {
-        Transforms.select(slateEditor, Editor.end(slateEditor, []))
-        ReactEditor.focus(slateEditor)
-      }, 1)
-    }
-  }, [ready, slateEditor, event, eventId])
-
-  useEffect(() => {
-    const { selection } = slateEditor
+    const { selection } = editor
 
     if (selection) {
-      const expressionRanges = getTemplateExpressionRanges(
-        (passageContent[selection?.anchor.path[0]] as CustomElement).children[0]
-          .text
-      )
+      const node = editor.children[selection?.anchor.path[0]]
 
       let foundInsideExpression = false
 
-      expressionRanges.map((range) => {
-        if (
-          selection.anchor.offset > range.start &&
-          selection.anchor.offset < range.end
-        ) {
-          setSelectedExpression({
-            isInside: true,
-            outsideOffset: range.end - selection.anchor.offset
-          })
+      if (Text.isText(node)) {
+        const expressionRanges = getTemplateExpressionRanges(node.text)
 
-          foundInsideExpression = true
+        expressionRanges.map((range) => {
+          if (
+            selection.anchor.offset > range.start &&
+            selection.anchor.offset < range.end
+          ) {
+            setSelectedExpression({
+              isInside: true,
+              outsideOffset: range.end - selection.anchor.offset
+            })
 
-          return
-        }
-      })
+            foundInsideExpression = true
+
+            return
+          }
+        })
+      }
 
       !foundInsideExpression &&
         setSelectedExpression({ isInside: false, outsideOffset: 0 })
     }
-  }, [slateEditor.selection])
+  }, [editor.selection])
 
   useEffect(() => {
-    logger.info(`PassageView->useEffect`)
-  }, [])
+    if (ready && event && event.id !== eventId) setReady(false)
+
+    if (!ready && editor && event && event.id === eventId) {
+      ReactEditor.deselect(editor)
+
+      // TODO: stack hack
+      setTimeout(() => {
+        Transforms.select(editor, Editor.end(editor, []))
+        ReactEditor.focus(editor)
+      }, 1)
+    }
+  }, [ready, editor, event, eventId])
 
   return (
     <>
       {event && (
-        <Slate
-          editor={slateEditor}
-          value={passageContent}
-          onChange={(newContent) => {
-            if (!ready) setReady(true)
-
-            if (ready) {
-              setPassageContent(newContent)
-
-              saveContent.cancel()
-              debounceSaveContent(newContent)
-            }
-          }}
+        <div
+          className={styles.EventContent}
+          onClick={() =>
+            composer.selectedWorldOutlineElement.id !== scene.id &&
+            composerDispatch({
+              type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
+              selectedWorldOutlineElement: {
+                expanded: true,
+                id: scene.id,
+                title: scene.title,
+                type: ELEMENT_TYPE.SCENE
+              }
+            })
+          }
         >
-          <div
-            className={styles.PassageView}
-            onClick={() =>
-              composer.selectedWorldOutlineElement.id !== scene.id &&
-              composerDispatch({
-                type: COMPOSER_ACTION_TYPE.WORLD_OUTLINE_SELECT,
-                selectedWorldOutlineElement: {
-                  expanded: true,
-                  id: scene.id,
-                  title: scene.title,
-                  type: ELEMENT_TYPE.SCENE
-                }
-              })
-            }
-          >
-            <div className={styles.contentContainer}>
-              <h1 className={styles.passageTitle}>{event.title}</h1>
+          <div className={styles.contentContainer}>
+            <h1 className={styles.eventTitle}>{event.title}</h1>
+            <SlateContext
+              editor={editor}
+              // https://github.com/ianstormtaylor/slate/pull/4540
+              value={JSON.parse(event.content)}
+              onChange={(newContent) => {
+                if (!ready) setReady(true)
 
-              <div className={styles.editableContainer}>
+                if (ready) {
+                  saveContent.cancel()
+                  debounceSaveContent(newContent)
+                }
+              }}
+            >
+              <DragDropWrapper onDragEnd={moveElement}>
                 <Editable
+                  placeholder="Enter event content..."
                   renderElement={renderElement}
                   renderLeaf={renderLeaf}
                   decorate={decorate}
-                  placeholder="Enter event content..."
                   onKeyDown={(event) => {
-                    const { selection } = slateEditor
-
-                    logger.info(`PassageView->Key Pressed: ${event.key}`)
-
-                    switch (event.key) {
-                      case '{':
+                    for (const hotkey in HOTKEYS) {
+                      if (isHotkey(hotkey, event)) {
                         event.preventDefault()
 
-                        if (selectedExpression.isInside) return
-
-                        if (selection) {
-                          Transforms.insertText(slateEditor, '{  }')
-
-                          // TODO: stack hack
-                          setTimeout(
-                            () =>
-                              Transforms.move(slateEditor, {
-                                distance: 2,
-                                unit: 'offset',
-                                reverse: true
-                              }),
-                            1
-                          )
-                        }
-                        break
-                      case '}':
-                        if (selectedExpression.isInside) {
-                          event.preventDefault()
-                          return
-                        }
-
-                        break
-                      case 'Tab':
-                        event.preventDefault()
-                        if (selectedExpression.isInside) {
-                          Transforms.move(slateEditor, {
-                            distance: selectedExpression.outsideOffset,
-                            unit: 'offset'
-                          })
-                        }
-                        break
-                      default:
-                        break
+                        processHotkey(HOTKEYS[hotkey])
+                      }
                     }
                   }}
                 />
-              </div>
-            </div>
+              </DragDropWrapper>
+            </SlateContext>
           </div>
-        </Slate>
+        </div>
       )}
     </>
   )

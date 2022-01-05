@@ -57,13 +57,6 @@ export enum SET_OPERATOR_TYPE {
   DIVIDE = '/'
 }
 
-export const DEFAULT_EVENT_CONTENT: Descendant[] = [
-  {
-    type: 'paragraph',
-    children: [{ text: '' }]
-  }
-]
-
 export type StudioId = string
 export type WorldId = string
 export type ElementId = string

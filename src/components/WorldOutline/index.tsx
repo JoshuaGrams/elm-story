@@ -7,12 +7,12 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import {
   ElementId,
   ELEMENT_TYPE,
-  DEFAULT_EVENT_CONTENT,
   World,
   EVENT_TYPE,
   SceneChildRefs,
   StudioId
 } from '../../data/types'
+import { DEFAULT_EVENT_CONTENT } from '../../data/eventContentTypes'
 import { DEFAULT_NODE_SIZE } from '../ElementEditor/SceneMap'
 
 import {

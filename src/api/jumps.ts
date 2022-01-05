@@ -7,10 +7,10 @@ import {
   Jump,
   JumpPath,
   StudioId,
-  DEFAULT_EVENT_CONTENT,
   EVENT_TYPE,
   ELEMENT_TYPE
 } from '../data/types'
+import { DEFAULT_EVENT_CONTENT } from '../data/eventContentTypes'
 
 import api from '.'
 
