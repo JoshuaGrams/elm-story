@@ -48,6 +48,7 @@ interface ComposerState {
     visible: boolean
     id: ElementId | undefined
   }
+  draggableEventContentElement: string | null
 }
 
 export enum COMPOSER_ACTION_TYPE {
@@ -69,7 +70,8 @@ export enum COMPOSER_ACTION_TYPE {
   SELECT = 'SELECT',
   ELEMENT_EDITOR_CLOSE_TAB = 'ELEMENT_EDITOR_CLOSE_TAB',
   OPEN_CHARACTER_MODAL = 'OPEN_CHARACTER_MODAL',
-  CLOSE_CHARACTER_MODAL = 'CLOSE_CHARACTER_MODAL'
+  CLOSE_CHARACTER_MODAL = 'CLOSE_CHARACTER_MODAL',
+  SET_DRAGGABLE_EVENT_CONTENT_ELEMENT = 'SET_DRAGGABLE_EVENT_CONTENT_ELEMENT'
 }
 
 type ComposerActionType =
@@ -176,6 +178,10 @@ type ComposerActionType =
   | {
       type: COMPOSER_ACTION_TYPE.CLOSE_CHARACTER_MODAL
     }
+  | {
+      type: COMPOSER_ACTION_TYPE.SET_DRAGGABLE_EVENT_CONTENT_ELEMENT
+      id: string | null
+    }
 
 const composerReducer = (
   state: ComposerState,
@@ -215,20 +221,17 @@ const composerReducer = (
     case COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS:
       return {
         ...state,
-        totalSceneMapSelectedJumps:
-          action.totalSceneMapSelectedJumps
+        totalSceneMapSelectedJumps: action.totalSceneMapSelectedJumps
       }
     case COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_EVENTS:
       return {
         ...state,
-        totalSceneMapSelectedEvents:
-          action.totalSceneMapSelectedEvents
+        totalSceneMapSelectedEvents: action.totalSceneMapSelectedEvents
       }
     case COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_PATHS:
       return {
         ...state,
-        totalSceneMapSelectedPaths:
-          action.totalSceneMapSelectedPaths
+        totalSceneMapSelectedPaths: action.totalSceneMapSelectedPaths
       }
     case COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CENTER:
       return {
@@ -248,20 +251,17 @@ const composerReducer = (
     case COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_PATH:
       return {
         ...state,
-        selectedSceneMapPath:
-          action.selectedSceneMapPath
+        selectedSceneMapPath: action.selectedSceneMapPath
       }
     case COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_CHOICE:
       return {
         ...state,
-        selectedSceneMapChoice:
-          action.selectedSceneMapChoice
+        selectedSceneMapChoice: action.selectedSceneMapChoice
       }
     case COMPOSER_ACTION_TYPE.SCENE_MAP_CENTERED_SELECTION:
       return {
         ...state,
-        centeredSceneMapSelection:
-          action.centeredSceneMapSelection
+        centeredSceneMapSelection: action.centeredSceneMapSelection
       }
     case COMPOSER_ACTION_TYPE.SELECT:
       return {
@@ -288,6 +288,11 @@ const composerReducer = (
           visible: false,
           id: undefined
         }
+      }
+    case COMPOSER_ACTION_TYPE.SET_DRAGGABLE_EVENT_CONTENT_ELEMENT:
+      return {
+        ...state,
+        draggableEventContentElement: action.id
       }
     default:
       return state
@@ -338,7 +343,8 @@ const defaultComposerState: ComposerState = {
   characterModal: {
     visible: false,
     id: undefined
-  }
+  },
+  draggableEventContentElement: null
 }
 
 export const ComposerContext = createContext<ComposerContextType>({

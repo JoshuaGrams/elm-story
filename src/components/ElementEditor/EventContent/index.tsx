@@ -1,5 +1,6 @@
 import { debounce } from 'lodash'
 import useEventListener from '@use-it/event-listener'
+import isHotkey from 'is-hotkey'
 
 import { getTemplateExpressionRanges } from '../../../lib/templates'
 
@@ -14,13 +15,11 @@ import React, {
 import { ElementId, ELEMENT_TYPE, Scene, StudioId } from '../../../data/types'
 import {
   CustomRange,
-  EventContentElement as EventContentElementType,
-  EventContentLeaf as EventContentLeafType,
   HOTKEY_EXPRESSION,
   HOTKEYS
 } from '../../../data/eventContentTypes'
 
-import { DropResult } from 'react-beautiful-dnd'
+import { DragStart, DropResult } from 'react-beautiful-dnd'
 
 import { useEvent } from '../../../hooks'
 
@@ -29,23 +28,12 @@ import {
   COMPOSER_ACTION_TYPE
 } from '../../../contexts/ComposerContext'
 
-import {
-  createEditor,
-  Descendant,
-  Editor,
-  Transforms,
-  Text,
-  Range,
-  BaseSelection
-} from 'slate'
+import { createEditor, Editor, Transforms, Text, BaseSelection } from 'slate'
 import {
   Slate as SlateContext,
   Editable,
   withReact,
-  ReactEditor,
-  RenderElementProps,
-  useFocused,
-  RenderLeafProps
+  ReactEditor
 } from 'slate-react'
 import { withHistory } from 'slate-history'
 
@@ -58,11 +46,11 @@ import {
 import DragDropWrapper from '../../DragDropWrapper'
 import EventContentElement from './EventContentElement'
 import EventContentLeaf from './EventContentLeaf'
+import EventContentToolbar from './EventContentToolbar'
 
 import api from '../../../api'
 
 import styles from './styles.module.less'
-import isHotkey from 'is-hotkey'
 
 const saveContent = debounce(
   async (studioId: StudioId, eventId: ElementId, content) => {
@@ -140,12 +128,25 @@ const EventContent: React.FC<{
   }, [])
 
   const moveElement = useCallback((result: DropResult) => {
+    console.log('test')
+    composerDispatch({
+      type: COMPOSER_ACTION_TYPE.SET_DRAGGABLE_EVENT_CONTENT_ELEMENT,
+      id: null
+    })
+
     if (result.destination?.index !== undefined) {
       Transforms.moveNodes(editor, {
         at: [result.source.index],
         to: [result.destination.index]
       })
     }
+  }, [])
+
+  const setDraggableId = useCallback((initial: DragStart) => {
+    composerDispatch({
+      type: COMPOSER_ACTION_TYPE.SET_DRAGGABLE_EVENT_CONTENT_ELEMENT,
+      id: initial.draggableId
+    })
   }, [])
 
   const close = () => {
@@ -290,6 +291,7 @@ const EventContent: React.FC<{
         >
           <div className={styles.contentContainer}>
             <h1 className={styles.eventTitle}>{event.title}</h1>
+
             <SlateContext
               editor={editor}
               // https://github.com/ianstormtaylor/slate/pull/4540
@@ -303,8 +305,14 @@ const EventContent: React.FC<{
                 }
               }}
             >
-              <DragDropWrapper onDragEnd={moveElement}>
+              <EventContentToolbar />
+
+              <DragDropWrapper
+                onBeforeDragStart={setDraggableId}
+                onDragEnd={moveElement}
+              >
                 <Editable
+                  className={styles.editable}
                   placeholder="Enter event content..."
                   renderElement={renderElement}
                   renderLeaf={renderLeaf}

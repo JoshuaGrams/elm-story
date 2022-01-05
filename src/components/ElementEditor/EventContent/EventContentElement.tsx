@@ -1,9 +1,9 @@
 import { v4 as uuid } from 'uuid'
 
-import React from 'react'
+import React, { useContext, useState } from 'react'
 
-import { DeleteOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
+import Icon, { DeleteOutlined } from '@ant-design/icons'
 
 import { Draggable } from 'react-beautiful-dnd'
 import { Transforms } from 'slate'
@@ -22,6 +22,9 @@ import {
   EventContentElement,
   ImageElement as ImageElementType
 } from '../../../data/eventContentTypes'
+
+import styles from './styles.module.less'
+import { ComposerContext } from '../../../contexts/ComposerContext'
 
 const ImageElement: React.FC<{ element: ImageElementType; attributes: {} }> = ({
   element,
@@ -114,25 +117,57 @@ const DraggableWrapper: React.FC<{ element: EventContentElement }> = ({
 }) => {
   const editor = useSlate()
 
+  const [draggableId] = useState(uuid())
+
+  const { composer } = useContext(ComposerContext)
+
   return (
     <Draggable
-      draggableId={uuid()}
+      draggableId={draggableId}
       index={ReactEditor.findPath(editor, element)[0]}
     >
       {(provided) => (
-        <div {...provided.draggableProps} ref={provided.innerRef}>
+        <div
+          {...provided.draggableProps}
+          ref={provided.innerRef}
+          className={styles.DraggableWrapper}
+        >
           <div
             contentEditable={false}
-            style={{
-              position: 'absolute',
-              left: '-15px',
-              width: '10px',
-              height: '20px',
-              background: 'var(--highlight-color)',
-              borderRadius: '2px'
-            }}
+            className={styles.dragHandle}
+            style={
+              composer.draggableEventContentElement
+                ? {
+                    opacity: 0
+                  }
+                : {}
+            }
             {...provided.dragHandleProps}
-          />
+          >
+            <Icon
+              component={() => (
+                <svg
+                  width="14"
+                  height="18"
+                  viewBox="0 0 14 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 2C0 0.89543 0.895431 0 2 0H14V18H2C0.89543 18 0 17.1046 0 16V2Z"
+                    fill="#8E4CFF"
+                  />
+                  <circle cx="5" cy="5" r="1" fill="white" />
+                  <circle cx="9" cy="5" r="1" fill="white" />
+                  <circle cx="5" cy="9" r="1" fill="white" />
+                  <circle cx="9" cy="9" r="1" fill="white" />
+                  <circle cx="5" cy="13" r="1" fill="white" />
+                  <circle cx="9" cy="13" r="1" fill="white" />
+                </svg>
+              )}
+            />
+          </div>
+
           {children}
         </div>
       )}

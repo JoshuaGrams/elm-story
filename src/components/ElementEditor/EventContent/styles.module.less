@@ -25,11 +25,37 @@
       position: sticky;
       top: 0px;
       z-index: 7;
+      margin: 0;
     }
 
-    .editableContainer {
+    .EventContentToolbar {
+      border-bottom: 1px solid var(--primary-border-color);
+    }
+
+    .editable {
       height: 100%;
-      padding: 10px 20px;
+      padding-top: 10px;
+
+      .DraggableWrapper {
+        &:hover .dragHandle {
+          opacity: 1;
+        }
+
+        .dragHandle {
+          transition: opacity 0.2s;
+          position: absolute;
+          top: 4px;
+          left: -14px;
+          width: 14px;
+          height: 18px;
+          opacity: 0;
+        }
+      }
+
+      p {
+        margin-bottom: 0 !important;
+        padding: 0 1em 1em 1em;
+      }
 
       p * {
         font-family: 'Literata';
@@ -49,4 +75,15 @@
       }
     }
   }
+}
+
+:global .event-content-hovering-toolbar {
+  background: hsl(0, 0%, 10%);
+  border: hsl(0, 0%, 20%);
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.2s;
+  box-shadow: 0px 2px 10px 0px #000000;
+  width: auto;
+  border-radius: 2px;
 }
