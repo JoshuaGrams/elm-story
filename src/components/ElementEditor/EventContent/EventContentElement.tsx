@@ -1,12 +1,19 @@
 import { v4 as uuid } from 'uuid'
 
+import {
+  isElementEmpty,
+  isElementEmptyAndSelected
+} from '../../../lib/contentEditor'
+
 import React, { useContext, useState } from 'react'
+
+import { ComposerContext } from '../../../contexts/ComposerContext'
 
 import { Button } from 'antd'
 import Icon, { DeleteOutlined } from '@ant-design/icons'
 
 import { Draggable } from 'react-beautiful-dnd'
-import { Transforms } from 'slate'
+import { Transforms, Range, Path, Node } from 'slate'
 import {
   ReactEditor,
   useFocused,
@@ -24,7 +31,6 @@ import {
 } from '../../../data/eventContentTypes'
 
 import styles from './styles.module.less'
-import { ComposerContext } from '../../../contexts/ComposerContext'
 
 const ImageElement: React.FC<{ element: ImageElementType; attributes: {} }> = ({
   element,
@@ -179,6 +185,9 @@ export const Element: React.FC<{
   element: EventContentElement
   attributes: {}
 }> = ({ element, attributes, children }) => {
+  const editor = useSlate(),
+    selected = useSelected()
+
   let content: JSX.Element | undefined = undefined
 
   switch (element.type) {
@@ -253,6 +262,11 @@ export const Element: React.FC<{
         <p
           draggable="false"
           style={{ textAlign: element.align || ALIGN_TYPE.LEFT }}
+          className={
+            isElementEmptyAndSelected(editor, element, selected)
+              ? styles.empty
+              : ''
+          }
           {...attributes}
         >
           {children}

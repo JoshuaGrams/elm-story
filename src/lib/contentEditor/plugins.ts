@@ -1,10 +1,11 @@
-import { Editor, Node, Path, Range, Transforms } from 'slate'
+import { Editor, Node, Path, Range, Transforms, Element } from 'slate'
 
 import {
   ELEMENT_FORMATS,
   EditorType,
   EventContentElement,
-  ImageElement
+  ImageElement,
+  ALIGN_TYPE
 } from '../../data/eventContentTypes'
 
 export const withCorrectVoidBehavior = (editor: EditorType) => {
@@ -53,6 +54,55 @@ export const withCorrectVoidBehavior = (editor: EditorType) => {
     }
 
     deleteBackward(unit)
+  }
+
+  return editor
+}
+
+export const withAlignReset = (editor: EditorType) => {
+  const { deleteBackward } = editor
+
+  editor.deleteBackward = (unit) => {
+    if (editor.selection && editor.selection.anchor.offset === 0) {
+      const path = Path.parent(editor.selection.anchor.path),
+        node = Node.get(editor, path)
+
+      const isSupportedAlignType =
+        Element.isElement(node) &&
+        (node.type === ELEMENT_FORMATS.H1 ||
+          node.type === ELEMENT_FORMATS.H2 ||
+          node.type === ELEMENT_FORMATS.H3 ||
+          node.type === ELEMENT_FORMATS.H4 ||
+          node.type === ELEMENT_FORMATS.P)
+
+      if (
+        !isSupportedAlignType ||
+        (isSupportedAlignType &&
+          (!node.align || node.align === ALIGN_TYPE.LEFT))
+      )
+        return deleteBackward(unit)
+
+      if (isSupportedAlignType) {
+        Transforms.setNodes(
+          editor,
+          { align: ALIGN_TYPE.LEFT },
+          {
+            at: {
+              anchor: editor.selection.anchor,
+              focus: editor.selection.focus
+            }
+          }
+        )
+      }
+    }
+
+    if (
+      !editor.selection ||
+      !Range.isCollapsed(editor.selection) ||
+      editor.selection.anchor.offset !== 0
+    ) {
+      return deleteBackward(unit)
+    }
   }
 
   return editor

@@ -40,7 +40,8 @@ import { withHistory } from 'slate-history'
 import {
   withCorrectVoidBehavior,
   withEmbeds,
-  withImages
+  withImages,
+  withAlignReset
 } from '../../../lib/contentEditor/plugins'
 
 import DragDropWrapper from '../../DragDropWrapper'
@@ -71,7 +72,9 @@ const EventContent: React.FC<{
     () =>
       withHistory(
         withImages(
-          withEmbeds(withCorrectVoidBehavior(withReact(createEditor())))
+          withEmbeds(
+            withAlignReset(withCorrectVoidBehavior(withReact(createEditor())))
+          )
         )
       ),
     []
@@ -312,7 +315,6 @@ const EventContent: React.FC<{
               >
                 <Editable
                   className={styles.editable}
-                  placeholder="Enter event content..."
                   renderElement={renderElement}
                   renderLeaf={renderLeaf}
                   decorate={decorate}

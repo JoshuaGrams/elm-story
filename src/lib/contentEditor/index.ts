@@ -1,13 +1,18 @@
-import { Editor, Element as SlateElement, Transforms } from 'slate'
+import { Editor, Element as SlateElement, Range, Transforms } from 'slate'
 
 import {
   ALIGN_TYPE,
+  EditorType,
   ELEMENT_FORMATS,
+  EventContentElement,
   LEAF_FORMATS,
   LIST_TYPES
 } from '../../data/eventContentTypes'
 
-export const isElementActive = (editor: Editor, format: ELEMENT_FORMATS) => {
+export const isElementActive = (
+  editor: EditorType,
+  format: ELEMENT_FORMATS
+) => {
   const { selection } = editor
 
   if (!selection) return false
@@ -24,7 +29,7 @@ export const isElementActive = (editor: Editor, format: ELEMENT_FORMATS) => {
 }
 
 export const toggleElement = (
-  editor: Editor,
+  editor: EditorType,
   format: ELEMENT_FORMATS,
   isActive: boolean
 ) => {
@@ -50,11 +55,11 @@ export const toggleElement = (
   }
 }
 
-export const isLeafActive = (editor: Editor, format: LEAF_FORMATS) =>
+export const isLeafActive = (editor: EditorType, format: LEAF_FORMATS) =>
   Editor.marks(editor)?.[format] ? true : false
 
 export const toggleLeaf = (
-  editor: Editor,
+  editor: EditorType,
   format: LEAF_FORMATS,
   isActive: boolean
 ) =>
@@ -62,7 +67,7 @@ export const toggleLeaf = (
     ? Editor.removeMark(editor, format)
     : Editor.addMark(editor, format, true)
 
-export const isAlignActive = (editor: Editor, type: ALIGN_TYPE) => {
+export const isAlignActive = (editor: EditorType, type: ALIGN_TYPE) => {
   const { selection } = editor
 
   if (!selection) return false
@@ -70,20 +75,20 @@ export const isAlignActive = (editor: Editor, type: ALIGN_TYPE) => {
   const [match] = Array.from(
     Editor.nodes(editor, {
       at: Editor.unhangRange(editor, selection),
-      match: (n) => {
+      match: (node) => {
         const isSupportedAlignType =
-          SlateElement.isElement(n) &&
-          (n.type === ELEMENT_FORMATS.H1 ||
-            n.type === ELEMENT_FORMATS.H2 ||
-            n.type === ELEMENT_FORMATS.H3 ||
-            n.type === ELEMENT_FORMATS.H4 ||
-            n.type === ELEMENT_FORMATS.P)
+          SlateElement.isElement(node) &&
+          (node.type === ELEMENT_FORMATS.H1 ||
+            node.type === ELEMENT_FORMATS.H2 ||
+            node.type === ELEMENT_FORMATS.H3 ||
+            node.type === ELEMENT_FORMATS.H4 ||
+            node.type === ELEMENT_FORMATS.P)
 
         return (
-          !Editor.isEditor(n) &&
-          SlateElement.isElement(n) &&
+          !Editor.isEditor(node) &&
+          SlateElement.isElement(node) &&
           isSupportedAlignType &&
-          (n.align === type || (!n.align && type === ALIGN_TYPE.LEFT))
+          (node.align === type || (!node.align && type === ALIGN_TYPE.LEFT))
         )
       }
     })
@@ -92,7 +97,7 @@ export const isAlignActive = (editor: Editor, type: ALIGN_TYPE) => {
   return !!match
 }
 
-export const getActiveAlign = (editor: Editor) => {
+export const getActiveAlign = (editor: EditorType) => {
   // TODO: dupe code (isAlignActive)
   const { selection } = editor
 
@@ -101,17 +106,17 @@ export const getActiveAlign = (editor: Editor) => {
   const [match] = Array.from(
     Editor.nodes(editor, {
       at: Editor.unhangRange(editor, selection),
-      match: (n) => {
+      match: (node) => {
         const isSupportedAlignType =
-          SlateElement.isElement(n) &&
-          (n.type === ELEMENT_FORMATS.H1 ||
-            n.type === ELEMENT_FORMATS.H2 ||
-            n.type === ELEMENT_FORMATS.H3 ||
-            n.type === ELEMENT_FORMATS.H4 ||
-            n.type === ELEMENT_FORMATS.P)
+          SlateElement.isElement(node) &&
+          (node.type === ELEMENT_FORMATS.H1 ||
+            node.type === ELEMENT_FORMATS.H2 ||
+            node.type === ELEMENT_FORMATS.H3 ||
+            node.type === ELEMENT_FORMATS.H4 ||
+            node.type === ELEMENT_FORMATS.P)
 
         return (
-          !Editor.isEditor(n) && isSupportedAlignType && n.align !== undefined
+          !Editor.isEditor(node) && isSupportedAlignType && node.align !== undefined
         )
       }
     })
@@ -124,3 +129,18 @@ export const getActiveAlign = (editor: Editor) => {
 
   return ALIGN_TYPE.LEFT
 }
+
+export const isElementEmpty = (element: EventContentElement) =>
+  (element.children[0] as { text: string }).text.length === 0
+
+export const isElementEmptyAndSelected = (
+  editor: EditorType,
+  element: EventContentElement,
+  selected: boolean
+) =>
+  selected &&
+  editor.selection &&
+  Range.isCollapsed(editor.selection) &&
+  isElementEmpty(element)
+    ? true
+    : false
