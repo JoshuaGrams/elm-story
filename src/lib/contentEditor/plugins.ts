@@ -1,7 +1,7 @@
 import { Editor, Node, Path, Range, Transforms } from 'slate'
 
 import {
-  BLOCK_FORMATS,
+  ELEMENT_FORMATS,
   EditorType,
   EventContentElement,
   ImageElement
@@ -21,7 +21,7 @@ export const withCorrectVoidBehavior = (editor: EditorType) => {
 
     if (Editor.isVoid(editor, selectedNode)) {
       Editor.insertNode(editor, {
-        type: BLOCK_FORMATS.P,
+        type: ELEMENT_FORMATS.P,
         children: [{ text: '' }]
       })
       return
@@ -60,7 +60,7 @@ export const withCorrectVoidBehavior = (editor: EditorType) => {
 
 export const insertImage = (editor: EditorType, url?: string) => {
   const image: ImageElement = {
-    type: BLOCK_FORMATS.IMG,
+    type: ELEMENT_FORMATS.IMG,
     url,
     children: [{ text: '' }]
   }
@@ -72,7 +72,7 @@ export const withImages = (editor: Editor) => {
   const { insertData, isVoid } = editor
 
   editor.isVoid = (element: EventContentElement) => {
-    return element.type === BLOCK_FORMATS.IMG ? true : isVoid(element)
+    return element.type === ELEMENT_FORMATS.IMG ? true : isVoid(element)
   }
 
   editor.insertData = (data) => {
@@ -108,7 +108,7 @@ export const withEmbeds = (editor: EditorType) => {
   const { isVoid } = editor
 
   editor.isVoid = (element) =>
-    element.type === BLOCK_FORMATS.EMBED ? true : isVoid(element)
+    element.type === ELEMENT_FORMATS.EMBED ? true : isVoid(element)
 
   return editor
 }

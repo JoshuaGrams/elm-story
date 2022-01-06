@@ -128,7 +128,6 @@ const EventContent: React.FC<{
   }, [])
 
   const moveElement = useCallback((result: DropResult) => {
-    console.log('test')
     composerDispatch({
       type: COMPOSER_ACTION_TYPE.SET_DRAGGABLE_EVENT_CONTENT_ELEMENT,
       id: null

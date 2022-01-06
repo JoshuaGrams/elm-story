@@ -22,63 +22,63 @@ export type EmptyText = {
 }
 
 export type ParagraphElement = {
-  type: BLOCK_FORMATS.P
+  type: ELEMENT_FORMATS.P
   align?: ALIGN_TYPE
   children: Descendant[]
 }
 
 export type HeadingOneElement = {
-  type: BLOCK_FORMATS.H1
+  type: ELEMENT_FORMATS.H1
   align?: ALIGN_TYPE
   children: Descendant[]
 }
 
 export type HeadingTwoElement = {
-  type: BLOCK_FORMATS.H2
+  type: ELEMENT_FORMATS.H2
   align?: ALIGN_TYPE
   children: Descendant[]
 }
 
 export type HeadingThreeElement = {
-  type: BLOCK_FORMATS.H3
+  type: ELEMENT_FORMATS.H3
   align?: ALIGN_TYPE
   children: Descendant[]
 }
 
 export type HeadingFourElement = {
-  type: BLOCK_FORMATS.H4
+  type: ELEMENT_FORMATS.H4
   align?: ALIGN_TYPE
   children: Descendant[]
 }
 
 export type BlockquoteElement = {
-  type: BLOCK_FORMATS.BLOCKQUOTE
+  type: ELEMENT_FORMATS.BLOCKQUOTE
   children: Descendant[]
 }
 
 export type OrderedListElement = {
-  type: BLOCK_FORMATS.OL
+  type: ELEMENT_FORMATS.OL
   children: Descendant[]
 }
 
 export type UnorderedListElement = {
-  type: BLOCK_FORMATS.UL
+  type: ELEMENT_FORMATS.UL
   children: Descendant[]
 }
 
 export type ListItemElement = {
-  type: BLOCK_FORMATS.LI
+  type: ELEMENT_FORMATS.LI
   children: Descendant[]
 }
 
 export type ImageElement = {
-  type: BLOCK_FORMATS.IMG
+  type: ELEMENT_FORMATS.IMG
   url?: string
   children: EmptyText[]
 }
 
 export type EmbedElement = {
-  type: BLOCK_FORMATS.EMBED
+  type: ELEMENT_FORMATS.EMBED
   url?: string
   children: EmptyText[]
 }
@@ -103,23 +103,23 @@ export type EventContentLeaf = {
   u?: boolean
   s?: boolean
   code?: boolean
-  char_ref?: boolean
+  character?: boolean
   expression?: boolean
   expressionStart?: boolean
   expressionEnd?: boolean
 }
 
-export enum INLINE_FORMATS {
+export enum LEAF_FORMATS {
   STRONG = 'strong',
   CODE = 'code',
   EM = 'em',
   S = 's',
   U = 'u',
-  CHAR_REF = 'char_ref',
-  EXP = 'exp'
+  CHARACTER = 'character',
+  EXPRESSION = 'expression'
 }
 
-export enum BLOCK_FORMATS {
+export enum ELEMENT_FORMATS {
   BLOCKQUOTE = 'blockquote',
   H1 = 'h1',
   H2 = 'h2',
@@ -140,11 +140,11 @@ export enum ALIGN_TYPE {
 }
 
 export const SUPPORTED_ALIGN_TYPES = [
-  BLOCK_FORMATS.H1,
-  BLOCK_FORMATS.H1,
-  BLOCK_FORMATS.H3,
-  BLOCK_FORMATS.H4,
-  BLOCK_FORMATS.P
+  ELEMENT_FORMATS.H1,
+  ELEMENT_FORMATS.H1,
+  ELEMENT_FORMATS.H3,
+  ELEMENT_FORMATS.H4,
+  ELEMENT_FORMATS.P
 ]
 
 export enum HOTKEY_EXPRESSION {
@@ -157,13 +157,13 @@ export enum HOTKEY_SELECTION {
   ALL = 'select_all'
 }
 
-export const LIST_TYPES = [BLOCK_FORMATS.OL, BLOCK_FORMATS.UL]
+export const LIST_TYPES = [ELEMENT_FORMATS.OL, ELEMENT_FORMATS.UL]
 
 export const HOTKEYS: { [hotkey: string]: string } = {
-  'mod+b': INLINE_FORMATS.STRONG,
-  'mod+i': INLINE_FORMATS.EM,
-  'mod+u': INLINE_FORMATS.U,
-  'mod+`': INLINE_FORMATS.CODE,
+  'mod+b': LEAF_FORMATS.STRONG,
+  'mod+i': LEAF_FORMATS.EM,
+  'mod+u': LEAF_FORMATS.U,
+  'mod+`': LEAF_FORMATS.CODE,
   'shift+[': HOTKEY_EXPRESSION.OPEN_BRACKET,
   'shift+]': HOTKEY_EXPRESSION.CLOSE_BRACKET,
   tab: HOTKEY_EXPRESSION.EXIT
@@ -171,7 +171,7 @@ export const HOTKEYS: { [hotkey: string]: string } = {
 
 export const DEFAULT_EVENT_CONTENT: Descendant[] = [
   {
-    type: BLOCK_FORMATS.P,
+    type: ELEMENT_FORMATS.P,
     children: [{ text: '' }]
   }
 ]

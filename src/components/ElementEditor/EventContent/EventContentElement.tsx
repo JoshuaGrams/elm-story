@@ -17,7 +17,7 @@ import {
 
 import {
   ALIGN_TYPE,
-  BLOCK_FORMATS,
+  ELEMENT_FORMATS,
   EmbedElement as EmbedElementType,
   EventContentElement,
   ImageElement as ImageElementType
@@ -182,13 +182,13 @@ export const Element: React.FC<{
   let content: JSX.Element | undefined = undefined
 
   switch (element.type) {
-    case BLOCK_FORMATS.BLOCKQUOTE:
+    case ELEMENT_FORMATS.BLOCKQUOTE:
       content = <blockquote {...attributes}>{children}</blockquote>
       break
-    case BLOCK_FORMATS.UL:
+    case ELEMENT_FORMATS.UL:
       content = <ul {...attributes}>{children}</ul>
       break
-    case BLOCK_FORMATS.H1:
+    case ELEMENT_FORMATS.H1:
       content = (
         <h1
           style={{ textAlign: element.align || ALIGN_TYPE.LEFT }}
@@ -198,7 +198,7 @@ export const Element: React.FC<{
         </h1>
       )
       break
-    case BLOCK_FORMATS.H2:
+    case ELEMENT_FORMATS.H2:
       content = (
         <h2
           style={{ textAlign: element.align || ALIGN_TYPE.LEFT }}
@@ -208,7 +208,7 @@ export const Element: React.FC<{
         </h2>
       )
       break
-    case BLOCK_FORMATS.H3:
+    case ELEMENT_FORMATS.H3:
       content = (
         <h3
           style={{ textAlign: element.align || ALIGN_TYPE.LEFT }}
@@ -218,7 +218,7 @@ export const Element: React.FC<{
         </h3>
       )
       break
-    case BLOCK_FORMATS.H4:
+    case ELEMENT_FORMATS.H4:
       content = (
         <h4
           style={{ textAlign: element.align || ALIGN_TYPE.LEFT }}
@@ -228,20 +228,20 @@ export const Element: React.FC<{
         </h4>
       )
       break
-    case BLOCK_FORMATS.LI:
+    case ELEMENT_FORMATS.LI:
       content = <li {...attributes}>{children}</li>
       break
-    case BLOCK_FORMATS.OL:
+    case ELEMENT_FORMATS.OL:
       content = <ol {...attributes}>{children}</ol>
       break
-    case BLOCK_FORMATS.IMG:
+    case ELEMENT_FORMATS.IMG:
       content = (
         <ImageElement element={element} attributes={attributes}>
           {children}
         </ImageElement>
       )
       break
-    case BLOCK_FORMATS.EMBED:
+    case ELEMENT_FORMATS.EMBED:
       content = (
         <EmbedElement element={element} attributes={attributes}>
           {children}
@@ -261,7 +261,7 @@ export const Element: React.FC<{
       break
   }
 
-  return element.type === BLOCK_FORMATS.LI ? (
+  return element.type === ELEMENT_FORMATS.LI ? (
     content
   ) : (
     <DraggableWrapper element={element}>{content}</DraggableWrapper>
