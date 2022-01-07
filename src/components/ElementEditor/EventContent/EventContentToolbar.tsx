@@ -1,10 +1,8 @@
 import {
   isElementActive,
-  isAlignActive,
   isLeafActive,
   toggleElement,
-  toggleLeaf,
-  getActiveAlign
+  toggleLeaf
 } from '../../../lib/contentEditor'
 
 import React, { useRef, useEffect } from 'react'
@@ -14,7 +12,6 @@ import { ReactEditor, useSlate } from 'slate-react'
 
 import { ELEMENT_FORMATS, LEAF_FORMATS } from '../../../data/eventContentTypes'
 
-import { Button, Menu } from 'antd'
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -23,7 +20,8 @@ import {
 } from '@ant-design/icons'
 
 import Portal from '../../Portal'
-import AlignSelect from './Tools/AlignDropdown'
+import ElementDropdown from './Tools/ElementDropdown'
+import AlignDropdown from './Tools/AlignDropdown'
 
 import styles from './toolbarStyles.module.less'
 
@@ -96,7 +94,9 @@ const EventContentToolbar: React.FC = () => {
   return (
     <Portal>
       <div ref={toolbarRef} className="event-content-hovering-toolbar">
-        <div className={styles.elementTools}>Change Element...</div>
+        <div className={styles.elementTools}>
+          <ElementDropdown />
+        </div>
 
         <div className={styles.leafTools}>
           <LeafButton format={LEAF_FORMATS.STRONG} type="leaf">
@@ -117,7 +117,7 @@ const EventContentToolbar: React.FC = () => {
         </div>
 
         <div className={styles.alignTools}>
-          <AlignSelect />
+          <AlignDropdown />
         </div>
       </div>
     </Portal>

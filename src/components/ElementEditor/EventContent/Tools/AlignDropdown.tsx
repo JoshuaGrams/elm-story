@@ -1,11 +1,11 @@
-import { getActiveAlign } from '../../../../lib/contentEditor'
+import { getActiveAlignType } from '../../../../lib/contentEditor'
 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { ALIGN_TYPE } from '../../../../data/eventContentTypes'
 
-import { Editor, Transforms } from 'slate'
-import { useFocused, useSlate } from 'slate-react'
+import { Transforms } from 'slate'
+import { useSlate } from 'slate-react'
 
 import {
   AlignCenterOutlined,
@@ -18,81 +18,76 @@ import { Dropdown, Menu } from 'antd'
 import styles from './styles.module.less'
 
 const AlignDropdown: React.FC = () => {
-  const focused = useFocused()
   const editor = useSlate()
 
-  const [currentAlign, setCurrentAlign] = useState<ALIGN_TYPE>(ALIGN_TYPE.LEFT)
+  const [currentAlignType, setCurrentAlignType] = useState<ALIGN_TYPE>(
+    ALIGN_TYPE.LEFT
+  )
 
-  const changeAlign = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
-    type: ALIGN_TYPE
-  ) => {
-    event.preventDefault()
+  const changeAlign = useCallback(
+    (event: React.MouseEvent<HTMLElement, MouseEvent>, type: ALIGN_TYPE) => {
+      event.preventDefault()
 
-    const { selection } = editor
+      const { selection } = editor
 
-    if (!selection) return
+      if (!selection) return
 
-    setCurrentAlign(type)
+      setCurrentAlignType(type)
 
-    const { anchor, focus } = selection
+      const { anchor, focus } = selection
 
-    // TODO: handle elements at the end that don't support alignment
-    Transforms.setNodes(
-      editor,
-      { align: type === ALIGN_TYPE.LEFT ? undefined : type },
-      {
-        at: {
-          anchor: { path: [anchor.path[0], 0], offset: 0 },
-          focus: {
-            path: [focus.path[0], 0],
-            offset: focus.offset
+      // TODO: handle elements at the end that don't support alignment
+      Transforms.setNodes(
+        editor,
+        { align: type === ALIGN_TYPE.LEFT ? undefined : type },
+        {
+          at: {
+            anchor: { path: [anchor.path[0], 0], offset: 0 },
+            focus: {
+              path: [focus.path[0], 0],
+              offset: focus.offset
+            }
           }
         }
-      }
-    )
+      )
+    },
+    []
+  )
 
-    Transforms.collapse(editor, { edge: 'end' })
-  }
-
-  useEffect(() => setCurrentAlign(getActiveAlign(editor)), [editor.selection])
+  useEffect(() => setCurrentAlignType(getActiveAlignType(editor)), [
+    editor.selection
+  ])
 
   return (
     <Dropdown
+      // @ts-ignore
+      autoDestroy
+      overlayClassName="event-content-align-dropdown-menu"
       overlay={
         <Menu>
           <Menu.Item
             onMouseDown={(event) => changeAlign(event, ALIGN_TYPE.LEFT)}
-            style={{
-              color:
-                currentAlign === ALIGN_TYPE.LEFT
-                  ? 'var(--highlight-color)'
-                  : 'unset'
-            }}
+            className={
+              currentAlignType === ALIGN_TYPE.LEFT ? styles.activeElement : ''
+            }
           >
-            <AlignLeftOutlined /> Left
+            <AlignLeftOutlined className={styles.icon} /> Left
           </Menu.Item>
           <Menu.Item
             onMouseDown={(event) => changeAlign(event, ALIGN_TYPE.CENTER)}
-            style={{
-              color:
-                currentAlign === ALIGN_TYPE.CENTER
-                  ? 'var(--highlight-color)'
-                  : 'unset'
-            }}
+            className={
+              currentAlignType === ALIGN_TYPE.CENTER ? styles.activeElement : ''
+            }
           >
-            <AlignCenterOutlined /> Center
+            <AlignCenterOutlined className={styles.icon} /> Center
           </Menu.Item>
           <Menu.Item
             onMouseDown={(event) => changeAlign(event, ALIGN_TYPE.RIGHT)}
-            style={{
-              color:
-                currentAlign === ALIGN_TYPE.RIGHT
-                  ? 'var(--highlight-color)'
-                  : 'unset'
-            }}
+            className={
+              currentAlignType === ALIGN_TYPE.RIGHT ? styles.activeElement : ''
+            }
           >
-            <AlignRightOutlined /> Right
+            <AlignRightOutlined className={styles.icon} /> Right
           </Menu.Item>
         </Menu>
       }
@@ -101,19 +96,19 @@ const AlignDropdown: React.FC = () => {
         className={styles.AlignDropdown}
         onMouseDown={(event) => event.preventDefault()}
       >
-        {currentAlign === ALIGN_TYPE.LEFT && (
+        {currentAlignType === ALIGN_TYPE.LEFT && (
           <>
-            <AlignLeftOutlined /> Left
+            <AlignLeftOutlined className={styles.iconHighlight} /> Left
           </>
         )}
-        {currentAlign === ALIGN_TYPE.CENTER && (
+        {currentAlignType === ALIGN_TYPE.CENTER && (
           <>
-            <AlignCenterOutlined /> Center
+            <AlignCenterOutlined className={styles.iconHighlight} /> Center
           </>
         )}
-        {currentAlign === ALIGN_TYPE.RIGHT && (
+        {currentAlignType === ALIGN_TYPE.RIGHT && (
           <>
-            <AlignRightOutlined /> Right
+            <AlignRightOutlined className={styles.iconHighlight} /> Right
           </>
         )}{' '}
         <DownOutlined />

@@ -44,18 +44,51 @@
         .dragHandle {
           transition: opacity 0.2s;
           position: absolute;
-          top: 4px;
+          top: 0;
+          bottom: 14px;
           left: -7px;
           width: 14px;
-          height: 18px;
+          background: var(--highlight-color);
+          // height: 18px;
+          display: grid;
+          align-items: center;
           opacity: 0;
+          border-radius: 2px;
         }
       }
 
-      p {
-        margin-bottom: 0 !important;
-        padding: 0 1em 1em 1em;
+      p *,
+      h1 *,
+      h2 *,
+      h3 *,
+      h4 *,
+      blockquote *,
+      ol *,
+      ul * {
+        font-family: 'Literata';
+      }
 
+      p,
+      h1,
+      h2,
+      h3,
+      h4 {
+        margin-bottom: 0 !important;
+        padding: 0 14px 14px 14px;
+      }
+
+      blockquote {
+        border-left: 2px solid var(--highlight-color);
+        margin-left: 20px;
+        padding-left: 20px;
+        font-style: italic;
+      }
+
+      ul {
+        list-style-type: unset;
+      }
+
+      p {
         &.empty:after {
           content: "Type '/' for commands...";
           color: #aaa;
@@ -68,9 +101,7 @@
       }
 
       p * {
-        font-family: 'Literata';
         font-size: 16px;
-        // font-weight: 400 !important;
       }
 
       .expression * {

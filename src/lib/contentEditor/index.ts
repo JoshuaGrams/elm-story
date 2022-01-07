@@ -97,7 +97,7 @@ export const isAlignActive = (editor: EditorType, type: ALIGN_TYPE) => {
   return !!match
 }
 
-export const getActiveAlign = (editor: EditorType) => {
+export const getActiveAlignType = (editor: EditorType) => {
   // TODO: dupe code (isAlignActive)
   const { selection } = editor
 
@@ -116,7 +116,9 @@ export const getActiveAlign = (editor: EditorType) => {
             node.type === ELEMENT_FORMATS.P)
 
         return (
-          !Editor.isEditor(node) && isSupportedAlignType && node.align !== undefined
+          !Editor.isEditor(node) &&
+          isSupportedAlignType &&
+          node.align !== undefined
         )
       }
     })
@@ -128,6 +130,29 @@ export const getActiveAlign = (editor: EditorType) => {
   }
 
   return ALIGN_TYPE.LEFT
+}
+
+export const getActiveElementType = (editor: EditorType) => {
+  const { selection } = editor
+
+  if (!selection) return ELEMENT_FORMATS.P
+
+  const [match] = Array.from(
+    Editor.nodes(editor, {
+      at: Editor.unhangRange(editor, selection),
+      match: (node) =>
+        !Editor.isEditor(node) &&
+        SlateElement.isElement(node) &&
+        node.type !== undefined
+    })
+  )
+
+  if (match) {
+    // @ts-ignore
+    return match[0].type
+  }
+
+  return ELEMENT_FORMATS.P
 }
 
 export const isElementEmpty = (element: EventContentElement) =>

@@ -1,7 +1,53 @@
+// mixin
+.iconDimColor {
+  color: hsl(0, 0%, 40%);
+}
+
+// mixin
+.iconHighlightColor {
+  color: var(--highlight-color);
+}
+
+.ElementDropdown,
 .AlignDropdown {
   padding: 0 10px;
 
   &:hover {
     cursor: pointer;
   }
+
+  .icon {
+    .iconDimColor();
+  }
+
+  .iconHighlight {
+    .iconHighlightColor();
+  }
+}
+
+// mixin
+.dropdownMenuShared {
+  :local .icon {
+    .iconDimColor();
+  }
+
+  :local .iconHighlight {
+    .iconHighlightColor();
+  }
+
+  :local .activeElement {
+    background: var(--highlight-color-20a) !important;
+
+    .icon {
+      color: var(--highlight-color);
+    }
+  }
+}
+
+:global .event-content-align-dropdown-menu {
+  .dropdownMenuShared();
+}
+
+:global .event-content-element-dropdown-menu {
+  .dropdownMenuShared();
 }
