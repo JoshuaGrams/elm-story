@@ -23,11 +23,11 @@ import {
 } from '@ant-design/icons'
 
 import Portal from '../../Portal'
-import AlignSelect from './Tools/AlignSelect'
+import AlignSelect from './Tools/AlignDropdown'
 
-import styles from './styles.module.less'
+import styles from './toolbarStyles.module.less'
 
-const ToolbarButton: React.FC<{
+const LeafButton: React.FC<{
   format: ELEMENT_FORMATS | LEAF_FORMATS
   type: 'element' | 'leaf'
 }> = ({ format, type, children }) => {
@@ -39,11 +39,8 @@ const ToolbarButton: React.FC<{
       : isLeafActive(editor, format as LEAF_FORMATS)
 
   return (
-    <Button
-      style={{
-        border: '1px solid',
-        borderColor: isActive ? '#8E4CFF' : 'hsl(0, 0%, 20%)'
-      }}
+    <div
+      className={`${styles.leafButton} ${isActive ? styles.active : ''}`}
       onMouseDown={(event) => {
         event.preventDefault()
 
@@ -53,7 +50,7 @@ const ToolbarButton: React.FC<{
       }}
     >
       {children || format}
-    </Button>
+    </div>
   )
 }
 
@@ -84,38 +81,44 @@ const EventContentToolbar: React.FC = () => {
     if (rect && toolbarRef.current) {
       toolbarRef.current.style.pointerEvents = 'unset'
       toolbarRef.current.style.opacity = '1'
-      toolbarRef.current.style.top = `${
-        rect.top + window.pageYOffset - toolbarRef.current.offsetHeight
-      }px`
-      toolbarRef.current.style.left = `${
+      toolbarRef.current.style.top = `${Math.round(
+        rect.top + window.pageYOffset - toolbarRef.current.offsetHeight - 4
+      )}px`
+      toolbarRef.current.style.left = `${Math.round(
         rect.left +
-        window.pageXOffset -
-        toolbarRef.current.offsetWidth / 2 +
-        rect.width / 2
-      }px`
+          window.pageXOffset -
+          toolbarRef.current.offsetWidth / 2 +
+          rect.width / 2
+      )}px`
     }
   })
 
   return (
     <Portal>
       <div ref={toolbarRef} className="event-content-hovering-toolbar">
-        <ToolbarButton format={LEAF_FORMATS.STRONG} type="leaf">
-          <BoldOutlined />
-        </ToolbarButton>
+        <div className={styles.elementTools}>Change Element...</div>
 
-        <ToolbarButton format={LEAF_FORMATS.EM} type="leaf">
-          <ItalicOutlined />
-        </ToolbarButton>
+        <div className={styles.leafTools}>
+          <LeafButton format={LEAF_FORMATS.STRONG} type="leaf">
+            <BoldOutlined />
+          </LeafButton>
 
-        <ToolbarButton format={LEAF_FORMATS.U} type="leaf">
-          <UnderlineOutlined />
-        </ToolbarButton>
+          <LeafButton format={LEAF_FORMATS.EM} type="leaf">
+            <ItalicOutlined />
+          </LeafButton>
 
-        <ToolbarButton format={LEAF_FORMATS.S} type="leaf">
-          <StrikethroughOutlined />
-        </ToolbarButton>
+          <LeafButton format={LEAF_FORMATS.U} type="leaf">
+            <UnderlineOutlined />
+          </LeafButton>
 
-        <AlignSelect />
+          <LeafButton format={LEAF_FORMATS.S} type="leaf">
+            <StrikethroughOutlined />
+          </LeafButton>
+        </div>
+
+        <div className={styles.alignTools}>
+          <AlignSelect />
+        </div>
       </div>
     </Portal>
   )

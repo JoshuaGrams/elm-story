@@ -16,7 +16,8 @@ import { ElementId, ELEMENT_TYPE, Scene, StudioId } from '../../../data/types'
 import {
   CustomRange,
   HOTKEY_EXPRESSION,
-  HOTKEYS
+  HOTKEYS,
+  LEAF_FORMATS
 } from '../../../data/eventContentTypes'
 
 import { DragStart, DropResult } from 'react-beautiful-dnd'
@@ -52,6 +53,7 @@ import EventContentToolbar from './EventContentToolbar'
 import api from '../../../api'
 
 import styles from './styles.module.less'
+import { isLeafActive, toggleLeaf } from '../../../lib/contentEditor'
 
 const saveContent = debounce(
   async (studioId: StudioId, eventId: ElementId, content) => {
@@ -161,11 +163,17 @@ const EventContent: React.FC<{
       let selection: BaseSelection | undefined = undefined
 
       switch (hotkey) {
-        case 'mod+b':
-        case 'mod+i':
-        case 'mod+u':
+        case 'strong':
+        case 'em':
+        case 'u':
+        case 's':
+          toggleLeaf(
+            editor,
+            hotkey as LEAF_FORMATS,
+            isLeafActive(editor, hotkey as LEAF_FORMATS)
+          )
+          break
         case 'mod+`':
-        case 'mod+a':
         case HOTKEY_EXPRESSION.OPEN_BRACKET:
           if (selectedExpression.isInside) return
 

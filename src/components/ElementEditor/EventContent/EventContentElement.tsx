@@ -13,7 +13,14 @@ import { Button } from 'antd'
 import Icon, { DeleteOutlined } from '@ant-design/icons'
 
 import { Draggable } from 'react-beautiful-dnd'
-import { Transforms, Range, Path, Node } from 'slate'
+import {
+  Transforms,
+  Range,
+  Path,
+  Node,
+  Element as SlateElement,
+  Editor
+} from 'slate'
 import {
   ReactEditor,
   useFocused,
@@ -127,6 +134,15 @@ const DraggableWrapper: React.FC<{ element: EventContentElement }> = ({
 
   const { composer } = useContext(ComposerContext)
 
+  const selectElement = () => {
+    const elementPosition = ReactEditor.findPath(editor, element)[0]
+
+    Transforms.select(editor, {
+      anchor: Editor.start(editor, [elementPosition]),
+      focus: Editor.end(editor, [elementPosition])
+    })
+  }
+
   return (
     <Draggable
       draggableId={draggableId}
@@ -148,6 +164,7 @@ const DraggableWrapper: React.FC<{ element: EventContentElement }> = ({
                   }
                 : {}
             }
+            onClick={selectElement}
             {...provided.dragHandleProps}
           >
             <Icon
@@ -159,10 +176,7 @@ const DraggableWrapper: React.FC<{ element: EventContentElement }> = ({
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path
-                    d="M0 2C0 0.89543 0.895431 0 2 0H14V18H2C0.89543 18 0 17.1046 0 16V2Z"
-                    fill="#8E4CFF"
-                  />
+                  <rect width="14" height="18" rx="2" fill="#8E4CFF" />
                   <circle cx="5" cy="5" r="1" fill="white" />
                   <circle cx="9" cy="5" r="1" fill="white" />
                   <circle cx="5" cy="9" r="1" fill="white" />

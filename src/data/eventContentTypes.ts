@@ -163,6 +163,7 @@ export const HOTKEYS: { [hotkey: string]: string } = {
   'mod+b': LEAF_FORMATS.STRONG,
   'mod+i': LEAF_FORMATS.EM,
   'mod+u': LEAF_FORMATS.U,
+  'mod+s': LEAF_FORMATS.S,
   'mod+`': LEAF_FORMATS.CODE,
   'shift+[': HOTKEY_EXPRESSION.OPEN_BRACKET,
   'shift+]': HOTKEY_EXPRESSION.CLOSE_BRACKET,

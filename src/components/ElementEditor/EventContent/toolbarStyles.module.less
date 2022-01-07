@@ -1,0 +1,54 @@
+:global .event-content-hovering-toolbar {
+  background: hsl(0, 0%, 10%);
+  border: hsl(0, 0%, 20%);
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.2s;
+  box-shadow: 0px 2px 10px 0px #000000;
+  border: 1px solid var(--primary-border-color);
+  width: auto;
+  background: hsl(0, 0%, 10%);
+  border-radius: 2px;
+  height: 24px;
+
+  div {
+    display: inline-block;
+    border-right: 1px solid var(--primary-border-color);
+    height: 100%;
+
+    &:last-of-type {
+      border: none;
+    }
+  }
+
+  :local .elementTools {
+    padding: 0 10px;
+  }
+
+  :local .leafTools {
+    .leafButton {
+      display: inline-block;
+      width: 24px;
+      text-align: center;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      &:hover span {
+        color: var(--highlight-color);
+      }
+
+      span {
+        color: hsl(0, 0%, 40%);
+      }
+
+      &.active span {
+        color: white;
+      }
+    }
+  }
+
+  :local .alignTools {
+  }
+}
