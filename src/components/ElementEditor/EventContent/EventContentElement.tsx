@@ -204,9 +204,22 @@ export const Element: React.FC<{
 
   let content: JSX.Element | undefined = undefined
 
+  const _isElementEmptyAndSelected = isElementEmptyAndSelected(
+    editor,
+    element,
+    selected
+  )
+
   switch (element.type) {
     case ELEMENT_FORMATS.BLOCKQUOTE:
-      content = <blockquote {...attributes}>{children}</blockquote>
+      content = (
+        <blockquote
+          className={_isElementEmptyAndSelected ? styles.empty : ''}
+          {...attributes}
+        >
+          {children}
+        </blockquote>
+      )
       break
     case ELEMENT_FORMATS.UL:
       content = <ul {...attributes}>{children}</ul>
@@ -215,6 +228,7 @@ export const Element: React.FC<{
       content = (
         <h1
           style={{ textAlign: element.align || ALIGN_TYPE.LEFT }}
+          className={_isElementEmptyAndSelected ? styles.empty : ''}
           {...attributes}
         >
           {children}
@@ -225,6 +239,7 @@ export const Element: React.FC<{
       content = (
         <h2
           style={{ textAlign: element.align || ALIGN_TYPE.LEFT }}
+          className={_isElementEmptyAndSelected ? styles.empty : ''}
           {...attributes}
         >
           {children}
@@ -235,6 +250,7 @@ export const Element: React.FC<{
       content = (
         <h3
           style={{ textAlign: element.align || ALIGN_TYPE.LEFT }}
+          className={_isElementEmptyAndSelected ? styles.empty : ''}
           {...attributes}
         >
           {children}
@@ -245,6 +261,7 @@ export const Element: React.FC<{
       content = (
         <h4
           style={{ textAlign: element.align || ALIGN_TYPE.LEFT }}
+          className={_isElementEmptyAndSelected ? styles.empty : ''}
           {...attributes}
         >
           {children}
@@ -252,7 +269,14 @@ export const Element: React.FC<{
       )
       break
     case ELEMENT_FORMATS.LI:
-      content = <li {...attributes}>{children}</li>
+      content = (
+        <li
+          className={_isElementEmptyAndSelected ? styles.empty : ''}
+          {...attributes}
+        >
+          {children}
+        </li>
+      )
       break
     case ELEMENT_FORMATS.OL:
       content = <ol {...attributes}>{children}</ol>
@@ -276,11 +300,7 @@ export const Element: React.FC<{
         <p
           draggable="false"
           style={{ textAlign: element.align || ALIGN_TYPE.LEFT }}
-          className={
-            isElementEmptyAndSelected(editor, element, selected)
-              ? styles.empty
-              : ''
-          }
+          className={_isElementEmptyAndSelected ? styles.empty : ''}
           {...attributes}
         >
           {children}

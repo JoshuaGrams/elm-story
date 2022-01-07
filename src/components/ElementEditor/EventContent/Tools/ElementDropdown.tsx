@@ -105,9 +105,9 @@ const HeadingIcon: React.FC<{
 
 HeadingIcon.displayName = 'HeadingIcon'
 
-const BlockquoteIcon = (
+const BlockquoteIcon: React.FC<{ className?: string }> = ({ className }) => (
   <Icon
-    className={styles.icon}
+    className={`${styles.icon} ${className || ''}`}
     component={() => (
       <svg
         width="12"
@@ -242,7 +242,7 @@ const ElementDropdown: React.FC = () => {
                 : ''
             }
           >
-            {BlockquoteIcon} Blockquote
+            <BlockquoteIcon /> Quote
           </Menu.Item>
           <Menu.Item
             onMouseDown={(event) => changeElement(event, ELEMENT_FORMATS.OL)}
@@ -252,7 +252,7 @@ const ElementDropdown: React.FC = () => {
                 : ''
             }
           >
-            <OrderedListOutlined className={styles.icon} /> Ordered List
+            <OrderedListOutlined className={styles.icon} /> Numbered List
           </Menu.Item>
           <Menu.Item
             onMouseDown={(event) => changeElement(event, ELEMENT_FORMATS.UL)}
@@ -262,7 +262,7 @@ const ElementDropdown: React.FC = () => {
                 : ''
             }
           >
-            <UnorderedListOutlined className={styles.icon} /> Unordered List
+            <UnorderedListOutlined className={styles.icon} /> Bulleted List
           </Menu.Item>
           <Menu.Item>
             <FileImageOutlined className={styles.icon} /> Image
@@ -289,34 +289,33 @@ const ElementDropdown: React.FC = () => {
         )}
         {currentElementType === ELEMENT_FORMATS.H2 && (
           <>
-            <HeadingIcon type="H1" className={styles.iconHighlight} /> Heading 2
+            <HeadingIcon type="H2" className={styles.iconHighlight} /> Heading 2
           </>
         )}
         {currentElementType === ELEMENT_FORMATS.H3 && (
           <>
-            <HeadingIcon type="H1" className={styles.iconHighlight} /> Heading 3
+            <HeadingIcon type="H3" className={styles.iconHighlight} /> Heading 3
           </>
         )}
         {currentElementType === ELEMENT_FORMATS.H4 && (
           <>
-            <HeadingIcon type="H1" className={styles.iconHighlight} /> Heading 4
+            <HeadingIcon type="H4" className={styles.iconHighlight} /> Heading 4
           </>
         )}
         {currentElementType === ELEMENT_FORMATS.BLOCKQUOTE && (
           <>
-            <HeadingIcon type="H1" className={styles.iconHighlight} />{' '}
-            Blockquote
+            <BlockquoteIcon className={styles.iconHighlight} /> Quote
           </>
         )}
         {currentElementType === ELEMENT_FORMATS.OL && (
           <>
-            <HeadingIcon type="H1" className={styles.iconHighlight} /> Ordered
+            <OrderedListOutlined className={styles.iconHighlight} /> Numbered
             List
           </>
         )}
         {currentElementType === ELEMENT_FORMATS.UL && (
           <>
-            <HeadingIcon type="H1" className={styles.iconHighlight} /> Unordered
+            <UnorderedListOutlined className={styles.iconHighlight} /> Bulleted
             List
           </>
         )}{' '}

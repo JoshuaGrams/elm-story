@@ -156,7 +156,9 @@ export const getActiveElementType = (editor: EditorType) => {
 }
 
 export const isElementEmpty = (element: EventContentElement) =>
-  (element.children[0] as { text: string }).text.length === 0
+  element.type === ELEMENT_FORMATS.OL || element.type === ELEMENT_FORMATS.UL
+    ? false
+    : (element.children[0] as { text: string }).text.length === 0
 
 export const isElementEmptyAndSelected = (
   editor: EditorType,
