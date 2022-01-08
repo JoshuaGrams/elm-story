@@ -75,19 +75,20 @@ const EventContent: React.FC<{
 }> = ({ studioId, scene, eventId, onClose }) => {
   const event = useEvent(studioId, eventId, [studioId, eventId])
 
-  const editor = useMemo<ReactEditor>(
-    () =>
-      withHistory(
-        withImages(
-          withEmbeds(
-            withElementReset(
-              withAlignReset(withCorrectVoidBehavior(withReact(createEditor())))
-            )
+  // https://github.com/ianstormtaylor/slate/commit/1b0e7c6b928865cb4fd656b6f922e30fbe72d77a
+  const [editor] = useState<ReactEditor>(() =>
+    withHistory(
+      withImages(
+        withEmbeds(
+          withElementReset(
+            withAlignReset(withCorrectVoidBehavior(withReact(createEditor())))
           )
         )
-      ),
-    []
+      )
+    )
   )
+
+  console.log('hi!')
 
   const { composer, composerDispatch } = useContext(ComposerContext)
 
