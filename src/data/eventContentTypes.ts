@@ -147,6 +147,10 @@ export const SUPPORTED_ALIGN_TYPES = [
   ELEMENT_FORMATS.P
 ]
 
+export enum HOTKEY_BASIC {
+  BACKSPACE = 'BACKSPACE'
+}
+
 export enum HOTKEY_EXPRESSION {
   OPEN_BRACKET = 'OPEN_BRACKET',
   CLOSE_BRACKET = 'CLOSE_BRACKET',
@@ -154,7 +158,7 @@ export enum HOTKEY_EXPRESSION {
 }
 
 export enum HOTKEY_SELECTION {
-  ALL = 'select_all'
+  ALL = 'SELECT_ALL'
 }
 
 export const LIST_TYPES = [ELEMENT_FORMATS.OL, ELEMENT_FORMATS.UL]
@@ -165,6 +169,8 @@ export const HOTKEYS: { [hotkey: string]: string } = {
   'mod+u': LEAF_FORMATS.U,
   'mod+s': LEAF_FORMATS.S,
   'mod+`': LEAF_FORMATS.CODE,
+  'mod+a': HOTKEY_SELECTION.ALL,
+  'backspace': HOTKEY_BASIC.BACKSPACE,
   'shift+[': HOTKEY_EXPRESSION.OPEN_BRACKET,
   'shift+]': HOTKEY_EXPRESSION.CLOSE_BRACKET,
   tab: HOTKEY_EXPRESSION.EXIT

@@ -1,3 +1,12 @@
+import logger from '../logger'
+
+import {
+  isElementActive,
+  isElementEmpty,
+  resetElementToParagraph,
+  toggleElement
+} from '.'
+
 import { Editor, Node, Path, Range, Transforms, Element } from 'slate'
 
 import {
@@ -7,6 +16,68 @@ import {
   ImageElement,
   ALIGN_TYPE
 } from '../../data/eventContentTypes'
+
+export const withElementReset = (editor: EditorType) => {
+  const { insertBreak, deleteBackward } = editor
+
+  editor.insertBreak = () => {
+    logger.info(`contentEditor->plugins->withElementReset->insertBreak`)
+
+    if (!editor.selection) return insertBreak()
+
+    const elementPath = Path.parent(editor.selection?.anchor.path),
+      element = Node.get(editor, elementPath)
+
+    if (Element.isElement(element) && element.type === ELEMENT_FORMATS.LI) {
+      if (isElementEmpty(element)) {
+        toggleElement(
+          editor,
+          ELEMENT_FORMATS.P,
+          isElementActive(editor, ELEMENT_FORMATS.LI)
+        )
+
+        return
+      } else {
+        return insertBreak()
+      }
+    } else {
+      Editor.insertNode(editor, {
+        type: ELEMENT_FORMATS.P,
+        children: [{ text: '' }]
+      })
+    }
+  }
+
+  editor.deleteBackward = (unit) => {
+    logger.info(`contentEditor->plugins->withElementReset->deleteBackward`)
+
+    if (!editor.selection) return deleteBackward(unit)
+
+    const elementPath = Path.parent(editor.selection?.anchor.path),
+      element = Node.get(editor, elementPath)
+
+    if (
+      Element.isElement(element) &&
+      element.type !== ELEMENT_FORMATS.P &&
+      isElementEmpty(element)
+    ) {
+      if (element.type === ELEMENT_FORMATS.LI) {
+        // must be the first list item
+        if (elementPath[1] !== 0) return deleteBackward(unit)
+
+        Transforms.unwrapNodes(editor)
+      }
+
+      resetElementToParagraph(editor)
+
+      return
+    }
+
+    return deleteBackward(unit)
+  }
+
+  return editor
+}
 
 export const withCorrectVoidBehavior = (editor: EditorType) => {
   const { deleteBackward, insertBreak } = editor

@@ -17,7 +17,10 @@ import {
   CustomRange,
   HOTKEY_EXPRESSION,
   HOTKEYS,
-  LEAF_FORMATS
+  LEAF_FORMATS,
+  HOTKEY_SELECTION,
+  HOTKEY_BASIC,
+  ELEMENT_FORMATS
 } from '../../../data/eventContentTypes'
 
 import { DragStart, DropResult } from 'react-beautiful-dnd'
@@ -42,7 +45,8 @@ import {
   withCorrectVoidBehavior,
   withEmbeds,
   withImages,
-  withAlignReset
+  withAlignReset,
+  withElementReset
 } from '../../../lib/contentEditor/plugins'
 
 import DragDropWrapper from '../../DragDropWrapper'
@@ -53,7 +57,8 @@ import EventContentToolbar from './EventContentToolbar'
 import api from '../../../api'
 
 import styles from './styles.module.less'
-import { isLeafActive, toggleLeaf } from '../../../lib/contentEditor'
+import { deleteAll, isLeafActive, toggleLeaf } from '../../../lib/contentEditor'
+import logger from '../../../lib/logger'
 
 const saveContent = debounce(
   async (studioId: StudioId, eventId: ElementId, content) => {
@@ -75,7 +80,9 @@ const EventContent: React.FC<{
       withHistory(
         withImages(
           withEmbeds(
-            withAlignReset(withCorrectVoidBehavior(withReact(createEditor())))
+            withElementReset(
+              withAlignReset(withCorrectVoidBehavior(withReact(createEditor())))
+            )
           )
         )
       ),
@@ -88,6 +95,8 @@ const EventContent: React.FC<{
       isInside: false,
       outsideOffset: 0
     }),
+    // https://github.com/ianstormtaylor/slate/issues/2500
+    [isAllSelected, setIsAllSelected] = useState(false),
     [ready, setReady] = useState(false)
 
   const debounceSaveContent = useCallback(
@@ -172,8 +181,13 @@ const EventContent: React.FC<{
             hotkey as LEAF_FORMATS,
             isLeafActive(editor, hotkey as LEAF_FORMATS)
           )
-          break
+          return
         case 'mod+`':
+          return
+        case HOTKEY_BASIC.BACKSPACE:
+          deleteAll(editor)
+          setIsAllSelected(false)
+          return
         case HOTKEY_EXPRESSION.OPEN_BRACKET:
           if (selectedExpression.isInside) return
 
@@ -194,11 +208,11 @@ const EventContent: React.FC<{
             )
           }
 
-          break
+          return
         case HOTKEY_EXPRESSION.CLOSE_BRACKET:
           if (selectedExpression.isInside) return
 
-          break
+          return
         case HOTKEY_EXPRESSION.EXIT:
           if (selectedExpression.isInside) {
             Transforms.move(editor, {
@@ -207,15 +221,15 @@ const EventContent: React.FC<{
             })
           }
 
-          break
+          return
         case 'esc':
           close()
-          break
+          return
         default:
           break
       }
     },
-    [editor]
+    [editor, isAllSelected]
   )
 
   useEventListener(
@@ -266,6 +280,10 @@ const EventContent: React.FC<{
         setSelectedExpression({ isInside: false, outsideOffset: 0 })
     }
   }, [editor.selection])
+
+  useEffect(() => {
+    logger.info(`EventContent->isAllSelected->${isAllSelected}`)
+  }, [isAllSelected])
 
   useEffect(() => {
     if (ready && event && event.id !== eventId) setReady(false)
@@ -329,10 +347,24 @@ const EventContent: React.FC<{
                   onKeyDown={(event) => {
                     for (const hotkey in HOTKEYS) {
                       if (isHotkey(hotkey, event)) {
+                        if (HOTKEYS[hotkey] === HOTKEY_SELECTION.ALL) {
+                          setIsAllSelected(!isAllSelected)
+                          return
+                        }
+
+                        if (
+                          HOTKEYS[hotkey] === HOTKEY_BASIC.BACKSPACE &&
+                          !isAllSelected
+                        ) {
+                          return
+                        }
+
                         event.preventDefault()
 
                         processHotkey(HOTKEYS[hotkey])
                       }
+
+                      setIsAllSelected(false)
                     }
                   }}
                 />
@@ -344,5 +376,7 @@ const EventContent: React.FC<{
     </>
   )
 }
+
+EventContent.displayName = 'EventContent'
 
 export default EventContent

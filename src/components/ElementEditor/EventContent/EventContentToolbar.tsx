@@ -1,7 +1,6 @@
 import {
   isElementActive,
   isLeafActive,
-  toggleElement,
   toggleLeaf
 } from '../../../lib/contentEditor'
 
@@ -42,9 +41,7 @@ const LeafButton: React.FC<{
       onMouseDown={(event) => {
         event.preventDefault()
 
-        type === 'element' &&
-          toggleElement(editor, format as ELEMENT_FORMATS, isActive)
-        type === 'leaf' && toggleLeaf(editor, format as LEAF_FORMATS, isActive)
+        toggleLeaf(editor, format as LEAF_FORMATS, isActive)
       }}
     >
       {children || format}

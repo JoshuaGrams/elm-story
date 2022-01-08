@@ -1,4 +1,13 @@
-import { Editor, Element as SlateElement, Range, Transforms } from 'slate'
+import {
+  BaseRange,
+  Editor,
+  Element,
+  Element as SlateElement,
+  Node,
+  Path,
+  Range,
+  Transforms
+} from 'slate'
 
 import {
   ALIGN_TYPE,
@@ -36,21 +45,27 @@ export const toggleElement = (
   const isList = LIST_TYPES.includes(format)
 
   Transforms.unwrapNodes(editor, {
-    match: (n) =>
-      !Editor.isEditor(n) &&
-      SlateElement.isElement(n) &&
-      LIST_TYPES.includes(n.type),
+    match: (node) =>
+      !Editor.isEditor(node) &&
+      SlateElement.isElement(node) &&
+      LIST_TYPES.includes(node.type),
     split: true
   })
 
   const newProperties: Partial<SlateElement> = {
-    type: isActive ? ELEMENT_FORMATS.P : isList ? ELEMENT_FORMATS.LI : format
+    type: isActive ? ELEMENT_FORMATS.P : isList ? ELEMENT_FORMATS.LI : format,
+    align: undefined
   }
 
   Transforms.setNodes<SlateElement>(editor, newProperties)
 
   if (!isActive && isList) {
-    const block = { type: format, align: ALIGN_TYPE.LEFT, children: [] }
+    const block = {
+      type: format,
+      align: undefined,
+      children: []
+    }
+
     Transforms.wrapNodes(editor, block)
   }
 }
@@ -171,3 +186,40 @@ export const isElementEmptyAndSelected = (
   isElementEmpty(element)
     ? true
     : false
+
+export const resetElementToParagraph = (
+  editor: EditorType,
+  selection?: BaseRange
+) => {
+  if (!editor.selection) return
+
+  Transforms.setNodes(
+    editor,
+    { type: ELEMENT_FORMATS.P, text: '' },
+    {
+      at: {
+        anchor: selection?.anchor || editor.selection.anchor,
+        focus: selection?.focus || editor.selection.focus
+      }
+    }
+  )
+}
+
+export const isList = (format: ELEMENT_FORMATS) => LIST_TYPES.includes(format)
+
+// https://github.com/ianstormtaylor/slate/issues/2500
+export const deleteAll = (editor: EditorType) => {
+  if (!editor.selection) return
+
+  const elementPath = Path.parent(editor.selection?.anchor.path),
+    element = Node.get(editor, elementPath)
+
+  if (Element.isElement(element) && element.type === ELEMENT_FORMATS.LI)
+    Transforms.unwrapNodes(editor)
+
+  Transforms.delete(editor)
+  Transforms.setNodes(editor, {
+    type: ELEMENT_FORMATS.P,
+    children: [{ text: '' }]
+  })
+}

@@ -1,6 +1,7 @@
 import {
   getActiveElementType,
-  isElementActive
+  isElementActive,
+  toggleElement
 } from '../../../../lib/contentEditor'
 
 import React, { useCallback, useEffect, useState } from 'react'
@@ -143,30 +144,7 @@ const ElementDropdown: React.FC = () => {
 
       setCurrentElementType(type)
 
-      const isList = LIST_TYPES.includes(type)
-
-      Transforms.unwrapNodes(editor, {
-        match: (n) =>
-          !Editor.isEditor(n) &&
-          SlateElement.isElement(n) &&
-          LIST_TYPES.includes(n.type),
-        split: true
-      })
-
-      const newProperties: Partial<SlateElement> = {
-        type: isElementActive(editor, type)
-          ? ELEMENT_FORMATS.P
-          : isList
-          ? ELEMENT_FORMATS.LI
-          : type
-      }
-
-      Transforms.setNodes<SlateElement>(editor, newProperties)
-
-      if (!isElementActive(editor, type) && isList) {
-        const block = { type, align: ALIGN_TYPE.LEFT, children: [] }
-        Transforms.wrapNodes(editor, block)
-      }
+      toggleElement(editor, type, isElementActive(editor, type))
     },
     [currentElementType]
   )
