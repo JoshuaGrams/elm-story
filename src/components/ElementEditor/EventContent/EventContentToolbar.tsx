@@ -1,10 +1,11 @@
 import {
+  getElement,
   isElementActive,
   isLeafActive,
   toggleLeaf
 } from '../../../lib/contentEditor'
 
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 
 import { Editor, Range } from 'slate'
 import { ReactEditor, useSlate } from 'slate-react'
@@ -53,8 +54,12 @@ const EventContentToolbar: React.FC = () => {
   const toolbarRef = useRef<HTMLDivElement | null>(null),
     editor = useSlate()
 
+  const [alignToolsSupported, setAlignToolsSupported] = useState(false)
+
   useEffect(() => {
     const { selection } = editor
+
+    setAlignToolsSupported(getElement(editor).alignSupported)
 
     if (
       !selection ||
@@ -113,9 +118,11 @@ const EventContentToolbar: React.FC = () => {
           </LeafButton>
         </div>
 
-        <div className={styles.alignTools}>
-          <AlignDropdown />
-        </div>
+        {alignToolsSupported && (
+          <div className={styles.alignTools}>
+            <AlignDropdown />
+          </div>
+        )}
       </div>
     </Portal>
   )

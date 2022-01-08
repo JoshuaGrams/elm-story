@@ -223,3 +223,33 @@ export const deleteAll = (editor: EditorType) => {
     children: [{ text: '' }]
   })
 }
+
+const isSupportedAlignType = (element: EventContentElement) =>
+  element.type === ELEMENT_FORMATS.H1 ||
+  element.type === ELEMENT_FORMATS.H2 ||
+  element.type === ELEMENT_FORMATS.H3 ||
+  element.type === ELEMENT_FORMATS.H4 ||
+  element.type === ELEMENT_FORMATS.P
+
+export const getElement = (
+  editor: EditorType
+): {
+  element: EventContentElement | undefined
+  path: Path | undefined
+  alignSupported: boolean
+} => {
+  const emptyValue = {
+    element: undefined,
+    path: undefined,
+    alignSupported: false
+  }
+
+  if (!editor.selection) return emptyValue
+
+  const path = Path.parent(editor.selection.anchor.path),
+    element = Node.get(editor, path)
+
+  if (!Element.isElement(element)) return emptyValue
+
+  return { element, path, alignSupported: isSupportedAlignType(element) }
+}

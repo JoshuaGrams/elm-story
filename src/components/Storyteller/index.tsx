@@ -131,7 +131,7 @@ const Storyteller: React.FC<{
   return (
     <div ref={runtimeWrapperRef} style={{ width: '100%', height: '100%' }}>
       <div id="runtime" style={runtimeStyles}>
-        <Runtime studioId={studioId} world={{ id: worldId }} />
+        {/* <Runtime studioId={studioId} world={{ id: worldId }} /> */}
       </div>
     </div>
   )
