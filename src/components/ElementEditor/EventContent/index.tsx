@@ -185,6 +185,7 @@ const EventContent: React.FC<{
         case 'mod+`':
           return
         case HOTKEY_BASIC.BACKSPACE:
+        case HOTKEY_BASIC.DELETE:
           deleteAll(editor)
           setIsAllSelected(false)
           return
@@ -238,6 +239,7 @@ const EventContent: React.FC<{
       if (event) {
         switch (event.key) {
           case 'Escape':
+            // TODO: should hide command menu and toolbar first...
             processHotkey('esc')
             break
           default:
@@ -353,7 +355,8 @@ const EventContent: React.FC<{
                         }
 
                         if (
-                          HOTKEYS[hotkey] === HOTKEY_BASIC.BACKSPACE &&
+                          (HOTKEYS[hotkey] === HOTKEY_BASIC.BACKSPACE ||
+                            HOTKEYS[hotkey] === HOTKEY_BASIC.DELETE) &&
                           !isAllSelected
                         ) {
                           return

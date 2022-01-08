@@ -148,7 +148,8 @@ export const SUPPORTED_ALIGN_TYPES = [
 ]
 
 export enum HOTKEY_BASIC {
-  BACKSPACE = 'BACKSPACE'
+  BACKSPACE = 'BACKSPACE',
+  DELETE = 'DELETE'
 }
 
 export enum HOTKEY_EXPRESSION {
@@ -170,7 +171,8 @@ export const HOTKEYS: { [hotkey: string]: string } = {
   'mod+s': LEAF_FORMATS.S,
   'mod+`': LEAF_FORMATS.CODE,
   'mod+a': HOTKEY_SELECTION.ALL,
-  'backspace': HOTKEY_BASIC.BACKSPACE,
+  backspace: HOTKEY_BASIC.BACKSPACE,
+  delete: HOTKEY_BASIC.DELETE,
   'shift+[': HOTKEY_EXPRESSION.OPEN_BRACKET,
   'shift+]': HOTKEY_EXPRESSION.CLOSE_BRACKET,
   tab: HOTKEY_EXPRESSION.EXIT
