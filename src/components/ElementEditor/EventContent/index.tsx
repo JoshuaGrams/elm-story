@@ -379,10 +379,6 @@ const EventContent: React.FC<{
   }, [editor.selection])
 
   useEffect(() => {
-    console.log(selectedExpression)
-  }, [selectedExpression])
-
-  useEffect(() => {
     logger.info(`EventContent->isAllSelected->${isAllSelected}`)
   }, [isAllSelected])
 
@@ -514,9 +510,6 @@ const EventContent: React.FC<{
                   }}
                 />
               </DragDropWrapper>
-
-              <code>{event.content}</code>
-              <code>{JSON.stringify(editor.children)}</code>
             </SlateContext>
           </div>
         </div>
