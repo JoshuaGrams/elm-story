@@ -51,3 +51,57 @@
 :global .event-content-element-dropdown-menu {
   .dropdownMenuShared();
 }
+
+:global .event-content-command-menu {
+  transition: 0.2s opacity;
+  opacity: 0;
+  width: 200px;
+  height: auto;
+  max-height: 200px;
+  background: red;
+  overflow-y: auto;
+  background: hsl(0, 0%, 10%);
+  border: 1px solid var(--primary-border-color);
+  border-radius: 2px;
+  box-shadow: 0px 2px 10px 0px #000000;
+  padding: 6px 0;
+
+  :local .container {
+    section {
+      margin-bottom: 10px;
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+
+      h1,
+      .item {
+        padding: 0 10px;
+      }
+
+      h1 {
+        font-size: 12px;
+        text-transform: uppercase;
+        color: hsl(0, 0%, 60%);
+        margin-bottom: 6px;
+        border-bottom: 1px solid var(--primary-border-color);
+      }
+
+      .item {
+        &:hover {
+          cursor: pointer;
+          background: hsl(0, 0%, 15%);
+        }
+
+        &.selected {
+          background: hsl(0, 0%, 25%);
+        }
+
+        &.noMatch {
+          cursor: unset !important;
+          background: none !important;
+        }
+      }
+    }
+  }
+}

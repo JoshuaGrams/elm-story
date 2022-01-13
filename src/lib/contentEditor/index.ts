@@ -17,6 +17,7 @@ import {
   LEAF_FORMATS,
   LIST_TYPES
 } from '../../data/eventContentTypes'
+import logger from '../logger'
 
 export const isElementActive = (
   editor: EditorType,
@@ -147,7 +148,7 @@ export const getActiveAlignType = (editor: EditorType) => {
   return ALIGN_TYPE.LEFT
 }
 
-export const getActiveElementType = (editor: EditorType) => {
+export const getActiveElementType = (editor: EditorType): ELEMENT_FORMATS => {
   const { selection } = editor
 
   if (!selection) return ELEMENT_FORMATS.P
@@ -252,4 +253,46 @@ export const getElement = (
   if (!Element.isElement(element)) return emptyValue
 
   return { element, path, alignSupported: isSupportedAlignType(element) }
+}
+
+// show, filter, target
+// https://github.com/usmansbk/slate/blob/755d52453f3fc1f76df9fb3c31ff72f8e5c2cb90/site/examples/mentions-with-space.tsx
+export const showCommandMenu = (
+  editor: EditorType
+): [boolean, string | undefined, BaseRange | undefined] => {
+  const { selection } = editor
+  // TODO: this should return true with / is types
+  // TODO: reuse match code for other symbols like @ and #
+  if (!selection || (selection && !Range.isCollapsed(selection)))
+    return [false, undefined, undefined]
+
+  const [start] = Range.edges(selection)
+  const end =
+    start &&
+    Editor.before(editor, start, {
+      unit: 'offset',
+      distance: start.offset
+    })
+  const textRange = end && Editor.range(editor, end, start)
+  const text = textRange && Editor.string(editor, textRange)
+  const match = text?.match(/\/(\s?\w*)$/)
+  const after = Editor.after(editor, start)
+  const afterRange = Editor.range(editor, start, after)
+  const afterText = Editor.string(editor, afterRange)
+  const afterMatch = afterText.match(/^(\s|$)/)
+
+  if (match && afterMatch) {
+    const [targetText, matchText] = match
+    const entity = Editor.before(editor, start, {
+      unit: 'offset',
+      distance: targetText.length
+    })
+
+    const targetRange = entity && Editor.range(editor, entity, start)
+
+    // return boolean and filter string
+    if (targetRange) return [true, matchText.trim(), targetRange]
+  }
+
+  return [false, undefined, undefined]
 }

@@ -149,7 +149,8 @@ export const SUPPORTED_ALIGN_TYPES = [
 
 export enum HOTKEY_BASIC {
   BACKSPACE = 'BACKSPACE',
-  DELETE = 'DELETE'
+  DELETE = 'DELETE',
+  ENTER = 'ENTER'
 }
 
 export enum HOTKEY_EXPRESSION {
@@ -159,7 +160,9 @@ export enum HOTKEY_EXPRESSION {
 }
 
 export enum HOTKEY_SELECTION {
-  ALL = 'SELECT_ALL'
+  ALL = 'SELECT_ALL',
+  MENU_UP = 'MENU_UP',
+  MENU_DOWN = 'MENU_DOWN'
 }
 
 export const LIST_TYPES = [ELEMENT_FORMATS.OL, ELEMENT_FORMATS.UL]
@@ -171,6 +174,9 @@ export const HOTKEYS: { [hotkey: string]: string } = {
   'mod+s': LEAF_FORMATS.S,
   'mod+`': LEAF_FORMATS.CODE,
   'mod+a': HOTKEY_SELECTION.ALL,
+  'enter': HOTKEY_BASIC.ENTER,
+  arrowup: HOTKEY_SELECTION.MENU_UP,
+  arrowdown: HOTKEY_SELECTION.MENU_DOWN,
   backspace: HOTKEY_BASIC.BACKSPACE,
   delete: HOTKEY_BASIC.DELETE,
   'shift+[': HOTKEY_EXPRESSION.OPEN_BRACKET,

@@ -1,16 +1,12 @@
+import logger from '../../../lib/logger'
+
 import { debounce } from 'lodash'
 import useEventListener from '@use-it/event-listener'
 import isHotkey from 'is-hotkey'
 
 import { getTemplateExpressionRanges } from '../../../lib/templates'
 
-import React, {
-  useMemo,
-  useState,
-  useEffect,
-  useCallback,
-  useContext
-} from 'react'
+import React, { useState, useEffect, useCallback, useContext } from 'react'
 
 import { ElementId, ELEMENT_TYPE, Scene, StudioId } from '../../../data/types'
 import {
@@ -19,8 +15,7 @@ import {
   HOTKEYS,
   LEAF_FORMATS,
   HOTKEY_SELECTION,
-  HOTKEY_BASIC,
-  ELEMENT_FORMATS
+  HOTKEY_BASIC
 } from '../../../data/eventContentTypes'
 
 import { DragStart, DropResult } from 'react-beautiful-dnd'
@@ -32,7 +27,14 @@ import {
   COMPOSER_ACTION_TYPE
 } from '../../../contexts/ComposerContext'
 
-import { createEditor, Editor, Transforms, Text, BaseSelection } from 'slate'
+import {
+  createEditor,
+  Editor,
+  Transforms,
+  Text,
+  BaseSelection,
+  BaseRange
+} from 'slate'
 import {
   Slate as SlateContext,
   Editable,
@@ -52,13 +54,18 @@ import {
 import DragDropWrapper from '../../DragDropWrapper'
 import EventContentElement from './EventContentElement'
 import EventContentLeaf from './EventContentLeaf'
+import CommandMenu from './Tools/CommandMenu'
 import EventContentToolbar from './EventContentToolbar'
 
 import api from '../../../api'
 
 import styles from './styles.module.less'
-import { deleteAll, isLeafActive, toggleLeaf } from '../../../lib/contentEditor'
-import logger from '../../../lib/logger'
+import {
+  deleteAll,
+  isLeafActive,
+  showCommandMenu,
+  toggleLeaf
+} from '../../../lib/contentEditor'
 
 const saveContent = debounce(
   async (studioId: StudioId, eventId: ElementId, content) => {
@@ -88,8 +95,6 @@ const EventContent: React.FC<{
     )
   )
 
-  console.log('hi!')
-
   const { composer, composerDispatch } = useContext(ComposerContext)
 
   const [selectedExpression, setSelectedExpression] = useState({
@@ -98,6 +103,13 @@ const EventContent: React.FC<{
     }),
     // https://github.com/ianstormtaylor/slate/issues/2500
     [isAllSelected, setIsAllSelected] = useState(false),
+    [commandMenuProps, setCommandMenuProps] = useState<{
+      show: boolean
+      filter: string | undefined
+      target: BaseRange | undefined
+      index: number
+    }>({ show: false, filter: undefined, target: undefined, index: 0 }),
+    [totalCommandMenuItems, setTotalCommandMenuItems] = useState(0),
     [ready, setReady] = useState(false)
 
   const debounceSaveContent = useCallback(
@@ -211,6 +223,38 @@ const EventContent: React.FC<{
           }
 
           return
+        case HOTKEY_SELECTION.MENU_UP:
+          if (
+            commandMenuProps.show &&
+            totalCommandMenuItems > 0 &&
+            commandMenuProps.index > 0 &&
+            commandMenuProps.index + 1 <= totalCommandMenuItems
+          ) {
+            setCommandMenuProps({
+              ...commandMenuProps,
+              index: commandMenuProps.index - 1
+            })
+          }
+
+          return
+        case HOTKEY_SELECTION.MENU_DOWN:
+          if (
+            commandMenuProps.show &&
+            totalCommandMenuItems > 0 &&
+            commandMenuProps.index >= 0 &&
+            commandMenuProps.index + 1 < totalCommandMenuItems
+          ) {
+            setCommandMenuProps({
+              ...commandMenuProps,
+              index: commandMenuProps.index + 1
+            })
+          }
+
+          return
+        case HOTKEY_BASIC.ENTER:
+          if (commandMenuProps.show) console.log('test')
+
+          return
         case HOTKEY_EXPRESSION.CLOSE_BRACKET:
           if (selectedExpression.isInside) return
 
@@ -225,13 +269,23 @@ const EventContent: React.FC<{
 
           return
         case 'esc':
+          if (commandMenuProps.show) {
+            setCommandMenuProps({
+              show: false,
+              filter: undefined,
+              target: undefined,
+              index: 0
+            })
+            return
+          }
+
           close()
           return
         default:
           break
       }
     },
-    [editor, isAllSelected]
+    [editor, isAllSelected, commandMenuProps, totalCommandMenuItems]
   )
 
   useEventListener(
@@ -302,6 +356,17 @@ const EventContent: React.FC<{
     }
   }, [ready, editor, event, eventId])
 
+  useEffect(() => {
+    if (event?.id !== composer.selectedSceneMapEvent) {
+      setCommandMenuProps({
+        show: false,
+        filter: undefined,
+        target: undefined,
+        index: 0
+      })
+    }
+  }, [composer.selectedSceneMapEvent])
+
   return (
     <>
       {event && (
@@ -331,11 +396,20 @@ const EventContent: React.FC<{
                 if (!ready) setReady(true)
 
                 if (ready) {
+                  const [show, filter, target] = showCommandMenu(editor)
+
+                  setCommandMenuProps({ show, filter, target, index: 0 })
+
                   saveContent.cancel()
                   debounceSaveContent(newContent)
                 }
               }}
             >
+              <CommandMenu
+                {...commandMenuProps}
+                onItemTotal={(total) => setTotalCommandMenuItems(total)}
+                onItemSelect={(item) => console.log(item)}
+              />
               <EventContentToolbar />
 
               <DragDropWrapper
@@ -350,6 +424,15 @@ const EventContent: React.FC<{
                   onKeyDown={(event) => {
                     for (const hotkey in HOTKEYS) {
                       if (isHotkey(hotkey, event)) {
+                        if (
+                          (!commandMenuProps.show ||
+                            totalCommandMenuItems === 0) &&
+                          (HOTKEYS[hotkey] === HOTKEY_BASIC.ENTER ||
+                            HOTKEYS[hotkey] === HOTKEY_SELECTION.MENU_UP ||
+                            HOTKEYS[hotkey] === HOTKEY_SELECTION.MENU_DOWN)
+                        )
+                          return
+
                         if (HOTKEYS[hotkey] === HOTKEY_SELECTION.ALL) {
                           setIsAllSelected(!isAllSelected)
                           return
