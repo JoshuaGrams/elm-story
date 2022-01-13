@@ -64,6 +64,7 @@ import api from '../../../api'
 import styles from './styles.module.less'
 import {
   deleteAll,
+  getElement,
   isElementActive,
   isLeafActive,
   showCommandMenu,
@@ -200,8 +201,6 @@ const EventContent: React.FC<{
         Transforms.delete(editor, { at: commandMenuProps.target })
 
       setCommandMenuProps(defaultCommandMenuProps)
-
-      console.log(item)
 
       if (SUPPORTED_ELEMENT_TYPES.includes(item as ELEMENT_FORMATS)) {
         toggleElement(
@@ -348,12 +347,14 @@ const EventContent: React.FC<{
     const { selection } = editor
 
     if (selection) {
-      const node = editor.children[selection?.anchor.path[0]]
+      const node = getElement(editor)
 
       let foundInsideExpression = false
 
-      if (Text.isText(node)) {
-        const expressionRanges = getTemplateExpressionRanges(node.text)
+      if (node.element?.children[0] && Text.isText(node.element.children[0])) {
+        const expressionRanges = getTemplateExpressionRanges(
+          node.element?.children[0].text
+        )
 
         expressionRanges.map((range) => {
           if (
@@ -376,6 +377,10 @@ const EventContent: React.FC<{
         setSelectedExpression({ isInside: false, outsideOffset: 0 })
     }
   }, [editor.selection])
+
+  useEffect(() => {
+    console.log(selectedExpression)
+  }, [selectedExpression])
 
   useEffect(() => {
     logger.info(`EventContent->isAllSelected->${isAllSelected}`)
@@ -470,8 +475,21 @@ const EventContent: React.FC<{
                             HOTKEYS[hotkey] === HOTKEY_BASIC.TAB ||
                             HOTKEYS[hotkey] === HOTKEY_SELECTION.MENU_UP ||
                             HOTKEYS[hotkey] === HOTKEY_SELECTION.MENU_DOWN)
-                        )
+                        ) {
+                          _event.preventDefault()
+
+                          if (
+                            HOTKEYS[hotkey] === HOTKEY_BASIC.TAB &&
+                            selectedExpression.isInside
+                          ) {
+                            Transforms.move(editor, {
+                              distance: selectedExpression.outsideOffset,
+                              unit: 'offset'
+                            })
+                          }
+
                           return
+                        }
 
                         if (HOTKEYS[hotkey] === HOTKEY_SELECTION.ALL) {
                           setIsAllSelected(!isAllSelected)
@@ -496,6 +514,9 @@ const EventContent: React.FC<{
                   }}
                 />
               </DragDropWrapper>
+
+              <code>{event.content}</code>
+              <code>{JSON.stringify(editor.children)}</code>
             </SlateContext>
           </div>
         </div>

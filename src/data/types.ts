@@ -1,5 +1,3 @@
-import { Descendant } from 'slate'
-
 export enum PLATFORM_TYPE {
   WINDOWS = 'win32',
   MACOS = 'darwin',
