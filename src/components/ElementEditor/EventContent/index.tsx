@@ -15,7 +15,9 @@ import {
   HOTKEYS,
   LEAF_FORMATS,
   HOTKEY_SELECTION,
-  HOTKEY_BASIC
+  HOTKEY_BASIC,
+  ELEMENT_FORMATS,
+  SUPPORTED_ELEMENT_TYPES
 } from '../../../data/eventContentTypes'
 
 import { DragStart, DropResult } from 'react-beautiful-dnd'
@@ -62,8 +64,10 @@ import api from '../../../api'
 import styles from './styles.module.less'
 import {
   deleteAll,
+  isElementActive,
   isLeafActive,
   showCommandMenu,
+  toggleElement,
   toggleLeaf
 } from '../../../lib/contentEditor'
 
@@ -73,6 +77,13 @@ const saveContent = debounce(
   },
   100
 )
+
+const defaultCommandMenuProps = {
+  show: false,
+  filter: undefined,
+  target: undefined,
+  index: 0
+}
 
 const EventContent: React.FC<{
   studioId: StudioId
@@ -108,8 +119,11 @@ const EventContent: React.FC<{
       filter: string | undefined
       target: BaseRange | undefined
       index: number
-    }>({ show: false, filter: undefined, target: undefined, index: 0 }),
+    }>(defaultCommandMenuProps),
     [totalCommandMenuItems, setTotalCommandMenuItems] = useState(0),
+    [selectedCommandMenuItem, setSelectedCommandMenuItem] = useState<
+      string | undefined
+    >(undefined),
     [ready, setReady] = useState(false)
 
   const debounceSaveContent = useCallback(
@@ -179,6 +193,26 @@ const EventContent: React.FC<{
     if (composer.selectedWorldOutlineElement.id === scene.id || !scene.id)
       onClose()
   }
+
+  const processCommandMenuOperation = useCallback(
+    (item: string) => {
+      commandMenuProps.target &&
+        Transforms.delete(editor, { at: commandMenuProps.target })
+
+      setCommandMenuProps(defaultCommandMenuProps)
+
+      console.log(item)
+
+      if (SUPPORTED_ELEMENT_TYPES.includes(item as ELEMENT_FORMATS)) {
+        toggleElement(
+          editor,
+          item as ELEMENT_FORMATS,
+          isElementActive(editor, item as ELEMENT_FORMATS)
+        )
+      }
+    },
+    [editor, commandMenuProps.target]
+  )
 
   const processHotkey = useCallback(
     (hotkey: string) => {
@@ -251,8 +285,11 @@ const EventContent: React.FC<{
           }
 
           return
+        case HOTKEY_BASIC.TAB:
         case HOTKEY_BASIC.ENTER:
-          if (commandMenuProps.show) console.log('test')
+          if (commandMenuProps.show && selectedCommandMenuItem) {
+            processCommandMenuOperation(selectedCommandMenuItem)
+          }
 
           return
         case HOTKEY_EXPRESSION.CLOSE_BRACKET:
@@ -270,12 +307,8 @@ const EventContent: React.FC<{
           return
         case 'esc':
           if (commandMenuProps.show) {
-            setCommandMenuProps({
-              show: false,
-              filter: undefined,
-              target: undefined,
-              index: 0
-            })
+            setCommandMenuProps(defaultCommandMenuProps)
+
             return
           }
 
@@ -285,7 +318,13 @@ const EventContent: React.FC<{
           break
       }
     },
-    [editor, isAllSelected, commandMenuProps, totalCommandMenuItems]
+    [
+      editor,
+      isAllSelected,
+      commandMenuProps,
+      totalCommandMenuItems,
+      selectedCommandMenuItem
+    ]
   )
 
   useEventListener(
@@ -357,13 +396,12 @@ const EventContent: React.FC<{
   }, [ready, editor, event, eventId])
 
   useEffect(() => {
+    !commandMenuProps.show && setSelectedCommandMenuItem(undefined)
+  }, [commandMenuProps.show])
+
+  useEffect(() => {
     if (event?.id !== composer.selectedSceneMapEvent) {
-      setCommandMenuProps({
-        show: false,
-        filter: undefined,
-        target: undefined,
-        index: 0
-      })
+      setCommandMenuProps(defaultCommandMenuProps)
     }
   }, [composer.selectedSceneMapEvent])
 
@@ -408,7 +446,8 @@ const EventContent: React.FC<{
               <CommandMenu
                 {...commandMenuProps}
                 onItemTotal={(total) => setTotalCommandMenuItems(total)}
-                onItemSelect={(item) => console.log(item)}
+                onItemSelect={(item) => setSelectedCommandMenuItem(item)}
+                onItemClick={(item) => processCommandMenuOperation(item)}
               />
               <EventContentToolbar />
 
@@ -421,13 +460,14 @@ const EventContent: React.FC<{
                   renderElement={renderElement}
                   renderLeaf={renderLeaf}
                   decorate={decorate}
-                  onKeyDown={(event) => {
+                  onKeyDown={(_event) => {
                     for (const hotkey in HOTKEYS) {
-                      if (isHotkey(hotkey, event)) {
+                      if (isHotkey(hotkey, _event)) {
                         if (
                           (!commandMenuProps.show ||
                             totalCommandMenuItems === 0) &&
                           (HOTKEYS[hotkey] === HOTKEY_BASIC.ENTER ||
+                            HOTKEYS[hotkey] === HOTKEY_BASIC.TAB ||
                             HOTKEYS[hotkey] === HOTKEY_SELECTION.MENU_UP ||
                             HOTKEYS[hotkey] === HOTKEY_SELECTION.MENU_DOWN)
                         )
@@ -446,7 +486,7 @@ const EventContent: React.FC<{
                           return
                         }
 
-                        event.preventDefault()
+                        _event.preventDefault()
 
                         processHotkey(HOTKEYS[hotkey])
                       }

@@ -75,7 +75,7 @@ const ELEMENT_MENU_ITEMS: MenuItem[] = [
 ]
 
 const MEDIA_MENU_ITEMS: MenuItem[] = [
-  { type: 'IMAGE', title: 'Image', additionalMatches: ['photo'] },
+  { type: 'IMAGE', title: 'Image', additionalMatches: ['photo', 'picture'] },
   { type: 'EMBED', title: 'Embed', additionalMatches: ['video'] }
 ]
 
@@ -100,6 +100,9 @@ const getFilteredItems = (items: MenuItem[], filter: string | undefined) =>
     return foundItem
   })
 
+const getItemType = (items: { type: string }[], index: number): string | null =>
+  items[index] ? items[index].type : null
+
 const CommandMenu: React.FC<{
   show: boolean
   filter: string | undefined
@@ -107,14 +110,33 @@ const CommandMenu: React.FC<{
   index: number
   onItemTotal: (total: number) => void
   onItemSelect: (item: string) => void
-}> = ({ show, filter, target, index, onItemTotal, onItemSelect }) => {
-  const commandMenuRef = useRef<HTMLDivElement | null>(null)
+  onItemClick: (item: string) => void
+}> = ({
+  show,
+  filter,
+  target,
+  index,
+  onItemTotal,
+  onItemSelect,
+  onItemClick
+}) => {
+  const commandMenuRef = useRef<HTMLDivElement | null>(null),
+    selectedItemRef = useRef<HTMLHRElement | null>(null)
 
   const editor = useSlate()
 
   const [formatItems, setFormatItems] = useState<MenuItem[]>([]),
     [elementItems, setElementItems] = useState<MenuItem[]>([]),
     [mediaItems, setMediaItems] = useState<MenuItem[]>([])
+
+  const processClick = (clickedIndex: number) => {
+    const item = getItemType(
+      [...formatItems, ...elementItems, ...mediaItems],
+      clickedIndex
+    )
+
+    item && onItemClick(item)
+  }
 
   useEffect(() => {
     setFormatItems(
@@ -141,9 +163,18 @@ const CommandMenu: React.FC<{
   )
 
   useEffect(() => {
-    const merge = [...formatItems, ...elementItems, ...mediaItems]
+    const item = getItemType(
+      [...formatItems, ...elementItems, ...mediaItems],
+      index
+    )
 
-    merge[index] && onItemSelect(merge[index].type)
+    if (item) {
+      const elements = document.getElementsByClassName('command-menu-item')
+
+      elements[index] && elements[index].scrollIntoView({ block: 'end' })
+
+      onItemSelect(item)
+    }
   })
 
   useEffect(() => {
@@ -182,12 +213,16 @@ const CommandMenu: React.FC<{
                 <section>
                   <h1>Format</h1>
                   {formatItems.map((item, _index) => {
+                    const selected = _index === index
+
                     return (
                       <div
+                        ref={selected ? selectedItemRef : null}
                         key={_index}
                         className={`${styles.item} ${
-                          _index === index ? styles.selected : ''
-                        }`}
+                          selected ? styles.selected : ''
+                        } command-menu-item`}
+                        onClick={() => processClick(_index)}
                       >
                         {item.title}
                       </div>
@@ -200,14 +235,17 @@ const CommandMenu: React.FC<{
                 <section>
                   <h1>Elements</h1>
                   {elementItems.map((item, _index) => {
-                    const offsetIndex = _index + formatItems.length
+                    const offsetIndex = _index + formatItems.length,
+                      selected = offsetIndex === index
 
                     return (
                       <div
+                        ref={selected ? selectedItemRef : null}
                         key={offsetIndex}
                         className={`${styles.item} ${
-                          offsetIndex === index ? styles.selected : ''
-                        }`}
+                          selected ? styles.selected : ''
+                        } command-menu-item`}
+                        onClick={() => processClick(offsetIndex)}
                       >
                         {item.title}
                       </div>
@@ -221,14 +259,17 @@ const CommandMenu: React.FC<{
                   <h1>Media</h1>
                   {mediaItems.map((item, _index) => {
                     const offsetIndex =
-                      _index + formatItems.length + elementItems.length
+                        _index + formatItems.length + elementItems.length,
+                      selected = offsetIndex === index
 
                     return (
                       <div
+                        ref={selected ? selectedItemRef : null}
                         key={offsetIndex}
                         className={`${styles.item} ${
-                          offsetIndex === index ? styles.selected : ''
-                        }`}
+                          selected ? styles.selected : ''
+                        } command-menu-item`}
+                        onClick={() => processClick(offsetIndex)}
                       >
                         {item.title}
                       </div>

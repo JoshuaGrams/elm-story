@@ -1,3 +1,5 @@
+import logger from '../logger'
+
 import {
   BaseRange,
   Editor,
@@ -17,7 +19,6 @@ import {
   LEAF_FORMATS,
   LIST_TYPES
 } from '../../data/eventContentTypes'
-import logger from '../logger'
 
 export const isElementActive = (
   editor: EditorType,
