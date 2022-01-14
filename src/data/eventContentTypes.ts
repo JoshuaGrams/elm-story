@@ -71,6 +71,19 @@ export type ListItemElement = {
   children: Descendant[]
 }
 
+export type CharacterElementFormatType =
+  | 'upper'
+  | 'lower'
+  | 'cap-first'
+  | 'cap-all'
+
+export type CharacterElement = {
+  type: ELEMENT_FORMATS.CHARACTER
+  // [ref, format]
+  character: [string, CharacterElementFormatType]
+  children: EmptyText[]
+}
+
 export type ImageElement = {
   type: ELEMENT_FORMATS.IMG
   url?: string
@@ -93,6 +106,7 @@ export type EventContentElement =
   | OrderedListElement
   | UnorderedListElement
   | ListItemElement
+  | CharacterElement
   | ImageElement
   | EmbedElement
 
@@ -102,8 +116,6 @@ export type EventContentLeaf = {
   em?: boolean
   u?: boolean
   s?: boolean
-  code?: boolean
-  character?: boolean
   expression?: boolean
   expressionStart?: boolean
   expressionEnd?: boolean
@@ -115,7 +127,6 @@ export enum LEAF_FORMATS {
   EM = 'em',
   S = 's',
   U = 'u',
-  CHARACTER = 'character',
   EXPRESSION = 'expression'
 }
 
@@ -130,7 +141,8 @@ export enum ELEMENT_FORMATS {
   UL = 'ul',
   LI = 'li',
   P = 'p',
-  EMBED = 'embed'
+  EMBED = 'embed',
+  CHARACTER = 'character'
 }
 
 export const SUPPORTED_ELEMENT_TYPES = [
@@ -143,7 +155,8 @@ export const SUPPORTED_ELEMENT_TYPES = [
   ELEMENT_FORMATS.OL,
   ELEMENT_FORMATS.UL,
   ELEMENT_FORMATS.IMG,
-  ELEMENT_FORMATS.EMBED
+  ELEMENT_FORMATS.EMBED,
+  ELEMENT_FORMATS.CHARACTER
 ]
 
 export enum ALIGN_TYPE {

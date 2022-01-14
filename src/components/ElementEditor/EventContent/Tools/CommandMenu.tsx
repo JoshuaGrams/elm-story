@@ -68,7 +68,7 @@ const FORMAT_MENU_ITEMS: MenuItem[] = [
 
 const ELEMENT_MENU_ITEMS: MenuItem[] = [
   {
-    type: 'CHARACTER',
+    type: ELEMENT_FORMATS.CHARACTER,
     title: 'Character Reference',
     additionalMatches: ['reference']
   }

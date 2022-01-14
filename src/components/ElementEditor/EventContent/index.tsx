@@ -50,7 +50,8 @@ import {
   withEmbeds,
   withImages,
   withAlignReset,
-  withElementReset
+  withElementReset,
+  withCharacters
 } from '../../../lib/contentEditor/plugins'
 
 import DragDropWrapper from '../../DragDropWrapper'
@@ -97,10 +98,12 @@ const EventContent: React.FC<{
   // https://github.com/ianstormtaylor/slate/commit/1b0e7c6b928865cb4fd656b6f922e30fbe72d77a
   const [editor] = useState<ReactEditor>(() =>
     withHistory(
-      withImages(
-        withEmbeds(
-          withElementReset(
-            withAlignReset(withCorrectVoidBehavior(withReact(createEditor())))
+      withCharacters(
+        withImages(
+          withEmbeds(
+            withElementReset(
+              withAlignReset(withCorrectVoidBehavior(withReact(createEditor())))
+            )
           )
         )
       )
@@ -203,6 +206,17 @@ const EventContent: React.FC<{
       setCommandMenuProps(defaultCommandMenuProps)
 
       if (SUPPORTED_ELEMENT_TYPES.includes(item as ELEMENT_FORMATS)) {
+        if (item === ELEMENT_FORMATS.CHARACTER) {
+          console.log('character')
+          Transforms.insertNodes(editor, {
+            type: ELEMENT_FORMATS.CHARACTER,
+            character: ['', 'lower'],
+            children: [{ text: '' }]
+          })
+          Transforms.move(editor)
+          return
+        }
+
         toggleElement(
           editor,
           item as ELEMENT_FORMATS,
@@ -507,6 +521,7 @@ const EventContent: React.FC<{
                     }
                   }}
                 />
+                {/* <code style={{ userSelect: 'all' }}>{event.content}</code> */}
               </DragDropWrapper>
             </SlateContext>
           </div>

@@ -22,10 +22,6 @@ const EventContentLeaf: React.FC<{
     children = <strong {...attributes}>{children}</strong>
   }
 
-  if (leaf.code) {
-    children = <code {...attributes}>{children}</code>
-  }
-
   if (leaf.em) {
     children = <em {...attributes}>{children}</em>
   }

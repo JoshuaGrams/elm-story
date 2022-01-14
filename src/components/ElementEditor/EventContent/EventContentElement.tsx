@@ -10,7 +10,7 @@ import React, { useContext, useState } from 'react'
 import { ComposerContext } from '../../../contexts/ComposerContext'
 
 import { Button } from 'antd'
-import Icon, { DeleteOutlined } from '@ant-design/icons'
+import Icon, { DeleteOutlined, UserOutlined } from '@ant-design/icons'
 
 import { Draggable } from 'react-beautiful-dnd'
 import {
@@ -31,6 +31,7 @@ import {
 
 import {
   ALIGN_TYPE,
+  CharacterElement as CharacterElementType,
   ELEMENT_FORMATS,
   EmbedElement as EmbedElementType,
   EventContentElement,
@@ -38,6 +39,31 @@ import {
 } from '../../../data/eventContentTypes'
 
 import styles from './styles.module.less'
+
+const CharacterElement: React.FC<{
+  element: CharacterElementType
+  attributes: {}
+}> = ({ element, attributes, children }) => {
+  const selected = useSelected()
+
+  return (
+    <span
+      {...attributes}
+      className={`${styles.character} ${selected ? styles.selected : ''}`}
+      contentEditable="false"
+      suppressContentEditableWarning
+    >
+      {element.character[0].length === 0 && (
+        <span style={{ color: 'hsl(0, 0%, 60%)' }}>
+          <UserOutlined className={styles.icon} /> Select character...
+        </span>
+      )}
+
+      {element.character[0].length > 0 && <>Jane Doe</>}
+      {children}
+    </span>
+  )
+}
 
 const ImageElement: React.FC<{ element: ImageElementType; attributes: {} }> = ({
   element,
@@ -288,6 +314,13 @@ export const Element: React.FC<{
         </ImageElement>
       )
       break
+    case ELEMENT_FORMATS.CHARACTER:
+      content = (
+        <CharacterElement element={element} attributes={attributes}>
+          {children}
+        </CharacterElement>
+      )
+      break
     case ELEMENT_FORMATS.EMBED:
       content = (
         <EmbedElement element={element} attributes={attributes}>
@@ -309,7 +342,8 @@ export const Element: React.FC<{
       break
   }
 
-  return element.type === ELEMENT_FORMATS.LI ? (
+  return element.type === ELEMENT_FORMATS.LI ||
+    element.type === ELEMENT_FORMATS.CHARACTER ? (
     content
   ) : (
     <DraggableWrapper element={element}>{content}</DraggableWrapper>

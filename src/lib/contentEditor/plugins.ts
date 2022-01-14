@@ -233,3 +233,15 @@ export const withEmbeds = (editor: EditorType) => {
 
   return editor
 }
+
+export const withCharacters = (editor: EditorType) => {
+  const { isInline, isVoid } = editor
+
+  editor.isInline = (element) =>
+    element.type === ELEMENT_FORMATS.CHARACTER ? true : isInline(element)
+
+  editor.isVoid = (element) =>
+    element.type === ELEMENT_FORMATS.CHARACTER ? true : isVoid(element)
+
+  return editor
+}
