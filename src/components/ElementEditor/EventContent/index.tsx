@@ -472,16 +472,14 @@ const EventContent: React.FC<{
                             HOTKEYS[hotkey] === HOTKEY_SELECTION.MENU_UP ||
                             HOTKEYS[hotkey] === HOTKEY_SELECTION.MENU_DOWN)
                         ) {
-                          _event.preventDefault()
+                          if (HOTKEYS[hotkey] === HOTKEY_BASIC.TAB) {
+                            _event.preventDefault()
 
-                          if (
-                            HOTKEYS[hotkey] === HOTKEY_BASIC.TAB &&
-                            selectedExpression.isInside
-                          ) {
-                            Transforms.move(editor, {
-                              distance: selectedExpression.outsideOffset,
-                              unit: 'offset'
-                            })
+                            selectedExpression.isInside &&
+                              Transforms.move(editor, {
+                                distance: selectedExpression.outsideOffset,
+                                unit: 'offset'
+                              })
                           }
 
                           return
