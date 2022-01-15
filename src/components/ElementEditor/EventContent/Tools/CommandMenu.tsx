@@ -191,7 +191,7 @@ const CommandMenu: React.FC<{
         commandMenuRef.current.style.top = `${Math.round(
           // TODO: lazy
           // @ts-ignore
-          rect.top - TOP_OFFSET[activeElement]
+          rect.bottom + 6
         )}px`
         commandMenuRef.current.style.left = `${Math.round(rect.x)}px`
         commandMenuRef.current.style.opacity = '1'

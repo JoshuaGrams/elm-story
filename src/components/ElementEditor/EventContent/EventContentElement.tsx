@@ -10,7 +10,7 @@ import React, { useContext, useState } from 'react'
 import { ComposerContext } from '../../../contexts/ComposerContext'
 
 import { Button } from 'antd'
-import Icon, { DeleteOutlined, UserOutlined } from '@ant-design/icons'
+import Icon, { DeleteOutlined } from '@ant-design/icons'
 
 import { Draggable } from 'react-beautiful-dnd'
 import {
@@ -38,25 +38,29 @@ import {
   ImageElement as ImageElementType
 } from '../../../data/eventContentTypes'
 
+import CharacterSelect from './Tools/CharacterSelect'
+
 import styles from './styles.module.less'
+import { StudioId, WorldId } from '../../../data/types'
 
 const CharacterElement: React.FC<{
+  studioId: StudioId
+  worldId: WorldId
   element: CharacterElementType
   attributes: {}
-}> = ({ element, attributes, children }) => {
+}> = ({ studioId, worldId, element, attributes, children }) => {
   const selected = useSelected()
 
   return (
     <span
       {...attributes}
       className={`${styles.character} ${selected ? styles.selected : ''}`}
-      contentEditable="false"
-      suppressContentEditableWarning
+      // contentEditable="false"
+      // suppressContentEditableWarning
+      data-slate-editor
     >
       {element.character[0].length === 0 && (
-        <span style={{ color: 'hsl(0, 0%, 60%)' }}>
-          <UserOutlined className={styles.icon} /> Select character...
-        </span>
+        <CharacterSelect studioId={studioId} worldId={worldId} />
       )}
 
       {element.character[0].length > 0 && <>Jane Doe</>}
@@ -222,9 +226,11 @@ const DraggableWrapper: React.FC<{ element: EventContentElement }> = ({
 }
 
 export const Element: React.FC<{
+  studioId: StudioId
+  worldId: WorldId
   element: EventContentElement
   attributes: {}
-}> = ({ element, attributes, children }) => {
+}> = ({ studioId, worldId, element, attributes, children }) => {
   const editor = useSlate(),
     selected = useSelected()
 
@@ -316,7 +322,12 @@ export const Element: React.FC<{
       break
     case ELEMENT_FORMATS.CHARACTER:
       content = (
-        <CharacterElement element={element} attributes={attributes}>
+        <CharacterElement
+          studioId={studioId}
+          worldId={worldId}
+          element={element}
+          attributes={attributes}
+        >
           {children}
         </CharacterElement>
       )

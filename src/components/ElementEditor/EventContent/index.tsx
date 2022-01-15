@@ -136,7 +136,13 @@ const EventContent: React.FC<{
   )
 
   const renderElement = useCallback(
-    (props) => <EventContentElement {...props} />,
+    (props) => (
+      <EventContentElement
+        studioId={studioId}
+        worldId={scene.worldId}
+        {...props}
+      />
+    ),
     []
   )
 
@@ -213,7 +219,8 @@ const EventContent: React.FC<{
             character: ['', 'lower'],
             children: [{ text: '' }]
           })
-          Transforms.move(editor)
+          Transforms.deselect(editor)
+          // Transforms.move(editor)
           return
         }
 
