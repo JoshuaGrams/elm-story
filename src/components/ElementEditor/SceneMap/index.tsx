@@ -224,6 +224,7 @@ async function addElementToScene(
     switch (type) {
       case ELEMENT_TYPE.EVENT:
         const event = await api().events.saveEvent(studioId, {
+          characters: [],
           ending: false,
           worldId: scene.worldId,
           sceneId: scene.id,

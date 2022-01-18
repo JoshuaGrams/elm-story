@@ -2,6 +2,7 @@ import logger from '../logger'
 
 import {
   BaseRange,
+  Descendant,
   Editor,
   Element,
   Element as SlateElement,
@@ -16,9 +17,13 @@ import {
   EditorType,
   ELEMENT_FORMATS,
   EventContentElement,
+  EventContentLeaf,
   LEAF_FORMATS,
   LIST_TYPES
 } from '../../data/eventContentTypes'
+import { ElementId, Event, StudioId } from '../../data/types'
+import api from '../../api'
+import { isEqual, uniq } from 'lodash'
 
 export const isElementActive = (
   editor: EditorType,
@@ -296,4 +301,72 @@ export const showCommandMenu = (
   }
 
   return [false, undefined, undefined]
+}
+
+export const getCaretPosition = (element: HTMLElement) => {
+  let position = 0
+
+  const selection = window.getSelection()
+
+  if (selection?.rangeCount !== 0) {
+    const range = window.getSelection()?.getRangeAt(0),
+      preCaretRange = range?.cloneRange()
+
+    preCaretRange?.selectNodeContents(element)
+    range?.endContainer &&
+      preCaretRange?.setEnd(range.endContainer, range?.endOffset)
+
+    if (preCaretRange) {
+      position = preCaretRange.toString().length
+    }
+  }
+
+  return position
+}
+
+export const flattenEventContent = (
+  content: Descendant[],
+  elementsOnly?: boolean
+): Array<EventContentLeaf | EventContentElement> => {
+  const flatEventContent = content.flatMap((element) => {
+    return Element.isElement(element) && element.children
+      ? [element, ...flattenEventContent(element.children)]
+      : element
+  })
+
+  return elementsOnly
+    ? flatEventContent.filter((element) => Element.isElement(element))
+    : flatEventContent
+}
+
+export const getCharactersIdsFromEventContent = (editor: EditorType) =>
+  flattenEventContent(editor.children, true)
+    .filter(
+      (element): element is EventContentElement =>
+        Element.isElement(element) && element.type === ELEMENT_FORMATS.CHARACTER
+    )
+    .map((element) =>
+      element.type === ELEMENT_FORMATS.CHARACTER
+        ? element.character[0]
+        : undefined
+    )
+
+export const syncCharactersFromEventContentToEventData = async (
+  studioId: StudioId,
+  event: Event,
+  editorCharacterIds: Array<ElementId | undefined>
+) => {
+  // character is being selected by designer; skip
+  if (editorCharacterIds.includes('')) return
+
+  // remove duplicates
+  let syncedCharacterIds = uniq(
+    editorCharacterIds.filter((id): id is ElementId => id !== undefined)
+  )
+
+  !isEqual(syncedCharacterIds, event.characters) &&
+    (await api().events.saveEvent(studioId, {
+      ...event,
+      characters: syncedCharacterIds
+    }))
 }

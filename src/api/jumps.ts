@@ -128,6 +128,7 @@ export async function switchJumpToChoiceOrInputEventType(
 
     const [event, updatedSceneChildRefs, pathsToPatch] = await Promise.all([
       api().events.saveEvent(studioId, {
+        characters: [],
         choices: [],
         composer: jump.composer,
         content: JSON.stringify([...DEFAULT_EVENT_CONTENT]),

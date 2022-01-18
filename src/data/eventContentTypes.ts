@@ -1,5 +1,6 @@
 import { BaseEditor, Descendant, Range } from 'slate'
 import { ReactEditor } from 'slate-react'
+import { ElementId } from './types'
 
 declare module 'slate' {
   interface CustomTypes {
@@ -79,8 +80,8 @@ export type CharacterElementFormatType =
 
 export type CharacterElement = {
   type: ELEMENT_FORMATS.CHARACTER
-  // [ref, format]
-  character: [string, CharacterElementFormatType]
+  // [id, alias, format]
+  character: [ElementId, string, CharacterElementFormatType]
   children: EmptyText[]
 }
 

@@ -793,6 +793,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
             try {
               event = await api().events.saveEvent(studioId, {
+                characters: [],
                 choices: [],
                 content: JSON.stringify([...DEFAULT_EVENT_CONTENT]),
                 composer: {
@@ -1348,7 +1349,11 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
     logger.info(`WorldOutline->composer.removedComponent->useEffect`)
 
     async function updateTree() {
-      if (treeData && composer.removedElement.id) {
+      if (
+        treeData &&
+        composer.removedElement.id &&
+        composer.removedElement.type !== ELEMENT_TYPE.CHARACTER // TODO: list for checking supported types
+      ) {
         logger.info(
           `Removing element from outline with ID: ${composer.removedElement.id}`
         )

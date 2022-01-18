@@ -1,6 +1,6 @@
 import logger from '../../../lib/logger'
 
-import { debounce } from 'lodash'
+import { debounce, isEqual } from 'lodash'
 import useEventListener from '@use-it/event-listener'
 import isHotkey from 'is-hotkey'
 
@@ -35,13 +35,16 @@ import {
   Transforms,
   Text,
   BaseSelection,
-  BaseRange
+  BaseRange,
+  Element
 } from 'slate'
 import {
   Slate as SlateContext,
   Editable,
   withReact,
-  ReactEditor
+  ReactEditor,
+  RenderElementProps,
+  RenderLeafProps
 } from 'slate-react'
 import { withHistory } from 'slate-history'
 
@@ -65,10 +68,13 @@ import api from '../../../api'
 import styles from './styles.module.less'
 import {
   deleteAll,
+  flattenEventContent,
+  getCharactersIdsFromEventContent,
   getElement,
   isElementActive,
   isLeafActive,
   showCommandMenu,
+  syncCharactersFromEventContentToEventData,
   toggleElement,
   toggleLeaf
 } from '../../../lib/contentEditor'
@@ -136,17 +142,54 @@ const EventContent: React.FC<{
   )
 
   const renderElement = useCallback(
-    (props) => (
-      <EventContentElement
-        studioId={studioId}
-        worldId={scene.worldId}
-        {...props}
-      />
-    ),
-    []
+    (props: RenderElementProps) => {
+      if (props.element.type === ELEMENT_FORMATS.CHARACTER) {
+        console.log(ReactEditor.findPath(editor, props.element))
+      }
+
+      return (
+        <EventContentElement
+          studioId={studioId}
+          worldId={scene.worldId}
+          onCharacterSelect={
+            props.element.type === ELEMENT_FORMATS.CHARACTER
+              ? (character) => {
+                  const characterElementPath = ReactEditor.findPath(
+                    editor,
+                    props.element
+                  )
+                  character.id &&
+                    Transforms.setNodes(
+                      editor,
+                      { character: [character.id, character.title, 'lower'] },
+                      { at: characterElementPath }
+                    )
+
+                  Transforms.select(
+                    editor,
+                    Editor.end(editor, characterElementPath)
+                  )
+
+                  ReactEditor.focus(editor)
+                  Transforms.move(editor)
+
+                  console.log(
+                    `add character '${character.title}' to event '${event?.id}'`
+                  )
+                }
+              : undefined
+          }
+          {...props}
+        />
+      )
+    },
+    [editor]
   )
 
-  const renderLeaf = useCallback((props) => <EventContentLeaf {...props} />, [])
+  const renderLeaf = useCallback(
+    (props: RenderLeafProps) => <EventContentLeaf {...props} />,
+    []
+  )
 
   const decorate = useCallback(([node, path]) => {
     const ranges: CustomRange[] = []
@@ -213,10 +256,9 @@ const EventContent: React.FC<{
 
       if (SUPPORTED_ELEMENT_TYPES.includes(item as ELEMENT_FORMATS)) {
         if (item === ELEMENT_FORMATS.CHARACTER) {
-          console.log('character')
           Transforms.insertNodes(editor, {
             type: ELEMENT_FORMATS.CHARACTER,
-            character: ['', 'lower'],
+            character: ['', '', 'lower'],
             children: [{ text: '' }]
           })
           Transforms.deselect(editor)
@@ -427,6 +469,43 @@ const EventContent: React.FC<{
     }
   }, [composer.selectedSceneMapEvent])
 
+  // if a character is deleted, the event content will be updated manually
+  // another way to do this is like removing components; composer action
+  // which is probably faster than constantly parsing and comparing
+  useEffect(() => {
+    if (composer.removedElement.type === ELEMENT_TYPE.CHARACTER) {
+      logger.info(
+        `EventContent->useEffect->composer.removedElement->character->${composer.removedElement.id}`
+      )
+
+      composerDispatch({
+        type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
+        removedElement: { id: undefined, type: undefined }
+      })
+    }
+  }, [composer.removedElement])
+
+  // syncs event content and event characters array
+  // from adding and removing characters via content editor
+  useEffect(() => {
+    logger.info(
+      `EventContent->useEffect->event.characters,editor.children->syncCharacters`
+    )
+
+    async function syncCharacters() {
+      if (!event) return
+
+      // TODO: lock during processing?
+      await syncCharactersFromEventContentToEventData(
+        studioId,
+        event,
+        getCharactersIdsFromEventContent(editor)
+      )
+    }
+
+    syncCharacters()
+  }, [event?.characters, editor.children])
+
   return (
     <>
       {event && (
@@ -528,7 +607,7 @@ const EventContent: React.FC<{
                     }
                   }}
                 />
-                {/* <code style={{ userSelect: 'all' }}>{event.content}</code> */}
+                <code style={{ userSelect: 'all' }}>{event.content}</code>
               </DragDropWrapper>
             </SlateContext>
           </div>

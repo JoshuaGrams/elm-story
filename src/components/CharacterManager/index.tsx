@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { Character, WorldId, StudioId } from '../../data/types'
+import { Character, WorldId, StudioId, ELEMENT_TYPE } from '../../data/types'
 
 import {
   ComposerContext,
@@ -56,14 +56,23 @@ const CharacterManager: React.FC<{
                   })
 
                   try {
-                    character.id &&
-                      (await Promise.all([
+                    if (character.id) {
+                      await Promise.all([
                         api().events.removeDeadPersonasFromEvent(
                           studioId,
                           character.id
                         ),
                         api().characters.removeCharacter(studioId, character.id)
-                      ]))
+                      ])
+
+                      composerDispatch({
+                        type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
+                        removedElement: {
+                          id: character.id,
+                          type: ELEMENT_TYPE.CHARACTER
+                        }
+                      })
+                    }
                   } catch (error) {
                     throw error
                   }

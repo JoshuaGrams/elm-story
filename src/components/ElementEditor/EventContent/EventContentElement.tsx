@@ -1,11 +1,10 @@
 import { v4 as uuid } from 'uuid'
 
-import {
-  isElementEmpty,
-  isElementEmptyAndSelected
-} from '../../../lib/contentEditor'
+import { isElementEmptyAndSelected } from '../../../lib/contentEditor'
 
 import React, { useContext, useState } from 'react'
+
+import { StudioId, WorldId } from '../../../data/types'
 
 import { ComposerContext } from '../../../contexts/ComposerContext'
 
@@ -13,14 +12,7 @@ import { Button } from 'antd'
 import Icon, { DeleteOutlined } from '@ant-design/icons'
 
 import { Draggable } from 'react-beautiful-dnd'
-import {
-  Transforms,
-  Range,
-  Path,
-  Node,
-  Element as SlateElement,
-  Editor
-} from 'slate'
+import { Transforms, Editor } from 'slate'
 import {
   ReactEditor,
   useFocused,
@@ -38,32 +30,44 @@ import {
   ImageElement as ImageElementType
 } from '../../../data/eventContentTypes'
 
-import CharacterSelect from './Tools/CharacterSelect'
+import CharacterSelect, { OnCharacterSelect } from './Tools/CharacterSelect'
 
 import styles from './styles.module.less'
-import { StudioId, WorldId } from '../../../data/types'
 
 const CharacterElement: React.FC<{
   studioId: StudioId
   worldId: WorldId
+  onCharacterSelect: OnCharacterSelect
   element: CharacterElementType
   attributes: {}
-}> = ({ studioId, worldId, element, attributes, children }) => {
+}> = ({
+  studioId,
+  worldId,
+  onCharacterSelect,
+  element,
+  attributes,
+  children
+}) => {
   const selected = useSelected()
 
   return (
     <span
       {...attributes}
+      style={{
+        display: element.character[0].length === 0 ? 'inline-block' : 'inline'
+      }}
       className={`${styles.character} ${selected ? styles.selected : ''}`}
-      // contentEditable="false"
-      // suppressContentEditableWarning
       data-slate-editor
     >
       {element.character[0].length === 0 && (
-        <CharacterSelect studioId={studioId} worldId={worldId} />
+        <CharacterSelect
+          studioId={studioId}
+          worldId={worldId}
+          onCharacterSelect={onCharacterSelect}
+        />
       )}
 
-      {element.character[0].length > 0 && <>Jane Doe</>}
+      {element.character[1].length > 0 && <>{element.character[1]}</>}
       {children}
     </span>
   )
@@ -226,11 +230,20 @@ const DraggableWrapper: React.FC<{ element: EventContentElement }> = ({
 }
 
 export const Element: React.FC<{
-  studioId: StudioId
-  worldId: WorldId
+  studioId?: StudioId
+  worldId?: WorldId
+  onCharacterSelect?: OnCharacterSelect
   element: EventContentElement
   attributes: {}
-}> = ({ studioId, worldId, element, attributes, children }) => {
+}> = ({
+  studioId,
+  worldId,
+  onCharacterSelect,
+  element,
+  attributes,
+  children
+}) => {
+  console.log(element)
   const editor = useSlate(),
     selected = useSelected()
 
@@ -321,10 +334,14 @@ export const Element: React.FC<{
       )
       break
     case ELEMENT_FORMATS.CHARACTER:
+      if (!studioId || !worldId || !onCharacterSelect)
+        throw 'Unable to render character element.'
+
       content = (
         <CharacterElement
           studioId={studioId}
           worldId={worldId}
+          onCharacterSelect={onCharacterSelect}
           element={element}
           attributes={attributes}
         >
