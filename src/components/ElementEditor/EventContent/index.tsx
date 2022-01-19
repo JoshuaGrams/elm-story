@@ -158,10 +158,11 @@ const EventContent: React.FC<{
                     editor,
                     props.element
                   )
+                
                   character.id &&
                     Transforms.setNodes(
                       editor,
-                      { character: [character.id, character.title, 'lower'] },
+                      { character: [character.id, null, 'lower'] },
                       { at: characterElementPath }
                     )
 
@@ -258,7 +259,7 @@ const EventContent: React.FC<{
         if (item === ELEMENT_FORMATS.CHARACTER) {
           Transforms.insertNodes(editor, {
             type: ELEMENT_FORMATS.CHARACTER,
-            character: ['', '', 'lower'],
+            character: null,
             children: [{ text: '' }]
           })
           Transforms.deselect(editor)

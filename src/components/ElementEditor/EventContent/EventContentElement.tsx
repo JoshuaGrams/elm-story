@@ -30,7 +30,9 @@ import {
   ImageElement as ImageElementType
 } from '../../../data/eventContentTypes'
 
-import CharacterSelect, { OnCharacterSelect } from './Tools/CharacterSelect'
+import CharacterElementSelect, {
+  OnCharacterSelect
+} from './Tools/CharacterElementSelect'
 
 import styles from './styles.module.less'
 
@@ -54,20 +56,19 @@ const CharacterElement: React.FC<{
     <span
       {...attributes}
       style={{
-        display: element.character[0].length === 0 ? 'inline-block' : 'inline'
+        display: element.character ? 'inline-block' : 'inline'
       }}
       className={`${styles.character} ${selected ? styles.selected : ''}`}
       data-slate-editor
     >
-      {element.character[0].length === 0 && (
-        <CharacterSelect
-          studioId={studioId}
-          worldId={worldId}
-          onCharacterSelect={onCharacterSelect}
-        />
-      )}
+      <CharacterElementSelect
+        studioId={studioId}
+        worldId={worldId}
+        element={element}
+        selectedCharacter={element.character ? element.character : undefined}
+        onCharacterSelect={onCharacterSelect}
+      />
 
-      {element.character[1].length > 0 && <>{element.character[1]}</>}
       {children}
     </span>
   )

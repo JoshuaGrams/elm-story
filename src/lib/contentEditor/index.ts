@@ -21,7 +21,7 @@ import {
   LEAF_FORMATS,
   LIST_TYPES
 } from '../../data/eventContentTypes'
-import { ElementId, Event, StudioId } from '../../data/types'
+import { Character, ElementId, Event, StudioId } from '../../data/types'
 import api from '../../api'
 import { isEqual, uniq } from 'lodash'
 
@@ -346,7 +346,7 @@ export const getCharactersIdsFromEventContent = (editor: EditorType) =>
         Element.isElement(element) && element.type === ELEMENT_FORMATS.CHARACTER
     )
     .map((element) =>
-      element.type === ELEMENT_FORMATS.CHARACTER
+      element.type === ELEMENT_FORMATS.CHARACTER && element.character
         ? element.character[0]
         : undefined
     )
@@ -369,4 +369,8 @@ export const syncCharactersFromEventContentToEventData = async (
       ...event,
       characters: syncedCharacterIds
     }))
+}
+
+export const getCharacterRef = (character: Character, refId: string) => {
+  return character.title
 }

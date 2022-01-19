@@ -78,10 +78,15 @@ export type CharacterElementFormatType =
   | 'cap-first'
   | 'cap-all'
 
+export type CharacterElementDetails = [
+  ElementId, // character id
+  null | string, // ref id
+  CharacterElementFormatType // display format
+]
+
 export type CharacterElement = {
   type: ELEMENT_FORMATS.CHARACTER
-  // [id, alias, format]
-  character: [ElementId, string, CharacterElementFormatType]
+  character: CharacterElementDetails | null
   children: EmptyText[]
 }
 

@@ -23,9 +23,11 @@ const useCharacter = (
   studioId: StudioId,
   characterId: ElementId | undefined | null,
   deps?: any[]
-): Character | undefined =>
+): Character | undefined | null =>
   useLiveQuery(
-    () => new LibraryDatabase(studioId).characters.get(characterId || ''),
+    async () =>
+      (await new LibraryDatabase(studioId).characters.get(characterId || '')) ||
+      null,
     deps || [],
     undefined
   )
