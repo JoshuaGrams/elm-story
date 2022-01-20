@@ -236,17 +236,10 @@ export const withEmbeds = (editor: EditorType) => {
 }
 
 export const withCharacters = (editor: EditorType) => {
-  const { isInline, isVoid, deleteBackward, normalizeNode } = editor
-
-  editor.normalizeNode = (entry) => {
-    console.log(entry)
-  }
+  const { isInline, isVoid, deleteBackward } = editor
 
   editor.deleteBackward = (unit) => {
     logger.info(`contentEditor->plugins->withCharacters->deleteBackward`)
-    console.log(unit)
-
-    console.log(editor.selection)
 
     if (!editor.selection) return deleteBackward(unit)
 
@@ -258,9 +251,10 @@ export const withCharacters = (editor: EditorType) => {
 
       if (
         Element.isElement(previousNode) &&
-        previousNode.type === ELEMENT_FORMATS.CHARACTER
+        previousNode.type === ELEMENT_FORMATS.CHARACTER &&
+        previousNode.character
       ) {
-        console.log(`delete character ${previousNode.character[0]}`)
+        logger.info(`delete character ${previousNode.character[0]}`)
       }
 
       return deleteBackward(unit)
@@ -271,9 +265,10 @@ export const withCharacters = (editor: EditorType) => {
 
     if (
       Element.isElement(parentNode) &&
-      parentNode.type === ELEMENT_FORMATS.CHARACTER
+      parentNode.type === ELEMENT_FORMATS.CHARACTER &&
+      parentNode.character
     ) {
-      console.log(`delete character ${parentNode.character[0]}`)
+      logger.info(`delete character ${parentNode.character[0]}`)
     }
 
     deleteBackward(unit)

@@ -103,12 +103,12 @@ const EventContent: React.FC<{
 
   // https://github.com/ianstormtaylor/slate/commit/1b0e7c6b928865cb4fd656b6f922e30fbe72d77a
   const [editor] = useState<ReactEditor>(() =>
-    withHistory(
-      withCharacters(
-        withImages(
-          withEmbeds(
-            withElementReset(
-              withAlignReset(withCorrectVoidBehavior(withReact(createEditor())))
+    withCharacters(
+      withImages(
+        withEmbeds(
+          withElementReset(
+            withAlignReset(
+              withCorrectVoidBehavior(withReact(withHistory(createEditor())))
             )
           )
         )
@@ -158,7 +158,7 @@ const EventContent: React.FC<{
                     editor,
                     props.element
                   )
-                
+
                   character.id &&
                     Transforms.setNodes(
                       editor,
