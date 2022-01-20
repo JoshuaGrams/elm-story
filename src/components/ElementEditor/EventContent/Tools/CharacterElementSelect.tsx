@@ -212,26 +212,18 @@ const CharacterElementSelect: React.FC<{
     }
   }
 
-  const removeElement = useCallback(() => {
-    const elementPath = ReactEditor.findPath(editor, element)
+    const removeElement = useCallback(() => {
+      const elementPath = ReactEditor.findPath(editor, element)
 
-    Transforms.removeNodes(editor, {
-      at: elementPath
-    })
+      Transforms.select(editor, elementPath)
 
-    Transforms.select(
-      editor,
-      Editor.end(
-        editor,
-        Path.hasPrevious(elementPath)
-          ? Path.previous(elementPath)
-          : Editor.start(editor, elementPath)
-      )
-    )
+      Transforms.removeNodes(editor, {
+        at: elementPath
+      })
 
-    ReactEditor.focus(editor)
-    Transforms.move(editor)
-  }, [editor, element])
+      ReactEditor.focus(editor)
+      Transforms.move(editor)
+    }, [editor, element])
 
   useEffect(() => {
     if (inputRef.current && !selectedCharacter) {
