@@ -244,7 +244,6 @@ export const Element: React.FC<{
   attributes,
   children
 }) => {
-  console.log(element)
   const editor = useSlate(),
     selected = useSelected()
 

@@ -1,15 +1,11 @@
+import logger from '../../../../lib/logger'
+
 import {
   getCaretPosition,
   getCharacterRef
 } from '../../../../lib/contentEditor'
 
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState
-} from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import {
   Character,
@@ -26,7 +22,7 @@ import {
 import { useCharacter, useCharacters } from '../../../../hooks'
 
 import { ReactEditor, useSlate } from 'slate-react'
-import { Editor, Path, Transforms } from 'slate'
+import { Transforms } from 'slate'
 
 import { UserOutlined } from '@ant-design/icons'
 
@@ -34,7 +30,6 @@ import Portal from '../../../Portal'
 import CharacterMask from '../../../CharacterManager/CharacterMask'
 
 import styles from './styles.module.less'
-import { ElementEditorTabContext } from '../../../../contexts/ElementEditorTabContext'
 
 export type OnCharacterSelect = (character: Character) => void
 
@@ -130,7 +125,6 @@ const SelectedCharacter: React.FC<{
   const editor = useSlate()
 
   useEffect(() => {
-    console.log(character)
     if (character?.id) {
       const refs = character.refs.map((ref) => ref[1])
 
@@ -200,30 +194,27 @@ const CharacterElementSelect: React.FC<{
   }
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    console.log(event)
     setFocused(false)
     event.preventDefault()
 
-    console.log(selecting)
-
     if (!filter && selecting) {
       removeElement()
-      console.log('remove character element')
+      logger.info('remove character element')
     }
   }
 
-    const removeElement = useCallback(() => {
-      const elementPath = ReactEditor.findPath(editor, element)
+  const removeElement = useCallback(() => {
+    const elementPath = ReactEditor.findPath(editor, element)
 
-      Transforms.select(editor, elementPath)
+    Transforms.select(editor, elementPath)
 
-      Transforms.removeNodes(editor, {
-        at: elementPath
-      })
+    Transforms.removeNodes(editor, {
+      at: elementPath
+    })
 
-      ReactEditor.focus(editor)
-      Transforms.move(editor)
-    }, [editor, element])
+    ReactEditor.focus(editor)
+    Transforms.move(editor)
+  }, [editor, element])
 
   useEffect(() => {
     if (inputRef.current && !selectedCharacter) {
@@ -251,8 +242,6 @@ const CharacterElementSelect: React.FC<{
             setCaretPosition(getCaretPosition(inputRef.current))
           }
           onKeyDown={(event) => {
-            console.log(event.code)
-
             if (event.code === 'Escape') {
               if (!filter && !selectedCharacter) {
                 inputRef.current?.blur()
@@ -282,13 +271,13 @@ const CharacterElementSelect: React.FC<{
             if (event.code === 'ArrowUp') {
               event.preventDefault()
 
-              console.log('move selection up')
+              logger.info('move selection up')
             }
 
             if (event.code === 'ArrowDown') {
               event.preventDefault()
 
-              console.log('move selection down')
+              logger.info('move selection down')
             }
 
             if (event.code === 'ArrowRight') {
@@ -329,8 +318,6 @@ const CharacterElementSelect: React.FC<{
         element={element}
         onCharacterSelect={(character) => {
           setSelecting(false)
-
-          console.log(character)
 
           setTimeout(() => onCharacterSelect(character), 0)
         }}

@@ -1,6 +1,6 @@
 import logger from '../../../lib/logger'
 
-import { debounce, isEqual } from 'lodash'
+import { debounce } from 'lodash'
 import useEventListener from '@use-it/event-listener'
 import isHotkey from 'is-hotkey'
 
@@ -35,8 +35,7 @@ import {
   Transforms,
   Text,
   BaseSelection,
-  BaseRange,
-  Element
+  BaseRange
 } from 'slate'
 import {
   Slate as SlateContext,
@@ -68,7 +67,6 @@ import api from '../../../api'
 import styles from './styles.module.less'
 import {
   deleteAll,
-  flattenEventContent,
   getCharactersIdsFromEventContent,
   getElement,
   isElementActive,
@@ -143,10 +141,6 @@ const EventContent: React.FC<{
 
   const renderElement = useCallback(
     (props: RenderElementProps) => {
-      if (props.element.type === ELEMENT_FORMATS.CHARACTER) {
-        console.log(ReactEditor.findPath(editor, props.element))
-      }
-
       return (
         <EventContentElement
           studioId={studioId}
@@ -174,7 +168,7 @@ const EventContent: React.FC<{
                   ReactEditor.focus(editor)
                   Transforms.move(editor)
 
-                  console.log(
+                  logger.info(
                     `add character '${character.title}' to event '${event?.id}'`
                   )
                 }

@@ -177,22 +177,27 @@ export const getActiveElementType = (editor: EditorType): ELEMENT_FORMATS => {
   return ELEMENT_FORMATS.P
 }
 
-export const isElementEmpty = (element: EventContentElement) =>
-  element.type === ELEMENT_FORMATS.OL || element.type === ELEMENT_FORMATS.UL
+export const isElementEmpty = (element: EventContentElement) => {
+  return element.type === ELEMENT_FORMATS.OL ||
+    element.type === ELEMENT_FORMATS.UL
     ? false
-    : (element.children[0] as { text: string }).text.length === 0
+    : Element.isElement(element) &&
+        !(element.children[0] as { text: string }).text &&
+        element.children.length === 1
+}
 
 export const isElementEmptyAndSelected = (
   editor: EditorType,
   element: EventContentElement,
   selected: boolean
-) =>
-  selected &&
-  editor.selection &&
-  Range.isCollapsed(editor.selection) &&
-  isElementEmpty(element)
+) => {
+  return selected &&
+    editor.selection &&
+    Range.isCollapsed(editor.selection) &&
+    isElementEmpty(element)
     ? true
     : false
+}
 
 export const resetElementToParagraph = (
   editor: EditorType,
