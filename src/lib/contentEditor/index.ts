@@ -379,3 +379,13 @@ export const syncCharactersFromEventContentToEventData = async (
 export const getCharacterRef = (character: Character, refId: string) => {
   return character.title
 }
+
+export const isEndOfLine = (editor: EditorType) => {
+  if (!editor.selection) return false
+
+  const afterLocation =
+    editor.selection &&
+    Editor.after(editor, editor.selection, { unit: 'offset' })
+
+  return afterLocation?.offset === 0 || !afterLocation
+}

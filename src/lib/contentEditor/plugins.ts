@@ -3,6 +3,7 @@ import logger from '../logger'
 import {
   isElementActive,
   isElementEmpty,
+  isEndOfLine,
   resetElementToParagraph,
   toggleElement
 } from '.'
@@ -41,6 +42,10 @@ export const withElementReset = (editor: EditorType) => {
         return insertBreak()
       }
     } else {
+      if (!isEndOfLine(editor)) {
+        return insertBreak()
+      }
+
       Editor.insertNode(editor, {
         type: ELEMENT_FORMATS.P,
         children: [{ text: '' }]
