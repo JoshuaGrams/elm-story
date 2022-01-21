@@ -115,7 +115,6 @@
 .CharacterSelect {
   display: inline-block;
   min-width: 4px;
-  padding: 0 4px;
 
   &:disabled {
     pointer-events: none;
@@ -135,9 +134,14 @@
 :global .event-content-character-select-menu {
   .menuStyles();
   padding: 0;
+  overflow-y: hidden;
+  max-height: 250px;
 
   :local .characters {
-    padding: 6px 0;
+    position: relative;
+    height: 210px;
+    overflow-y: auto;
+    background: hsl(0, 0%, 10%);
 
     .item {
       display: grid;
@@ -154,6 +158,10 @@
       &:hover {
         cursor: pointer;
         background: hsl(0, 0%, 15%);
+      }
+
+      &.selected {
+        background: hsl(0, 0%, 25%);
       }
 
       .title {

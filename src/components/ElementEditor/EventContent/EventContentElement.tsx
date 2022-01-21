@@ -56,7 +56,7 @@ const CharacterElement: React.FC<{
     <span
       {...attributes}
       style={{
-        display: element.character ? 'inline-block' : 'inline'
+        display: 'inline-block'
       }}
       className={`${styles.character} ${selected ? styles.selected : ''}`}
       data-slate-editor

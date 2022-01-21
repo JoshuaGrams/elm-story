@@ -243,6 +243,7 @@ const isSupportedAlignType = (element: EventContentElement) =>
   element.type === ELEMENT_FORMATS.H4 ||
   element.type === ELEMENT_FORMATS.P
 
+// similar to getActiveElementType, but not the entire block
 export const getElement = (
   editor: EditorType
 ): {
@@ -327,6 +328,24 @@ export const getCaretPosition = (element: HTMLElement) => {
   }
 
   return position
+}
+
+export const setCaretToEnd = (element: HTMLElement) => {
+  const range = document.createRange()
+  const selection = window.getSelection()
+
+  range.selectNodeContents(element)
+  range.collapse(false)
+
+  if (!selection) return
+
+  selection.removeAllRanges()
+  selection.addRange(range)
+  element.focus()
+  range.detach() // optimization
+
+  // set scroll to the end if multiline
+  element.scrollTop = element.scrollHeight
 }
 
 export const flattenEventContent = (
