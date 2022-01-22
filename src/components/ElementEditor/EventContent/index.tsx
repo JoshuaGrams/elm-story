@@ -147,30 +147,45 @@ const EventContent: React.FC<{
           worldId={scene.worldId}
           onCharacterSelect={
             props.element.type === ELEMENT_FORMATS.CHARACTER
-              ? (character) => {
+              ? (character, remove) => {
                   const characterElementPath = ReactEditor.findPath(
                     editor,
                     props.element
                   )
 
-                  character.id &&
+                  if (!remove) {
                     Transforms.setNodes(
                       editor,
-                      { character: [character.id, null, 'lower'] },
+                      {
+                        character: character?.id
+                          ? [character.id, null, 'lower']
+                          : null
+                      },
                       { at: characterElementPath }
                     )
 
-                  Transforms.select(
-                    editor,
-                    Editor.end(editor, characterElementPath)
-                  )
+                    character &&
+                      logger.info(
+                        `add character '${character.title}' to event '${event?.id}'`
+                      )
+
+                    !character &&
+                      logger.info(`reset character from event '${event?.id}`)
+
+                    Transforms.select(
+                      editor,
+                      Editor.end(editor, characterElementPath)
+                    )
+                  }
+
+                  if (remove) {
+                    Transforms.removeNodes(editor, { at: characterElementPath })
+
+                    logger.info(`remove character from event '${event?.id}`)
+                  }
 
                   ReactEditor.focus(editor)
                   Transforms.move(editor)
-
-                  logger.info(
-                    `add character '${character.title}' to event '${event?.id}'`
-                  )
                 }
               : undefined
           }
@@ -602,7 +617,16 @@ const EventContent: React.FC<{
                     }
                   }}
                 />
-                <code style={{ userSelect: 'all' }}>{event.content}</code>
+
+                <code
+                  style={{
+                    userSelect: 'all',
+                    position: 'absolute',
+                    bottom: -400
+                  }}
+                >
+                  {event.content}
+                </code>
               </DragDropWrapper>
             </SlateContext>
           </div>

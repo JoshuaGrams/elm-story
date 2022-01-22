@@ -1,7 +1,7 @@
 import logger from '../../../../lib/logger'
+import isHotkey from 'is-hotkey'
 
 import {
-  getActiveElementType,
   getCaretPosition,
   getCharacterRef,
   getElement,
@@ -28,15 +28,18 @@ import { useCharacter, useCharacters } from '../../../../hooks'
 import { ReactEditor, useSelected, useSlate } from 'slate-react'
 import { Transforms } from 'slate'
 
+import { Dropdown, Menu } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 
 import Portal from '../../../Portal'
 import CharacterMask from '../../../CharacterManager/CharacterMask'
 
 import styles from './styles.module.less'
-import isHotkey from 'is-hotkey'
 
-export type OnCharacterSelect = (character: Character) => void
+export type OnCharacterSelect = (
+  character: Character | null,
+  remove?: boolean
+) => void
 
 const CharacterSelectMenu: React.FC<{
   studioId: StudioId
@@ -142,7 +145,9 @@ const SelectedCharacter: React.FC<{
   element: CharacterElement
   character: Character | null | undefined // null = character doesn't exist
   elementCharacterData?: CharacterElementDetails
-}> = ({ element, character, elementCharacterData }) => {
+  onClick: (reset?: boolean) => void
+  onRemove: () => void
+}> = ({ element, character, elementCharacterData, onClick, onRemove }) => {
   const editor = useSlate()
 
   useEffect(() => {
@@ -170,29 +175,41 @@ const SelectedCharacter: React.FC<{
   }, [character])
 
   return (
-    <>
-      {character !== null && elementCharacterData && (
-        <>
-          {character !== undefined ? (
-            elementCharacterData[1] ? (
-              getCharacterRef(character, elementCharacterData[1])
+    <Dropdown
+      disabled={character === undefined}
+      overlay={
+        <Menu>
+          <Menu.Item onClick={onRemove}>Remove Reference</Menu.Item>
+        </Menu>
+      }
+      trigger={['contextMenu']}
+    >
+      <span>
+        {character !== null && elementCharacterData && (
+          <>
+            {character !== undefined ? (
+              elementCharacterData[1] ? (
+                getCharacterRef(character, elementCharacterData[1])
+              ) : (
+                <span style={{ cursor: 'pointer' }} onClick={() => onClick()}>
+                  {character.title}
+                </span>
+              )
             ) : (
-              <span style={{ cursor: 'pointer' }}>{character.title}</span>
-            )
-          ) : (
-            <>
-              <UserOutlined />
-            </>
-          )}
-        </>
-      )}
+              <>
+                <UserOutlined />
+              </>
+            )}
+          </>
+        )}
 
-      {character === null && (
-        <span style={{ background: 'red' }}>
-          <UserOutlined />
-        </span>
-      )}
-    </>
+        {character === null && (
+          <span style={{ background: 'red', cursor: 'pointer' }}>
+            <UserOutlined onClick={() => onClick(true)} />
+          </span>
+        )}
+      </span>
+    </Dropdown>
   )
 }
 
@@ -249,7 +266,7 @@ const CharacterElementSelect: React.FC<{
     Transforms.move(editor)
   }, [editor, element])
 
-  const selectCharacter = useCallback((character: Character) => {
+  const selectCharacter = useCallback((character: Character | null) => {
     setSelecting(false)
 
     setTimeout(() => onCharacterSelect(character), 0)
@@ -271,7 +288,6 @@ const CharacterElementSelect: React.FC<{
     selectedCharacter &&
       setSelecting(
         selected &&
-          character !== null &&
           getElement(editor).element?.type === ELEMENT_FORMATS.CHARACTER
       )
   }, [selected, selectedCharacter, character, editor])
@@ -429,6 +445,17 @@ const CharacterElementSelect: React.FC<{
           element={element}
           character={character}
           elementCharacterData={selectedCharacter}
+          onClick={() => {
+            setSelecting(true)
+
+            // TODO: this is only if designers decide they want ES to make this choice
+            // See useEffect for selected to also adjust to match
+            // !reset && setSelecting(true)
+            // reset && onCharacterSelect(null)
+          }}
+          onRemove={() => {
+            onCharacterSelect(null, true)
+          }}
         />
       )}
     </>
