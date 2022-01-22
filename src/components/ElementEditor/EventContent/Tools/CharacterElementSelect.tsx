@@ -285,11 +285,22 @@ const CharacterElementSelect: React.FC<{
   useEffect(() => {
     logger.info(`CharacterElementSelect->useEffect->selected:${selected}`)
 
-    selectedCharacter &&
+    if (selectedCharacter) {
+      const foundCharacterIndex = characters
+        ? characters.findIndex(
+            (character) => selectedCharacter[0] === character?.id
+          )
+        : -1
+
+      setMenuSelectionIndex(
+        foundCharacterIndex !== -1 ? foundCharacterIndex : 0
+      )
+
       setSelecting(
         selected &&
           getElement(editor).element?.type === ELEMENT_FORMATS.CHARACTER
       )
+    }
   }, [selected, selectedCharacter, character, editor])
 
   useEffect(() => {
@@ -297,15 +308,23 @@ const CharacterElementSelect: React.FC<{
       inputRef.current.focus()
       setCaretToEnd(inputRef.current)
     }
-
-    if (!selecting) {
-      setMenuSelectionIndex(0)
-    }
   }, [selecting, inputRef.current])
 
   useEffect(() => {
-    console.log(menuSelectionIndex)
-  }, [menuSelectionIndex])
+    const foundCharacterIndex = characters
+      ? characters.findIndex((character) => {
+          const filterLower = filter.toLowerCase(),
+            characterTitleLower = character.title.toLowerCase()
+
+          return (
+            filterLower.charAt(0) === characterTitleLower.charAt(0) &&
+            characterTitleLower.includes(filterLower)
+          )
+        })
+      : -1
+
+    foundCharacterIndex !== -1 && setMenuSelectionIndex(foundCharacterIndex)
+  }, [filter])
 
   return (
     <>
