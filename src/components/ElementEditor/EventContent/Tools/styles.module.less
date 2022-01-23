@@ -139,17 +139,16 @@
 
   :local .characters {
     position: relative;
-    height: 210px;
+    max-height: 210px;
     overflow-y: auto;
     background: hsl(0, 0%, 10%);
 
     .item {
       display: grid;
-      grid-template-columns: 32px auto;
+      grid-template-columns: 32px auto 16px;
       align-items: center;
       padding: 0 10px;
       height: 44px;
-      margin-bottom: 2px;
 
       &:last-of-type {
         margin: 0;
@@ -166,6 +165,24 @@
 
       .title {
         padding-left: 6px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      .aliases {
+        height: 100%;
+        display: grid;
+        align-items: center;
+        justify-content: center;
+
+        &.disabled {
+          color: hsl(0, 0%, 20%) !important;
+        }
+
+        &:hover {
+          color: var(--highlight-color);
+        }
       }
     }
   }

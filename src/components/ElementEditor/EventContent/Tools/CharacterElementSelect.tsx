@@ -29,7 +29,12 @@ import { ReactEditor, useSelected, useSlate } from 'slate-react'
 import { Transforms } from 'slate'
 
 import { Dropdown, Menu } from 'antd'
-import { UserOutlined } from '@ant-design/icons'
+import {
+  ArrowRightOutlined,
+  LeftOutlined,
+  RightOutlined,
+  UserOutlined
+} from '@ant-design/icons'
 
 import Portal from '../../../Portal'
 import CharacterMask from '../../../CharacterManager/CharacterMask'
@@ -41,6 +46,112 @@ export type OnCharacterSelect = (
   remove?: boolean
 ) => void
 
+// [which menu (0 titles, 1 alias), [title menu index, alias menu index]]
+type MenuType = 'TITLE' | 'ALIAS'
+
+interface MenuSelection {
+  type: MenuType
+  selection: [number, number]
+}
+
+const CharacterTitleMenu: React.FC<{
+  studioId: StudioId
+  characters: Character[]
+  currentSelection: number
+  onCharacterSelect: OnCharacterSelect
+  onRefDrillDown: (characterIndex: number) => void
+}> = ({
+  studioId,
+  characters,
+  currentSelection,
+  onCharacterSelect,
+  onRefDrillDown
+}) => {
+  return (
+    <>
+      {characters?.map(
+        (character, index) =>
+          character.id && (
+            <div
+              key={character.id}
+              className={`character-select-menu-item ${styles.item} ${
+                currentSelection === index ? styles.selected : ''
+              }`}
+              onMouseDown={(event) => {
+                event.preventDefault()
+
+                onCharacterSelect(character)
+              }}
+            >
+              <CharacterMask
+                studioId={studioId}
+                worldId={character.worldId}
+                characterId={character.id}
+                type={CHARACTER_MASK_TYPE.NEUTRAL}
+                overlay={false}
+                aspectRatio="4/5"
+                active
+                assetId={
+                  character.masks.find(
+                    (mask) => mask.type === CHARACTER_MASK_TYPE.NEUTRAL
+                  )?.assetId
+                }
+              />
+
+              <div className={styles.title} title={character.title}>
+                {character.title}
+              </div>
+
+              <div
+                className={`${styles.aliases}  ${
+                  character.refs.length === 0 ? styles.disabled : ''
+                }`}
+                onMouseDown={(event) => {
+                  event.stopPropagation()
+                  event.preventDefault()
+
+                  if (character.refs.length === 0) return
+
+                  onRefDrillDown(index)
+                }}
+              >
+                <RightOutlined />
+              </div>
+            </div>
+          )
+      )}
+    </>
+  )
+}
+
+const CharacterAliasMenu: React.FC<{
+  character: Character
+  onBack: () => void
+}> = ({ character, onBack }) => {
+  return (
+    <>
+      {character.id && (
+        <div>
+          <div>
+            <LeftOutlined
+              onMouseDown={(event) => {
+                event.stopPropagation()
+                event.preventDefault()
+
+                onBack()
+              }}
+            />{' '}
+            {character.title}
+          </div>
+          {character.refs.map((ref) => (
+            <div key={ref[0]}>{ref[1]}</div>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
 const CharacterSelectMenu: React.FC<{
   studioId: StudioId
   characters?: Character[]
@@ -48,15 +159,19 @@ const CharacterSelectMenu: React.FC<{
   show: boolean
   filter: string
   inputRect: DOMRect | undefined
-  menuSelectionIndex: number
+  menuSelection: MenuSelection
+  elementCharacterData?: CharacterElementDetails
   onCharacterSelect: OnCharacterSelect
+  onMenuSelection: (selection: MenuSelection) => void
 }> = ({
   studioId,
   characters,
   show,
   inputRect,
-  menuSelectionIndex,
-  onCharacterSelect
+  menuSelection,
+  elementCharacterData,
+  onCharacterSelect,
+  onMenuSelection
 }) => {
   const characterSelectMenuRef = useRef<HTMLDivElement>(null)
 
@@ -81,8 +196,8 @@ const CharacterSelectMenu: React.FC<{
       'character-select-menu-item '
     )
 
-    elements[menuSelectionIndex] &&
-      elements[menuSelectionIndex].scrollIntoView({ block: 'end' })
+    elements[menuSelection.selection[0]] &&
+      elements[menuSelection.selection[0]].scrollIntoView({ block: 'end' })
   })
 
   return (
@@ -94,37 +209,35 @@ const CharacterSelectMenu: React.FC<{
             className="event-content-character-select-menu"
           >
             <div className={styles.characters}>
-              {characters?.map(
-                (character, index) =>
-                  character.id && (
-                    <div
-                      key={character.id}
-                      className={`character-select-menu-item ${styles.item} ${
-                        menuSelectionIndex === index ? styles.selected : ''
-                      }`}
-                      onMouseDown={(event) => {
-                        event.preventDefault()
-
-                        onCharacterSelect(character)
+              {characters && (
+                <>
+                  {menuSelection.type === 'TITLE' && (
+                    <CharacterTitleMenu
+                      studioId={studioId}
+                      characters={characters}
+                      currentSelection={menuSelection.selection[0]}
+                      onCharacterSelect={onCharacterSelect}
+                      onRefDrillDown={(characterIndex) => {
+                        onMenuSelection({
+                          type: 'ALIAS',
+                          selection: [menuSelection.selection[0], 0]
+                        })
                       }}
-                    >
-                      <CharacterMask
-                        studioId={studioId}
-                        worldId={character.worldId}
-                        characterId={character.id}
-                        type={CHARACTER_MASK_TYPE.NEUTRAL}
-                        overlay={false}
-                        aspectRatio="4/5"
-                        active
-                        assetId={
-                          character.masks.find(
-                            (mask) => mask.type === CHARACTER_MASK_TYPE.NEUTRAL
-                          )?.assetId
-                        }
-                      />
-                      <div className={styles.title}>{character.title}</div>
-                    </div>
-                  )
+                    />
+                  )}
+
+                  {menuSelection.type === 'ALIAS' && (
+                    <CharacterAliasMenu
+                      character={characters[menuSelection.selection[0]]}
+                      onBack={() => {
+                        onMenuSelection({
+                          type: 'TITLE',
+                          selection: [menuSelection.selection[0], 0]
+                        })
+                      }}
+                    />
+                  )}
+                </>
               )}
             </div>
 
@@ -235,11 +348,13 @@ const CharacterElementSelect: React.FC<{
     [focused, setFocused] = useState(false),
     [caretPosition, setCaretPosition] = useState(0)
 
-  const [menuSelectionIndex, setMenuSelectionIndex] = useState(0)
+  const [menuSelection, setMenuSelection] = useState<MenuSelection>({
+    type: 'TITLE',
+    selection: [0, 0]
+  })
 
-  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) =>
     setFocused(true)
-  }
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     setFocused(false)
@@ -278,6 +393,21 @@ const CharacterElementSelect: React.FC<{
     }
   }, [inputRef.current])
 
+  const resetMenuSelection = useCallback(() => {
+    if (!selectedCharacter) return
+
+    const foundCharacterIndex = characters
+      ? characters.findIndex(
+          (character) => selectedCharacter[0] === character?.id
+        )
+      : -1
+
+    setMenuSelection({
+      type: 'TITLE',
+      selection: [foundCharacterIndex !== -1 ? foundCharacterIndex : 0, 0]
+    })
+  }, [selectedCharacter, characters])
+
   useEffect(() => {
     !selectedCharacter && setSelecting(true)
   }, [selectedCharacter])
@@ -286,15 +416,7 @@ const CharacterElementSelect: React.FC<{
     logger.info(`CharacterElementSelect->useEffect->selected:${selected}`)
 
     if (selectedCharacter) {
-      const foundCharacterIndex = characters
-        ? characters.findIndex(
-            (character) => selectedCharacter[0] === character?.id
-          )
-        : -1
-
-      setMenuSelectionIndex(
-        foundCharacterIndex !== -1 ? foundCharacterIndex : 0
-      )
+      resetMenuSelection()
 
       setSelecting(
         selected &&
@@ -323,8 +445,13 @@ const CharacterElementSelect: React.FC<{
         })
       : -1
 
-    foundCharacterIndex !== -1 && setMenuSelectionIndex(foundCharacterIndex)
+    foundCharacterIndex !== -1 &&
+      setMenuSelection({ type: 'TITLE', selection: [foundCharacterIndex, 0] })
   }, [filter])
+
+  useEffect(() => {
+    focused && resetMenuSelection()
+  }, [focused])
 
   return (
     <>
@@ -355,7 +482,8 @@ const CharacterElementSelect: React.FC<{
             if (event.code === 'Enter') {
               event.preventDefault()
 
-              characters && selectCharacter(characters[menuSelectionIndex])
+              characters &&
+                selectCharacter(characters[menuSelection.selection[0]])
 
               return
             }
@@ -373,11 +501,14 @@ const CharacterElementSelect: React.FC<{
 
               if (
                 selecting &&
-                menuSelectionIndex > 0 &&
+                menuSelection.selection[0] > 0 &&
                 characters &&
-                menuSelectionIndex <= characters.length - 1
+                menuSelection.selection[0] <= characters.length - 1
               ) {
-                setMenuSelectionIndex(menuSelectionIndex - 1)
+                setMenuSelection({
+                  ...menuSelection,
+                  selection: [menuSelection.selection[0] - 1, 0]
+                })
                 logger.info('move selection up')
               }
             }
@@ -387,11 +518,14 @@ const CharacterElementSelect: React.FC<{
 
               if (
                 selecting &&
-                menuSelectionIndex >= 0 &&
+                menuSelection.selection[0] >= 0 &&
                 characters &&
-                menuSelectionIndex < characters.length - 1
+                menuSelection.selection[0] < characters.length - 1
               ) {
-                setMenuSelectionIndex(menuSelectionIndex + 1)
+                setMenuSelection({
+                  ...menuSelection,
+                  selection: [menuSelection.selection[0] + 1, 0]
+                })
                 logger.info('move selection up')
               }
             }
@@ -409,9 +543,13 @@ const CharacterElementSelect: React.FC<{
               }
             }
 
-            if (isHotkey('opt+arrowright', event)) {
+            if (isHotkey('opt+ArrowRight', event)) {
               if (selectedCharacter && selecting) {
                 event.preventDefault()
+
+                characters &&
+                  characters[menuSelection.selection[0]].refs.length > 0 &&
+                  setMenuSelection({ ...menuSelection, type: 'ALIAS' })
 
                 console.log('move right')
 
@@ -432,9 +570,11 @@ const CharacterElementSelect: React.FC<{
               }
             }
 
-            if (isHotkey('opt+arrowleft', event)) {
+            if (isHotkey('opt+ArrowLeft', event)) {
               if (selectedCharacter && selecting) {
                 event.preventDefault()
+
+                setMenuSelection({ ...menuSelection, type: 'TITLE' })
 
                 console.log('move left')
 
@@ -442,7 +582,9 @@ const CharacterElementSelect: React.FC<{
               }
             }
           }}
-          onInput={() => setFilter(inputRef.current?.textContent || '')}
+          onInput={() => {
+            setFilter(inputRef.current?.textContent || '')
+          }}
         >
           {character?.title || ''}
         </span>
@@ -455,8 +597,10 @@ const CharacterElementSelect: React.FC<{
         filter={filter}
         inputRect={inputRef.current?.getBoundingClientRect()}
         element={element}
-        menuSelectionIndex={menuSelectionIndex}
+        menuSelection={menuSelection}
+        elementCharacterData={selectedCharacter}
         onCharacterSelect={selectCharacter}
+        onMenuSelection={(selection) => setMenuSelection(selection)}
       />
 
       {!selecting && (
