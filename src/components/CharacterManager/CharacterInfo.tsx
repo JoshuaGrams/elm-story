@@ -73,23 +73,24 @@ const EditAliasPopover: React.FC<{
             if (newValue && newValue !== defaultValue && selections) {
               const sanitizedNewValue = newValue.toUpperCase().trim()
 
-              if (
-                Object.keys(CHARACTER_PRONOUN_TYPES).findIndex(
-                  (pronoun) => pronoun === sanitizedNewValue
-                ) === -1
-              ) {
-                const foundSelectionIndex = selections?.findIndex(
-                  (selection) => selection.value === defaultValue
-                )
+              // #200
+              // if (
+              //   Object.keys(CHARACTER_PRONOUN_TYPES).findIndex(
+              //     (pronoun) => pronoun === sanitizedNewValue
+              //   ) === -1
+              // ) {
+              const foundSelectionIndex = selections?.findIndex(
+                (selection) => selection.value === defaultValue
+              )
 
-                if (foundSelectionIndex !== -1) {
-                  const newSelections = [...selections]
+              if (foundSelectionIndex !== -1) {
+                const newSelections = [...selections]
 
-                  newSelections[foundSelectionIndex].value = sanitizedNewValue
+                newSelections[foundSelectionIndex].value = sanitizedNewValue
 
-                  onFinish(newSelections)
-                }
+                onFinish(newSelections)
               }
+              // }
             }
 
             editRefInputRef.current?.blur()
@@ -133,9 +134,10 @@ const ReferencesSelect: React.FC<{
 
     return (
       <div
-        className={`${!isPronoun ? selectStyles.editableValue : ''}`}
+        // elmstorygames/feedback#200
+        className={selectStyles.editableValue}
         onClick={() => {
-          if (!isPronoun && selections) {
+          if (selections) {
             const foundSelectionIndex = selections.findIndex(
               (selection) => selection.value === props.data.value
             )
@@ -264,11 +266,10 @@ const ReferencesSelect: React.FC<{
                   : '0.4'
                 : '1.0',
               borderColor: data.editing ? 'hsl(262, 100%, 65%) !important' : '',
-              borderStyle: data.pronoun ? 'dashed !important' : 'solid',
+              // elmstorygames/feedback#200
+              borderStyle: 'solid',
               ':hover': {
-                borderColor: !data.pronoun
-                  ? 'hsl(262, 100%, 65%) !important'
-                  : ''
+                borderColor: 'hsl(262, 100%, 65%) !important'
               }
             }
           }
