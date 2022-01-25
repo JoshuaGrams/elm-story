@@ -21,7 +21,7 @@ const useCharacters = (
 
 const useCharacter = (
   studioId: StudioId,
-  characterId: ElementId | undefined | null,
+  characterId: ElementId | undefined | null, // undefined: loading, null: does not exist
   deps?: any[]
 ): Character | undefined | null =>
   useLiveQuery(
@@ -36,13 +36,22 @@ const useCharacterEvents = (
   studioId: StudioId,
   characterId: ElementId | undefined | null,
   deps?: any[]
-): Event[] | undefined =>
+  // [events with persona, events with references]
+): [Event[], Event[]] | undefined =>
   useLiveQuery(
-    () =>
-      new LibraryDatabase(studioId).events
+    async () => {
+      const personaEvents = await new LibraryDatabase(studioId).events
         .where('persona')
         .equals(characterId || '')
-        .toArray(),
+        .toArray()
+
+      const referenceEvents = await new LibraryDatabase(studioId).events
+        .where('characters')
+        .equals(characterId || '')
+        .toArray()
+
+      return [personaEvents, referenceEvents]
+    },
     deps || [],
     undefined
   )
