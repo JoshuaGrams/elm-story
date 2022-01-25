@@ -3,7 +3,7 @@ import isHotkey from 'is-hotkey'
 
 import {
   getCaretPosition,
-  getCharacterRef,
+  getCharacterAliasOrTitle,
   getElement,
   setCaretToEnd
 } from '../../../../lib/contentEditor'
@@ -13,6 +13,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Character,
   CHARACTER_MASK_TYPE,
+  ElementId,
   StudioId,
   WorldId
 } from '../../../../data/types'
@@ -42,7 +43,7 @@ import CharacterMask from '../../../CharacterManager/CharacterMask'
 import styles from './styles.module.less'
 
 export type OnCharacterSelect = (
-  character: Character | null,
+  character: CharacterElementDetails | null,
   remove?: boolean
 ) => void
 
@@ -52,6 +53,12 @@ type MenuType = 'TITLE' | 'ALIAS'
 interface MenuSelection {
   type: MenuType
   selection: [number, number]
+}
+
+const scrollMenuItemIntoView = (elementClassName: string, index: number) => {
+  const elements = document.getElementsByClassName(elementClassName)
+
+  elements[index] && elements[index].scrollIntoView({ block: 'end' })
 }
 
 const CharacterTitleMenu: React.FC<{
@@ -67,20 +74,28 @@ const CharacterTitleMenu: React.FC<{
   onCharacterSelect,
   onRefDrillDown
 }) => {
+  useEffect(() =>
+    scrollMenuItemIntoView('character-select-menu-title-item', currentSelection)
+  )
+
   return (
-    <>
+    <div className={styles.CharacterTitleMenu}>
       {characters?.map(
         (character, index) =>
           character.id && (
             <div
               key={character.id}
-              className={`character-select-menu-item ${styles.item} ${
+              className={`character-select-menu-title-item ${styles.item} ${
                 currentSelection === index ? styles.selected : ''
               }`}
               onMouseDown={(event) => {
                 event.preventDefault()
 
-                onCharacterSelect(character)
+                character.id &&
+                  onCharacterSelect({
+                    character_id: character.id,
+                    format: 'cap-all'
+                  })
               }}
             >
               <CharacterMask
@@ -103,14 +118,14 @@ const CharacterTitleMenu: React.FC<{
               </div>
 
               <div
-                className={`${styles.aliases}  ${
+                className={`${styles.aliasesDrillDown}  ${
                   character.refs.length === 0 ? styles.disabled : ''
                 }`}
                 onMouseDown={(event) => {
+                  if (character.refs.length === 0) return
+
                   event.stopPropagation()
                   event.preventDefault()
-
-                  if (character.refs.length === 0) return
 
                   onRefDrillDown(index)
                 }}
@@ -120,35 +135,65 @@ const CharacterTitleMenu: React.FC<{
             </div>
           )
       )}
-    </>
+    </div>
   )
 }
 
 const CharacterAliasMenu: React.FC<{
   character: Character
+  currentSelection: number
+  onCharacterSelect: OnCharacterSelect
   onBack: () => void
-}> = ({ character, onBack }) => {
-  return (
-    <>
-      {character.id && (
-        <div>
-          <div>
-            <LeftOutlined
-              onMouseDown={(event) => {
-                event.stopPropagation()
-                event.preventDefault()
+}> = ({ character, currentSelection, onCharacterSelect, onBack }) => {
+  useEffect(() =>
+    scrollMenuItemIntoView('character-select-menu-alias-item', currentSelection)
+  )
 
-                onBack()
-              }}
-            />{' '}
-            {character.title}
+  return (
+    <div className={styles.CharacterAliasMenu}>
+      {character.id && (
+        <>
+          <div
+            className={styles.titleBar}
+            onMouseDown={(event) => {
+              event.stopPropagation()
+              event.preventDefault()
+
+              onBack()
+            }}
+          >
+            <LeftOutlined className={styles.back} />
+            <span className={styles.title}>{character.title}</span>
           </div>
-          {character.refs.map((ref) => (
-            <div key={ref[0]}>{ref[1]}</div>
-          ))}
-        </div>
+
+          <div>
+            {character.refs.map((ref, index) => (
+              <div
+                key={ref[0]}
+                className={`character-select-menu-alias-item ${styles.item} ${
+                  currentSelection === index ? styles.selected : ''
+                }`}
+                style={{
+                  gridTemplateColumns: 'auto'
+                }}
+                onMouseDown={(event) => {
+                  event.preventDefault()
+
+                  character.id &&
+                    onCharacterSelect({
+                      character_id: character.id,
+                      alias_id: character.refs[index][0],
+                      format: 'cap-all'
+                    })
+                }}
+              >
+                <div className={styles.alias}>{ref[1]}</div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
-    </>
+    </div>
   )
 }
 
@@ -191,15 +236,6 @@ const CharacterSelectMenu: React.FC<{
     }
   }, [show, characterSelectMenuRef.current])
 
-  useEffect(() => {
-    const elements = document.getElementsByClassName(
-      'character-select-menu-item '
-    )
-
-    elements[menuSelection.selection[0]] &&
-      elements[menuSelection.selection[0]].scrollIntoView({ block: 'end' })
-  })
-
   return (
     <>
       {show && (
@@ -208,7 +244,7 @@ const CharacterSelectMenu: React.FC<{
             ref={characterSelectMenuRef}
             className="event-content-character-select-menu"
           >
-            <div className={styles.characters}>
+            <div className={styles.menus}>
               {characters && (
                 <>
                   {menuSelection.type === 'TITLE' && (
@@ -220,7 +256,7 @@ const CharacterSelectMenu: React.FC<{
                       onRefDrillDown={(characterIndex) => {
                         onMenuSelection({
                           type: 'ALIAS',
-                          selection: [menuSelection.selection[0], 0]
+                          selection: [characterIndex, 0]
                         })
                       }}
                     />
@@ -229,6 +265,8 @@ const CharacterSelectMenu: React.FC<{
                   {menuSelection.type === 'ALIAS' && (
                     <CharacterAliasMenu
                       character={characters[menuSelection.selection[0]]}
+                      currentSelection={menuSelection.selection[1]}
+                      onCharacterSelect={onCharacterSelect}
                       onBack={() => {
                         onMenuSelection({
                           type: 'TITLE',
@@ -261,30 +299,42 @@ const SelectedCharacter: React.FC<{
   onClick: (reset?: boolean) => void
   onRemove: () => void
 }> = ({ element, character, elementCharacterData, onClick, onRemove }) => {
-  const editor = useSlate()
+  // const editor = useSlate()
+
+  const aliasOrTitle =
+    character && elementCharacterData
+      ? getCharacterAliasOrTitle(character, elementCharacterData.alias_id)
+      : undefined
+
+  // TODO: we don't want to change designer's data unless this gets requested enough
+  // note we would also need to do this when character title or ref is removed and
+  // event content editor is not open
+  // useEffect(() => {
+  //   if (!elementCharacterData) return
+
+  //   if (character?.id) {
+  //     const foundAlias = character.refs.find(
+  //       (ref) => ref[0] === elementCharacterData.alias_id
+  //     )
+
+  //     if (elementCharacterData.alias_id && !foundAlias) {
+  //       const characterElementPath = ReactEditor.findPath(editor, element)
+
+  //       Transforms.setNodes(
+  //         editor,
+  //         {
+  //           character_id: elementCharacterData.character_id,
+  //           alias_id: undefined,
+  //           format: elementCharacterData.format
+  //         },
+  //         { at: characterElementPath }
+  //       )
+  //     }
+  //   }
+  // }, [character])
 
   useEffect(() => {
-    if (!elementCharacterData) return
-
-    if (character?.id) {
-      const refs = character.refs.map((ref) => ref[1])
-
-      if (
-        elementCharacterData[1] &&
-        !refs.includes(elementCharacterData[1]) &&
-        elementCharacterData[1] !== character.title
-      ) {
-        const characterElementPath = ReactEditor.findPath(editor, element)
-
-        Transforms.setNodes(
-          editor,
-          {
-            character: [elementCharacterData[0], null, elementCharacterData[2]]
-          },
-          { at: characterElementPath }
-        )
-      }
-    }
+    console.log(character)
   }, [character])
 
   return (
@@ -298,16 +348,12 @@ const SelectedCharacter: React.FC<{
       trigger={['contextMenu']}
     >
       <span>
-        {character !== null && elementCharacterData && (
+        {character !== null && elementCharacterData?.character_id && (
           <>
             {character !== undefined ? (
-              elementCharacterData[1] ? (
-                getCharacterRef(character, elementCharacterData[1])
-              ) : (
-                <span style={{ cursor: 'pointer' }} onClick={() => onClick()}>
-                  {character.title}
-                </span>
-              )
+              <span style={{ cursor: 'pointer' }} onClick={() => onClick()}>
+                {aliasOrTitle}
+              </span>
             ) : (
               <>
                 <UserOutlined />
@@ -316,7 +362,10 @@ const SelectedCharacter: React.FC<{
           </>
         )}
 
-        {character === null && (
+        {(character === null ||
+          (character !== undefined &&
+            elementCharacterData?.alias_id &&
+            aliasOrTitle === null)) && (
           <span style={{ background: 'red', cursor: 'pointer' }}>
             <UserOutlined onClick={() => onClick(true)} />
           </span>
@@ -338,7 +387,7 @@ const CharacterElementSelect: React.FC<{
 
   const inputRef = useRef<HTMLSpanElement>(null)
 
-  const character = useCharacter(studioId, selectedCharacter?.[0], [
+  const character = useCharacter(studioId, selectedCharacter?.character_id, [
       selectedCharacter
     ]),
     characters = useCharacters(studioId, worldId, [])
@@ -381,11 +430,11 @@ const CharacterElementSelect: React.FC<{
     Transforms.move(editor)
   }, [editor, element])
 
-  const selectCharacter = useCallback((character: Character | null) => {
+  const selectCharacter = (character: CharacterElementDetails | null) => {
     setSelecting(false)
 
-    setTimeout(() => onCharacterSelect(character), 0)
-  }, [])
+    setTimeout(() => onCharacterSelect(character), 100)
+  }
 
   useEffect(() => {
     if (inputRef.current && !selectedCharacter) {
@@ -398,7 +447,7 @@ const CharacterElementSelect: React.FC<{
 
     const foundCharacterIndex = characters
       ? characters.findIndex(
-          (character) => selectedCharacter[0] === character?.id
+          (character) => selectedCharacter.character_id === character?.id
         )
       : -1
 
@@ -482,8 +531,28 @@ const CharacterElementSelect: React.FC<{
             if (event.code === 'Enter') {
               event.preventDefault()
 
-              characters &&
-                selectCharacter(characters[menuSelection.selection[0]])
+              console.log(menuSelection)
+
+              if (characters) {
+                const character = characters[menuSelection.selection[0]]
+
+                if (character?.id) {
+                  if (menuSelection.type === 'TITLE') {
+                    selectCharacter({
+                      character_id: character.id,
+                      format: 'cap-all'
+                    })
+                  }
+
+                  if (menuSelection.type === 'ALIAS') {
+                    selectCharacter({
+                      character_id: character.id,
+                      alias_id: character.refs[menuSelection.selection[1]][0],
+                      format: 'cap-all'
+                    })
+                  }
+                }
+              }
 
               return
             }
@@ -499,34 +568,92 @@ const CharacterElementSelect: React.FC<{
             if (event.code === 'ArrowUp') {
               event.preventDefault()
 
-              if (
-                selecting &&
-                menuSelection.selection[0] > 0 &&
-                characters &&
-                menuSelection.selection[0] <= characters.length - 1
-              ) {
-                setMenuSelection({
-                  ...menuSelection,
-                  selection: [menuSelection.selection[0] - 1, 0]
-                })
-                logger.info('move selection up')
+              if (selecting) {
+                if (
+                  menuSelection.type === 'TITLE' &&
+                  menuSelection.selection[0] > 0 &&
+                  characters &&
+                  menuSelection.selection[0] <= characters.length - 1
+                ) {
+                  logger.info('move title selection up')
+
+                  setMenuSelection({
+                    ...menuSelection,
+                    selection: [menuSelection.selection[0] - 1, 0]
+                  })
+                }
+
+                if (
+                  menuSelection.type === 'ALIAS' &&
+                  menuSelection.selection[1] > 0 &&
+                  characters &&
+                  menuSelection.selection[1] <=
+                    characters[menuSelection.selection[0]].refs.length - 1
+                ) {
+                  logger.info('move alias selection up')
+
+                  setMenuSelection({
+                    ...menuSelection,
+                    selection: [
+                      menuSelection.selection[0],
+                      menuSelection.selection[1] - 1
+                    ]
+                  })
+                }
               }
             }
 
             if (event.code === 'ArrowDown') {
               event.preventDefault()
 
-              if (
-                selecting &&
-                menuSelection.selection[0] >= 0 &&
+              if (selecting) {
+                if (
+                  menuSelection.type === 'TITLE' &&
+                  menuSelection.selection[0] >= 0 &&
+                  characters &&
+                  menuSelection.selection[0] < characters.length - 1
+                ) {
+                  logger.info('move title selection up')
+
+                  setMenuSelection({
+                    ...menuSelection,
+                    selection: [menuSelection.selection[0] + 1, 0]
+                  })
+                }
+
+                if (
+                  menuSelection.type === 'ALIAS' &&
+                  menuSelection.selection[1] >= 0 &&
+                  characters &&
+                  menuSelection.selection[1] <
+                    characters[menuSelection.selection[0]].refs.length - 1
+                ) {
+                  logger.info('move alias selection up')
+
+                  setMenuSelection({
+                    ...menuSelection,
+                    selection: [
+                      menuSelection.selection[0],
+                      menuSelection.selection[1] + 1
+                    ]
+                  })
+                }
+              }
+            }
+
+            // must come before ArrowRight
+            if (isHotkey('opt+ArrowRight', event)) {
+              console.log(selecting)
+              if (selecting) {
+                event.preventDefault()
+
                 characters &&
-                menuSelection.selection[0] < characters.length - 1
-              ) {
-                setMenuSelection({
-                  ...menuSelection,
-                  selection: [menuSelection.selection[0] + 1, 0]
-                })
-                logger.info('move selection up')
+                  characters[menuSelection.selection[0]].refs.length > 0 &&
+                  setMenuSelection({ ...menuSelection, type: 'ALIAS' })
+
+                console.log('move right')
+
+                return
               }
             }
 
@@ -543,15 +670,14 @@ const CharacterElementSelect: React.FC<{
               }
             }
 
-            if (isHotkey('opt+ArrowRight', event)) {
-              if (selectedCharacter && selecting) {
+            // must come before ArrowLeft
+            if (isHotkey('opt+ArrowLeft', event)) {
+              if (selecting) {
                 event.preventDefault()
 
-                characters &&
-                  characters[menuSelection.selection[0]].refs.length > 0 &&
-                  setMenuSelection({ ...menuSelection, type: 'ALIAS' })
+                setMenuSelection({ ...menuSelection, type: 'TITLE' })
 
-                console.log('move right')
+                console.log('move left')
 
                 return
               }
@@ -569,24 +695,14 @@ const CharacterElementSelect: React.FC<{
                 return
               }
             }
-
-            if (isHotkey('opt+ArrowLeft', event)) {
-              if (selectedCharacter && selecting) {
-                event.preventDefault()
-
-                setMenuSelection({ ...menuSelection, type: 'TITLE' })
-
-                console.log('move left')
-
-                return
-              }
-            }
           }}
           onInput={() => {
             setFilter(inputRef.current?.textContent || '')
           }}
         >
-          {character?.title || ''}
+          {character
+            ? getCharacterAliasOrTitle(character, selectedCharacter?.alias_id)
+            : ''}
         </span>
       )}
 

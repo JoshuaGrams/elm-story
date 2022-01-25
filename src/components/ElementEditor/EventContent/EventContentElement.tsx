@@ -52,6 +52,8 @@ const CharacterElement: React.FC<{
 }) => {
   const selected = useSelected()
 
+  const { character_id, alias_id, format } = element
+
   return (
     <span
       {...attributes}
@@ -65,7 +67,9 @@ const CharacterElement: React.FC<{
         studioId={studioId}
         worldId={worldId}
         element={element}
-        selectedCharacter={element.character ? element.character : undefined}
+        selectedCharacter={
+          character_id ? { character_id, alias_id, format } : undefined
+        }
         onCharacterSelect={onCharacterSelect}
       />
 

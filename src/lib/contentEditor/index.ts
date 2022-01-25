@@ -370,8 +370,8 @@ export const getCharactersIdsFromEventContent = (editor: EditorType) =>
         Element.isElement(element) && element.type === ELEMENT_FORMATS.CHARACTER
     )
     .map((element) =>
-      element.type === ELEMENT_FORMATS.CHARACTER && element.character
-        ? element.character[0]
+      element.type === ELEMENT_FORMATS.CHARACTER && element.character_id
+        ? element.character_id
         : undefined
     )
 
@@ -395,9 +395,13 @@ export const syncCharactersFromEventContentToEventData = async (
     }))
 }
 
-export const getCharacterRef = (character: Character, refId: string) => {
-  return character.title
-}
+export const getCharacterAliasOrTitle = (
+  character: Character,
+  aliasId?: string
+): string | null =>
+  aliasId
+    ? character.refs.find((ref) => ref[0] === aliasId)?.[1] || null
+    : character.title
 
 export const isEndOfLine = (editor: EditorType) => {
   if (!editor.selection) return false

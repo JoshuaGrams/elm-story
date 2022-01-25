@@ -17,7 +17,8 @@ import {
   HOTKEY_SELECTION,
   HOTKEY_BASIC,
   ELEMENT_FORMATS,
-  SUPPORTED_ELEMENT_TYPES
+  SUPPORTED_ELEMENT_TYPES,
+  CharacterElement
 } from '../../../data/eventContentTypes'
 
 import { DragStart, DropResult } from 'react-beautiful-dnd'
@@ -153,24 +154,26 @@ const EventContent: React.FC<{
                     props.element
                   )
 
-                  if (!remove) {
-                    Transforms.setNodes(
+                  if (!remove && character) {
+                    const { character_id, alias_id, format } = character
+
+                    Transforms.setNodes<CharacterElement>(
                       editor,
                       {
-                        character: character?.id
-                          ? [character.id, null, 'lower']
-                          : null
+                        character_id,
+                        alias_id,
+                        format
                       },
                       { at: characterElementPath }
                     )
 
                     character &&
                       logger.info(
-                        `add character '${character.title}' to event '${event?.id}'`
+                        `add character '${character_id}' alias '${alias_id}' to event '${eventId}'`
                       )
 
                     !character &&
-                      logger.info(`reset character from event '${event?.id}`)
+                      logger.info(`reset character from event '${eventId}`)
 
                     Transforms.select(
                       editor,
@@ -181,7 +184,7 @@ const EventContent: React.FC<{
                   if (remove) {
                     Transforms.removeNodes(editor, { at: characterElementPath })
 
-                    logger.info(`remove character from event '${event?.id}`)
+                    logger.info(`remove character from event '${eventId}`)
                   }
 
                   ReactEditor.focus(editor)
@@ -193,7 +196,7 @@ const EventContent: React.FC<{
         />
       )
     },
-    [editor]
+    [editor, eventId]
   )
 
   const renderLeaf = useCallback(
@@ -268,7 +271,6 @@ const EventContent: React.FC<{
         if (item === ELEMENT_FORMATS.CHARACTER) {
           Transforms.insertNodes(editor, {
             type: ELEMENT_FORMATS.CHARACTER,
-            character: null,
             children: [{ text: '' }]
           })
           Transforms.deselect(editor)
