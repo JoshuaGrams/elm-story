@@ -2,13 +2,20 @@ import logger from '../../../../lib/logger'
 import isHotkey from 'is-hotkey'
 
 import {
+  formatCharacterRefDisplay,
   getCaretPosition,
   getCharacterAliasOrTitle,
   getElement,
   setCaretToEnd
 } from '../../../../lib/contentEditor'
 
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 
 import {
   Character,
@@ -26,10 +33,15 @@ import {
 
 import { useCharacter, useCharacters } from '../../../../hooks'
 
+import {
+  ComposerContext,
+  COMPOSER_ACTION_TYPE
+} from '../../../../contexts/ComposerContext'
+
 import { ReactEditor, useSelected, useSlate } from 'slate-react'
 import { Transforms } from 'slate'
 
-import { Dropdown, Menu } from 'antd'
+import { Dropdown, Menu, Popover } from 'antd'
 import {
   ArrowRightOutlined,
   LeftOutlined,
@@ -47,8 +59,8 @@ export type OnCharacterSelect = (
   remove?: boolean
 ) => void
 
-// [which menu (0 titles, 1 alias), [title menu index, alias menu index]]
-type MenuType = 'TITLE' | 'ALIAS'
+// [which menu, [title menu index, alias menu index]]
+type MenuType = 'TITLE' | 'ALIAS' | 'FORMAT'
 
 interface MenuSelection {
   type: MenuType
@@ -65,12 +77,14 @@ const CharacterTitleMenu: React.FC<{
   studioId: StudioId
   characters: Character[]
   currentSelection: number
+  elementCharacterData?: CharacterElementDetails
   onCharacterSelect: OnCharacterSelect
   onRefDrillDown: (characterIndex: number) => void
 }> = ({
   studioId,
   characters,
   currentSelection,
+  elementCharacterData,
   onCharacterSelect,
   onRefDrillDown
 }) => {
@@ -94,7 +108,7 @@ const CharacterTitleMenu: React.FC<{
                 character.id &&
                   onCharacterSelect({
                     character_id: character.id,
-                    format: 'cap-all'
+                    format: elementCharacterData?.format || 'cap'
                   })
               }}
             >
@@ -114,7 +128,10 @@ const CharacterTitleMenu: React.FC<{
               />
 
               <div className={styles.title} title={character.title}>
-                {character.title}
+                {formatCharacterRefDisplay(
+                  character.title,
+                  elementCharacterData?.format
+                )}
               </div>
 
               <div
@@ -139,12 +156,21 @@ const CharacterTitleMenu: React.FC<{
   )
 }
 
+CharacterTitleMenu.displayName = 'CharacterTitleMenu'
+
 const CharacterAliasMenu: React.FC<{
   character: Character
   currentSelection: number
+  elementCharacterData?: CharacterElementDetails
   onCharacterSelect: OnCharacterSelect
   onBack: () => void
-}> = ({ character, currentSelection, onCharacterSelect, onBack }) => {
+}> = ({
+  character,
+  currentSelection,
+  elementCharacterData,
+  onCharacterSelect,
+  onBack
+}) => {
   useEffect(() =>
     scrollMenuItemIntoView('character-select-menu-alias-item', currentSelection)
   )
@@ -183,11 +209,16 @@ const CharacterAliasMenu: React.FC<{
                     onCharacterSelect({
                       character_id: character.id,
                       alias_id: character.refs[index][0],
-                      format: 'cap-all'
+                      format: elementCharacterData?.format || 'cap'
                     })
                 }}
               >
-                <div className={styles.alias}>{ref[1]}</div>
+                <div className={styles.alias}>
+                  {formatCharacterRefDisplay(
+                    ref[1],
+                    elementCharacterData?.format
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -196,6 +227,57 @@ const CharacterAliasMenu: React.FC<{
     </div>
   )
 }
+
+CharacterAliasMenu.displayName = 'CharacterAliasMenu'
+
+const DisplayFormat: React.FC<{
+  elementCharacterData?: CharacterElementDetails
+  onCharacterSelect: OnCharacterSelect
+}> = ({ onCharacterSelect, elementCharacterData }) => {
+  return (
+    <div
+      className={styles.DisplayFormat}
+      onMouseDown={(event) => event.preventDefault()}
+    >
+      <div className={styles.options}>
+        <div
+          className={
+            elementCharacterData?.format === 'cap' ? styles.active : ''
+          }
+          onMouseDown={(event) => {
+            event.preventDefault()
+
+            onCharacterSelect({ ...elementCharacterData, format: 'cap' })
+          }}
+        >
+          Cap
+        </div>{' '}
+        <div
+          className={
+            elementCharacterData?.format === 'lower' ? styles.active : ''
+          }
+          onMouseDown={() =>
+            onCharacterSelect({ ...elementCharacterData, format: 'lower' })
+          }
+        >
+          lower
+        </div>{' '}
+        <div
+          className={
+            elementCharacterData?.format === 'upper' ? styles.active : ''
+          }
+          onMouseDown={() =>
+            onCharacterSelect({ ...elementCharacterData, format: 'upper' })
+          }
+        >
+          UPPER
+        </div>
+      </div>
+    </div>
+  )
+}
+
+DisplayFormat.displayName = 'DisplayFormat'
 
 const CharacterSelectMenu: React.FC<{
   studioId: StudioId
@@ -252,11 +334,15 @@ const CharacterSelectMenu: React.FC<{
                       studioId={studioId}
                       characters={characters}
                       currentSelection={menuSelection.selection[0]}
+                      elementCharacterData={elementCharacterData}
                       onCharacterSelect={onCharacterSelect}
                       onRefDrillDown={(characterIndex) => {
                         onMenuSelection({
                           type: 'ALIAS',
-                          selection: [characterIndex, 0]
+                          selection: [
+                            characterIndex,
+                            menuSelection.selection[1]
+                          ]
                         })
                       }}
                     />
@@ -266,11 +352,12 @@ const CharacterSelectMenu: React.FC<{
                     <CharacterAliasMenu
                       character={characters[menuSelection.selection[0]]}
                       currentSelection={menuSelection.selection[1]}
+                      elementCharacterData={elementCharacterData}
                       onCharacterSelect={onCharacterSelect}
                       onBack={() => {
                         onMenuSelection({
                           type: 'TITLE',
-                          selection: [menuSelection.selection[0], 0]
+                          selection: menuSelection.selection
                         })
                       }}
                     />
@@ -279,12 +366,12 @@ const CharacterSelectMenu: React.FC<{
               )}
             </div>
 
-            <div
-              className={styles.displayFormat}
-              onMouseDown={(event) => event.preventDefault()}
-            >
-              Display Format
-            </div>
+            {elementCharacterData && (
+              <DisplayFormat
+                elementCharacterData={elementCharacterData}
+                onCharacterSelect={onCharacterSelect}
+              />
+            )}
           </div>
         </Portal>
       )}
@@ -293,18 +380,23 @@ const CharacterSelectMenu: React.FC<{
 }
 
 const SelectedCharacter: React.FC<{
+  studioId: StudioId
   element: CharacterElement
   character: Character | null | undefined // null = character doesn't exist
   elementCharacterData?: CharacterElementDetails
   onClick: (reset?: boolean) => void
   onRemove: () => void
-}> = ({ element, character, elementCharacterData, onClick, onRemove }) => {
+}> = ({ studioId, character, elementCharacterData, onClick, onRemove }) => {
   // const editor = useSlate()
+
+  const { composer, composerDispatch } = useContext(ComposerContext)
 
   const aliasOrTitle =
     character && elementCharacterData
       ? getCharacterAliasOrTitle(character, elementCharacterData.alias_id)
       : undefined
+
+  const [popoverVisible, setPopoverVisible] = useState(false)
 
   // TODO: we don't want to change designer's data unless this gets requested enough
   // note we would also need to do this when character title or ref is removed and
@@ -333,10 +425,6 @@ const SelectedCharacter: React.FC<{
   //   }
   // }, [character])
 
-  useEffect(() => {
-    console.log(character)
-  }, [character])
-
   return (
     <Dropdown
       disabled={character === undefined}
@@ -347,30 +435,73 @@ const SelectedCharacter: React.FC<{
       }
       trigger={['contextMenu']}
     >
-      <span>
-        {character !== null && elementCharacterData?.character_id && (
-          <>
-            {character !== undefined ? (
-              <span style={{ cursor: 'pointer' }} onClick={() => onClick()}>
-                {aliasOrTitle}
-              </span>
-            ) : (
+      <Popover
+        style={{ margin: 0, padding: 0 }}
+        overlayClassName="es-character-element-select__popover"
+        visible={popoverVisible}
+        onVisibleChange={(visible) => setPopoverVisible(visible)}
+        content={
+          <div
+            className={styles.container}
+            onClick={() => {
+              setPopoverVisible(false)
+
+              character?.id &&
+                composerDispatch({
+                  type: COMPOSER_ACTION_TYPE.OPEN_CHARACTER_MODAL,
+                  characterId: character.id
+                })
+            }}
+          >
+            {character?.id && (
               <>
-                <UserOutlined />
+                <CharacterMask
+                  studioId={studioId}
+                  worldId={character.worldId}
+                  characterId={character.id}
+                  type={CHARACTER_MASK_TYPE.NEUTRAL}
+                  overlay={false}
+                  fill
+                  aspectRatio="4/5"
+                  active
+                  assetId={
+                    character.masks.find(
+                      (mask) => mask.type === CHARACTER_MASK_TYPE.NEUTRAL
+                    )?.assetId
+                  }
+                />
+
+                <div className={styles.title}>{character.title}</div>
               </>
             )}
-          </>
-        )}
+          </div>
+        }
+        destroyTooltipOnHide
+      >
+        <span>
+          {character !== null && elementCharacterData?.character_id && (
+            <>
+              {character !== undefined && aliasOrTitle && (
+                <span style={{ cursor: 'pointer' }} onClick={() => onClick()}>
+                  {formatCharacterRefDisplay(
+                    aliasOrTitle,
+                    elementCharacterData.format
+                  )}
+                </span>
+              )}
+            </>
+          )}
 
-        {(character === null ||
-          (character !== undefined &&
-            elementCharacterData?.alias_id &&
-            aliasOrTitle === null)) && (
-          <span style={{ background: 'red', cursor: 'pointer' }}>
-            <UserOutlined onClick={() => onClick(true)} />
-          </span>
-        )}
-      </span>
+          {(character === null ||
+            (character !== undefined &&
+              elementCharacterData?.alias_id &&
+              aliasOrTitle === null)) && (
+            <span style={{ background: 'red', cursor: 'pointer' }}>
+              <UserOutlined onClick={() => onClick(true)} />
+            </span>
+          )}
+        </span>
+      </Popover>
     </Dropdown>
   )
 }
@@ -446,14 +577,22 @@ const CharacterElementSelect: React.FC<{
     if (!selectedCharacter) return
 
     const foundCharacterIndex = characters
-      ? characters.findIndex(
-          (character) => selectedCharacter.character_id === character?.id
-        )
-      : -1
+        ? characters.findIndex(
+            (character) => selectedCharacter.character_id === character?.id
+          )
+        : -1,
+      foundAliasIndex = characters
+        ? characters[foundCharacterIndex].refs.findIndex(
+            (ref) => selectedCharacter.alias_id === ref[0]
+          )
+        : -1
 
     setMenuSelection({
       type: 'TITLE',
-      selection: [foundCharacterIndex !== -1 ? foundCharacterIndex : 0, 0]
+      selection: [
+        foundCharacterIndex !== -1 ? foundCharacterIndex : 0,
+        foundAliasIndex !== -1 ? foundAliasIndex : 0
+      ]
     })
   }, [selectedCharacter, characters])
 
@@ -482,20 +621,47 @@ const CharacterElementSelect: React.FC<{
   }, [selecting, inputRef.current])
 
   useEffect(() => {
-    const foundCharacterIndex = characters
-      ? characters.findIndex((character) => {
-          const filterLower = filter.toLowerCase(),
-            characterTitleLower = character.title.toLowerCase()
+    if (menuSelection.type === 'TITLE') {
+      const foundCharacterIndex = characters
+        ? characters.findIndex((character) => {
+            const filterLower = filter.toLowerCase(),
+              characterTitleLower = character.title.toLowerCase()
 
-          return (
-            filterLower.charAt(0) === characterTitleLower.charAt(0) &&
-            characterTitleLower.includes(filterLower)
-          )
+            return (
+              filterLower.charAt(0) === characterTitleLower.charAt(0) &&
+              characterTitleLower.includes(filterLower)
+            )
+          })
+        : -1
+
+      if (foundCharacterIndex !== -1) {
+        setMenuSelection({
+          type: 'TITLE',
+          selection: [foundCharacterIndex, 0]
         })
-      : -1
+      }
+    }
 
-    foundCharacterIndex !== -1 &&
-      setMenuSelection({ type: 'TITLE', selection: [foundCharacterIndex, 0] })
+    if (menuSelection.type === 'ALIAS') {
+      const foundAliasIndex = characters
+        ? characters[menuSelection.selection[0]].refs.findIndex((ref) => {
+            const filterLower = filter.toLowerCase(),
+              characterAliasLower = ref[1].toLocaleLowerCase()
+
+            return (
+              filterLower.charAt(0) === characterAliasLower.charAt(0) &&
+              characterAliasLower.includes(filterLower)
+            )
+          })
+        : -1
+
+      if (foundAliasIndex !== -1) {
+        setMenuSelection({
+          type: 'ALIAS',
+          selection: [menuSelection.selection[0], foundAliasIndex]
+        })
+      }
+    }
   }, [filter])
 
   useEffect(() => {
@@ -519,7 +685,6 @@ const CharacterElementSelect: React.FC<{
             setCaretPosition(getCaretPosition(inputRef.current))
           }
           onKeyDown={(event) => {
-            console.log(event.code)
             if (event.code === 'Escape') {
               if (!filter && !selectedCharacter) {
                 inputRef.current?.blur()
@@ -531,8 +696,6 @@ const CharacterElementSelect: React.FC<{
             if (event.code === 'Enter') {
               event.preventDefault()
 
-              console.log(menuSelection)
-
               if (characters) {
                 const character = characters[menuSelection.selection[0]]
 
@@ -540,7 +703,7 @@ const CharacterElementSelect: React.FC<{
                   if (menuSelection.type === 'TITLE') {
                     selectCharacter({
                       character_id: character.id,
-                      format: 'cap-all'
+                      format: selectedCharacter?.format || 'cap'
                     })
                   }
 
@@ -548,7 +711,7 @@ const CharacterElementSelect: React.FC<{
                     selectCharacter({
                       character_id: character.id,
                       alias_id: character.refs[menuSelection.selection[1]][0],
-                      format: 'cap-all'
+                      format: selectedCharacter?.format || 'cap'
                     })
                   }
                 }
@@ -643,15 +806,12 @@ const CharacterElementSelect: React.FC<{
 
             // must come before ArrowRight
             if (isHotkey('opt+ArrowRight', event)) {
-              console.log(selecting)
               if (selecting) {
                 event.preventDefault()
 
                 characters &&
                   characters[menuSelection.selection[0]].refs.length > 0 &&
                   setMenuSelection({ ...menuSelection, type: 'ALIAS' })
-
-                console.log('move right')
 
                 return
               }
@@ -677,8 +837,6 @@ const CharacterElementSelect: React.FC<{
 
                 setMenuSelection({ ...menuSelection, type: 'TITLE' })
 
-                console.log('move left')
-
                 return
               }
             }
@@ -700,8 +858,14 @@ const CharacterElementSelect: React.FC<{
             setFilter(inputRef.current?.textContent || '')
           }}
         >
-          {character
-            ? getCharacterAliasOrTitle(character, selectedCharacter?.alias_id)
+          {character && selectedCharacter
+            ? formatCharacterRefDisplay(
+                getCharacterAliasOrTitle(
+                  character,
+                  selectedCharacter?.alias_id
+                ) || '',
+                selectedCharacter.format
+              )
             : ''}
         </span>
       )}
@@ -721,6 +885,7 @@ const CharacterElementSelect: React.FC<{
 
       {!selecting && (
         <SelectedCharacter
+          studioId={studioId}
           element={element}
           character={character}
           elementCharacterData={selectedCharacter}

@@ -72,11 +72,7 @@ export type ListItemElement = {
   children: Descendant[]
 }
 
-export type CharacterElementFormatType =
-  | 'upper'
-  | 'lower'
-  | 'cap-first'
-  | 'cap-all'
+export type CharacterElementFormatType = 'cap' | 'lower' | 'upper'
 
 export interface CharacterElementDetails {
   character_id?: ElementId // character id

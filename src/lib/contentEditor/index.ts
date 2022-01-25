@@ -14,6 +14,7 @@ import {
 
 import {
   ALIGN_TYPE,
+  CharacterElementFormatType,
   EditorType,
   ELEMENT_FORMATS,
   EventContentElement,
@@ -411,4 +412,22 @@ export const isEndOfLine = (editor: EditorType) => {
     Editor.after(editor, editor.selection, { unit: 'offset' })
 
   return afterLocation?.offset === 0 || !afterLocation
+}
+
+export const formatCharacterRefDisplay = (
+  text: string,
+  type?: CharacterElementFormatType
+) => {
+  switch (type) {
+    case 'lower':
+      return text.toLowerCase()
+    case 'upper':
+      return text.toUpperCase()
+    case 'cap':
+    default:
+      return text.replace(
+        /(^\w|\s\w)(\S*)/g,
+        (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase()
+      )
+  }
 }

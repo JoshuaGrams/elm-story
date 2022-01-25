@@ -624,7 +624,8 @@ const EventContent: React.FC<{
                   style={{
                     userSelect: 'all',
                     position: 'absolute',
-                    bottom: -400
+                    bottom: -400,
+                    display: 'none'
                   }}
                 >
                   {event.content}
