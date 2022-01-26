@@ -139,6 +139,7 @@ const WorldProperties: React.FC<{
                             <JumpTo
                               studioId={studioId}
                               jumpId={world.jump}
+                              width={244}
                               onRemove={async () => {
                                 world.id &&
                                   api().worlds.saveJumpRefToWorld(

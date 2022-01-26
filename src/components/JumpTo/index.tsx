@@ -34,11 +34,12 @@ const JumpSelect: React.FC<{
   worldId?: WorldId
   sceneId?: ElementId
   selectedId: ElementId | undefined
+  width?: number // elmstorygames/feedback#202
   onChangePathPart: (
     componentType: ELEMENT_TYPE,
     componentId: ElementId | null
   ) => Promise<void>
-}> = ({ studioId, worldId, sceneId, selectedId, onChangePathPart }) => {
+}> = ({ studioId, worldId, sceneId, selectedId, width, onChangePathPart }) => {
   let scenes: Scene[] | undefined = worldId
       ? useScenes(studioId, worldId, [worldId])
       : undefined,
@@ -84,7 +85,10 @@ const JumpSelect: React.FC<{
             </h2>
           </Divider>
 
-          <div className={`${styles.selectWrapper} nodrag`}>
+          <div
+            className={`${styles.selectWrapper} nodrag`}
+            style={{ gridTemplateColumns: `${width ? width : 224}px 32px` }}
+          >
             {selectedSceneId && (
               <>
                 <Select value={selectedSceneId} onChange={onChange}>
@@ -178,8 +182,9 @@ const JumpSelect: React.FC<{
 const JumpTo: React.FC<{
   studioId: StudioId
   jumpId: ElementId
+  width?: number
   onRemove?: (jumpId: ElementId) => Promise<void>
-}> = ({ studioId, jumpId, onRemove }) => {
+}> = ({ studioId, jumpId, width, onRemove }) => {
   const jump = useJump(studioId, jumpId, [studioId, jumpId])
 
   const { composer, composerDispatch } = useContext(ComposerContext)
@@ -236,6 +241,7 @@ const JumpTo: React.FC<{
             <JumpSelect
               studioId={studioId}
               worldId={jump.worldId}
+              width={width}
               selectedId={jump.path[0]}
               onChangePathPart={onChangePathPart}
             />
@@ -246,6 +252,7 @@ const JumpTo: React.FC<{
             <JumpSelect
               studioId={studioId}
               sceneId={jump.path[0]}
+              width={width}
               selectedId={jump.path[1]}
               onChangePathPart={onChangePathPart}
             />
