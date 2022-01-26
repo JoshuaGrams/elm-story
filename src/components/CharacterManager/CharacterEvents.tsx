@@ -146,7 +146,11 @@ const EventRow: React.FC<{
             key: event.id,
             title: event.title,
             refs,
-            mask: event.persona?.[1]
+            // elmstorygames/feedback#204
+            mask:
+              event.persona?.[0] === character.id
+                ? event.persona?.[1]
+                : undefined
           }
         ]}
         columns={[
