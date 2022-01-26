@@ -20,7 +20,6 @@ import React, {
 import {
   Character,
   CHARACTER_MASK_TYPE,
-  ElementId,
   StudioId,
   WorldId
 } from '../../../../data/types'
@@ -43,7 +42,6 @@ import { Transforms } from 'slate'
 
 import { Dropdown, Menu, Popover } from 'antd'
 import {
-  ArrowRightOutlined,
   LeftOutlined,
   RightOutlined,
   UserOutlined

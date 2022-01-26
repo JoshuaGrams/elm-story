@@ -125,6 +125,7 @@ const JumpSelect: React.FC<{
             className={`${styles.selectWrapper} ${
               !selectedEventId ? styles.fullWidth : ''
             } nodrag`}
+            style={{ gridTemplateColumns: `${width ? width : 224}px 32px` }}
           >
             {selectedEventId && (
               <>

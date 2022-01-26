@@ -43,6 +43,7 @@ import { BranchesOutlined, PlusOutlined } from '@ant-design/icons'
 import NodeTitle from './NodeTitle'
 import EventPersonaPane from './EventPersona'
 import EventSnippet from './EventSnippet'
+import EventCharacterRefGrid from './EventCharacterRefGrid'
 
 import styles from './styles.module.less'
 
@@ -600,6 +601,17 @@ const EventNode: React.FC<NodeProps<{
               content={event.content}
               onEditPassage={(eventId) => data.onEditEvent(eventId)}
             />
+
+            {event.characters.length > 0 && (
+              <EventCharacterRefGrid
+                studioId={data.studioId}
+                characterIds={
+                  event.persona?.[0]
+                    ? event.characters.filter((id) => id !== event.persona?.[0])
+                    : event.characters
+                }
+              />
+            )}
           </div>
 
           {event.type === EVENT_TYPE.CHOICE && (
