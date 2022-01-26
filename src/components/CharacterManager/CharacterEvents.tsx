@@ -6,7 +6,8 @@ import {
   WorldId,
   Event,
   Scene,
-  StudioId
+  StudioId,
+  CHARACTER_MASK_TYPE
 } from '../../data/types'
 
 import { useCharacterEvents, useScene } from '../../hooks'
@@ -21,6 +22,10 @@ import { PartitionOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 import CharacterMask from './CharacterMask'
+import {
+  formatCharacterRefDisplay,
+  getCharacterDetailsFromEventContent
+} from '../../lib/contentEditor'
 
 const SceneRow: React.FC<{ scene: Scene }> = ({ scene }) => {
   const { composerDispatch } = useContext(ComposerContext)
@@ -59,7 +64,11 @@ const EventRow: React.FC<{
 }> = ({ studioId, character, event }) => {
   const { composerDispatch } = useContext(ComposerContext)
 
-  const ref = character.refs.find((ref) => ref[0] === event.persona?.[2])?.[1]
+  const singleRef = character.refs.find(
+    (ref) => ref[0] === event.persona?.[2]
+  )?.[1]
+
+  const [refs, setRefs] = useState<string[]>([])
 
   const openScene = () => {
     composerDispatch({
@@ -90,6 +99,45 @@ const EventRow: React.FC<{
     )
   }
 
+  // elmstorygames/feedback#199
+  useEffect(() => {
+    const combinedRefs: string[] = []
+
+    singleRef && combinedRefs.push(formatCharacterRefDisplay(singleRef, 'cap'))
+
+    const characterDetails = getCharacterDetailsFromEventContent(
+      JSON.parse(event.content)
+    )
+
+    characterDetails.map(({ character_id, alias_id }) => {
+      if (character_id && !alias_id) {
+        const formattedCharacterTitle = formatCharacterRefDisplay(
+          character.title,
+          'cap'
+        )
+
+        !combinedRefs.includes(formattedCharacterTitle) &&
+          combinedRefs.push(formattedCharacterTitle)
+      }
+
+      if (alias_id) {
+        const foundAlias = character.refs.find((ref) => ref[0] === alias_id)
+
+        if (foundAlias) {
+          const formattedCharacterAlias = formatCharacterRefDisplay(
+            foundAlias[1],
+            'cap'
+          )
+
+          !combinedRefs.includes(formattedCharacterAlias) &&
+            combinedRefs.push(formattedCharacterAlias)
+        }
+      }
+    })
+
+    setRefs(combinedRefs)
+  }, [])
+
   return (
     <div className={styles.EventRow}>
       <Table
@@ -97,7 +145,7 @@ const EventRow: React.FC<{
           {
             key: event.id,
             title: event.title,
-            ref,
+            refs,
             mask: event.persona?.[1]
           }
         ]}
@@ -106,7 +154,7 @@ const EventRow: React.FC<{
             title: 'Event',
             dataIndex: 'title',
             key: 'title',
-            render: (title) => (
+            render: (title: string) => (
               <span className={styles.link} onClick={openEvent}>
                 {title}
               </span>
@@ -114,36 +162,48 @@ const EventRow: React.FC<{
           },
           {
             title: 'Reference',
-            dataIndex: 'ref',
-            key: 'ref',
+            dataIndex: 'refs',
+            key: 'refs',
             className: styles.reference,
-            render: (ref) => <>{ref || <span>&mdash;</span>}</>
+            render: (refs: string[]) => (
+              <>
+                {refs.length > 0 ? (
+                  <span>{refs.join(', ')}</span>
+                ) : (
+                  <span>&mdash;</span>
+                )}
+              </>
+            )
           },
           {
             title: 'Mask',
             dataIndex: 'mask',
             key: 'mask',
             className: styles.mask,
-            render: (mask) => (
+            render: (mask: CHARACTER_MASK_TYPE | undefined) => (
               <div>
-                {character.id && (
-                  <CharacterMask
-                    studioId={studioId}
-                    worldId={character.worldId}
-                    type={mask}
-                    characterId={character.id}
-                    width="76px"
-                    aspectRatio="1/1"
-                    assetId={
-                      character.masks.find((_mask) => _mask.type === mask)
-                        ?.assetId
-                    }
-                    active
-                    fill
-                  />
+                {character.id && mask && (
+                  <>
+                    <CharacterMask
+                      studioId={studioId}
+                      worldId={character.worldId}
+                      type={mask}
+                      characterId={character.id}
+                      width="76px"
+                      aspectRatio="1/1"
+                      assetId={
+                        character.masks.find((_mask) => _mask.type === mask)
+                          ?.assetId
+                      }
+                      active
+                      fill
+                    />
+
+                    <span>{mask}</span>
+                  </>
                 )}
 
-                <span>{mask}</span>
+                {!mask && <div style={{ textAlign: 'center' }}>N/A</div>}
               </div>
             )
           }

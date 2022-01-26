@@ -14,6 +14,7 @@ import {
 
 import {
   ALIGN_TYPE,
+  CharacterElement,
   CharacterElementFormatType,
   EditorType,
   ELEMENT_FORMATS,
@@ -363,6 +364,17 @@ export const flattenEventContent = (
     ? flatEventContent.filter((element) => Element.isElement(element))
     : flatEventContent
 }
+
+export const getCharacterDetailsFromEventContent = (content: Descendant[]) =>
+  flattenEventContent(content, true)
+    .filter(
+      (element): element is CharacterElement =>
+        Element.isElement(element) && element.type === ELEMENT_FORMATS.CHARACTER
+    )
+    .map(({ character_id, alias_id }) => ({
+      character_id,
+      alias_id
+    }))
 
 export const getCharactersIdsFromEventContent = (editor: EditorType) =>
   flattenEventContent(editor.children, true)

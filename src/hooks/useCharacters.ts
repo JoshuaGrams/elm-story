@@ -36,8 +36,7 @@ const useCharacterEvents = (
   studioId: StudioId,
   characterId: ElementId | undefined | null,
   deps?: any[]
-  // [events with persona, events with references]
-): [Event[], Event[]] | undefined =>
+): Event[] | undefined =>
   useLiveQuery(
     async () => {
       const personaEvents = await new LibraryDatabase(studioId).events
@@ -50,7 +49,13 @@ const useCharacterEvents = (
         .equals(characterId || '')
         .toArray()
 
-      return [personaEvents, referenceEvents]
+      // elmstorygames/feedback#199
+      const mergedEvents = [...personaEvents, ...referenceEvents],
+        mergedEventIds = mergedEvents.map(({ id }) => id)
+
+      return mergedEvents.filter(
+        ({ id }, index) => !mergedEventIds.includes(id, index + 1)
+      )
     },
     deps || [],
     undefined
