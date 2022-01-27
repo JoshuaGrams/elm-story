@@ -26,7 +26,6 @@ import {
   PartitionOutlined,
   QuestionOutlined,
   RightOutlined,
-  SendOutlined,
   UserOutlined
 } from '@ant-design/icons'
 
@@ -185,7 +184,9 @@ const ElementItem = ({
       break
     case ELEMENT_TYPE.JUMP:
       ElementIcon = () => (
-        <SendOutlined className={`${elementIconClassNames} ${styles.event}`} />
+        <ArrowRightOutlined
+          className={`${elementIconClassNames} ${styles.event}`}
+        />
       )
       break
     default:

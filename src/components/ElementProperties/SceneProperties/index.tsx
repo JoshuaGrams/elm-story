@@ -18,7 +18,7 @@ import { Collapse } from 'antd'
 import {
   AlignLeftOutlined,
   BranchesOutlined,
-  ForwardOutlined,
+  ArrowRightOutlined,
   NodeIndexOutlined
 } from '@ant-design/icons'
 
@@ -125,8 +125,8 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                 <Collapse.Panel
                   header={
                     <>
-                      <ForwardOutlined className={styles.headerIcon} /> Selected
-                      Jump Event
+                      <ArrowRightOutlined className={styles.headerIcon} />{' '}
+                      Selected Jump Event
                       <ElementHelpButton type={ELEMENT_TYPE.JUMP} />
                     </>
                   }

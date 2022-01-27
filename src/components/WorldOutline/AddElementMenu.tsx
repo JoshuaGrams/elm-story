@@ -10,7 +10,7 @@ import {
   AlignLeftOutlined,
   FolderOutlined,
   PartitionOutlined,
-  SendOutlined
+  ArrowRightOutlined
 } from '@ant-design/icons'
 
 const AddElementMenu: React.FC<{
@@ -58,7 +58,7 @@ const AddElementMenu: React.FC<{
               composer.selectedWorldOutlineElement.type === ELEMENT_TYPE.FOLDER
             }
           >
-            <SendOutlined />
+            <ArrowRightOutlined />
             Jump
           </Menu.Item>
         </Menu>

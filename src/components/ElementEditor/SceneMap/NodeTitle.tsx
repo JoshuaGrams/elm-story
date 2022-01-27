@@ -8,7 +8,7 @@ import {
 } from '../../../contexts/ComposerContext'
 
 import { Typography } from 'antd'
-import { AlignLeftOutlined, SendOutlined } from '@ant-design/icons'
+import { AlignLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
@@ -62,7 +62,7 @@ const NodeTitle: React.FC<{
           )}
 
           {jump && (
-            <SendOutlined className={`${styles.headerIcon} ${styles.jump}`} />
+            <ArrowRightOutlined className={`${styles.headerIcon} ${styles.jump}`} />
           )}
 
           <Typography.Text
