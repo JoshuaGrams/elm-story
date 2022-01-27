@@ -42,8 +42,16 @@
   box-shadow: 0px 0px 20px hsla(0, 0%, 0%, 0.8);
   transition: border 0.25s;
 
-  &.selected {
-    border: 1px var(--highlight-color) solid;
+  &.react-flow__node-eventNode {
+    &.selected {
+      border: 1px var(--highlight-color) solid;
+    }
+  }
+
+  &.react-flow__node-jumpNode {
+    &.selected {
+      border: 1px var(--jump-node-color) solid;
+    }
   }
 }
 
