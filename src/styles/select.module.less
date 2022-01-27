@@ -11,6 +11,7 @@
     transform: rotate(-135deg) !important;
     z-index: 1001 !important;
   }
+
   .ant-popover-inner {
     border-radius: 2px;
   }
@@ -41,6 +42,9 @@
       color: white;
 
       :global .es-select__input {
+        // elmstorygames/feedback#154
+        width: auto;
+        padding-top: 2px !important;
         font-size: 12px !important;
         text-transform: uppercase;
       }
