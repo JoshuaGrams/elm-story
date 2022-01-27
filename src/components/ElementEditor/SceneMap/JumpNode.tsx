@@ -1,4 +1,4 @@
-import React, { memo, useContext } from 'react'
+import React, { memo, useContext, useEffect, useState } from 'react'
 
 import { StudioId, ElementId, ELEMENT_TYPE } from '../../../data/types'
 
@@ -52,6 +52,16 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
     scene = useScene(data.studioId, jump?.path[0], [jump?.path]),
     event = useEvent(data.studioId, jump?.path[1], [jump?.path])
 
+  const [incomingConnection, setIncomingConnection] = useState<{
+    active: boolean
+    possible: boolean
+  }>({
+    active: false,
+    possible: false
+  })
+
+  const { composer } = useContext(ComposerContext)
+
   // const jumps = useStoreState((state) =>
   //     state.nodes.filter(
   //       (node: Node<{ type: ELEMENT_TYPE }>) =>
@@ -93,8 +103,34 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
     }
   }
 
+  useEffect(() => {
+    !composer.selectedSceneMapConnectStartData &&
+      setIncomingConnection({ active: false, possible: false })
+  }, [composer.selectedSceneMapConnectStartData])
+
   return (
-    <div className={styles.JumpNode} key={jump?.id}>
+    <div
+      className={styles.JumpNode}
+      key={jump?.id}
+      onMouseEnter={() => {
+        const { sceneId, nodeId, handleId, handleType } =
+          composer.selectedSceneMapConnectStartData || {}
+
+        console.log(sceneId)
+        console.log(data.sceneId)
+
+        if (sceneId && data.sceneId === sceneId && nodeId !== data.jumpId) {
+          setIncomingConnection({ ...incomingConnection, active: true })
+          console.log(composer.selectedSceneMapConnectStartData)
+        }
+      }}
+    >
+      <div
+        className={`es-scene-map__connection-cover es-scene-map__jump-node ${
+          incomingConnection.active ? styles.incomingConnectionActive : ''
+        }`}
+      />
+
       {jump?.id && (
         <>
           <div>

@@ -1,5 +1,7 @@
 import React, { createContext, useMemo, useReducer } from 'react'
 
+import { HandleType } from 'react-flow-renderer'
+
 import { ElementId, ELEMENT_TYPE } from '../data/types'
 
 interface ComposerState {
@@ -35,6 +37,12 @@ interface ComposerState {
   selectedSceneMapEvent: ElementId | null
   selectedSceneMapPath: ElementId | null
   selectedSceneMapChoice: ElementId | null
+  selectedSceneMapConnectStartData: {
+    sceneId: ElementId | null
+    nodeId: ElementId | null
+    handleId: ElementId | null
+    handleType: HandleType | null
+  } | null
   centeredSceneMapSelection: boolean
   selectedElements: {
     id?: ElementId
@@ -67,6 +75,7 @@ export enum COMPOSER_ACTION_TYPE {
   SCENE_MAP_SELECT_PATH = 'SCENE_MAP_SELECT_PATH',
   SCENE_MAP_SELECT_CHOICE = 'SCENE_MAP_SELECT_CHOICE',
   SCENE_MAP_CENTERED_SELECTION = 'SCENE_MAP_CENTERED_SELECTION',
+  SET_SELECTED_SCENE_MAP_CONNECT_START_DATA = 'SET_SELECTED_SCENE_MAP_CONNECT_START_DATA',
   SELECT = 'SELECT',
   ELEMENT_EDITOR_CLOSE_TAB = 'ELEMENT_EDITOR_CLOSE_TAB',
   OPEN_CHARACTER_MODAL = 'OPEN_CHARACTER_MODAL',
@@ -163,6 +172,15 @@ type ComposerActionType =
         id?: ElementId
         type?: ELEMENT_TYPE
       }[]
+    }
+  | {
+      type: COMPOSER_ACTION_TYPE.SET_SELECTED_SCENE_MAP_CONNECT_START_DATA
+    selectedSceneMapConnectStartData: {
+        sceneId: ElementId | null
+        nodeId: ElementId | null
+        handleId: ElementId | null
+        handleType: HandleType | null
+      } | null
     }
   | {
       type: COMPOSER_ACTION_TYPE.ELEMENT_EDITOR_CLOSE_TAB
@@ -263,6 +281,12 @@ const composerReducer = (
         ...state,
         centeredSceneMapSelection: action.centeredSceneMapSelection
       }
+    case COMPOSER_ACTION_TYPE.SET_SELECTED_SCENE_MAP_CONNECT_START_DATA:
+      return {
+        ...state,
+        selectedSceneMapConnectStartData:
+          action.selectedSceneMapConnectStartData
+      }
     case COMPOSER_ACTION_TYPE.SELECT:
       return {
         ...state,
@@ -337,6 +361,7 @@ const defaultComposerState: ComposerState = {
   selectedSceneMapEvent: null,
   selectedSceneMapPath: null,
   selectedSceneMapChoice: null,
+  selectedSceneMapConnectStartData: null,
   centeredSceneMapSelection: false,
   selectedElements: [],
   closedEditorTab: { id: undefined, type: undefined },

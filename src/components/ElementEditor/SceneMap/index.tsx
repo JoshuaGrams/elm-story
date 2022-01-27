@@ -344,13 +344,14 @@ const SceneMap: React.FC<{
     [selectedRoute, setSelectedRoute] = useState<ElementId | null>(null),
     [selectedChoice, setSelectedChoice] = useState<ElementId | null>(null),
     [elements, setElements] = useState<FlowElement[]>([]),
-    [paneMoving, setPaneMoving] = useState(false),
-    // elmstorygames/feedback#109
-    [connectStartData, setConnectStartData] = useState<{
-      nodeId: ElementId | null
-      handleId: ElementId | null
-      handleType: HandleType | null
-    } | null>(null)
+    [paneMoving, setPaneMoving] = useState(false)
+  // elmstorygames/feedback#109
+  // elmstorygames/feedback#171
+  // [connectStartData, setConnectStartData] = useState<{
+  //   nodeId: ElementId | null
+  //   handleId: ElementId | null
+  //   handleType: HandleType | null
+  // } | null>(null)
 
   function setSelectedSceneViewCenter() {
     composerDispatch({
@@ -1536,7 +1537,13 @@ const SceneMap: React.FC<{
               logger.info('onConnectStart')
 
               // elmstorygames/feedback#109
-              setConnectStartData(params)
+              // setConnectStartData(params)
+              // elmstorygames/feedback#171
+              composerDispatch({
+                type:
+                  COMPOSER_ACTION_TYPE.SET_SELECTED_SCENE_MAP_CONNECT_START_DATA,
+                selectedSceneMapConnectStartData: { ...params, sceneId }
+              })
             }}
             onConnect={onConnect}
             elementsSelectable
@@ -1549,15 +1556,42 @@ const SceneMap: React.FC<{
             onMouseUp={async (event) => {
               logger.info('ReactFlow->onMouseUp')
 
+              // elmstorygames/feedback#171
+              // designer drag/drop on another node
               if (
-                !connectStartData ||
+                composer.selectedSceneMapConnectStartData &&
+                (event.target as Element).classList.contains(
+                  'es-scene-map__connection-cover'
+                )
+              ) {
+                console.log('hi there')
+                console.log(event.target.classList)
+
+                composerDispatch({
+                  type:
+                    COMPOSER_ACTION_TYPE.SET_SELECTED_SCENE_MAP_CONNECT_START_DATA,
+                  selectedSceneMapConnectStartData: null
+                })
+
+                return
+              }
+
+              // there is no connection data or the designer didn't
+              // drag/drop over the background or it's not the same scene
+              if (
+                // elmstorygames/feedback#171
+                !composer.selectedSceneMapConnectStartData ||
                 !(event.target as Element).classList.contains(
                   'react-flow__pane'
                 ) ||
                 composer.selectedWorldOutlineElement.id !== sceneId ||
                 !scene
               ) {
-                setConnectStartData(null)
+                composerDispatch({
+                  type:
+                    COMPOSER_ACTION_TYPE.SET_SELECTED_SCENE_MAP_CONNECT_START_DATA,
+                  selectedSceneMapConnectStartData: null
+                })
 
                 return
               }
@@ -1570,7 +1604,8 @@ const SceneMap: React.FC<{
                   project({
                     x:
                       event.nativeEvent.offsetX -
-                      (connectStartData.handleType === 'target'
+                      (composer.selectedSceneMapConnectStartData.handleType ===
+                      'target'
                         ? DEFAULT_NODE_SIZE.EVENT_WIDTH
                         : 2) *
                         composer.selectedSceneMapCenter.zoom,
@@ -1584,13 +1619,24 @@ const SceneMap: React.FC<{
                   const foundSourceNode:
                     | FlowElement<NodeData>
                     | undefined = elements.find(
-                    (element) => element.id === connectStartData.nodeId
+                    (element) =>
+                      element.id ===
+                      composer.selectedSceneMapConnectStartData?.nodeId
                   )
 
-                  if (connectStartData.nodeId && connectStartData.handleId) {
-                    if (events && connectStartData.handleType === 'source') {
+                  if (
+                    composer.selectedSceneMapConnectStartData?.nodeId &&
+                    composer.selectedSceneMapConnectStartData?.handleId
+                  ) {
+                    if (
+                      events &&
+                      composer.selectedSceneMapConnectStartData?.handleType ===
+                        'source'
+                    ) {
                       const foundEvent = events.find(
-                        (event) => event.id === connectStartData.nodeId
+                        (event) =>
+                          event.id ===
+                          composer.selectedSceneMapConnectStartData?.nodeId
                       )
 
                       if (foundEvent?.id && foundEvent.ending) {
@@ -1608,26 +1654,30 @@ const SceneMap: React.FC<{
                       conditionsType: PATH_CONDITIONS_TYPE.ALL,
                       sceneId,
                       originId:
-                        connectStartData.handleType === 'target'
+                        composer.selectedSceneMapConnectStartData
+                          ?.handleType === 'target'
                           ? eventId
-                          : connectStartData.nodeId,
+                          : composer.selectedSceneMapConnectStartData?.nodeId,
                       choiceId:
                         foundSourceNode?.data?.eventType ===
                           EVENT_TYPE.CHOICE &&
                         foundSourceNode?.data.totalChoices > 0 &&
-                        connectStartData.handleType === 'source'
-                          ? connectStartData.handleId
+                        composer.selectedSceneMapConnectStartData
+                          ?.handleType === 'source'
+                          ? composer.selectedSceneMapConnectStartData?.handleId
                           : undefined,
                       inputId:
                         foundSourceNode?.data?.eventType === EVENT_TYPE.INPUT &&
-                        connectStartData.handleType === 'source'
-                          ? connectStartData.handleId
+                        composer.selectedSceneMapConnectStartData
+                          ?.handleType === 'source'
+                          ? composer.selectedSceneMapConnectStartData?.handleId
                           : undefined,
                       originType:
                         foundSourceNode?.data?.eventType || ELEMENT_TYPE.CHOICE,
                       destinationId:
-                        connectStartData.handleType === 'target'
-                          ? connectStartData.nodeId
+                        composer.selectedSceneMapConnectStartData
+                          ?.handleType === 'target'
+                          ? composer.selectedSceneMapConnectStartData?.nodeId
                           : eventId,
                       destinationType:
                         foundSourceNode?.data?.type === ELEMENT_TYPE.JUMP
@@ -1637,7 +1687,11 @@ const SceneMap: React.FC<{
                     })
                   }
 
-                  setConnectStartData(null)
+                  composerDispatch({
+                    type:
+                      COMPOSER_ACTION_TYPE.SET_SELECTED_SCENE_MAP_CONNECT_START_DATA,
+                    selectedSceneMapConnectStartData: null
+                  })
 
                   composerDispatch({
                     type: COMPOSER_ACTION_TYPE.ELEMENT_SAVE,

@@ -38,7 +38,11 @@ import {
 import { Handle, Position, NodeProps, Connection } from 'react-flow-renderer'
 
 import { Dropdown, Menu, Typography } from 'antd'
-import { BranchesOutlined, PlusOutlined } from '@ant-design/icons'
+import {
+  BranchesOutlined,
+  FacebookFilled,
+  PlusOutlined
+} from '@ant-design/icons'
 
 import NodeTitle from './NodeTitle'
 import EventPersonaPane from './EventPersona'
@@ -476,8 +480,15 @@ const EventNode: React.FC<NodeProps<{
   const { composer, composerDispatch } = useContext(ComposerContext)
 
   const [choices, setChoices] = useState<
-    { id: ElementId; title: string; handle: JSX.Element }[]
-  >([])
+      { id: ElementId; title: string; handle: JSX.Element }[]
+    >([]),
+    [incomingConnection, setIncomingConnection] = useState<{
+      active: boolean
+      possible: boolean
+    }>({
+      active: false,
+      possible: false
+    })
 
   useEffect(() => {
     logger.info(`EventNode->choicesByEventRef->useEffect`)
@@ -541,8 +552,35 @@ const EventNode: React.FC<NodeProps<{
     logger.info(`EventNode->useEffect->selectedChoice: ${data.selectedChoice}`)
   }, [data.selectedChoice])
 
+  useEffect(() => {
+    !composer.selectedSceneMapConnectStartData &&
+      setIncomingConnection({ active: false, possible: false })
+  }, [composer.selectedSceneMapConnectStartData])
+
   return (
-    <div className={styles.EventNode} key={data.eventId} id={data.eventId}>
+    <div
+      className={styles.EventNode}
+      key={data.eventId}
+      id={data.eventId}
+      onMouseEnter={() => {
+        const { sceneId, nodeId, handleId, handleType } =
+          composer.selectedSceneMapConnectStartData || {}
+
+        console.log(sceneId)
+        console.log(data.sceneId)
+
+        if (sceneId && data.sceneId === sceneId && nodeId !== data.eventId) {
+          setIncomingConnection({ ...incomingConnection, active: true })
+          console.log(composer.selectedSceneMapConnectStartData)
+        }
+      }}
+    >
+      <div
+        className={`es-scene-map__connection-cover es-scene-map__event-node ${
+          incomingConnection.active ? styles.incomingConnectionActive : ''
+        }`}
+      />
+
       {event?.id && (
         <>
           <div>
