@@ -31,19 +31,21 @@ const JumpHandle: React.FC<{
     <Handle
       type="target"
       id={jumpId}
-      style={{
-        top: '50%',
-        bottom: '50%',
-        background: paths.find((path) => path.destinationId === jumpId)
-          ? 'white'
-          : 'black'
-      }}
       position={Position.Left}
       className={styles.jumpHandle}
       isValidConnection={(connection: Connection) =>
         isConnectionValid(connection, paths, 'JUMP')
       }
-    />
+    >
+      <div
+        className={`${styles.visual} ${styles.jumpHandleVisual}`}
+        style={{
+          background: paths.find((path) => path.destinationId === jumpId)
+            ? 'var(--jump-node-handle-gradient-left-active)'
+            : 'var(--node-handle-gradient-left)'
+        }}
+      />
+    </Handle>
   )
 }
 

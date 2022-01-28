@@ -22,10 +22,48 @@
   --highlight-color-30a: hsla(262, 100%, 65%, 0.3);
   --highlight-color-20a: hsla(262, 100%, 65%, 0.2);
   --highlight-color-10a: hsla(262, 100%, 65%, 0.1);
+  --highlight-color-0a: hsla(262, 100%, 65%, 0);
   --disabled-color: hsl(0, 0%, 20%);
   --disabled-color-bright: hsl(0, 0%, 40%);
   --jump-node-color: hsl(160, 100%, 60%);
+  --jump-node-color-0a: hsla(160, 100%, 60%, 0);
+  --node-handle-gradient-left: linear-gradient(
+    90deg,
+    hsl(0, 0%, 30%) 50%,
+    hsla(0, 0%, 30%, 0) 100%
+  );
+  --event-node-handle-gradient-left-active: linear-gradient(
+    90deg,
+    var(--highlight-color) 50%,
+    var(--highlight-color-0a) 100%
+  );
+  --jump-node-handle-gradient-left-active: linear-gradient(
+    90deg,
+    var(--jump-node-color) 50%,
+    var(--jump-node-color-0a) 100%
+  );
+  --node-handle-gradient-right: linear-gradient(
+    -90deg,
+    hsl(0, 0%, 30%) 50%,
+    hsla(0, 0%, 30%, 0) 100%
+  );
+  --event-node-handle-gradient-right-active: linear-gradient(
+    -90deg,
+    var(--highlight-color) 50%,
+    var(--highlight-color-0a) 100%
+  );
+  --node-handle-connection-invalid-left: linear-gradient(
+    90deg,
+    var(--warning-color) 50%,
+    var(--warning-color-0a) 100%
+  );
+  --node-handle-connection-invalid-right: linear-gradient(
+    -90deg,
+    var(--warning-color) 50%,
+    var(--warning-color-0a) 100%
+  );
   --warning-color: hsl(350, 100%, 60%);
+  --warning-color-0a: hsla(350, 100%, 60%, 0);
   --warning-color-bright: hsl(350, 100%, 65%);
   --primary-border-color: hsl(0, 0%, 20%);
   --tab-toolbar-bg-color: hsl(0, 0%, 0%);

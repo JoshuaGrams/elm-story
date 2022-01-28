@@ -165,19 +165,21 @@ const ChoiceSourceHandle: React.FC<{
       key={choiceId}
       type="source"
       className={styles.choiceHandle}
-      style={{
-        top: '50%',
-        bottom: '50%',
-        background: paths.find((path) => path.choiceId === choiceId)
-          ? 'white'
-          : 'black'
-      }}
       position={Position.Right}
       id={choiceId}
       isValidConnection={(connection: Connection) =>
         isConnectionValid(connection, paths, 'CHOICE')
       }
-    />
+    >
+      <div
+        className={`${styles.visual} ${styles.choiceHandleVisual}`}
+        style={{
+          background: paths.find((path) => path.choiceId === choiceId)
+            ? 'var(--event-node-handle-gradient-right-active)'
+            : 'var(--node-handle-gradient-right)'
+        }}
+      />
+    </Handle>
   )
 }
 
@@ -343,19 +345,21 @@ const InputSourceHandle: React.FC<{
       key={inputId}
       type="source"
       className={styles.inputHandle}
-      style={{
-        top: '50%',
-        bottom: '50%',
-        background: paths.find((path) => path.inputId === inputId)
-          ? 'white'
-          : 'black'
-      }}
       position={Position.Right}
       id={inputId}
       isValidConnection={(connection: Connection) =>
         isConnectionValid(connection, paths, 'INPUT')
       }
-    />
+    >
+      <div
+        className={`${styles.visual} ${styles.inputHandleVisual}`}
+        style={{
+          background: paths.find((path) => path.inputId === inputId)
+            ? 'var(--event-node-handle-gradient-right-active)'
+            : 'var(--node-handle-gradient-right)'
+        }}
+      />
+    </Handle>
   )
 }
 
@@ -405,19 +409,21 @@ const EventTargetHandle: React.FC<{
     <Handle
       type="target"
       id={eventId}
-      className={styles.passageTargetHandle}
-      style={{
-        top: '50%',
-        bottom: '50%',
-        background: paths.find((path) => path.destinationId === eventId)
-          ? 'white'
-          : 'black'
-      }}
+      className={styles.eventTargetHandle}
       position={Position.Left}
       isValidConnection={(connection: Connection) =>
         isConnectionValid(connection, paths, 'CHOICE')
       }
-    />
+    >
+      <div
+        className={`${styles.visual} ${styles.eventHandleVisual}`}
+        style={{
+          background: paths.find((path) => path.destinationId === eventId)
+            ? 'var(--event-node-handle-gradient-left-active)'
+            : 'var(--node-handle-gradient-left)'
+        }}
+      />
+    </Handle>
   )
 }
 
@@ -434,20 +440,22 @@ const EventSourceHandle: React.FC<{
     <Handle
       key={eventId}
       type="source"
-      className={styles.passageSourceHandle}
-      style={{
-        top: '50%',
-        bottom: '50%',
-        background: paths.find((path) => path.originId === eventId)
-          ? 'white'
-          : 'black'
-      }}
+      className={styles.eventSourceHandle}
       position={Position.Right}
       id={eventId}
       isValidConnection={(connection: Connection) =>
         isConnectionValid(connection, paths, 'ORIGIN')
       }
-    />
+    >
+      <div
+        className={`${styles.visual} ${styles.eventHandleVisual}`}
+        style={{
+          background: paths.find((path) => path.originId === eventId)
+            ? 'var(--event-node-handle-gradient-right-active)'
+            : 'var(--node-handle-gradient-right)'
+        }}
+      />
+    </Handle>
   )
 }
 

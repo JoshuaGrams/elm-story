@@ -1723,13 +1723,13 @@ const SceneMap: React.FC<{
                       )
 
                       if (foundEvent && foundEvent.ending) {
-                        return `hsl(350, 100%, 65%)`
+                        return `var(--warning-color-bright)`
                       }
                     }
 
-                    return 'hsl(262, 100%, 65%)'
+                    return 'var(--highlight-color)'
                   case 'jumpNode':
-                    return 'hsl(160, 100%, 60%)'
+                    return 'var(--jump-node-color)'
                   default:
                     return '#000'
                 }

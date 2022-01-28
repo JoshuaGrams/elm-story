@@ -61,16 +61,54 @@
   border: 1px dotted var(--highlight-color-80a);
 }
 
-:global .react-flow__handle-connecting {
-  border: 1px hsl(357, 91%, 55%) solid;
-  background: hsl(357, 91%, 55%) !important;
-  cursor: no-drop !important;
+:global .react-flow__handle-left {
+  &.react-flow__handle-connecting {
+    cursor: no-drop !important;
+
+    :local .visual {
+      background: var(--node-handle-connection-invalid-left) !important;
+    }
+  }
 }
 
-:global .react-flow__handle-valid {
-  border: 1px hsl(96, 65%, 63%) solid;
-  background: hsl(96, 65%, 63%) !important;
-  cursor: crosshair !important;
+:global .react-flow__handle-right {
+  &.react-flow__handle-connecting {
+    cursor: no-drop !important;
+
+    :local .visual {
+      background: var(--node-handle-connection-invalid-right) !important;
+    }
+  }
+
+  &.react-flow__handle-valid {
+    cursor: crosshair !important;
+
+    :local .visual {
+      background: var(--event-node-handle-gradient-right-active) !important;
+    }
+  }
+}
+
+:global .react-flow__handle-left {
+  &.react-flow__handle-connecting {
+    cursor: no-drop !important;
+
+    :local .visual {
+      background: var(--node-handle-connection-invalid-left) !important;
+    }
+  }
+
+  &.react-flow__handle-valid {
+    cursor: crosshair !important;
+
+    :local .jumpHandleVisual {
+      background: var(--jump-node-handle-gradient-left-active) !important;
+    }
+
+    :local .eventHandleVisual {
+      background: var(--event-node-handle-gradient-left-active) !important;
+    }
+  }
 }
 
 :global .react-flow__edge {
@@ -176,9 +214,25 @@
   max-width: 200px;
 
   .jumpHandle {
-    width: 8px;
-    height: 8px;
-    background: black;
+    width: 14px;
+    height: 100%;
+    z-index: 5;
+    background: transparent;
+    border: none;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    left: -8px;
+
+    .visual {
+      pointer-events: none;
+      width: 100%;
+      height: 18px;
+      border: 1px solid black;
+      border-right: none;
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+    }
   }
 
   .jumpToContainer {
@@ -217,12 +271,45 @@
   min-width: 200px;
   max-width: 200px;
 
-  .passageTargetHandle,
-  .passageSourceHandle {
-    width: 8px;
-    height: 8px;
-    background: black;
+  .eventTargetHandle,
+  .eventSourceHandle {
+    width: 14px;
+    height: 100%;
     z-index: 5;
+    background: transparent;
+    border: none;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+
+    .visual {
+      pointer-events: none;
+      width: 100%;
+      height: 18px;
+      border: 1px solid black;
+    }
+  }
+
+  // left side
+  .eventTargetHandle {
+    left: -8px;
+
+    .visual {
+      border-right: none;
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+    }
+  }
+
+  // right side
+  .eventSourceHandle {
+    right: -8px;
+
+    .visual {
+      border-left: none;
+      border-top-right-radius: 6px;
+      border-bottom-right-radius: 6px;
+    }
   }
 
   .bottomRadius {
@@ -238,9 +325,25 @@
     background: hsla(0, 0%, 20%, 80%);
 
     .choiceHandle {
-      width: 8px;
-      height: 8px;
-      background: black;
+      width: 14px;
+      height: 100%;
+      z-index: 5;
+      background: transparent;
+      border: none;
+      display: grid;
+      align-items: center;
+      justify-items: center;
+      right: -8px;
+
+      .visual {
+        pointer-events: none;
+        width: 100%;
+        height: 18px;
+        border: 1px solid black;
+        border-left: none;
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
     }
 
     .ChoiceRow {
@@ -355,9 +458,25 @@
     }
 
     .inputHandle {
-      width: 8px;
-      height: 8px;
-      background: black;
+      width: 14px;
+      height: 100%;
+      z-index: 5;
+      background: transparent;
+      border: none;
+      display: grid;
+      align-items: center;
+      justify-items: center;
+      right: -8px;
+
+      .visual {
+        pointer-events: none;
+        width: 100%;
+        height: 18px;
+        border: 1px solid black;
+        border-left: none;
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
     }
   }
 }
