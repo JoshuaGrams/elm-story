@@ -42,6 +42,7 @@ interface ComposerState {
     nodeId: ElementId | null
     handleId: ElementId | null
     handleType: HandleType | null
+    targetNodeId: ElementId | null
   } | null
   centeredSceneMapSelection: boolean
   selectedElements: {
@@ -175,11 +176,12 @@ type ComposerActionType =
     }
   | {
       type: COMPOSER_ACTION_TYPE.SET_SELECTED_SCENE_MAP_CONNECT_START_DATA
-    selectedSceneMapConnectStartData: {
+      selectedSceneMapConnectStartData: {
         sceneId: ElementId | null
         nodeId: ElementId | null
         handleId: ElementId | null
         handleType: HandleType | null
+        targetNodeId: ElementId | null
       } | null
     }
   | {

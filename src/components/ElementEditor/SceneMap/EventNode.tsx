@@ -8,7 +8,8 @@ import {
   useStoreState,
   useStoreActions,
   Node,
-  useUpdateNodeInternals
+  useUpdateNodeInternals,
+  FlowElement
 } from 'react-flow-renderer'
 
 import {
@@ -52,6 +53,7 @@ import EventCharacterRefGrid from './EventCharacterRefGrid'
 import styles from './styles.module.less'
 
 import api from '../../../api'
+import { NodeData } from '.'
 
 interface MenuInfo {
   domEvent: React.MouseEvent<HTMLElement>
@@ -64,6 +66,8 @@ export const isConnectionValid = (
 ): boolean => {
   logger.info('isConnectionValid')
   logger.info(`handleType: ${handleType}`)
+
+  console.log(connection)
 
   if (connection.source === connection.target) {
     logger.info('Unable to make connection. Source is equal to target.')
@@ -153,13 +157,9 @@ export const isConnectionValid = (
 }
 
 const ChoiceSourceHandle: React.FC<{
-  studioId: StudioId
-  sceneId: ElementId
   choiceId: ElementId
-}> = ({ studioId, sceneId, choiceId }) => {
-  // TODO: do we really need to get access to paths on every choice?
-  const paths = usePathsBySceneRef(studioId, sceneId) || []
-
+  scenePaths: Path[]
+}> = ({ choiceId, scenePaths }) => {
   return (
     <Handle
       key={choiceId}
@@ -168,13 +168,13 @@ const ChoiceSourceHandle: React.FC<{
       position={Position.Right}
       id={choiceId}
       isValidConnection={(connection: Connection) =>
-        isConnectionValid(connection, paths, 'CHOICE')
+        isConnectionValid(connection, scenePaths, 'CHOICE')
       }
     >
       <div
         className={`${styles.visual} ${styles.choiceHandleVisual}`}
         style={{
-          background: paths.find((path) => path.choiceId === choiceId)
+          background: scenePaths.find((path) => path.choiceId === choiceId)
             ? 'var(--event-node-handle-gradient-right-active)'
             : 'var(--node-handle-gradient-right)'
         }}
@@ -334,12 +334,9 @@ const ChoiceRow: React.FC<{
 ChoiceRow.displayName = 'ChoiceRow'
 
 const InputSourceHandle: React.FC<{
-  studioId: StudioId
-  sceneId: ElementId
   inputId: ElementId
-}> = ({ studioId, sceneId, inputId }) => {
-  const paths = usePathsBySceneRef(studioId, sceneId) || []
-
+  scenePaths: Path[]
+}> = ({ inputId, scenePaths }) => {
   return (
     <Handle
       key={inputId}
@@ -348,13 +345,13 @@ const InputSourceHandle: React.FC<{
       position={Position.Right}
       id={inputId}
       isValidConnection={(connection: Connection) =>
-        isConnectionValid(connection, paths, 'INPUT')
+        isConnectionValid(connection, scenePaths, 'INPUT')
       }
     >
       <div
         className={`${styles.visual} ${styles.inputHandleVisual}`}
         style={{
-          background: paths.find((path) => path.inputId === inputId)
+          background: scenePaths.find((path) => path.inputId === inputId)
             ? 'var(--event-node-handle-gradient-right-active)'
             : 'var(--node-handle-gradient-right)'
         }}
@@ -398,13 +395,9 @@ const InputRow: React.FC<{
 InputRow.displayName = 'InputRow'
 
 const EventTargetHandle: React.FC<{
-  studioId: StudioId
-  sceneId: ElementId
   eventId: ElementId
-}> = ({ studioId, sceneId, eventId }) => {
-  // TODO: do we really need to get access to paths on every event?
-  const paths = usePathsBySceneRef(studioId, sceneId) || []
-
+  scenePaths: Path[]
+}> = ({ eventId, scenePaths }) => {
   return (
     <Handle
       type="target"
@@ -412,13 +405,13 @@ const EventTargetHandle: React.FC<{
       className={styles.eventTargetHandle}
       position={Position.Left}
       isValidConnection={(connection: Connection) =>
-        isConnectionValid(connection, paths, 'CHOICE')
+        isConnectionValid(connection, scenePaths, 'CHOICE')
       }
     >
       <div
         className={`${styles.visual} ${styles.eventHandleVisual}`}
         style={{
-          background: paths.find((path) => path.destinationId === eventId)
+          background: scenePaths.find((path) => path.destinationId === eventId)
             ? 'var(--event-node-handle-gradient-left-active)'
             : 'var(--node-handle-gradient-left)'
         }}
@@ -430,12 +423,9 @@ const EventTargetHandle: React.FC<{
 EventTargetHandle.displayName = 'EventTargetHandle'
 
 const EventSourceHandle: React.FC<{
-  studioId: StudioId
-  sceneId: ElementId
   eventId: ElementId
-}> = ({ studioId, sceneId, eventId }) => {
-  const paths = usePathsBySceneRef(studioId, sceneId) || []
-
+  scenePaths: Path[]
+}> = ({ eventId, scenePaths }) => {
   return (
     <Handle
       key={eventId}
@@ -444,13 +434,13 @@ const EventSourceHandle: React.FC<{
       position={Position.Right}
       id={eventId}
       isValidConnection={(connection: Connection) =>
-        isConnectionValid(connection, paths, 'ORIGIN')
+        isConnectionValid(connection, scenePaths, 'ORIGIN')
       }
     >
       <div
         className={`${styles.visual} ${styles.eventHandleVisual}`}
         style={{
-          background: paths.find((path) => path.originId === eventId)
+          background: scenePaths.find((path) => path.originId === eventId)
             ? 'var(--event-node-handle-gradient-right-active)'
             : 'var(--node-handle-gradient-right)'
         }}
@@ -492,11 +482,17 @@ const EventNode: React.FC<NodeProps<{
     >([]),
     [incomingConnection, setIncomingConnection] = useState<{
       active: boolean
-      possible: boolean
+      validTarget: boolean
+      validSource: boolean
     }>({
       active: false,
-      possible: false
+      validTarget: false,
+      validSource: false
     })
+
+  const scenePaths = usePathsBySceneRef(data.studioId, data.sceneId, []) || []
+
+  const nodes: FlowElement<NodeData>[] = useStoreState((state) => state.nodes)
 
   useEffect(() => {
     logger.info(`EventNode->choicesByEventRef->useEffect`)
@@ -517,16 +513,15 @@ const EventNode: React.FC<NodeProps<{
               title: choice.title,
               handle: (
                 <ChoiceSourceHandle
-                  studioId={data.studioId}
-                  sceneId={data.sceneId}
                   choiceId={choice.id}
+                  scenePaths={scenePaths}
                 />
               )
             }
           })
       )
     }
-  }, [choicesByEventRef, event?.choices])
+  }, [choicesByEventRef, event?.choices, scenePaths])
 
   useEffect(() => {
     async function removePassthroughNode() {
@@ -562,7 +557,11 @@ const EventNode: React.FC<NodeProps<{
 
   useEffect(() => {
     !composer.selectedSceneMapConnectStartData &&
-      setIncomingConnection({ active: false, possible: false })
+      setIncomingConnection({
+        active: false,
+        validTarget: false,
+        validSource: false
+      })
   }, [composer.selectedSceneMapConnectStartData])
 
   return (
@@ -578,36 +577,84 @@ const EventNode: React.FC<NodeProps<{
         console.log(data.sceneId)
 
         if (sceneId && data.sceneId === sceneId && nodeId !== data.eventId) {
-          setIncomingConnection({ ...incomingConnection, active: true })
           console.log(composer.selectedSceneMapConnectStartData)
+          console.log(data.eventId)
+
+          const foundSourceNode = nodes.find((node) => node.id === nodeId)
+
+          console.log(foundSourceNode)
+          if (foundSourceNode) {
+            const valid = isConnectionValid(
+              {
+                source: handleType === 'source' ? nodeId || null : data.eventId,
+                sourceHandle: handleId || null,
+                target: handleType === 'source' ? data.eventId : nodeId || null,
+                targetHandle:
+                  handleType === 'source' ? data.eventId : nodeId || null
+              },
+              scenePaths,
+              foundSourceNode.data?.eventType || EVENT_TYPE.JUMP
+            )
+
+            console.log(valid)
+
+            setIncomingConnection({
+              ...incomingConnection,
+              active: true,
+              validTarget: valid && handleType === 'source',
+              validSource: valid && handleType === 'target'
+            })
+
+            composerDispatch({
+              type:
+                COMPOSER_ACTION_TYPE.SET_SELECTED_SCENE_MAP_CONNECT_START_DATA,
+              selectedSceneMapConnectStartData: composer.selectedSceneMapConnectStartData
+                ? {
+                    ...composer.selectedSceneMapConnectStartData,
+                    targetNodeId: valid ? data.eventId : null
+                  }
+                : null
+            })
+          }
         }
       }}
     >
       <div
         className={`es-scene-map__connection-cover es-scene-map__event-node ${
-          incomingConnection.active ? styles.incomingConnectionActive : ''
+          incomingConnection.active && incomingConnection.validTarget
+            ? 'es-scene-map__connection-valid-target'
+            : ''
+        } ${
+          incomingConnection.active && !incomingConnection.validTarget
+            ? 'es-scene-map__connection-invalid-target'
+            : ''
+        } ${
+          incomingConnection.active && incomingConnection.validSource
+            ? 'es-scene-map__connection-valid-source'
+            : ''
+        } ${
+          incomingConnection.active && !incomingConnection.validSource
+            ? 'es-scene-map__connection-invalid-source'
+            : ''
+        } ${
+          incomingConnection.active &&
+          (incomingConnection.validSource || incomingConnection.validTarget)
+            ? 'es-scene-map__connection-valid'
+            : ''
         }`}
       />
 
       {event?.id && (
         <>
           <div>
-            <EventTargetHandle
-              studioId={data.studioId}
-              sceneId={data.sceneId}
-              eventId={event.id}
-            />
+            <EventTargetHandle eventId={event.id} scenePaths={scenePaths} />
 
             <div>
               <NodeTitle studioId={data.studioId} event={event} />
             </div>
 
             {choices.length === 0 && event.type !== EVENT_TYPE.INPUT && (
-              <EventSourceHandle
-                studioId={data.studioId}
-                sceneId={data.sceneId}
-                eventId={event.id}
-              />
+              <EventSourceHandle eventId={event.id} scenePaths={scenePaths} />
             )}
           </div>
 
@@ -856,9 +903,8 @@ const EventNode: React.FC<NodeProps<{
                 inputId={event.input}
                 handle={
                   <InputSourceHandle
-                    studioId={data.studioId}
-                    sceneId={data.sceneId}
                     inputId={event.input}
+                    scenePaths={scenePaths}
                   />
                 }
               />

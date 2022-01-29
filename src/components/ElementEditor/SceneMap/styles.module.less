@@ -63,50 +63,40 @@
 
 :global .react-flow__handle-left {
   &.react-flow__handle-connecting {
-    cursor: no-drop !important;
-
     :local .visual {
-      background: var(--node-handle-connection-invalid-left) !important;
+      // background: var(--node-handle-connection-invalid-left) !important;
     }
   }
 }
 
 :global .react-flow__handle-right {
   &.react-flow__handle-connecting {
-    cursor: no-drop !important;
-
     :local .visual {
-      background: var(--node-handle-connection-invalid-right) !important;
+      // background: var(--node-handle-connection-invalid-right) !important;
     }
   }
 
   &.react-flow__handle-valid {
-    cursor: crosshair !important;
-
     :local .visual {
-      background: var(--event-node-handle-gradient-right-active) !important;
+      // background: var(--event-node-handle-gradient-right-active) !important;
     }
   }
 }
 
 :global .react-flow__handle-left {
   &.react-flow__handle-connecting {
-    cursor: no-drop !important;
-
     :local .visual {
-      background: var(--node-handle-connection-invalid-left) !important;
+      // background: var(--node-handle-connection-invalid-left) !important;
     }
   }
 
   &.react-flow__handle-valid {
-    cursor: crosshair !important;
-
     :local .jumpHandleVisual {
-      background: var(--jump-node-handle-gradient-left-active) !important;
+      // background: var(--jump-node-handle-gradient-left-active) !important;
     }
 
     :local .eventHandleVisual {
-      background: var(--event-node-handle-gradient-left-active) !important;
+      // background: var(--event-node-handle-gradient-left-active) !important;
     }
   }
 }
@@ -559,13 +549,119 @@
   }
 
   &:hover {
-    // :global .es-scene-map__connection-cover {
-    .incomingConnectionActive {
-      opacity: 0.2;
-      pointer-events: all;
-      cursor: crosshair;
+    :global .es-scene-map__connection-cover {
+      &.es-scene-map__connection-valid-target,
+      &.es-scene-map__connection-valid-source,
+      &.es-scene-map__connection-invalid-target,
+      &.es-scene-map__connection-invalid-source,
+      &.es-scene-map__connection-valid,
+      &.es-scene-map__connection-invalid {
+        opacity: 0.2;
+        pointer-events: all;
+      }
+
+      &.es-scene-map__connection-valid-target,
+      &.es-scene-map__connection-valid-source {
+        cursor: pointer;
+
+        &.es-scene-map__event-node {
+          background: var(--highlight-color);
+        }
+      }
+
+      &.es-scene-map__connection-valid-target + div {
+        .react-flow__handle-left {
+          cursor: crosshair;
+
+          :local .eventHandleVisual {
+            background: var(
+              --event-node-handle-gradient-left-active
+            ) !important;
+          }
+        }
+      }
+
+      &.es-scene-map__connection-valid-source + div {
+        .react-flow__handle-right {
+          cursor: crosshair;
+
+          :local .eventHandleVisual {
+            background: var(
+              --event-node-handle-gradient-right-active
+            ) !important;
+          }
+        }
+      }
+
+      &.es-scene-map__connection-valid {
+        cursor: crosshair !important;
+
+        &.es-scene-map__jump-node {
+          background: var(--jump-node-color);
+        }
+
+        &.es-scene-map__event-node {
+          background: var(--highlight-color) !important;
+        }
+      }
+
+      &.es-scene-map__connection-valid + div {
+        .react-flow__handle-left {
+          cursor: crosshair;
+
+          :local .jumpHandleVisual {
+            background: var(--jump-node-handle-gradient-left-active) !important;
+          }
+
+          :local .eventHandleVisual {
+            background: var(
+              --event-node-handle-gradient-left-active
+            ) !important;
+          }
+        }
+      }
+
+      &.es-scene-map__connection-invalid-target,
+      &.es-scene-map__connection-invalid-source,
+      &.es-scene-map__connection-invalid {
+        cursor: no-drop;
+
+        &.es-scene-map__event-node,
+        &.es-scene-map__jump-node {
+          background: var(--warning-color);
+        }
+      }
+
+      &.es-scene-map__connection-invalid + div {
+        .react-flow__handle-left {
+          cursor: no-drop;
+
+          :local .visual {
+            background: var(--node-handle-connection-invalid-left) !important;
+          }
+        }
+      }
+
+      &.es-scene-map__connection-invalid-target + div {
+        .react-flow__handle-left {
+          cursor: no-drop;
+
+          :local .eventHandleVisual {
+            background: var(--node-handle-connection-invalid-left) !important;
+          }
+        }
+      }
+
+      &.es-scene-map__connection-invalid-source + div {
+        .react-flow__handle-right {
+          cursor: no-drop;
+
+          :local .eventHandleVisual {
+            background: var(--node-handle-connection-invalid-right) !important;
+          }
+        }
+      }
     }
-    // }
   }
 
   :global .es-scene-map__connection-cover {
@@ -577,14 +673,6 @@
     opacity: 0;
     pointer-events: none;
     z-index: 1;
-
-    &.es-scene-map__event-node {
-      background: var(--highlight-color);
-    }
-
-    &.es-scene-map__jump-node {
-      background: var(--jump-node-color);
-    }
   }
 }
 

@@ -1,6 +1,6 @@
 import React, { memo, useContext, useEffect, useState } from 'react'
 
-import { StudioId, ElementId, ELEMENT_TYPE } from '../../../data/types'
+import { StudioId, ElementId, ELEMENT_TYPE, Path } from '../../../data/types'
 
 import { useJump, usePathsBySceneRef, useScene, useEvent } from '../../../hooks'
 
@@ -9,24 +9,35 @@ import {
   COMPOSER_ACTION_TYPE
 } from '../../../contexts/ComposerContext'
 
-import { Connection, Handle, NodeProps, Position } from 'react-flow-renderer'
+import {
+  Connection,
+  FlowElement,
+  Handle,
+  Node,
+  NodeProps,
+  Position,
+  useStoreState
+} from 'react-flow-renderer'
 
 import { Divider } from 'antd'
-import { AlignLeftOutlined, PartitionOutlined } from '@ant-design/icons'
+import {
+  AlignLeftOutlined,
+  NodeExpandOutlined,
+  PartitionOutlined
+} from '@ant-design/icons'
 
 import NodeTitle from './NodeTitle'
 
 import styles from './styles.module.less'
 
 import { isConnectionValid } from './EventNode'
+import { NodeData } from '.'
+import { EVENT_TYPE } from '../../../../engine/tsc-build/src/types'
 
 const JumpHandle: React.FC<{
-  studioId: StudioId
-  sceneId: ElementId
   jumpId: ElementId
-}> = ({ studioId, sceneId, jumpId }) => {
-  const paths = usePathsBySceneRef(studioId, sceneId) || []
-
+  scenePaths: Path[]
+}> = ({ jumpId, scenePaths }) => {
   return (
     <Handle
       type="target"
@@ -34,13 +45,13 @@ const JumpHandle: React.FC<{
       position={Position.Left}
       className={styles.jumpHandle}
       isValidConnection={(connection: Connection) =>
-        isConnectionValid(connection, paths, 'JUMP')
+        isConnectionValid(connection, scenePaths, 'JUMP')
       }
     >
       <div
         className={`${styles.visual} ${styles.jumpHandleVisual}`}
         style={{
-          background: paths.find((path) => path.destinationId === jumpId)
+          background: scenePaths.find((path) => path.destinationId === jumpId)
             ? 'var(--jump-node-handle-gradient-left-active)'
             : 'var(--node-handle-gradient-left)'
         }}
@@ -56,13 +67,17 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
 
   const [incomingConnection, setIncomingConnection] = useState<{
     active: boolean
-    possible: boolean
+    valid: boolean
   }>({
     active: false,
-    possible: false
+    valid: false
   })
 
-  const { composer } = useContext(ComposerContext)
+  const { composer, composerDispatch } = useContext(ComposerContext)
+
+  const scenePaths = usePathsBySceneRef(data.studioId, data.sceneId, []) || []
+
+  const nodes: FlowElement<NodeData>[] = useStoreState((state) => state.nodes)
 
   // const jumps = useStoreState((state) =>
   //     state.nodes.filter(
@@ -73,8 +88,6 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
   //   setSelectedElement = useStoreActions(
   //     (actions) => actions.setSelectedElements
   //   )
-
-  const { composerDispatch } = useContext(ComposerContext)
 
   const jumpToLink = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -107,7 +120,7 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
 
   useEffect(() => {
     !composer.selectedSceneMapConnectStartData &&
-      setIncomingConnection({ active: false, possible: false })
+      setIncomingConnection({ active: false, valid: false })
   }, [composer.selectedSceneMapConnectStartData])
 
   return (
@@ -122,14 +135,70 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
         console.log(data.sceneId)
 
         if (sceneId && data.sceneId === sceneId && nodeId !== data.jumpId) {
-          setIncomingConnection({ ...incomingConnection, active: true })
           console.log(composer.selectedSceneMapConnectStartData)
+          console.log(data.jumpId)
+
+          const foundSourceNode = nodes.find((node) => node.id === nodeId)
+
+          console.log(foundSourceNode)
+          if (foundSourceNode) {
+            const valid =
+              handleType === 'source' &&
+              isConnectionValid(
+                {
+                  source:
+                    handleType === 'source' ? nodeId || null : data.jumpId,
+                  sourceHandle: handleId || null,
+                  target:
+                    handleType === 'source' ? data.jumpId : nodeId || null,
+                  targetHandle:
+                    handleType === 'source' ? data.jumpId : nodeId || null
+                },
+                scenePaths,
+                foundSourceNode.data?.eventType || EVENT_TYPE.JUMP
+              )
+
+            console.log(valid)
+
+            setIncomingConnection({
+              ...incomingConnection,
+              active: true,
+              valid
+            })
+
+            composerDispatch({
+              type:
+                COMPOSER_ACTION_TYPE.SET_SELECTED_SCENE_MAP_CONNECT_START_DATA,
+              selectedSceneMapConnectStartData: composer.selectedSceneMapConnectStartData
+                ? {
+                    ...composer.selectedSceneMapConnectStartData,
+                    targetNodeId: valid ? data.jumpId : null
+                  }
+                : null
+            })
+          }
         }
+
+        // source: "ca62eafa-ec8b-430c-8daf-493b3d59c173"
+        // sourceHandle: "4a8cff3c-0f83-4ad6-81fe-ff4861580e56"
+        // target: "386df056-002d-4f07-b170-b8adc5a3bc68"
+        // targetHandle: "386df056-002d-4f07-b170-b8adc5a3bc68"
+
+        // handleId: "4a8cff3c-0f83-4ad6-81fe-ff4861580e56" // sourceHandle or targetHandle
+        // handleType: "source" // or target
+        // nodeId: "ca62eafa-ec8b-430c-8daf-493b3d59c173" // source
+        // sceneId: "a0ef93e4-50c2-447f-8802-614401219ed2" // coming from scene
       }}
     >
       <div
         className={`es-scene-map__connection-cover es-scene-map__jump-node ${
-          incomingConnection.active ? styles.incomingConnectionActive : ''
+          incomingConnection.active && incomingConnection.valid
+            ? 'es-scene-map__connection-valid'
+            : ''
+        } ${
+          incomingConnection.active && !incomingConnection.valid
+            ? 'es-scene-map__connection-invalid'
+            : ''
         }`}
       />
 
@@ -140,11 +209,7 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
               <NodeTitle studioId={data.studioId} jump={jump} />
             </div>
 
-            <JumpHandle
-              studioId={data.studioId}
-              sceneId={data.sceneId}
-              jumpId={jump.id}
-            />
+            <JumpHandle jumpId={jump.id} scenePaths={scenePaths} />
           </div>
 
           {jump?.id && (

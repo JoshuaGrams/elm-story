@@ -70,7 +70,7 @@ export enum DEFAULT_NODE_SIZE {
   JUMP_HEIGHT_EXTENDED = 171
 }
 
-interface NodeData {
+export interface NodeData {
   studioId: StudioId
   sceneId?: ElementId
   jumpId?: ElementId
@@ -1562,10 +1562,64 @@ const SceneMap: React.FC<{
                 composer.selectedSceneMapConnectStartData &&
                 (event.target as Element).classList.contains(
                   'es-scene-map__connection-cover'
-                )
+                ) &&
+                scene
               ) {
+                const {
+                  nodeId,
+                  targetNodeId
+                } = composer.selectedSceneMapConnectStartData
+
                 console.log('hi there')
                 console.log(event.target.classList)
+                console.log(composer.selectedSceneMapConnectStartData)
+
+                if (nodeId && targetNodeId) {
+                  const foundSourceNode:
+                    | FlowElement<NodeData>
+                    | undefined = elements.find(
+                    (element) => element.id === nodeId
+                  )
+
+                  console.log(foundSourceNode)
+
+                  await api().paths.savePath(studioId, {
+                    title: 'Untitled Path',
+                    worldId: scene.worldId,
+                    conditionsType: PATH_CONDITIONS_TYPE.ALL,
+                    sceneId,
+                    originId:
+                      composer.selectedSceneMapConnectStartData?.handleType ===
+                      'target'
+                        ? targetNodeId
+                        : nodeId,
+                    choiceId:
+                      foundSourceNode?.data?.eventType === EVENT_TYPE.CHOICE &&
+                      foundSourceNode?.data.totalChoices > 0 &&
+                      composer.selectedSceneMapConnectStartData?.handleType ===
+                        'source'
+                        ? composer.selectedSceneMapConnectStartData?.handleId
+                        : undefined,
+                    inputId:
+                      foundSourceNode?.data?.eventType === EVENT_TYPE.INPUT &&
+                      composer.selectedSceneMapConnectStartData?.handleType ===
+                        'source'
+                        ? composer.selectedSceneMapConnectStartData?.handleId
+                        : undefined,
+                    originType:
+                      foundSourceNode?.data?.eventType || ELEMENT_TYPE.CHOICE,
+                    destinationId:
+                      composer.selectedSceneMapConnectStartData?.handleType ===
+                      'target'
+                        ? nodeId
+                        : targetNodeId,
+                    destinationType:
+                      foundSourceNode?.data?.type === ELEMENT_TYPE.JUMP
+                        ? ELEMENT_TYPE.JUMP
+                        : ELEMENT_TYPE.EVENT,
+                    tags: []
+                  })
+                }
 
                 composerDispatch({
                   type:
