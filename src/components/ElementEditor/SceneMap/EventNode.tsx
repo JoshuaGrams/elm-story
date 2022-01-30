@@ -364,14 +364,74 @@ InputSourceHandle.displayName = 'InputSourceHandle'
 
 const InputRow: React.FC<{
   studioId: StudioId
+  eventSceneId: ElementId
   inputId: ElementId
   handle: JSX.Element
-}> = ({ studioId, inputId, handle }) => {
+}> = ({ studioId, eventSceneId, inputId, handle }) => {
   const input = useInput(studioId, inputId, [inputId]),
     variable = useVariable(studioId, input?.variableId, [input?.variableId])
 
+  const { composer, composerDispatch } = useContext(ComposerContext)
+
+  const [incomingConnection, setIncomingConnection] = useState<{
+    active: boolean
+    validSource: boolean
+    validTarget: boolean
+  }>({
+    active: false,
+    validSource: false,
+    validTarget: false
+  })
+
+  useEffect(() => {
+    !composer.selectedSceneMapConnectStartData &&
+      setIncomingConnection({
+        active: false,
+        validSource: false,
+        validTarget: false
+      })
+  }, [composer.selectedSceneMapConnectStartData])
+
   return (
-    <>
+    <div className={styles.InputRow}>
+      {/* use for ChoiceRow */}
+
+      {/* <div
+        className={'es-scene-map__connection-cover'}
+        style={{
+          zIndex: 3,
+          pointerEvents: 'all'
+        }}
+        onMouseEnter={(event) => {
+          event.stopPropagation()
+
+          console.log('-----')
+          console.log('INPUT ROW')
+
+          const { sceneId, nodeId, handleId, handleType } =
+            composer.selectedSceneMapConnectStartData || {}
+
+          console.log(handleType)
+
+          if (eventSceneId === sceneId && input && handleType === 'target') {
+            console.log('input row')
+
+            let valid = true
+
+            composerDispatch({
+              type:
+                COMPOSER_ACTION_TYPE.SET_SELECTED_SCENE_MAP_CONNECT_START_DATA,
+              selectedSceneMapConnectStartData: composer.selectedSceneMapConnectStartData
+                ? {
+                    ...composer.selectedSceneMapConnectStartData,
+                    targetNodeId: valid ? input.eventId : null
+                  }
+                : null
+            })
+          }
+        }}
+      /> */}
+
       {variable ? (
         <div className={styles.info}>
           <h2>Input Variable</h2>
@@ -388,7 +448,7 @@ const InputRow: React.FC<{
       )}
 
       {handle}
-    </>
+    </div>
   )
 }
 
@@ -494,6 +554,11 @@ const EventNode: React.FC<NodeProps<{
 
   const nodes: FlowElement<NodeData>[] = useStoreState((state) => state.nodes)
 
+  const isPassthroughEvent =
+      event && event.choices.length === 0 && event.type !== EVENT_TYPE.INPUT,
+    isInputEvent = event?.type === EVENT_TYPE.INPUT,
+    isMultiChoiceEvent = event && event.choices.length > 0
+
   useEffect(() => {
     logger.info(`EventNode->choicesByEventRef->useEffect`)
 
@@ -569,9 +634,11 @@ const EventNode: React.FC<NodeProps<{
       className={styles.EventNode}
       key={data.eventId}
       id={data.eventId}
-      onMouseEnter={() => {
+      onMouseEnter={(_event) => {
         const { sceneId, nodeId, handleId, handleType } =
           composer.selectedSceneMapConnectStartData || {}
+
+        console.log(_event.target)
 
         console.log(sceneId)
         console.log(data.sceneId)
@@ -583,18 +650,42 @@ const EventNode: React.FC<NodeProps<{
           const foundSourceNode = nodes.find((node) => node.id === nodeId)
 
           console.log(foundSourceNode)
+          console.log('----')
           if (foundSourceNode) {
-            const valid = isConnectionValid(
-              {
-                source: handleType === 'source' ? nodeId || null : data.eventId,
-                sourceHandle: handleId || null,
-                target: handleType === 'source' ? data.eventId : nodeId || null,
-                targetHandle:
-                  handleType === 'source' ? data.eventId : nodeId || null
-              },
-              scenePaths,
-              foundSourceNode.data?.eventType || EVENT_TYPE.JUMP
-            )
+            let valid = false
+
+            if (handleType === 'target' && !isPassthroughEvent) {
+              if (isInputEvent && event.input) {
+                valid = isConnectionValid(
+                  {
+                    source: data.eventId,
+                    sourceHandle: event.input,
+                    target: nodeId || null,
+                    targetHandle: nodeId || null
+                  },
+                  scenePaths,
+                  foundSourceNode.data?.eventType || EVENT_TYPE.JUMP
+                )
+              }
+
+              if (isMultiChoiceEvent) {
+                valid = false
+              }
+            } else {
+              valid = isConnectionValid(
+                {
+                  source:
+                    handleType === 'source' ? nodeId || null : data.eventId,
+                  sourceHandle: handleId || null,
+                  target:
+                    handleType === 'source' ? data.eventId : nodeId || null,
+                  targetHandle:
+                    handleType === 'source' ? data.eventId : nodeId || null
+                },
+                scenePaths,
+                foundSourceNode.data?.eventType || EVENT_TYPE.JUMP
+              )
+            }
 
             console.log(valid)
 
@@ -611,7 +702,8 @@ const EventNode: React.FC<NodeProps<{
               selectedSceneMapConnectStartData: composer.selectedSceneMapConnectStartData
                 ? {
                     ...composer.selectedSceneMapConnectStartData,
-                    targetNodeId: valid ? data.eventId : null
+                    targetNodeId: valid ? data.eventId : null,
+                    inputId: valid && isInputEvent ? event.input || null : null
                   }
                 : null
             })
@@ -620,28 +712,41 @@ const EventNode: React.FC<NodeProps<{
       }}
     >
       <div
-        className={`es-scene-map__connection-cover es-scene-map__event-node ${
-          incomingConnection.active && incomingConnection.validTarget
-            ? 'es-scene-map__connection-valid-target'
-            : ''
-        } ${
+        className={`es-scene-map__connection-cover
+         es-scene-map__event-node ${
+           //  isPassthroughEvent &&
+           incomingConnection.active && incomingConnection.validTarget
+             ? 'es-scene-map__connection-valid-target'
+             : ''
+         } ${
           incomingConnection.active && !incomingConnection.validTarget
             ? 'es-scene-map__connection-invalid-target'
             : ''
         } ${
+          // isPassthroughEvent &&
           incomingConnection.active && incomingConnection.validSource
             ? 'es-scene-map__connection-valid-source'
             : ''
         } ${
+          // isPassthroughEvent &&
           incomingConnection.active && !incomingConnection.validSource
             ? 'es-scene-map__connection-invalid-source'
             : ''
         } ${
+          // (isPassthroughEvent || event?.type === EVENT_TYPE.INPUT) &&
           incomingConnection.active &&
           (incomingConnection.validSource || incomingConnection.validTarget)
             ? 'es-scene-map__connection-valid'
             : ''
         }`}
+        // input and events with choices
+        style={
+          event && event.choices.length > 0
+            ? {
+                background: 'unset'
+              }
+            : {}
+        }
       />
 
       {event?.id && (
@@ -897,9 +1002,13 @@ const EventNode: React.FC<NodeProps<{
           )}
 
           {event.type === EVENT_TYPE.INPUT && event.input && (
-            <div className={`${styles.input} ${styles.bottomRadius}`}>
+            <div
+              className={`${styles.bottomRadius}`}
+              style={{ background: 'hsla(0, 0%, 20%, 80%)' }}
+            >
               <InputRow
                 studioId={data.studioId}
+                eventSceneId={data.sceneId}
                 inputId={event.input}
                 handle={
                   <InputSourceHandle

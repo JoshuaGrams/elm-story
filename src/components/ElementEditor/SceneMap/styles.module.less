@@ -420,8 +420,7 @@
     }
   }
 
-  .input {
-    background: hsla(0, 0%, 20%, 80%);
+  .InputRow {
     padding: 10px;
 
     .info {
@@ -549,43 +548,22 @@
   }
 
   &:hover {
-    :global .es-scene-map__connection-cover {
-      &.es-scene-map__connection-valid-target,
-      &.es-scene-map__connection-valid-source,
-      &.es-scene-map__connection-invalid-target,
-      &.es-scene-map__connection-invalid-source,
-      &.es-scene-map__connection-valid,
-      &.es-scene-map__connection-invalid {
-        opacity: 0.2;
-        pointer-events: all;
-      }
+    :global .es-scene-map__connection-valid-target ~ div {
+      .react-flow__handle-left {
+        cursor: crosshair;
 
-      &.es-scene-map__connection-valid-target,
-      &.es-scene-map__connection-valid-source {
-        cursor: pointer;
-
-        &.es-scene-map__event-node {
-          background: var(--highlight-color);
+        :local .eventHandleVisual {
+          background: var(--event-node-handle-gradient-left-active) !important;
         }
       }
+    }
 
-      &.es-scene-map__connection-valid-target + div {
-        .react-flow__handle-left {
+    :global .es-scene-map__connection-valid-source ~ div {
+      :local .InputRow {
+        :global .react-flow__handle-right {
           cursor: crosshair;
 
-          :local .eventHandleVisual {
-            background: var(
-              --event-node-handle-gradient-left-active
-            ) !important;
-          }
-        }
-      }
-
-      &.es-scene-map__connection-valid-source + div {
-        .react-flow__handle-right {
-          cursor: crosshair;
-
-          :local .eventHandleVisual {
+          :local .inputHandleVisual {
             background: var(
               --event-node-handle-gradient-right-active
             ) !important;
@@ -593,86 +571,126 @@
         }
       }
 
-      &.es-scene-map__connection-valid {
-        cursor: crosshair !important;
+      .react-flow__handle-right {
+        cursor: crosshair;
 
-        &.es-scene-map__jump-node {
-          background: var(--jump-node-color);
-        }
-
-        &.es-scene-map__event-node {
-          background: var(--highlight-color) !important;
+        :local .eventHandleVisual {
+          background: var(--event-node-handle-gradient-right-active) !important;
         }
       }
+    }
 
-      &.es-scene-map__connection-valid + div {
-        .react-flow__handle-left {
-          cursor: crosshair;
+    :global .es-scene-map__connection-valid ~ div {
+      .react-flow__handle-left {
+        cursor: crosshair;
 
-          :local .jumpHandleVisual {
-            background: var(--jump-node-handle-gradient-left-active) !important;
-          }
+        :local .jumpHandleVisual {
+          background: var(--jump-node-handle-gradient-left-active) !important;
+        }
 
-          :local .eventHandleVisual {
-            background: var(
-              --event-node-handle-gradient-left-active
-            ) !important;
-          }
+        :local .eventHandleVisual {
+          background: var(--event-node-handle-gradient-left-active) !important;
         }
       }
+    }
 
-      &.es-scene-map__connection-invalid-target,
-      &.es-scene-map__connection-invalid-source,
-      &.es-scene-map__connection-invalid {
+    :global .es-scene-map__connection-invalid ~ div {
+      .react-flow__handle-left {
         cursor: no-drop;
 
-        &.es-scene-map__event-node,
-        &.es-scene-map__jump-node {
-          background: var(--warning-color);
+        :local .visual {
+          background: var(--node-handle-connection-invalid-left) !important;
         }
       }
+    }
 
-      &.es-scene-map__connection-invalid + div {
-        .react-flow__handle-left {
-          cursor: no-drop;
+    :global .es-scene-map__connection-invalid-target ~ div {
+      .react-flow__handle-left {
+        cursor: no-drop;
 
-          :local .visual {
-            background: var(--node-handle-connection-invalid-left) !important;
-          }
+        :local .eventHandleVisual {
+          background: var(--node-handle-connection-invalid-left) !important;
         }
       }
+    }
 
-      &.es-scene-map__connection-invalid-target + div {
-        .react-flow__handle-left {
+    :global .es-scene-map__connection-invalid-source ~ div {
+      :local .InputRow {
+        :global .react-flow__handle-right {
           cursor: no-drop;
 
-          :local .eventHandleVisual {
-            background: var(--node-handle-connection-invalid-left) !important;
-          }
-        }
-      }
-
-      &.es-scene-map__connection-invalid-source + div {
-        .react-flow__handle-right {
-          cursor: no-drop;
-
-          :local .eventHandleVisual {
+          :local .inputHandleVisual {
             background: var(--node-handle-connection-invalid-right) !important;
           }
         }
       }
+
+      .react-flow__handle-right {
+        cursor: no-drop;
+
+        :local .eventHandleVisual {
+          background: var(--node-handle-connection-invalid-right) !important;
+        }
+      }
+    }
+
+    :global .es-scene-map__connection-valid-target,
+    :global .es-scene-map__connection-valid-source,
+    :global .es-scene-map__connection-invalid-target,
+    :global .es-scene-map__connection-invalid-source,
+    :global .es-scene-map__connection-valid,
+    :global .es-scene-map__connection-invalid {
+      opacity: 0.2;
+      pointer-events: all;
+    }
+
+    :global .es-scene-map__connection-valid-target,
+    :global .es-scene-map__connection-valid-source {
+      cursor: pointer;
+
+      &.es-scene-map__event-node {
+        background: var(--highlight-color);
+      }
+    }
+
+    :global .es-scene-map__connection-valid {
+      cursor: crosshair !important;
+
+      &.es-scene-map__jump-node {
+        background: var(--jump-node-color);
+      }
+
+      &.es-scene-map__event-node {
+        background: var(--highlight-color) !important;
+      }
+    }
+
+    :global .es-scene-map__connection-invalid-target,
+    :global .es-scene-map__connection-invalid-source,
+    :global .es-scene-map__connection-invalid {
+      cursor: no-drop;
+
+      &.es-scene-map__event-node,
+      &.es-scene-map__jump-node {
+        background: var(--warning-color);
+      }
+    }
+
+    :global .es-scene-map__connection-cover {
     }
   }
 
   :global .es-scene-map__connection-cover {
     border-radius: 5px;
     transition: opacity 0.2s;
+    left: 0;
+    top: 0;
     position: absolute;
     width: 100%;
     height: 100%;
     opacity: 0;
     pointer-events: none;
-    z-index: 1;
+    z-index: 2;
   }
 }
 

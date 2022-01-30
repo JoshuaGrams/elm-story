@@ -1567,6 +1567,7 @@ const SceneMap: React.FC<{
               ) {
                 const {
                   nodeId,
+                  handleType,
                   targetNodeId
                 } = composer.selectedSceneMapConnectStartData
 
@@ -1578,7 +1579,9 @@ const SceneMap: React.FC<{
                   const foundSourceNode:
                     | FlowElement<NodeData>
                     | undefined = elements.find(
-                    (element) => element.id === nodeId
+                    (element) =>
+                      element.id ===
+                      (handleType === 'source' ? nodeId : targetNodeId)
                   )
 
                   console.log(foundSourceNode)
@@ -1604,8 +1607,10 @@ const SceneMap: React.FC<{
                       foundSourceNode?.data?.eventType === EVENT_TYPE.INPUT &&
                       composer.selectedSceneMapConnectStartData?.handleType ===
                         'source'
-                        ? composer.selectedSceneMapConnectStartData?.handleId
-                        : undefined,
+                        ? composer.selectedSceneMapConnectStartData.handleId ||
+                          undefined
+                        : composer.selectedSceneMapConnectStartData.inputId ||
+                          undefined,
                     originType:
                       foundSourceNode?.data?.eventType || ELEMENT_TYPE.CHOICE,
                     destinationId:
