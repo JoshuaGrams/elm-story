@@ -131,16 +131,9 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
         const { sceneId, nodeId, handleId, handleType } =
           composer.selectedSceneMapConnectStartData || {}
 
-        console.log(sceneId)
-        console.log(data.sceneId)
-
         if (sceneId && data.sceneId === sceneId && nodeId !== data.jumpId) {
-          console.log(composer.selectedSceneMapConnectStartData)
-          console.log(data.jumpId)
-
           const foundSourceNode = nodes.find((node) => node.id === nodeId)
 
-          console.log(foundSourceNode)
           if (foundSourceNode) {
             const valid =
               handleType === 'source' &&
@@ -157,8 +150,6 @@ const JumpNode: React.FC<NodeProps> = ({ data }) => {
                 scenePaths,
                 foundSourceNode.data?.eventType || EVENT_TYPE.JUMP
               )
-
-            console.log(valid)
 
             setIncomingConnection({
               ...incomingConnection,

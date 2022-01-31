@@ -343,6 +343,12 @@
       cursor: pointer;
       transition: background-color 0.25s;
 
+      :global {
+        .es-scene-map__connection-cover {
+          border-radius: 0px;
+        }
+      }
+
       &.choiceSelected {
         background-color: var(--highlight-color-80a);
 
@@ -571,6 +577,35 @@
         }
       }
 
+      :local .ChoiceRow {
+        .validConnection {
+          cursor: crosshair;
+
+          opacity: 0.2;
+          background: var(--highlight-color);
+
+          ~ div.choiceHandle {
+            cursor: crosshair;
+
+            :local .choiceHandleVisual {
+              background: var(
+                --event-node-handle-gradient-right-active
+              ) !important;
+            }
+          }
+        }
+
+        // :global .react-flow__handle-right {
+        //   cursor: crosshair;
+
+        //   :local .choiceHandleVisual {
+        //     background: var(
+        //       --event-node-handle-gradient-right-active
+        //     ) !important;
+        //   }
+        // }
+      }
+
       .react-flow__handle-right {
         cursor: crosshair;
 
@@ -625,6 +660,25 @@
         }
       }
 
+      :local .ChoiceRow {
+        .invalidConnection {
+          cursor: no-drop !important;
+
+          opacity: 0.2;
+          background: var(--warning-color);
+
+          ~ div.choiceHandle {
+            cursor: no-drop !important;
+
+            :local .choiceHandleVisual {
+              background: var(
+                --node-handle-connection-invalid-right
+              ) !important;
+            }
+          }
+        }
+      }
+
       .react-flow__handle-right {
         cursor: no-drop;
 
@@ -663,6 +717,10 @@
       &.es-scene-map__event-node {
         background: var(--highlight-color) !important;
       }
+
+      &.es-scene-map__event-node-multi-choice {
+        background: transparent !important;
+      }
     }
 
     :global .es-scene-map__connection-invalid-target,
@@ -673,6 +731,12 @@
       &.es-scene-map__event-node,
       &.es-scene-map__jump-node {
         background: var(--warning-color);
+      }
+
+      &.es-scene-map__event-node-multi-choice {
+        &.es-scene-map__event-node {
+          background: transparent !important;
+        }
       }
     }
 
