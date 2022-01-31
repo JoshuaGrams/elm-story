@@ -62,6 +62,7 @@ const WorldInspector: React.FC<{ studioId: StudioId; world: World }> = ({
                           className={styles.tabAddComponentButton}
                           onClick={async () => {
                             if (world.id) {
+                              // TODO: change to lib method
                               const character = await api().characters.saveCharacter(
                                 studioId,
                                 {

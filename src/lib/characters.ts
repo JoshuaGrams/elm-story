@@ -1,10 +1,20 @@
 import {
+  Character,
   CharacterMask,
   CHARACTER_MASK_TYPE,
-  CHARACTER_MASK_VALUES
+  CHARACTER_MASK_VALUES,
+  StudioId,
+  WorldId
 } from '../data/types'
 
 import { Area } from 'react-easy-crop/types'
+
+import {
+  names,
+  uniqueNamesGenerator
+} from 'unique-names-generator'
+
+import api from '../api'
 
 export const getCharacterPersonalityMakeup = (activeMasks: CharacterMask[]) => {
   let value = { drive: 0, energy: 0 }
@@ -108,3 +118,25 @@ export const getCroppedImageData = async (
     }, 'image/jpeg')
   })
 }
+
+export const createGenericCharacter = async (
+  studioId: StudioId,
+  worldId: WorldId
+): Promise<Character> =>
+  await api().characters.saveCharacter(studioId, {
+    description: undefined,
+    worldId,
+    masks: [
+      {
+        type: CHARACTER_MASK_TYPE.NEUTRAL,
+        active: true
+      }
+    ],
+    refs: [],
+    tags: [],
+    title: uniqueNamesGenerator({
+      dictionaries: [names, names],
+      length: 2,
+      separator: ' '
+    })
+  })

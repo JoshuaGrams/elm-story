@@ -1,6 +1,8 @@
 import logger from '../../../../lib/logger'
 import isHotkey from 'is-hotkey'
 
+import { createGenericCharacter } from '../../../../lib/characters'
+
 import {
   formatCharacterRefDisplay,
   getCaretPosition,
@@ -41,11 +43,7 @@ import { ReactEditor, useSelected, useSlate } from 'slate-react'
 import { Transforms } from 'slate'
 
 import { Dropdown, Menu, Popover } from 'antd'
-import {
-  LeftOutlined,
-  RightOutlined,
-  UserOutlined
-} from '@ant-design/icons'
+import { LeftOutlined, RightOutlined, UserOutlined } from '@ant-design/icons'
 
 import Portal from '../../../Portal'
 import CharacterMask from '../../../CharacterManager/CharacterMask'
@@ -665,6 +663,15 @@ const CharacterElementSelect: React.FC<{
   useEffect(() => {
     focused && resetMenuSelection()
   }, [focused])
+
+  useEffect(() => {
+    // elmstorygames/feedback#211
+    async function createCharacter() {
+      await createGenericCharacter(studioId, worldId)
+    }
+
+    if (characters?.length === 0) createCharacter()
+  }, [characters])
 
   return (
     <>
