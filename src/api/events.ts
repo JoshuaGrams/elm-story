@@ -326,7 +326,7 @@ export async function removeDeadPersonaRefsFromEvent(
 }
 
 // when characters are removed
-export async function removeDeadPersonasFromEvent(
+export async function removeDeadPersonas(
   studioId: StudioId,
   characterId: ElementId
 ) {
@@ -350,6 +350,37 @@ export async function removeDeadPersonasFromEvent(
         } catch (error) {
           throw error
         }
+      })
+    ])
+  } catch (error) {
+    throw error
+  }
+}
+
+// when characters are removed
+// elmstorygames/feedback#212
+export async function removeDeadCharacterRefs(
+  studioId: StudioId,
+  characterId: ElementId
+) {
+  const db = new LibraryDatabase(studioId)
+
+  try {
+    const referenceEvents = await db.events
+      .where('characters')
+      .equals(characterId || '')
+      .toArray()
+
+    await Promise.all([
+      referenceEvents.map(async (event) => {
+        event.id &&
+          (await db.events.update(event.id, {
+            ...event,
+            characters: event.characters.filter(
+              (existingCharacterId) => existingCharacterId !== characterId
+            ),
+            updated: Date.now()
+          }))
       })
     ])
   } catch (error) {

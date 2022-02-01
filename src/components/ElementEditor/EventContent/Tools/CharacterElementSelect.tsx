@@ -578,7 +578,7 @@ const CharacterElementSelect: React.FC<{
           )
         : -1,
       foundAliasIndex = characters
-        ? characters[foundCharacterIndex].refs.findIndex(
+        ? characters[foundCharacterIndex]?.refs.findIndex(
             (ref) => selectedCharacter.alias_id === ref[0]
           )
         : -1

@@ -58,10 +58,7 @@ const CharacterManager: React.FC<{
                   try {
                     if (character.id) {
                       await Promise.all([
-                        api().events.removeDeadPersonasFromEvent(
-                          studioId,
-                          character.id
-                        ),
+                        api().events.removeDeadPersonas(studioId, character.id),
                         api().characters.removeCharacter(studioId, character.id)
                       ])
 
