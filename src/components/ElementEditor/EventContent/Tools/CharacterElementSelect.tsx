@@ -277,6 +277,7 @@ DisplayFormat.displayName = 'DisplayFormat'
 
 const CharacterSelectMenu: React.FC<{
   studioId: StudioId
+  worldId: WorldId
   characters?: Character[]
   element: EventContentElement
   show: boolean
@@ -288,6 +289,7 @@ const CharacterSelectMenu: React.FC<{
   onMenuSelection: (selection: MenuSelection) => void
 }> = ({
   studioId,
+  worldId,
   characters,
   show,
   inputRect,
@@ -313,6 +315,15 @@ const CharacterSelectMenu: React.FC<{
       characterSelectMenuRef.current.style.opacity = '0'
     }
   }, [show, characterSelectMenuRef.current])
+
+  useEffect(() => {
+    // elmstorygames/feedback#211
+    async function createCharacter() {
+      await createGenericCharacter(studioId, worldId)
+    }
+
+    if (characters?.length === 0 && show) createCharacter()
+  }, [characters, show])
 
   return (
     <>
@@ -686,15 +697,6 @@ const CharacterElementSelect: React.FC<{
     focused && resetMenuSelection()
   }, [focused])
 
-  useEffect(() => {
-    // elmstorygames/feedback#211
-    async function createCharacter() {
-      await createGenericCharacter(studioId, worldId)
-    }
-
-    if (characters?.length === 0) createCharacter()
-  }, [characters])
-
   return (
     <>
       {selecting && (
@@ -899,6 +901,7 @@ const CharacterElementSelect: React.FC<{
 
       <CharacterSelectMenu
         studioId={studioId}
+        worldId={worldId}
         characters={characters}
         show={selecting}
         filter={filter}
