@@ -33,6 +33,7 @@ import {
 import CharacterElementSelect, {
   OnCharacterSelect
 } from './Tools/CharacterElementSelect'
+import ImageElementSelect from './Tools/ImageElementSelect'
 
 import styles from './styles.module.less'
 
@@ -83,49 +84,12 @@ const ImageElement: React.FC<{ element: ImageElementType; attributes: {} }> = ({
   attributes,
   children
 }) => {
-  const editor = useSlateStatic()
-  const path = ReactEditor.findPath(editor, element)
-  const focused = useFocused()
-  const selected = useSelected()
-
-  return element.url ? (
+  return (
     <div {...attributes}>
       {children}
 
-      <div
-        className={`content-image ${selected ? 'selected' : ''}`}
-        style={{
-          boxShadow: `${
-            selected && focused ? '0 0 0 3px var(--highlight-color)' : 'none'
-          }`
-        }}
-        contentEditable={false}
-      >
-        <img
-          draggable="false"
-          src={element.url}
-          style={{
-            display: 'block',
-            maxWidth: '100%',
-            maxHeight: '30em'
-          }}
-        />
-        <Button
-          className="remove-image-button"
-          style={{
-            position: 'absolute',
-            right: '10px',
-            bottom: '10px'
-          }}
-        >
-          <DeleteOutlined
-            onClick={() => Transforms.removeNodes(editor, { at: path })}
-          />
-        </Button>
-      </div>
+      <ImageElementSelect />
     </div>
-  ) : (
-    <div>missing image</div>
   )
 }
 

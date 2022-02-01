@@ -75,8 +75,12 @@ const ELEMENT_MENU_ITEMS: MenuItem[] = [
 ]
 
 const MEDIA_MENU_ITEMS: MenuItem[] = [
-  { type: 'IMAGE', title: 'Image', additionalMatches: ['photo', 'picture'] },
-  { type: 'EMBED', title: 'Embed', additionalMatches: ['video'] }
+  {
+    type: ELEMENT_FORMATS.IMG,
+    title: 'Image',
+    additionalMatches: ['photo', 'picture']
+  }
+  // { type: 'EMBED', title: 'Embed', additionalMatches: ['video'] }
 ]
 
 const getFilteredItems = (items: MenuItem[], filter: string | undefined) =>

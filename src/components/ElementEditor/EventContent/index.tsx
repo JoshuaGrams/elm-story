@@ -273,8 +273,22 @@ const EventContent: React.FC<{
             type: ELEMENT_FORMATS.CHARACTER,
             children: [{ text: '' }]
           })
+
           Transforms.deselect(editor)
           // Transforms.move(editor)
+
+          return
+        }
+
+        if (item === ELEMENT_FORMATS.IMG) {
+          console.log('HERE')
+          Transforms.insertNodes(editor, {
+            type: ELEMENT_FORMATS.IMG,
+            children: [{ text: '' }]
+          })
+
+          Transforms.deselect(editor)
+
           return
         }
 
@@ -624,8 +638,8 @@ const EventContent: React.FC<{
                   style={{
                     userSelect: 'all',
                     position: 'absolute',
-                    bottom: -400,
-                    display: 'none'
+                    bottom: -400
+                    // display: 'none'
                   }}
                 >
                   {event.content}
