@@ -42,7 +42,7 @@ import {
 import { ReactEditor, useSelected, useSlate } from 'slate-react'
 import { Transforms } from 'slate'
 
-import { Dropdown, Menu, Popover } from 'antd'
+import { Button, Dropdown, Menu, Popover } from 'antd'
 import { LeftOutlined, RightOutlined, UserOutlined } from '@ant-design/icons'
 
 import Portal from '../../../Portal'
@@ -382,7 +382,14 @@ const SelectedCharacter: React.FC<{
   elementCharacterData?: CharacterElementDetails
   onClick: (reset?: boolean) => void
   onRemove: () => void
-}> = ({ studioId, character, elementCharacterData, onClick, onRemove }) => {
+}> = ({
+  studioId,
+  element,
+  character,
+  elementCharacterData,
+  onClick,
+  onRemove
+}) => {
   // const editor = useSlate()
 
   const { composer, composerDispatch } = useContext(ComposerContext)
@@ -439,8 +446,16 @@ const SelectedCharacter: React.FC<{
         content={
           <div
             className={styles.container}
+            // elmstorygames/feedback#213
+            style={{ display: character ? 'grid' : 'block' }}
             onClick={() => {
               setPopoverVisible(false)
+
+              // elmstorygames/feedback#213
+              if (!character) {
+                onRemove()
+                return
+              }
 
               character?.id &&
                 composerDispatch({
@@ -469,6 +484,13 @@ const SelectedCharacter: React.FC<{
 
                 <div className={styles.title}>{character.title}</div>
               </>
+            )}
+
+            {/* elmstorygames/feedback#213 */}
+            {!character && (
+              <div className={`${styles.title} ${styles.notFound}`}>
+                Character <code>{element.character_id}</code> not found...
+              </div>
             )}
           </div>
         }

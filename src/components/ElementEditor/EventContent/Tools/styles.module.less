@@ -259,7 +259,7 @@
     bottom: -2px !important;
     border-color: hsl(0, 0%, 8%) !important;
     transform: rotate(-135deg) !important;
-    z-index: 1001 !important;
+    z-index: 1 !important;
   }
 
   .ant-popover-inner {
@@ -270,6 +270,7 @@
     background: hsl(0, 0%, 8%);
     border-radius: 2px;
     overflow: hidden;
+    z-index: 2;
   }
 
   :local .container {
@@ -282,6 +283,10 @@
 
       .title {
         color: var(--highlight-color);
+
+        &.notFound {
+          color: var(--warning-color);
+        }
       }
     }
 
@@ -291,6 +296,17 @@
       display: grid;
       align-items: center;
       justify-items: center;
+
+      // elmstorygames/feedback#213
+      &.notFound {
+        max-width: 150px;
+        text-align: center;
+
+        code {
+          font-size: 12px;
+          background: hsl(0, 0%, 15%);
+        }
+      }
     }
   }
 }
