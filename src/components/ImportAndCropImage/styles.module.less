@@ -17,5 +17,45 @@
     height: auto;
     bottom: 0;
     margin-bottom: 20px;
+    z-index: 1;
+  }
+
+  .controls {
+    position: absolute;
+    width: 100%;
+    background: hsla(0, 0%, 3%, 1);
+    padding: 0 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--primary-border-color);
+    bottom: -74px;
+    box-shadow: 0px 10px 20px 1px black;
+    overflow: hidden;
+
+    .slider {
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 32px auto 32px;
+      height: 32px;
+      width: 100%;
+
+      .middle {
+        display: grid;
+        grid-template-columns: repeat(2, 100px);
+        gap: 10px;
+        width: 200px;
+        margin: 0 auto;
+      }
+
+      .side {
+        padding: 0;
+
+        .enabled {
+          color: var(--highlight-color);
+        }
+      }
+    }
   }
 }

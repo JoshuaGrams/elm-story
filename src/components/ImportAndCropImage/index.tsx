@@ -13,38 +13,45 @@ import Cropper from 'react-easy-crop'
 import { Button, Slider } from 'antd'
 
 import styles from './styles.module.less'
+import { BorderInnerOutlined, FileImageOutlined } from '@ant-design/icons'
 
 export enum IMPORT_IMAGE_TYPE {
   INLINE = 'INLINE'
+}
+
+export interface CroppedImage {
+  type?: IMPORT_IMAGE_TYPE
+  data: Blob | null
+  url: string
 }
 
 const ImportAndCropImage = React.forwardRef<
   { import: (type?: IMPORT_IMAGE_TYPE) => void },
   {
     cropping: boolean
+    showGrid?: boolean
     cropAreaStyle?: React.CSSProperties
     containerStyle?: React.CSSProperties
+    controlStyle?: React.CSSProperties
     aspectRatio?: number
     size: { width: number; height: number }
+    quality?: number
     onImportImageData: () => void
-    onImportImageCropComplete: (
-      image: {
-        type?: IMPORT_IMAGE_TYPE
-        data: Blob | null
-        url: string
-      } | null
-    ) => void
+    onImportImageCropComplete: (image: CroppedImage | null) => void
   }
 >(
   (
     {
       cropping,
+      showGrid,
       cropAreaStyle,
       containerStyle,
+      controlStyle,
       aspectRatio,
+      size,
+      quality,
       onImportImageData,
-      onImportImageCropComplete,
-      size
+      onImportImageCropComplete
     },
     ref
   ) => {
@@ -54,6 +61,7 @@ const ImportAndCropImage = React.forwardRef<
       [imageData, setImageData] = useState<string | ArrayBuffer | null>(null),
       [crop, setCrop] = useState({ x: 0, y: 0 }),
       [zoom, setZoom] = useState(1),
+      [gridEnabled, setGridEnabled] = useState(false),
       [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
 
     const onMaskImageSelect = async (
@@ -84,7 +92,8 @@ const ImportAndCropImage = React.forwardRef<
           imageData as string,
           croppedAreaPixels,
           size,
-          'webp'
+          'webp',
+          quality
         )
 
         croppedImageData &&
@@ -153,7 +162,7 @@ const ImportAndCropImage = React.forwardRef<
                       }
                     }}
                     image={imageData as string}
-                    showGrid={false}
+                    showGrid={showGrid || gridEnabled}
                     crop={crop}
                     zoom={zoom}
                     // cropSize={size}
@@ -175,23 +184,41 @@ const ImportAndCropImage = React.forwardRef<
                   />
                 </div>
 
-                <Slider
-                  min={1}
-                  max={3}
-                  step={0.05}
-                  tooltipVisible={false}
-                  onChange={(value) => setZoom(value)}
-                  value={zoom}
-                  style={{ marginBottom: '30px' }}
-                />
+                <div className={styles.controls} style={{ ...controlStyle }}>
+                  <Slider
+                    min={1}
+                    max={3}
+                    step={0.05}
+                    tooltipVisible={false}
+                    onChange={(value) => setZoom(value)}
+                    value={zoom}
+                    className={styles.slider}
+                  />
 
-                <div style={{ height: '24px ' }}>
                   <div className={styles.buttons}>
-                    <Button onClick={() => onImportImageCropComplete(null)}>
-                      Cancel
+                    <Button
+                      className={styles.side}
+                      onClick={() => setGridEnabled(!gridEnabled)}
+                      title="Toggle grid..."
+                    >
+                      <BorderInnerOutlined
+                        className={gridEnabled ? styles.enabled : ''}
+                      />
                     </Button>
 
-                    <Button onClick={onSave}>Save</Button>
+                    <div className={styles.middle}>
+                      <Button onClick={() => onImportImageCropComplete(null)}>
+                        Cancel
+                      </Button>
+
+                      <Button onClick={onSave} className={styles.save}>
+                        Save
+                      </Button>
+                    </div>
+
+                    <Button className={styles.side} title="Select new image...">
+                      <FileImageOutlined />
+                    </Button>
                   </div>
                 </div>
               </>

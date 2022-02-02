@@ -9,13 +9,14 @@ export default (database: Dexie) => {
     .version(11)
     .stores({
       events:
-        '&id,*characters,ending,worldId,*persona,sceneId,title,*tags,updated'
+        '&id,*characters,ending,*images,worldId,*persona,sceneId,title,*tags,updated'
     })
     .upgrade(async (tx) => {
       const eventsTable = tx.table(LIBRARY_TABLE.EVENTS)
 
       eventsTable.toCollection().modify((event: Event) => {
         event.characters = []
+        event.images = []
       })
     })
 }

@@ -1,5 +1,8 @@
 import logger from '../../../lib/logger'
 
+import { ipcRenderer } from 'electron'
+import { v4 as uuid } from 'uuid'
+
 import { debounce } from 'lodash'
 import useEventListener from '@use-it/event-listener'
 import isHotkey from 'is-hotkey'
@@ -18,7 +21,8 @@ import {
   HOTKEY_BASIC,
   ELEMENT_FORMATS,
   SUPPORTED_ELEMENT_TYPES,
-  CharacterElement
+  CharacterElement,
+  ImageElement
 } from '../../../data/eventContentTypes'
 
 import { DragStart, DropResult } from 'react-beautiful-dnd'
@@ -77,6 +81,7 @@ import {
   toggleElement,
   toggleLeaf
 } from '../../../lib/contentEditor'
+import { WINDOW_EVENT_TYPE } from '../../../lib/events'
 
 const saveContent = debounce(
   async (studioId: StudioId, eventId: ElementId, content) => {
@@ -192,11 +197,48 @@ const EventContent: React.FC<{
                 }
               : undefined
           }
+          onImageSelect={
+            props.element.type === ELEMENT_FORMATS.IMG
+              ? async (image) => {
+                  console.log(image)
+                  console.log(event)
+                  if (event?.id && image?.data) {
+                    console.log('onIMageSelect')
+                    const imageElementPath = ReactEditor.findPath(
+                      editor,
+                      props.element
+                    )
+
+                    let assetId: string = uuid()
+
+                    try {
+                      await ipcRenderer.invoke(WINDOW_EVENT_TYPE.SAVE_ASSET, {
+                        studioId,
+                        worldId: event.worldId,
+                        id: assetId,
+                        data: await image.data.arrayBuffer(),
+                        ext: 'webp'
+                      })
+
+                      Transforms.setNodes<ImageElement>(
+                        editor,
+                        {
+                          asset_id: assetId
+                        },
+                        { at: imageElementPath }
+                      )
+                    } catch (error) {
+                      throw error
+                    }
+                  }
+                }
+              : undefined
+          }
           {...props}
         />
       )
     },
-    [editor, eventId]
+    [editor, eventId, event]
   )
 
   const renderLeaf = useCallback(
@@ -638,8 +680,8 @@ const EventContent: React.FC<{
                   style={{
                     userSelect: 'all',
                     position: 'absolute',
-                    bottom: -400
-                    // display: 'none'
+                    bottom: -400,
+                    display: 'none'
                   }}
                 >
                   {event.content}

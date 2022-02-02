@@ -1,11 +1,18 @@
 import { getSvgUrl } from '../../../../lib'
 
-import React, { useEffect, useImperativeHandle, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { ImageElement } from '../../../../data/eventContentTypes'
 
+import ImportAndCropImage, { CroppedImage } from '../../../ImportAndCropImage'
+
 import styles from './styles.module.less'
-import ImportAndCropImage from '../../../ImportAndCropImage'
+import { ipcRenderer } from 'electron'
+import { WINDOW_EVENT_TYPE } from '../../../../lib/events'
+import { StudioId, WorldId } from '../../../../data/types'
+import { url } from 'inspector'
+
+export type OnImageSelect = (image: CroppedImage) => Promise<void>
 
 const ImageSelectPlaceholder = `
 <svg
@@ -34,12 +41,40 @@ const ImageSelectPlaceholder = `
 </svg>
 `
 
-const ImageElementSelect: React.FC<{ element: ImageElement }> = ({
-  element
-}) => {
+const ImageElementSelect: React.FC<{
+  studioId: StudioId
+  worldId: WorldId
+  element: ImageElement
+  onImageSelect: OnImageSelect
+}> = ({ studioId, worldId, element, onImageSelect }) => {
   const importInlineImageRef = useRef<{ import: () => void }>(null)
 
-  const [croppingImage, setCroppingImage] = useState<boolean>(false)
+  const [croppingImage, setCroppingImage] = useState<boolean>(false),
+    [savingImage, setSavingImage] = useState<boolean>(false),
+    [imagePath, setImagePath] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    async function getImagePath() {
+      if (element.asset_id) {
+        const path: string | null = await ipcRenderer.invoke(
+          WINDOW_EVENT_TYPE.GET_ASSET,
+          {
+            studioId,
+            worldId,
+            id: element.asset_id,
+            ext: 'webp'
+          }
+        )
+
+        if (path) {
+          setImagePath(path)
+          return
+        }
+      }
+    }
+
+    getImagePath()
+  }, [element.asset_id])
 
   return (
     <div className={styles.ImageSelect} contentEditable={false}>
@@ -51,13 +86,31 @@ const ImageElementSelect: React.FC<{ element: ImageElement }> = ({
         }}
         containerStyle={{ background: 'transparent' }}
         aspectRatio={16 / 9}
+        quality={0.7}
         onImportImageData={() => setCroppingImage(true)}
-        onImportImageCropComplete={(image) => {
-          console.log(image?.data)
+        onImportImageCropComplete={async (image) => {
+          if (image) {
+            setSavingImage(true)
+
+            try {
+              await onImageSelect(image)
+            } catch (error) {
+              throw error
+            }
+          }
+
           setCroppingImage(false)
+          setSavingImage(false)
         }}
-        size={{ width: 655, height: 368 }}
+        size={{ width: 655 * 2, height: 368 * 2 }}
       />
+
+      {element.asset_id && (
+        <div
+          className={styles.image}
+          style={{ backgroundImage: imagePath ? `url(${imagePath})` : 'unset' }}
+        />
+      )}
 
       {!element.asset_id && (
         <div

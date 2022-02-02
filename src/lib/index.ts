@@ -20,7 +20,8 @@ export const getCroppedImageData = async (
     width: number
     height: number
   },
-  format?: 'png' | 'webp'
+  format?: 'png' | 'webp',
+  quality?: number
 ): Promise<{ data: Blob | null; url: string } | null> => {
   const image = await createImage(src),
     canvas = document.createElement('canvas'),
@@ -42,11 +43,15 @@ export const getCroppedImageData = async (
   )
 
   return new Promise((resolve) => {
-    canvas.toBlob((file) => {
-      resolve({
-        data: file,
-        url: canvas.toDataURL(`image/${format || 'jpeg'}`)
-      })
-    }, `image/${format || 'jpeg'}`)
+    canvas.toBlob(
+      (file) => {
+        resolve({
+          data: file,
+          url: canvas.toDataURL(`image/${format || 'jpeg'}`)
+        })
+      },
+      `image/${format || 'jpeg'}`,
+      quality || 1
+    )
   })
 }

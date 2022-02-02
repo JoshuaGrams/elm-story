@@ -33,7 +33,7 @@ import {
 import CharacterElementSelect, {
   OnCharacterSelect
 } from './Tools/CharacterElementSelect'
-import ImageElementSelect from './Tools/ImageElementSelect'
+import ImageElementSelect, { OnImageSelect } from './Tools/ImageElementSelect'
 
 import styles from './styles.module.less'
 
@@ -79,16 +79,23 @@ const CharacterElement: React.FC<{
   )
 }
 
-const ImageElement: React.FC<{ element: ImageElementType; attributes: {} }> = ({
-  element,
-  attributes,
-  children
-}) => {
+const ImageElement: React.FC<{
+  studioId: StudioId
+  worldId: WorldId
+  element: ImageElementType
+  attributes: {}
+  onImageSelect: OnImageSelect
+}> = ({ studioId, worldId, element, attributes, onImageSelect, children }) => {
   return (
     <div {...attributes} data-slate-editor>
       {children}
 
-      <ImageElementSelect element={element}/>
+      <ImageElementSelect
+        studioId={studioId}
+        worldId={worldId}
+        element={element}
+        onImageSelect={onImageSelect}
+      />
     </div>
   )
 }
@@ -202,12 +209,14 @@ export const Element: React.FC<{
   studioId?: StudioId
   worldId?: WorldId
   onCharacterSelect?: OnCharacterSelect
+  onImageSelect?: OnImageSelect
   element: EventContentElement
   attributes: {}
 }> = ({
   studioId,
   worldId,
   onCharacterSelect,
+  onImageSelect,
   element,
   attributes,
   children
@@ -295,8 +304,17 @@ export const Element: React.FC<{
       content = <ol {...attributes}>{children}</ol>
       break
     case ELEMENT_FORMATS.IMG:
+      if (!studioId || !worldId || !onImageSelect)
+        throw 'Unable to render image element.'
+
       content = (
-        <ImageElement element={element} attributes={attributes}>
+        <ImageElement
+          studioId={studioId}
+          worldId={worldId}
+          element={element}
+          attributes={attributes}
+          onImageSelect={onImageSelect}
+        >
           {children}
         </ImageElement>
       )

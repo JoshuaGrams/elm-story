@@ -379,12 +379,16 @@ const CharacterPersonality: React.FC<{
 
             if (foundMaskIndex !== -1) {
               if (newMasks[foundMaskIndex].assetId) {
-                await ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
-                  studioId,
-                  worldId: character.worldId,
-                  id: newMasks[foundMaskIndex].assetId,
-                  ext: 'jpeg'
-                })
+                try {
+                  await ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
+                    studioId,
+                    worldId: character.worldId,
+                    id: newMasks[foundMaskIndex].assetId,
+                    ext: 'jpeg'
+                  })
+                } catch (error) {
+                  throw error
+                }
               }
 
               newMasks[foundMaskIndex].active = true
@@ -392,18 +396,22 @@ const CharacterPersonality: React.FC<{
             }
 
             if (assetId) {
-              await ipcRenderer.invoke(WINDOW_EVENT_TYPE.SAVE_ASSET, {
-                studioId,
-                worldId: character.worldId,
-                id: assetId,
-                data: await mask.data.arrayBuffer(),
-                ext: 'jpeg'
-              })
+              try {
+                await ipcRenderer.invoke(WINDOW_EVENT_TYPE.SAVE_ASSET, {
+                  studioId,
+                  worldId: character.worldId,
+                  id: assetId,
+                  data: await mask.data.arrayBuffer(),
+                  ext: 'jpeg'
+                })
 
-              await api().characters.saveCharacter(studioId, {
-                ...character,
-                masks: newMasks
-              })
+                await api().characters.saveCharacter(studioId, {
+                  ...character,
+                  masks: newMasks
+                })
+              } catch (error) {
+                throw error
+              }
             }
           }
 
