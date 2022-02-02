@@ -90,7 +90,7 @@ export type CharacterElement = {
 
 export type ImageElement = {
   type: ELEMENT_FORMATS.IMG
-  url?: string
+  asset_id?: string
   children: EmptyText[]
 }
 

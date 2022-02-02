@@ -134,6 +134,7 @@ export async function switchJumpToChoiceOrInputEventType(
         content: JSON.stringify([...DEFAULT_EVENT_CONTENT]),
         ending: false,
         id: newEventId,
+        images: [],
         input: inputId,
         sceneId: jump.sceneId,
         tags: [],

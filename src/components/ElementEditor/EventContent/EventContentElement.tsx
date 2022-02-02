@@ -85,10 +85,10 @@ const ImageElement: React.FC<{ element: ImageElementType; attributes: {} }> = ({
   children
 }) => {
   return (
-    <div {...attributes}>
+    <div {...attributes} data-slate-editor>
       {children}
 
-      <ImageElementSelect />
+      <ImageElementSelect element={element}/>
     </div>
   )
 }

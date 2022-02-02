@@ -292,6 +292,7 @@ export interface Event extends Element {
   choices: ElementId[]
   content: string
   ending: boolean // world end
+  images: string[] // asset id
   input?: ElementId // input ref
   persona?: EventPersona
   sceneId: ElementId

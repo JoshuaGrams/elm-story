@@ -226,6 +226,7 @@ async function addElementToScene(
         const event = await api().events.saveEvent(studioId, {
           characters: [],
           ending: false,
+          images: [],
           worldId: scene.worldId,
           sceneId: scene.id,
           title: 'Untitled Event',

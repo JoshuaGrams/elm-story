@@ -9,10 +9,7 @@ import {
 
 import { Area } from 'react-easy-crop/types'
 
-import {
-  names,
-  uniqueNamesGenerator
-} from 'unique-names-generator'
+import { names, uniqueNamesGenerator } from 'unique-names-generator'
 
 import api from '../api'
 
@@ -79,6 +76,7 @@ export const getCharacterDominateMakeup = (activeMasks: CharacterMask[]) => {
   }
 }
 
+// TODO: abstract and move to index
 const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image()
@@ -89,6 +87,7 @@ const createImage = (url: string): Promise<HTMLImageElement> =>
     image.src = url
   })
 
+// TODO: abstract and move to index
 export const getCroppedImageData = async (
   src: string,
   pixelCrop: Area

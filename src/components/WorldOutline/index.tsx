@@ -805,6 +805,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                     DEFAULT_NODE_SIZE.EVENT_HEIGHT / 2
                 },
                 ending: false,
+                images: [],
                 worldId: world.id,
                 sceneId: parentItem.id as string,
                 title: 'Untitled Event',
