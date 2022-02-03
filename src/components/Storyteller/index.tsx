@@ -11,7 +11,7 @@ import {
   EngineDevToolsLiveEvent,
   ENGINE_DEVTOOLS_LIVE_EVENTS,
   ENGINE_DEVTOOLS_LIVE_EVENT_TYPE
-} from '../../lib/transport/types/0.6.0'
+} from '../../lib/transport/types/0.7.0'
 
 import {
   ComposerContext,
@@ -67,6 +67,16 @@ const Storyteller: React.FC<{
         }
         break
       case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.GET_ASSET_URL:
+        const [url, exists]: [string, boolean] = await ipcRenderer.invoke(
+          WINDOW_EVENT_TYPE.GET_ASSET,
+          {
+            studioId,
+            worldId,
+            id: detail.asset?.id,
+            ext: 'jpeg'
+          }
+        )
+
         window.dispatchEvent(
           new CustomEvent<EngineDevToolsLiveEvent>(
             ENGINE_DEVTOOLS_LIVE_EVENTS.COMPOSER_TO_ENGINE,
@@ -75,12 +85,8 @@ const Storyteller: React.FC<{
                 eventType: ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RETURN_ASSET_URL,
                 eventId: detail.eventId,
                 asset: {
-                  url: await ipcRenderer.invoke(WINDOW_EVENT_TYPE.GET_ASSET, {
-                    studioId,
-                    worldId,
-                    id: detail.asset?.id,
-                    ext: 'jpeg'
-                  })
+                  url,
+                  exists
                 }
               }
             }

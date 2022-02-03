@@ -1,4 +1,5 @@
 import logger from '../logger'
+import { ipcRenderer } from 'electron'
 
 import {
   BaseRange,
@@ -27,6 +28,7 @@ import {
 import { Character, ElementId, Event, StudioId } from '../../data/types'
 import api from '../../api'
 import { isEqual, uniq } from 'lodash'
+import { WINDOW_EVENT_TYPE } from '../events'
 
 export const isElementActive = (
   editor: EditorType,
@@ -462,10 +464,85 @@ export const syncImagesFromEventContentToEventData = async (
   imagesToRemainById: Array<string>,
   imagesToRemoveById: Array<string>
 ) => {
-  // check every event for the image id...
-  // if it's not found, send the asset to trash
+  if (!event.id) return
 
-  // api().events.removeDeadImageRefs(studioId, )
+  const cachedEventImagesById = [...event.images]
+
+  // syncs images array
+  // this must come first
+  await api().events.saveEvent(studioId, {
+    ...event,
+    images: imagesToRemainById
+  })
+
+  // If there aren't any images to remove, we can assume that
+  // we need to check for images in the trash and move them back
+  // i.e. designer performed undo operation
+  // we can avoid this when an image is inserted by checking if the image id
+  // exists in the cached event.images array before we mutate after
+  if (imagesToRemainById.length > 0 && imagesToRemoveById.length === 0) {
+    const imagesToRestoreById = imagesToRemainById.filter(
+      (imageId) => !cachedEventImagesById.includes(imageId)
+    )
+
+    if (imagesToRestoreById.length === 0) return
+
+    await Promise.all(
+      imagesToRestoreById.map(async (imageId) => {
+        console.log(`RESTORE IMAGE ${imageId}`)
+
+        ipcRenderer.invoke(WINDOW_EVENT_TYPE.RESTORE_ASSET, {
+          studioId,
+          worldId: event.worldId,
+          id: imageId,
+          ext: 'webp'
+        })
+      })
+    )
+
+    return
+  }
+
   console.log('remove these!')
   console.log(imagesToRemoveById)
+
+  // next, we need to look at every event to see if any of these images are being used
+  // if not, send to .trash or move back to primary
+  // record with imageId as key and length of events as value
+  const foundEventsByImageId: { [imageId: string]: number } = {}
+
+  await Promise.all(
+    imagesToRemoveById.map(async (imageId) => {
+      try {
+        if (!foundEventsByImageId[imageId]) foundEventsByImageId[imageId] = 0
+
+        foundEventsByImageId[imageId] =
+          foundEventsByImageId[imageId] +
+          (await api().events.getEventsByImageId(studioId, imageId)).length
+      } catch (error) {
+        throw error
+      }
+    })
+  )
+
+  // check events length by imageId and if 0, send the image to .trash
+  Promise.all(
+    Object.keys(foundEventsByImageId).map(async (imageId) => {
+      if (foundEventsByImageId[imageId] === 0) {
+        // send image to the trash
+        ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
+          studioId,
+          worldId: event.worldId,
+          id: imageId,
+          ext: 'webp',
+          trash: true
+        })
+      }
+    })
+  )
+
+  console.log('imagesToRemainById')
+  console.log(imagesToRemainById)
+  console.log('foundEventsByImageId')
+  console.log(foundEventsByImageId)
 }

@@ -184,7 +184,7 @@ const createWindow = async () => {
             worldId: WorldId
             id: string
             data: ArrayBuffer
-            ext: 'jpeg'
+            ext: 'jpeg' | 'webp'
           }
         ): Promise<string | null> => {
           const path = `${app.getPath(
@@ -203,7 +203,7 @@ const createWindow = async () => {
       )
 
       ipcMain.handle(
-        WINDOW_EVENT_TYPE.REMOVE_ASSET,
+        WINDOW_EVENT_TYPE.RESTORE_ASSET,
         async (
           _,
           {
@@ -216,15 +216,59 @@ const createWindow = async () => {
             worldId: WorldId
             id: string
             data: ArrayBuffer
-            ext: 'jpeg'
+            ext: 'jpeg' | 'webp'
           }
         ) => {
-          const path = `${app.getPath(
-            'userData'
-          )}/assets/${studioId}/${worldId}/${id}.${ext}`
+          const basePath = `${app.getPath(
+              'userData'
+            )}/assets/${studioId}/${worldId}`,
+            assetPath = `${basePath}/.trash/${id}.${ext}`
 
           try {
-            await fs.remove(path)
+            if (!(await fs.pathExists(assetPath))) return
+
+            await fs.move(assetPath, `${basePath}/${id}.${ext}`)
+          } catch (error) {
+            // TODO: return error to app
+            throw error
+          }
+        }
+      )
+
+      ipcMain.handle(
+        WINDOW_EVENT_TYPE.REMOVE_ASSET,
+        async (
+          _,
+          {
+            studioId,
+            worldId,
+            id,
+            ext,
+            trash
+          }: {
+            studioId: StudioId
+            worldId: WorldId
+            id: string
+            data: ArrayBuffer
+            ext: 'jpeg' | 'webp'
+            trash?: boolean
+          }
+        ) => {
+          const basePath = `${app.getPath(
+              'userData'
+            )}/assets/${studioId}/${worldId}`,
+            assetPath = `${basePath}/${id}.${ext}`
+
+          try {
+            if (!(await fs.pathExists(assetPath))) return
+
+            if (trash) {
+              await fs.move(assetPath, `${basePath}/.trash/${id}.${ext}`)
+            }
+
+            if (!trash) {
+              await fs.remove(assetPath)
+            }
           } catch (error) {
             // TODO: return error to app
             throw error
@@ -275,7 +319,12 @@ const createWindow = async () => {
             worldId,
             id,
             ext
-          }: { studioId: StudioId; worldId: WorldId; id: string; ext: 'jpeg' }
+          }: {
+            studioId: StudioId
+            worldId: WorldId
+            id: string
+            ext: 'jpeg' | 'webp'
+          }
         ) => {
           let platformPath: string
 
@@ -297,7 +346,9 @@ const createWindow = async () => {
 
           const exists = await fs.pathExists(platformPath)
 
-          return exists ? `"${platformPath}"` : null
+          // return exists ? `"${platformPath}"` : null
+
+          return [`"${platformPath}"`, exists]
         }
       )
 

@@ -367,6 +367,7 @@ export interface EngineDevToolsLiveEvent {
   asset?: {
     id?: string
     url?: string
+    exists?: boolean
   }
 }
 

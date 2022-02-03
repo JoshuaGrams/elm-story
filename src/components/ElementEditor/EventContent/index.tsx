@@ -596,8 +596,6 @@ const EventContent: React.FC<{
     async function syncImages() {
       if (!event) return
 
-      console.log(imageCache)
-
       const imagesToRemainById = getImageIdsFromEventContent(editor)
 
       if (isEqual(imageCache, imagesToRemainById)) {

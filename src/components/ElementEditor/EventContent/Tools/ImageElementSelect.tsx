@@ -53,13 +53,13 @@ const ImageElementSelect: React.FC<{
   const selected = useSelected()
 
   const [croppingImage, setCroppingImage] = useState<boolean>(false),
-    [savingImage, setSavingImage] = useState<boolean>(false),
+    [loadingImage, setLoadingImage] = useState<boolean>(false),
     [imagePath, setImagePath] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     async function getImagePath() {
       if (element.asset_id) {
-        const path: string | null = await ipcRenderer.invoke(
+        const [path, exists]: [string, boolean] = await ipcRenderer.invoke(
           WINDOW_EVENT_TYPE.GET_ASSET,
           {
             studioId,
@@ -69,10 +69,10 @@ const ImageElementSelect: React.FC<{
           }
         )
 
-        if (path) {
-          setImagePath(path)
-          return
-        }
+        // if (path) {
+        setImagePath(path)
+        return
+        // }
       }
     }
 
@@ -95,7 +95,7 @@ const ImageElementSelect: React.FC<{
         onImportImageData={() => setCroppingImage(true)}
         onImportImageCropComplete={async (image) => {
           if (image) {
-            setSavingImage(true)
+            setLoadingImage(true)
 
             try {
               await onImageSelect(image)
@@ -105,7 +105,7 @@ const ImageElementSelect: React.FC<{
           }
 
           setCroppingImage(false)
-          setSavingImage(false)
+          setLoadingImage(false)
         }}
         size={{ width: 655 * 2, height: 368 * 2 }}
       />
@@ -115,6 +115,10 @@ const ImageElementSelect: React.FC<{
           className={styles.image}
           style={{ backgroundImage: imagePath ? `url(${imagePath})` : 'unset' }}
         />
+      )}
+
+      {element.asset_id && !loadingImage && !imagePath && (
+        <div>Missing Image...</div>
       )}
 
       {!element.asset_id && (

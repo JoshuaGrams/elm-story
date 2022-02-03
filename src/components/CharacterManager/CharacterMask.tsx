@@ -104,7 +104,7 @@ const CharacterMask: React.FC<{
         }
 
         if (assetId) {
-          const path: string | null = await ipcRenderer.invoke(
+          const [path, exists]: [string, boolean] = await ipcRenderer.invoke(
             WINDOW_EVENT_TYPE.GET_ASSET,
             {
               studioId,
@@ -114,12 +114,12 @@ const CharacterMask: React.FC<{
             }
           )
 
-          if (path) {
+          if (exists) {
             setMaskImagePath(path)
             return
           }
 
-          if (!path) {
+          if (!exists) {
             const character = await api().characters.getCharacter(
               studioId,
               characterId
