@@ -20,6 +20,7 @@ import {
   ELEMENT_FORMATS,
   EventContentElement,
   EventContentLeaf,
+  ImageElement,
   LEAF_FORMATS,
   LIST_TYPES
 } from '../../data/eventContentTypes'
@@ -442,4 +443,29 @@ export const formatCharacterRefDisplay = (
         (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase()
       )
   }
+}
+
+// TODO: dupe code; breakout filtering
+export const getImageIdsFromEventContent = (editor: EditorType) =>
+  flattenEventContent(editor.children, true)
+    .filter(
+      (element): element is ImageElement =>
+        Element.isElement(element) &&
+        element.type === ELEMENT_FORMATS.IMG &&
+        element.asset_id !== undefined
+    )
+    .map(({ asset_id }) => asset_id as string)
+
+export const syncImagesFromEventContentToEventData = async (
+  studioId: StudioId,
+  event: Event,
+  imagesToRemainById: Array<string>,
+  imagesToRemoveById: Array<string>
+) => {
+  // check every event for the image id...
+  // if it's not found, send the asset to trash
+
+  // api().events.removeDeadImageRefs(studioId, )
+  console.log('remove these!')
+  console.log(imagesToRemoveById)
 }

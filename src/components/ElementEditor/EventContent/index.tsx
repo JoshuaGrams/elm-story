@@ -3,7 +3,7 @@ import logger from '../../../lib/logger'
 import { ipcRenderer } from 'electron'
 import { v4 as uuid } from 'uuid'
 
-import { debounce } from 'lodash'
+import { debounce, isEqual, xor, xorBy } from 'lodash'
 import useEventListener from '@use-it/event-listener'
 import isHotkey from 'is-hotkey'
 
@@ -74,10 +74,12 @@ import {
   deleteAll,
   getCharactersIdsFromEventContent,
   getElement,
+  getImageIdsFromEventContent,
   isElementActive,
   isLeafActive,
   showCommandMenu,
   syncCharactersFromEventContentToEventData,
+  syncImagesFromEventContentToEventData,
   toggleElement,
   toggleLeaf
 } from '../../../lib/contentEditor'
@@ -138,7 +140,9 @@ const EventContent: React.FC<{
     [selectedCommandMenuItem, setSelectedCommandMenuItem] = useState<
       string | undefined
     >(undefined),
-    [ready, setReady] = useState(false)
+    [ready, setReady] = useState(false),
+    // so we know what images have been removed
+    [imageCache, setImageCache] = useState<string[]>([])
 
   const debounceSaveContent = useCallback(
     (content) => saveContent(studioId, eventId, content),
@@ -212,13 +216,28 @@ const EventContent: React.FC<{
                     let assetId: string = uuid()
 
                     try {
-                      await ipcRenderer.invoke(WINDOW_EVENT_TYPE.SAVE_ASSET, {
-                        studioId,
-                        worldId: event.worldId,
-                        id: assetId,
-                        data: await image.data.arrayBuffer(),
-                        ext: 'webp'
-                      })
+                      const promises: Promise<any>[] = []
+
+                      promises.push(
+                        ipcRenderer.invoke(WINDOW_EVENT_TYPE.SAVE_ASSET, {
+                          studioId,
+                          worldId: event.worldId,
+                          id: assetId,
+                          data: await image.data.arrayBuffer(),
+                          ext: 'webp'
+                        })
+                      )
+
+                      if (!event.images.includes(assetId)) {
+                        promises.push(
+                          api().events.saveEvent(studioId, {
+                            ...event,
+                            images: [...event.images, assetId]
+                          })
+                        )
+                      }
+
+                      await Promise.all(promises)
 
                       Transforms.setNodes<ImageElement>(
                         editor,
@@ -323,7 +342,6 @@ const EventContent: React.FC<{
         }
 
         if (item === ELEMENT_FORMATS.IMG) {
-          console.log('HERE')
           Transforms.insertNodes(editor, {
             type: ELEMENT_FORMATS.IMG,
             children: [{ text: '' }]
@@ -574,6 +592,37 @@ const EventContent: React.FC<{
     syncCharacters()
   }, [event?.characters, editor.children])
 
+  useEffect(() => {
+    async function syncImages() {
+      if (!event) return
+
+      console.log(imageCache)
+
+      const imagesToRemainById = getImageIdsFromEventContent(editor)
+
+      if (isEqual(imageCache, imagesToRemainById)) {
+        console.log('cache is the same dont do anything')
+        return
+      }
+
+      const imagesToRemoveById =
+        imagesToRemainById.length === 0
+          ? imageCache
+          : imageCache.filter((id) => !imagesToRemainById.includes(id))
+
+      await syncImagesFromEventContentToEventData(
+        studioId,
+        event,
+        imagesToRemainById,
+        imagesToRemoveById
+      )
+
+      setImageCache(imagesToRemainById)
+    }
+
+    syncImages()
+  }, [event?.images, editor.children, imageCache])
+
   return (
     <>
       {event && (
@@ -680,8 +729,8 @@ const EventContent: React.FC<{
                   style={{
                     userSelect: 'all',
                     position: 'absolute',
-                    bottom: -400,
-                    display: 'none'
+                    bottom: -400
+                    // display: 'none'
                   }}
                 >
                   {event.content}

@@ -202,31 +202,41 @@ export const withImages = (editor: Editor) => {
     return element.type === ELEMENT_FORMATS.IMG ? true : isVoid(element)
   }
 
-  editor.insertData = (data) => {
-    const text = data.getData('text/plain')
-    const { files } = data
+  // editor.deleteBackward = (unit) => {
+  //   const { deleteBackward } = editor
 
-    if (files && files.length > 0) {
-      // @ts-ignore
-      for (const file of files) {
-        const reader = new FileReader()
-        const [mime] = file.type.split('/')
+  //   logger.info(`contentEditor->plugins->withImages->deleteBackward`)
 
-        if (mime === 'image') {
-          reader.addEventListener('load', () => {
-            const url = reader.result
-            url && insertImage(editor, url as string)
-          })
+  //   if (!editor.selection) return deleteBackward(unit)
 
-          reader.readAsDataURL(file)
-        }
-      }
-    } else if (text) {
-      insertImage(editor, text)
-    } else {
-      insertData(data)
-    }
-  }
+  //   console.log('test')
+  // }
+
+  // editor.insertData = (data) => {
+  //   const text = data.getData('text/plain')
+  //   const { files } = data
+
+  //   if (files && files.length > 0) {
+  //     // @ts-ignore
+  //     for (const file of files) {
+  //       const reader = new FileReader()
+  //       const [mime] = file.type.split('/')
+
+  //       if (mime === 'image') {
+  //         reader.addEventListener('load', () => {
+  //           const url = reader.result
+  //           url && insertImage(editor, url as string)
+  //         })
+
+  //         reader.readAsDataURL(file)
+  //       }
+  //     }
+  //   } else if (text) {
+  //     insertImage(editor, text)
+  //   } else {
+  //     insertData(data)
+  //   }
+  // }
 
   return editor
 }
@@ -243,6 +253,7 @@ export const withEmbeds = (editor: EditorType) => {
 export const withCharacters = (editor: EditorType) => {
   const { isInline, isVoid, deleteBackward } = editor
 
+  // TODO: this doesn't do anything, but has some useful code
   editor.deleteBackward = (unit) => {
     logger.info(`contentEditor->plugins->withCharacters->deleteBackward`)
 
@@ -257,9 +268,9 @@ export const withCharacters = (editor: EditorType) => {
       if (
         Element.isElement(previousNode) &&
         previousNode.type === ELEMENT_FORMATS.CHARACTER &&
-        previousNode.character
+        previousNode.character_id
       ) {
-        logger.info(`delete character ${previousNode.character[0]}`)
+        logger.info(`delete character ${previousNode.character_id}`)
       }
 
       return deleteBackward(unit)
@@ -271,9 +282,9 @@ export const withCharacters = (editor: EditorType) => {
     if (
       Element.isElement(parentNode) &&
       parentNode.type === ELEMENT_FORMATS.CHARACTER &&
-      parentNode.character
+      parentNode.character_id
     ) {
-      logger.info(`delete character ${parentNode.character[0]}`)
+      logger.info(`delete character ${parentNode.character_id}`)
     }
 
     deleteBackward(unit)

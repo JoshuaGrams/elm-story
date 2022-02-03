@@ -11,6 +11,7 @@ import { ipcRenderer } from 'electron'
 import { WINDOW_EVENT_TYPE } from '../../../../lib/events'
 import { StudioId, WorldId } from '../../../../data/types'
 import { url } from 'inspector'
+import { useSelected } from 'slate-react'
 
 export type OnImageSelect = (image: CroppedImage) => Promise<void>
 
@@ -49,6 +50,8 @@ const ImageElementSelect: React.FC<{
 }> = ({ studioId, worldId, element, onImageSelect }) => {
   const importInlineImageRef = useRef<{ import: () => void }>(null)
 
+  const selected = useSelected()
+
   const [croppingImage, setCroppingImage] = useState<boolean>(false),
     [savingImage, setSavingImage] = useState<boolean>(false),
     [imagePath, setImagePath] = useState<string | undefined>(undefined)
@@ -78,6 +81,8 @@ const ImageElementSelect: React.FC<{
 
   return (
     <div className={styles.ImageSelect} contentEditable={false}>
+      {selected && <div className={styles.selection} />}
+
       <ImportAndCropImage
         ref={importInlineImageRef}
         cropping={croppingImage}
@@ -105,7 +110,7 @@ const ImageElementSelect: React.FC<{
         size={{ width: 655 * 2, height: 368 * 2 }}
       />
 
-      {element.asset_id && (
+      {element.asset_id && imagePath && (
         <div
           className={styles.image}
           style={{ backgroundImage: imagePath ? `url(${imagePath})` : 'unset' }}
