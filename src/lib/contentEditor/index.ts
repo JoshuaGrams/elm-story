@@ -1,5 +1,10 @@
 import logger from '../logger'
+
+import { isEqual, uniq } from 'lodash'
 import { ipcRenderer } from 'electron'
+
+import { Character, ElementId, Event, StudioId } from '../../data/types'
+import { WINDOW_EVENT_TYPE } from '../events'
 
 import {
   BaseRange,
@@ -25,10 +30,8 @@ import {
   LEAF_FORMATS,
   LIST_TYPES
 } from '../../data/eventContentTypes'
-import { Character, ElementId, Event, StudioId } from '../../data/types'
+
 import api from '../../api'
-import { isEqual, uniq } from 'lodash'
-import { WINDOW_EVENT_TYPE } from '../events'
 
 export const isElementActive = (
   editor: EditorType,
@@ -503,46 +506,12 @@ export const syncImagesFromEventContentToEventData = async (
     return
   }
 
-  console.log('remove these!')
-  console.log(imagesToRemoveById)
-
   // next, we need to look at every event to see if any of these images are being used
   // if not, send to .trash or move back to primary
   // record with imageId as key and length of events as value
-  const foundEventsByImageId: { [imageId: string]: number } = {}
-
-  await Promise.all(
-    imagesToRemoveById.map(async (imageId) => {
-      try {
-        if (!foundEventsByImageId[imageId]) foundEventsByImageId[imageId] = 0
-
-        foundEventsByImageId[imageId] =
-          foundEventsByImageId[imageId] +
-          (await api().events.getEventsByImageId(studioId, imageId)).length
-      } catch (error) {
-        throw error
-      }
-    })
+  await api().events.removeDeadImageAssets(
+    studioId,
+    event.worldId,
+    imagesToRemoveById
   )
-
-  // check events length by imageId and if 0, send the image to .trash
-  Promise.all(
-    Object.keys(foundEventsByImageId).map(async (imageId) => {
-      if (foundEventsByImageId[imageId] === 0) {
-        // send image to the trash
-        ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
-          studioId,
-          worldId: event.worldId,
-          id: imageId,
-          ext: 'webp',
-          trash: true
-        })
-      }
-    })
-  )
-
-  console.log('imagesToRemainById')
-  console.log(imagesToRemainById)
-  console.log('foundEventsByImageId')
-  console.log(foundEventsByImageId)
 }

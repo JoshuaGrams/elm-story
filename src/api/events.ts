@@ -1,5 +1,8 @@
 import { LibraryDatabase, LIBRARY_TABLE } from '../db'
+import { ipcRenderer } from 'electron'
 import { v4 as uuid } from 'uuid'
+
+import { WINDOW_EVENT_TYPE } from '../lib/events'
 
 import { Descendant } from 'slate'
 import {
@@ -461,4 +464,48 @@ export async function getEventsByImageId(studioId: StudioId, imageId: string) {
   } catch (error) {
     throw error
   }
+}
+
+export async function removeDeadImageAssets(
+  studioId: StudioId,
+  worldId: WorldId,
+  imagesToRemoveById: string[],
+  // when events are removed, the images array is not updated
+  // so we need to filter this event from the length check
+  // supports filtering multiple events if desired
+  filterOutEventIds?: string[]
+) {
+  const foundEventsByImageId: { [imageId: string]: number } = {}
+
+  await Promise.all(
+    imagesToRemoveById.map(async (imageId) => {
+      try {
+        if (!foundEventsByImageId[imageId]) foundEventsByImageId[imageId] = 0
+
+        foundEventsByImageId[imageId] =
+          foundEventsByImageId[imageId] +
+          (await api().events.getEventsByImageId(studioId, imageId)).filter(
+            (event) => event.id && !filterOutEventIds?.includes(event.id)
+          ).length
+      } catch (error) {
+        throw error
+      }
+    })
+  )
+
+  // check events length by imageId and if 0, send the image to .trash
+  Promise.all(
+    Object.keys(foundEventsByImageId).map(async (imageId) => {
+      if (foundEventsByImageId[imageId] === 0) {
+        // send image to the trash
+        ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
+          studioId,
+          worldId,
+          id: imageId,
+          ext: 'webp',
+          trash: true
+        })
+      }
+    })
+  )
 }

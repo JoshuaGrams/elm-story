@@ -53,6 +53,8 @@ import v9 from './v9'
 import v10 from './v10'
 import v11 from './v11' // 0.7.0
 
+import api from '../api'
+
 export enum DB_NAME {
   APP = 'esg-app',
   LIBRARY = 'esg-library'
@@ -185,7 +187,9 @@ export class LibraryDatabase extends Dexie {
   public variables: Dexie.Table<Variable, string>
   public worlds: Dexie.Table<World, string>
 
-  public constructor(studioId: string) {
+  public studioId: StudioId
+
+  public constructor(studioId: StudioId) {
     super(`${DB_NAME.LIBRARY}-${studioId}`)
 
     v1(this)
@@ -217,6 +221,8 @@ export class LibraryDatabase extends Dexie {
     this.settings = this.table(LIBRARY_TABLE.SETTINGS)
     this.variables = this.table(LIBRARY_TABLE.VARIABLES)
     this.worlds = this.table(LIBRARY_TABLE.WORLDS)
+
+    this.studioId = studioId
   }
 
   public async getElement(table: LIBRARY_TABLE, id: ElementId) {
@@ -1760,6 +1766,15 @@ export class LibraryDatabase extends Dexie {
 
           await this.saveChildRefsToScene(event.sceneId, updatedSceneChildRefs)
         }
+      }
+
+      if (event?.id && event.images.length > 0) {
+        await api().events.removeDeadImageAssets(
+          this.studioId,
+          event.worldId,
+          event.images,
+          [event.id]
+        )
       }
 
       await this.transaction('rw', this.events, async () => {
