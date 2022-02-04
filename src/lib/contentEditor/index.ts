@@ -385,14 +385,12 @@ export const getCharacterDetailsFromEventContent = (content: Descendant[]) =>
 export const getCharactersIdsFromEventContent = (editor: EditorType) =>
   flattenEventContent(editor.children, true)
     .filter(
-      (element): element is EventContentElement =>
-        Element.isElement(element) && element.type === ELEMENT_FORMATS.CHARACTER
+      (element): element is CharacterElement =>
+        Element.isElement(element) &&
+        element.type === ELEMENT_FORMATS.CHARACTER &&
+        element.character_id !== undefined
     )
-    .map((element) =>
-      element.type === ELEMENT_FORMATS.CHARACTER && element.character_id
-        ? element.character_id
-        : undefined
-    )
+    .map(({ character_id }) => character_id as string)
 
 export const syncCharactersFromEventContentToEventData = async (
   studioId: StudioId,

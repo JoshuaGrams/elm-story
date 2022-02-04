@@ -87,7 +87,7 @@ const ImageElement: React.FC<{
   onImageSelect: OnImageSelect
 }> = ({ studioId, worldId, element, attributes, onImageSelect, children }) => {
   return (
-    <div {...attributes} className={`${styles.img}`} data-slate-editor>
+    <div {...attributes} className={`${styles.img}`}>
       {children}
 
       <ImageElementSelect

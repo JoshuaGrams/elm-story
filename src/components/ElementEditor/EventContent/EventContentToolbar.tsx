@@ -1,4 +1,5 @@
 import {
+  getActiveElementType,
   getElement,
   isElementActive,
   isLeafActive,
@@ -65,7 +66,8 @@ const EventContentToolbar: React.FC = () => {
       !selection ||
       !ReactEditor.isFocused(editor) ||
       Range.isCollapsed(selection) ||
-      Editor.string(editor, selection) === ''
+      Editor.string(editor, selection) === '' ||
+      getActiveElementType(editor) === ELEMENT_FORMATS.IMG
     ) {
       if (toolbarRef.current) {
         toolbarRef.current.style.opacity = '0'

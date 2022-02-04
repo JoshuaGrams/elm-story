@@ -3,7 +3,7 @@ import logger from '../../../lib/logger'
 import { ipcRenderer } from 'electron'
 import { v4 as uuid } from 'uuid'
 
-import { debounce, isEqual, xor, xorBy } from 'lodash'
+import { debounce, isEqual } from 'lodash'
 import useEventListener from '@use-it/event-listener'
 import isHotkey from 'is-hotkey'
 
@@ -22,7 +22,8 @@ import {
   ELEMENT_FORMATS,
   SUPPORTED_ELEMENT_TYPES,
   CharacterElement,
-  ImageElement
+  ImageElement,
+  DEFAULT_EVENT_CONTENT
 } from '../../../data/eventContentTypes'
 
 import { DragStart, DropResult } from 'react-beautiful-dnd'
@@ -40,7 +41,10 @@ import {
   Transforms,
   Text,
   BaseSelection,
-  BaseRange
+  BaseRange,
+  Path,
+  Node,
+  Element
 } from 'slate'
 import {
   Slate as SlateContext,
@@ -76,6 +80,7 @@ import {
   getElement,
   getImageIdsFromEventContent,
   isElementActive,
+  isElementEmpty,
   isLeafActive,
   showCommandMenu,
   syncCharactersFromEventContentToEventData,
@@ -141,7 +146,8 @@ const EventContent: React.FC<{
       string | undefined
     >(undefined),
     [ready, setReady] = useState(false),
-    // so we know what images have been removed
+    // so we know what images and characters have been removed
+    [characterCache, setCharacterCache] = useState<string[]>([]),
     [imageCache, setImageCache] = useState<string[]>([])
 
   const debounceSaveContent = useCallback(
@@ -246,6 +252,14 @@ const EventContent: React.FC<{
                         },
                         { at: imageElementPath }
                       )
+
+                      // Transforms.select(
+                      //   editor,
+                      //   Editor.start(editor, imageElementPath)
+                      // )
+
+                      ReactEditor.focus(editor)
+                      Transforms.move(editor)
                     } catch (error) {
                       throw error
                     }
@@ -336,18 +350,37 @@ const EventContent: React.FC<{
           })
 
           Transforms.deselect(editor)
-          // Transforms.move(editor)
 
           return
         }
 
         if (item === ELEMENT_FORMATS.IMG) {
+          const {
+            element: previousElement,
+            path: previousElementPath
+          } = getElement(editor)
+
+          if (
+            previousElement &&
+            previousElementPath &&
+            isElementEmpty(previousElement)
+          ) {
+            Transforms.setNodes(
+              editor,
+              {
+                type: ELEMENT_FORMATS.IMG,
+                children: [{ text: '' }]
+              },
+              { at: previousElementPath }
+            )
+
+            return
+          }
+
           Transforms.insertNodes(editor, {
             type: ELEMENT_FORMATS.IMG,
             children: [{ text: '' }]
           })
-
-          Transforms.deselect(editor)
 
           return
         }
@@ -539,6 +572,15 @@ const EventContent: React.FC<{
 
       // TODO: stack hack
       setTimeout(() => {
+        // TODO: this might be desired UX, but is confusing
+        // const startingElement = Node.last(editor, [])
+
+        // if (
+        //   Element.isElement(startingElement) &&
+        //   startingElement.type === ELEMENT_FORMATS.IMG
+        // )
+        //   return
+
         Transforms.select(editor, Editor.end(editor, []))
         ReactEditor.focus(editor)
       }, 1)
@@ -574,23 +616,29 @@ const EventContent: React.FC<{
   // syncs event content and event characters array
   // from adding and removing characters via content editor
   useEffect(() => {
-    logger.info(
-      `EventContent->useEffect->event.characters,editor.children->syncCharacters`
-    )
-
     async function syncCharacters() {
       if (!event) return
+
+      const charactersToRemainById = getCharactersIdsFromEventContent(editor)
+
+      if (isEqual(characterCache, charactersToRemainById)) return
+
+      logger.info(
+        `EventContent->useEffect->event.characters,editor.children->syncCharacters`
+      )
 
       // TODO: lock during processing?
       await syncCharactersFromEventContentToEventData(
         studioId,
         event,
-        getCharactersIdsFromEventContent(editor)
+        charactersToRemainById
       )
+
+      setCharacterCache(charactersToRemainById)
     }
 
     syncCharacters()
-  }, [event?.characters, editor.children])
+  }, [event?.content, characterCache])
 
   useEffect(() => {
     async function syncImages() {
@@ -598,10 +646,7 @@ const EventContent: React.FC<{
 
       const imagesToRemainById = getImageIdsFromEventContent(editor)
 
-      if (isEqual(imageCache, imagesToRemainById)) {
-        console.log('cache is the same dont do anything')
-        return
-      }
+      if (isEqual(imageCache, imagesToRemainById)) return
 
       const imagesToRemoveById =
         imagesToRemainById.length === 0
@@ -619,7 +664,7 @@ const EventContent: React.FC<{
     }
 
     syncImages()
-  }, [event?.images, editor.children, imageCache])
+  }, [event?.content, imageCache])
 
   return (
     <>
@@ -655,6 +700,19 @@ const EventContent: React.FC<{
                   setCommandMenuProps({ show, filter, target, index: 0 })
 
                   saveContent.cancel()
+
+                  // elmstorygames/feedback#216
+                  if (newContent.length === 0) {
+                    editor.children = [...DEFAULT_EVENT_CONTENT]
+
+                    Transforms.select(editor, Editor.start(editor, []))
+
+                    ReactEditor.focus(editor)
+                    Transforms.move(editor)
+
+                    return
+                  }
+
                   debounceSaveContent(newContent)
                 }
               }}

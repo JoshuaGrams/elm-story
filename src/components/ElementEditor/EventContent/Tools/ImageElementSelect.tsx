@@ -1,17 +1,22 @@
+import { ipcRenderer } from 'electron'
+
 import { getSvgUrl } from '../../../../lib'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
+import { WINDOW_EVENT_TYPE } from '../../../../lib/events'
+import { StudioId, WorldId } from '../../../../data/types'
 import { ImageElement } from '../../../../data/eventContentTypes'
+
+import { ReactEditor, useSelected, useSlate } from 'slate-react'
 
 import ImportAndCropImage, { CroppedImage } from '../../../ImportAndCropImage'
 
 import styles from './styles.module.less'
-import { ipcRenderer } from 'electron'
-import { WINDOW_EVENT_TYPE } from '../../../../lib/events'
-import { StudioId, WorldId } from '../../../../data/types'
-import { url } from 'inspector'
-import { useSelected } from 'slate-react'
+import { Transforms } from 'slate'
+import { Button } from 'antd'
+import { DeleteOutlined } from '@ant-design/icons'
+import { getElement } from '../../../../lib/contentEditor'
 
 export type OnImageSelect = (image: CroppedImage) => Promise<void>
 
@@ -50,11 +55,24 @@ const ImageElementSelect: React.FC<{
 }> = ({ studioId, worldId, element, onImageSelect }) => {
   const importInlineImageRef = useRef<{ import: () => void }>(null)
 
-  const selected = useSelected()
+  const editor = useSlate(),
+    selected = useSelected()
 
   const [croppingImage, setCroppingImage] = useState<boolean>(false),
     [loadingImage, setLoadingImage] = useState<boolean>(false),
     [imagePath, setImagePath] = useState<string | undefined>(undefined)
+
+  const removeImage = useCallback(
+    (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      event.stopPropagation()
+
+      Transforms.delete(editor, { at: getElement(editor).path })
+
+      ReactEditor.focus(editor)
+      Transforms.move(editor)
+    },
+    [editor]
+  )
 
   useEffect(() => {
     async function getImagePath() {
@@ -107,31 +125,48 @@ const ImageElementSelect: React.FC<{
           setCroppingImage(false)
           setLoadingImage(false)
         }}
+        onSelectNewImage={() => importInlineImageRef.current?.import()}
         size={{ width: 655 * 2, height: 368 * 2 }}
       />
 
       {element.asset_id && imagePath && (
         <div
-          className={styles.image}
+          className={`${styles.image} ${selected ? styles.selected : ''}`}
           style={{ backgroundImage: imagePath ? `url(${imagePath})` : 'unset' }}
-        />
+          onClick={() => {
+            // TODO: this doesn't work properly with the cache
+            // importInlineImageRef.current?.import()
+          }}
+        >
+          <div className={styles.toolbar}>
+            <Button danger onClick={removeImage}>
+              <DeleteOutlined />
+            </Button>
+          </div>
+        </div>
       )}
 
-      {element.asset_id && !loadingImage && !imagePath && (
+      {/* {element.asset_id && !loadingImage && !imagePath && (
         <div>Missing Image...</div>
-      )}
+      )} */}
 
       {!element.asset_id && (
         <div
           onClick={() => importInlineImageRef.current?.import()}
-          className={styles.placeholder}
+          className={`${styles.placeholder} ${selected ? styles.selected : ''}`}
           title="Click to select an image..."
           style={{
             backgroundImage: `url(${getSvgUrl(ImageSelectPlaceholder)})`,
             opacity: croppingImage ? 0 : 'unset',
             pointerEvents: croppingImage ? 'none' : 'unset'
           }}
-        />
+        >
+          <div className={styles.toolbar}>
+            <Button danger onClick={removeImage}>
+              <DeleteOutlined />
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   )

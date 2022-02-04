@@ -242,12 +242,12 @@ const ElementDropdown: React.FC = () => {
           >
             <UnorderedListOutlined className={styles.icon} /> Bulleted List
           </Menu.Item>
-          <Menu.Item>
+          {/* <Menu.Item>
             <FileImageOutlined className={styles.icon} /> Image
           </Menu.Item>
           <Menu.Item>
             <YoutubeOutlined className={styles.icon} /> Embed
-          </Menu.Item>
+          </Menu.Item> */}
         </Menu>
       }
     >

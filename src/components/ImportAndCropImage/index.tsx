@@ -38,6 +38,7 @@ const ImportAndCropImage = React.forwardRef<
     quality?: number
     onImportImageData: () => void
     onImportImageCropComplete: (image: CroppedImage | null) => void
+    onSelectNewImage: () => void
   }
 >(
   (
@@ -51,7 +52,8 @@ const ImportAndCropImage = React.forwardRef<
       size,
       quality,
       onImportImageData,
-      onImportImageCropComplete
+      onImportImageCropComplete,
+      onSelectNewImage
     },
     ref
   ) => {
@@ -211,12 +213,20 @@ const ImportAndCropImage = React.forwardRef<
                         Cancel
                       </Button>
 
-                      <Button onClick={onSave} className={styles.save}>
+                      <Button
+                        onClick={onSave}
+                        className={styles.save}
+                        type="primary"
+                      >
                         Save
                       </Button>
                     </div>
 
-                    <Button className={styles.side} title="Select new image...">
+                    <Button
+                      className={styles.side}
+                      title="Select new image..."
+                      onClick={onSelectNewImage}
+                    >
                       <FileImageOutlined />
                     </Button>
                   </div>
