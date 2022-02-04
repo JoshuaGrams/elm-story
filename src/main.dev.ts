@@ -219,15 +219,14 @@ const createWindow = async () => {
             ext: 'jpeg' | 'webp'
           }
         ) => {
-          const basePath = `${app.getPath(
-              'userData'
-            )}/assets/${studioId}/${worldId}`,
-            assetPath = `${basePath}/.trash/${id}.${ext}`
+          const userDataPath = app.getPath('userData'),
+            assetsPath = `${userDataPath}/assets/${studioId}/${worldId}`,
+            assetInTrashPath = `${userDataPath}/.trash/${id}.${ext}`
 
           try {
-            if (!(await fs.pathExists(assetPath))) return
+            if (!(await fs.pathExists(assetInTrashPath))) return
 
-            await fs.move(assetPath, `${basePath}/${id}.${ext}`)
+            await fs.move(assetInTrashPath, `${assetsPath}/${id}.${ext}`)
           } catch (error) {
             // TODO: return error to app
             throw error
@@ -254,16 +253,15 @@ const createWindow = async () => {
             trash?: boolean
           }
         ) => {
-          const basePath = `${app.getPath(
-              'userData'
-            )}/assets/${studioId}/${worldId}`,
-            assetPath = `${basePath}/${id}.${ext}`
+          const userDataPath = app.getPath('userData'),
+            assetsPath = `${userDataPath}/assets/${studioId}/${worldId}`,
+            assetPath = `${assetsPath}/${id}.${ext}`
 
           try {
             if (!(await fs.pathExists(assetPath))) return
 
             if (trash) {
-              await fs.move(assetPath, `${basePath}/.trash/${id}.${ext}`)
+              await fs.move(assetPath, `${userDataPath}/.trash/${id}.${ext}`)
             }
 
             if (!trash) {
@@ -637,8 +635,11 @@ const createWindow = async () => {
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater()
+  // new AppUpdater()
 }
+
+// elmstorygames/feedback#110
+fs.emptyDir(`${app.getPath('userData')}/.trash`)
 
 /**
  * Add event listeners...
