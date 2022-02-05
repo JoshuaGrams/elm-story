@@ -1,4 +1,5 @@
 import logger from '../logger'
+import { capitalizeString } from '..'
 
 import { isEqual, uniq } from 'lodash'
 import { ipcRenderer } from 'electron'
@@ -20,8 +21,11 @@ import {
 
 import {
   ALIGN_TYPE,
+  AllowedCharacterDisplayFormatStyles,
+  CharacterDisplayFormat,
   CharacterElement,
-  CharacterElementFormatType,
+  CharacterElementStyleTypes,
+  CharacterElementTransformType,
   EditorType,
   ELEMENT_FORMATS,
   EventContentElement,
@@ -430,22 +434,68 @@ export const isEndOfLine = (editor: EditorType) => {
   return afterLocation?.offset === 0 || !afterLocation
 }
 
-export const formatCharacterRefDisplay = (
+export const getCharacterRefDisplayFormat = (
   text: string,
-  type?: CharacterElementFormatType
-) => {
-  switch (type) {
+  transform: CharacterElementTransformType,
+  styles?: CharacterElementStyleTypes
+): CharacterDisplayFormat => {
+  let transText: string = `${text}`,
+    _styles: AllowedCharacterDisplayFormatStyles | undefined = undefined
+
+  switch (transform) {
     case 'lower':
-      return text.toLowerCase()
+      transText = transText.toLowerCase()
+      break
     case 'upper':
-      return text.toUpperCase()
+      transText = transText.toUpperCase()
+      break
     case 'cap':
     default:
-      return text.replace(
-        /(^\w|\s\w)(\S*)/g,
-        (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase()
-      )
+      transText = capitalizeString(transText)
+      break
   }
+
+  if (styles) {
+    styles.map((style) => {
+      if (!_styles) _styles = {}
+
+      switch (style) {
+        case 'strong':
+          _styles.fontWeight = 'bold'
+          break
+        case 'em':
+          _styles.fontStyle = 'italic'
+          break
+        case 'u':
+          if (!_styles.textDecoration) {
+            _styles.textDecoration = 'underline'
+            break
+          }
+
+          if (_styles.textDecoration === 'line-through') {
+            _styles.textDecoration = 'underline line-through'
+            break
+          }
+
+          break
+        case 's':
+          if (!_styles.textDecoration) {
+            _styles.textDecoration = 'line-through'
+          }
+
+          if (_styles.textDecoration === 'underline') {
+            _styles.textDecoration = 'underline line-through'
+            break
+          }
+
+          break
+        default:
+          break
+      }
+    })
+  }
+
+  return { text: transText, styles: _styles }
 }
 
 // TODO: dupe code; breakout filtering
@@ -490,8 +540,6 @@ export const syncImagesFromEventContentToEventData = async (
 
     await Promise.all(
       imagesToRestoreById.map(async (imageId) => {
-        console.log(`RESTORE IMAGE ${imageId}`)
-
         ipcRenderer.invoke(WINDOW_EVENT_TYPE.RESTORE_ASSET, {
           studioId,
           worldId: event.worldId,

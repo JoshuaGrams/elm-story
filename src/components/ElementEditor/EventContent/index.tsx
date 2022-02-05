@@ -11,6 +11,7 @@ import { getTemplateExpressionRanges } from '../../../lib/templates'
 
 import React, { useState, useEffect, useCallback, useContext } from 'react'
 
+import { WINDOW_EVENT_TYPE } from '../../../lib/events'
 import { ElementId, ELEMENT_TYPE, Scene, StudioId } from '../../../data/types'
 import {
   CustomRange,
@@ -41,10 +42,7 @@ import {
   Transforms,
   Text,
   BaseSelection,
-  BaseRange,
-  Path,
-  Node,
-  Element
+  BaseRange
 } from 'slate'
 import {
   Slate as SlateContext,
@@ -88,7 +86,6 @@ import {
   toggleElement,
   toggleLeaf
 } from '../../../lib/contentEditor'
-import { WINDOW_EVENT_TYPE } from '../../../lib/events'
 
 const saveContent = debounce(
   async (studioId: StudioId, eventId: ElementId, content) => {
@@ -170,14 +167,20 @@ const EventContent: React.FC<{
                   )
 
                   if (!remove && character) {
-                    const { character_id, alias_id, format } = character
+                    const {
+                      character_id,
+                      alias_id,
+                      transform,
+                      styles
+                    } = character
 
                     Transforms.setNodes<CharacterElement>(
                       editor,
                       {
                         character_id,
                         alias_id,
-                        format
+                        transform,
+                        styles
                       },
                       { at: characterElementPath }
                     )
@@ -210,10 +213,7 @@ const EventContent: React.FC<{
           onImageSelect={
             props.element.type === ELEMENT_FORMATS.IMG
               ? async (image) => {
-                  console.log(image)
-                  console.log(event)
                   if (event?.id && image?.data) {
-                    console.log('onIMageSelect')
                     const imageElementPath = ReactEditor.findPath(
                       editor,
                       props.element
@@ -346,7 +346,8 @@ const EventContent: React.FC<{
         if (item === ELEMENT_FORMATS.CHARACTER) {
           Transforms.insertNodes(editor, {
             type: ELEMENT_FORMATS.CHARACTER,
-            children: [{ text: '' }]
+            children: [{ text: '' }],
+            transform: 'cap'
           })
 
           Transforms.deselect(editor)
@@ -785,8 +786,8 @@ const EventContent: React.FC<{
                   style={{
                     userSelect: 'all',
                     position: 'absolute',
-                    bottom: -400
-                    // display: 'none'
+                    bottom: -400,
+                    display: 'none'
                   }}
                 >
                   {event.content}

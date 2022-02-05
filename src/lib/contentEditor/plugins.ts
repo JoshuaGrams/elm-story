@@ -88,14 +88,8 @@ export const withElementReset = (editor: EditorType) => {
 export const withCorrectVoidBehavior = (editor: EditorType) => {
   const { deleteBackward, insertBreak, insertNode } = editor
 
-  editor.insertNode = (node) => {
-    console.log('HEEEEEEEEEELLO')
-    insertNode(node)
-  }
-
   // if current selection is void node, insert a default node below
   // editor.insertBreak = () => {
-  //   console.log('WAHAAT')
   //   if (!editor.selection || !Range.isCollapsed(editor.selection)) {
   //     return insertBreak()
   //   }
@@ -135,7 +129,6 @@ export const withCorrectVoidBehavior = (editor: EditorType) => {
   //     }
   //   }
 
-  //   console.log('TEST')
   //   return deleteBackward(unit)
   // }
 

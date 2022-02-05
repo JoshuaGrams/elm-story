@@ -135,7 +135,7 @@
   .menuStyles();
   padding: 0;
   overflow-y: hidden;
-  max-height: 250px;
+  max-height: 282px; // don't forget options panel
 
   :local .menus {
     position: relative;
@@ -219,35 +219,49 @@
 
   :local .DisplayFormat {
     border-top: 1px solid var(--primary-border-color);
-    height: 32px;
+    height: 64px;
     width: 100%;
 
     .options {
       font-size: 12px;
-      display: grid;
-      grid-template-columns: repeat(3, auto);
+
       height: 100%;
 
-      div {
+      .transform {
+        grid-template-columns: repeat(3, auto);
+      }
+
+      .style {
+        grid-template-columns: repeat(4, 25%);
+        border-top: 1px solid hsl(0, 0%, 8%);
+      }
+
+      .transform,
+      .style {
+        height: 32px;
         display: grid;
-        align-items: center;
-        justify-items: center;
-        height: 100%;
-        width: 100%;
-        border-right: 1px solid hsl(0, 0%, 8%);
-        color: hsl(0, 0%, 40%);
 
-        &.active {
-          color: var(--highlight-color);
-        }
+        div {
+          display: grid;
+          align-items: center;
+          justify-items: center;
+          height: 100%;
+          width: 100%;
+          border-right: 1px solid hsl(0, 0%, 8%);
+          color: hsl(0, 0%, 40%);
 
-        &:last-of-type {
-          border: none;
-        }
+          &.active {
+            color: var(--highlight-color);
+          }
 
-        &:hover {
-          cursor: pointer;
-          color: white;
+          &:last-of-type {
+            border: none;
+          }
+
+          &:hover {
+            cursor: pointer;
+            color: white;
+          }
         }
       }
     }

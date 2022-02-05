@@ -72,19 +72,38 @@ export type ListItemElement = {
   children: Descendant[]
 }
 
-export type CharacterElementFormatType = 'cap' | 'lower' | 'upper'
+export type CharacterElementTransformType = 'cap' | 'lower' | 'upper'
+export type CharacterElementStyleType = 'strong' | 'em' | 'u' | 's'
+export type CharacterElementStyleTypes = CharacterElementStyleType[]
 
 export interface CharacterElementDetails {
   character_id?: ElementId // character id
   alias_id?: string // ref id
-  format?: CharacterElementFormatType // display format
+  transform?: CharacterElementTransformType
+  styles?: CharacterElementStyleTypes
+}
+
+export type AllowedCharacterDisplayFormatStyles = {
+  fontWeight?: 'bold' | 'unset'
+  fontStyle?: 'italic' | 'unset'
+  textDecoration?:
+    | 'underline'
+    | 'line-through'
+    | 'underline line-through'
+    | 'unset'
+}
+
+export type CharacterDisplayFormat = {
+  text: string
+  styles?: AllowedCharacterDisplayFormatStyles
 }
 
 export type CharacterElement = {
   type: ELEMENT_FORMATS.CHARACTER
   character_id?: ElementId
   alias_id?: string
-  format?: CharacterElementFormatType
+  transform?: CharacterElementTransformType
+  styles?: CharacterElementStyleTypes
   children: EmptyText[]
 }
 

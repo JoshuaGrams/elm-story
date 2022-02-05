@@ -1,12 +1,13 @@
 import logger from '../../../../lib/logger'
+import { remove } from 'lodash'
 import isHotkey from 'is-hotkey'
 
 import { createGenericCharacter } from '../../../../lib/characters'
 
 import {
-  formatCharacterRefDisplay,
   getCaretPosition,
   getCharacterAliasOrTitle,
+  getCharacterRefDisplayFormat,
   getElement,
   setCaretToEnd
 } from '../../../../lib/contentEditor'
@@ -26,8 +27,10 @@ import {
   WorldId
 } from '../../../../data/types'
 import {
+  CharacterDisplayFormat,
   CharacterElement,
   CharacterElementDetails,
+  CharacterElementStyleType,
   ELEMENT_FORMATS,
   EventContentElement
 } from '../../../../data/eventContentTypes'
@@ -42,8 +45,16 @@ import {
 import { ReactEditor, useSelected, useSlate } from 'slate-react'
 import { Transforms } from 'slate'
 
-import { Button, Dropdown, Menu, Popover } from 'antd'
-import { LeftOutlined, RightOutlined, UserOutlined } from '@ant-design/icons'
+import { Dropdown, Menu, Popover } from 'antd'
+import {
+  BoldOutlined,
+  ItalicOutlined,
+  LeftOutlined,
+  RightOutlined,
+  StrikethroughOutlined,
+  UnderlineOutlined,
+  UserOutlined
+} from '@ant-design/icons'
 
 import Portal from '../../../Portal'
 import CharacterMask from '../../../CharacterManager/CharacterMask'
@@ -104,7 +115,7 @@ const CharacterTitleMenu: React.FC<{
                 character.id &&
                   onCharacterSelect({
                     character_id: character.id,
-                    format: elementCharacterData?.format || 'cap'
+                    transform: elementCharacterData?.transform || 'cap'
                   })
               }}
             >
@@ -124,10 +135,12 @@ const CharacterTitleMenu: React.FC<{
               />
 
               <div className={styles.title} title={character.title}>
-                {formatCharacterRefDisplay(
-                  character.title,
-                  elementCharacterData?.format
-                )}
+                {
+                  getCharacterRefDisplayFormat(
+                    character.title,
+                    elementCharacterData?.transform || 'cap'
+                  ).text
+                }
               </div>
 
               <div
@@ -185,7 +198,14 @@ const CharacterAliasMenu: React.FC<{
             }}
           >
             <LeftOutlined className={styles.back} />
-            <span className={styles.title}>{character.title}</span>
+            <span className={styles.title}>
+              {
+                getCharacterRefDisplayFormat(
+                  character.title,
+                  elementCharacterData?.transform || 'cap'
+                ).text
+              }
+            </span>
           </div>
 
           <div>
@@ -205,15 +225,17 @@ const CharacterAliasMenu: React.FC<{
                     onCharacterSelect({
                       character_id: character.id,
                       alias_id: character.refs[index][0],
-                      format: elementCharacterData?.format || 'cap'
+                      transform: elementCharacterData?.transform || 'cap'
                     })
                 }}
               >
                 <div className={styles.alias}>
-                  {formatCharacterRefDisplay(
-                    ref[1],
-                    elementCharacterData?.format
-                  )}
+                  {
+                    getCharacterRefDisplayFormat(
+                      ref[1],
+                      elementCharacterData?.transform || 'cap'
+                    ).text
+                  }
                 </div>
               </div>
             ))}
@@ -226,54 +248,140 @@ const CharacterAliasMenu: React.FC<{
 
 CharacterAliasMenu.displayName = 'CharacterAliasMenu'
 
-const DisplayFormat: React.FC<{
+const DisplayFormatSelection: React.FC<{
   elementCharacterData?: CharacterElementDetails
   onCharacterSelect: OnCharacterSelect
 }> = ({ onCharacterSelect, elementCharacterData }) => {
+  const applyStyle = useCallback(
+    (styleToApply: CharacterElementStyleType) => {
+      const clonedStyles = [...(elementCharacterData?.styles || [])],
+        removedStyle =
+          remove(clonedStyles, (style) => style === styleToApply).length > 0
+
+      if (!removedStyle) {
+        clonedStyles.push(styleToApply)
+      }
+
+      onCharacterSelect({
+        ...elementCharacterData,
+        styles: clonedStyles.length > 0 ? clonedStyles : undefined
+      })
+    },
+    [elementCharacterData]
+  )
+
   return (
     <div
       className={styles.DisplayFormat}
       onMouseDown={(event) => event.preventDefault()}
     >
       <div className={styles.options}>
-        <div
-          className={
-            elementCharacterData?.format === 'cap' ? styles.active : ''
-          }
-          onMouseDown={(event) => {
-            event.preventDefault()
+        <div className={styles.transform}>
+          <div
+            className={
+              elementCharacterData?.transform === 'cap' ? styles.active : ''
+            }
+            onMouseDown={(event) => {
+              event.preventDefault()
 
-            onCharacterSelect({ ...elementCharacterData, format: 'cap' })
-          }}
-        >
-          Cap
-        </div>{' '}
-        <div
-          className={
-            elementCharacterData?.format === 'lower' ? styles.active : ''
-          }
-          onMouseDown={() =>
-            onCharacterSelect({ ...elementCharacterData, format: 'lower' })
-          }
-        >
-          lower
-        </div>{' '}
-        <div
-          className={
-            elementCharacterData?.format === 'upper' ? styles.active : ''
-          }
-          onMouseDown={() =>
-            onCharacterSelect({ ...elementCharacterData, format: 'upper' })
-          }
-        >
-          UPPER
+              onCharacterSelect({
+                ...elementCharacterData,
+                transform: 'cap'
+              })
+            }}
+          >
+            Cap
+          </div>{' '}
+          <div
+            className={
+              elementCharacterData?.transform === 'lower' ? styles.active : ''
+            }
+            onMouseDown={(event) => {
+              event.preventDefault()
+
+              onCharacterSelect({
+                ...elementCharacterData,
+                transform: 'lower'
+              })
+            }}
+          >
+            lower
+          </div>{' '}
+          <div
+            className={
+              elementCharacterData?.transform === 'upper' ? styles.active : ''
+            }
+            onMouseDown={(event) => {
+              event.preventDefault()
+
+              onCharacterSelect({
+                ...elementCharacterData,
+                transform: 'upper'
+              })
+            }}
+          >
+            UPPER
+          </div>
+        </div>
+
+        <div className={styles.style}>
+          <div
+            className={
+              elementCharacterData?.styles?.includes('strong')
+                ? styles.active
+                : ''
+            }
+            onMouseDown={(event) => {
+              event.preventDefault()
+
+              applyStyle('strong')
+            }}
+          >
+            <BoldOutlined />
+          </div>
+          <div
+            className={
+              elementCharacterData?.styles?.includes('em') ? styles.active : ''
+            }
+            onMouseDown={(event) => {
+              event.preventDefault()
+
+              applyStyle('em')
+            }}
+          >
+            <ItalicOutlined />
+          </div>
+          <div
+            className={
+              elementCharacterData?.styles?.includes('u') ? styles.active : ''
+            }
+            onMouseDown={(event) => {
+              event.preventDefault()
+
+              applyStyle('u')
+            }}
+          >
+            <UnderlineOutlined />
+          </div>
+          <div
+            className={
+              elementCharacterData?.styles?.includes('s') ? styles.active : ''
+            }
+            onMouseDown={(event) => {
+              event.preventDefault()
+
+              applyStyle('s')
+            }}
+          >
+            <StrikethroughOutlined />
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-DisplayFormat.displayName = 'DisplayFormat'
+DisplayFormatSelection.displayName = 'DisplayFormatSelection'
 
 const CharacterSelectMenu: React.FC<{
   studioId: StudioId
@@ -374,7 +482,7 @@ const CharacterSelectMenu: React.FC<{
             </div>
 
             {elementCharacterData && (
-              <DisplayFormat
+              <DisplayFormatSelection
                 elementCharacterData={elementCharacterData}
                 onCharacterSelect={onCharacterSelect}
               />
@@ -403,14 +511,38 @@ const SelectedCharacter: React.FC<{
 }) => {
   // const editor = useSlate()
 
-  const { composer, composerDispatch } = useContext(ComposerContext)
+  const { composerDispatch } = useContext(ComposerContext)
 
-  const aliasOrTitle =
-    character && elementCharacterData
-      ? getCharacterAliasOrTitle(character, elementCharacterData.alias_id)
-      : undefined
+  const [popoverVisible, setPopoverVisible] = useState(false),
+    [aliasOrTitle, setAliasOrTitle] = useState<string | undefined>(undefined),
+    [characterDisplayFormat, setCharacterDisplayFormat] = useState<
+      CharacterDisplayFormat | undefined
+    >(undefined)
 
-  const [popoverVisible, setPopoverVisible] = useState(false)
+  useEffect(() => {
+    if (!character || !elementCharacterData) return
+
+    setAliasOrTitle(
+      getCharacterAliasOrTitle(character, elementCharacterData.alias_id) ||
+        undefined
+    )
+  }, [character, elementCharacterData?.alias_id])
+
+  useEffect(() => {
+    if (!aliasOrTitle) return
+
+    setCharacterDisplayFormat(
+      getCharacterRefDisplayFormat(
+        aliasOrTitle,
+        elementCharacterData?.transform || 'cap',
+        elementCharacterData?.styles
+      )
+    )
+  }, [
+    aliasOrTitle,
+    elementCharacterData?.transform,
+    elementCharacterData?.styles
+  ])
 
   // TODO: we don't want to change designer's data unless this gets requested enough
   // note we would also need to do this when character title or ref is removed and
@@ -454,6 +586,7 @@ const SelectedCharacter: React.FC<{
         overlayClassName="es-character-element-select__popover"
         visible={popoverVisible}
         onVisibleChange={(visible) => setPopoverVisible(visible)}
+        mouseEnterDelay={0.5}
         content={
           <div
             className={styles.container}
@@ -510,14 +643,19 @@ const SelectedCharacter: React.FC<{
         <span>
           {character !== null && elementCharacterData?.character_id && (
             <>
-              {character !== undefined && aliasOrTitle && (
-                <span style={{ cursor: 'pointer' }} onClick={() => onClick()}>
-                  {formatCharacterRefDisplay(
-                    aliasOrTitle,
-                    elementCharacterData.format
-                  )}
-                </span>
-              )}
+              {character !== undefined &&
+                aliasOrTitle &&
+                characterDisplayFormat && (
+                  <span
+                    style={{
+                      cursor: 'pointer',
+                      ...characterDisplayFormat.styles
+                    }}
+                    onClick={() => onClick()}
+                  >
+                    {characterDisplayFormat.text}
+                  </span>
+                )}
             </>
           )}
 
@@ -555,7 +693,10 @@ const CharacterElementSelect: React.FC<{
   const [selecting, setSelecting] = useState(false),
     [filter, setFilter] = useState(''),
     [focused, setFocused] = useState(false),
-    [caretPosition, setCaretPosition] = useState(0)
+    [caretPosition, setCaretPosition] = useState(0),
+    [characterDisplayFormat, setCharacterDisplayFormat] = useState<
+      CharacterDisplayFormat | undefined
+    >(undefined)
 
   const [menuSelection, setMenuSelection] = useState<MenuSelection>({
     type: 'TITLE',
@@ -697,6 +838,23 @@ const CharacterElementSelect: React.FC<{
     focused && resetMenuSelection()
   }, [focused])
 
+  useEffect(() => {
+    if (!character) return
+
+    setCharacterDisplayFormat(
+      getCharacterRefDisplayFormat(
+        getCharacterAliasOrTitle(character, selectedCharacter?.alias_id) || '',
+        selectedCharacter?.transform || 'cap',
+        selectedCharacter?.styles
+      )
+    )
+  }, [
+    character,
+    selectedCharacter?.alias_id,
+    selectedCharacter?.transform,
+    selectedCharacter?.styles
+  ])
+
   return (
     <>
       {selecting && (
@@ -704,6 +862,7 @@ const CharacterElementSelect: React.FC<{
           contentEditable={true}
           suppressContentEditableWarning
           className={`${styles.CharacterSelect}`}
+          style={{ ...(characterDisplayFormat?.styles || {}) }}
           ref={inputRef}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -732,7 +891,7 @@ const CharacterElementSelect: React.FC<{
                   if (menuSelection.type === 'TITLE') {
                     selectCharacter({
                       character_id: character.id,
-                      format: selectedCharacter?.format || 'cap'
+                      transform: 'cap'
                     })
                   }
 
@@ -740,7 +899,7 @@ const CharacterElementSelect: React.FC<{
                     selectCharacter({
                       character_id: character.id,
                       alias_id: character.refs[menuSelection.selection[1]][0],
-                      format: selectedCharacter?.format || 'cap'
+                      transform: 'cap'
                     })
                   }
                 }
@@ -887,15 +1046,7 @@ const CharacterElementSelect: React.FC<{
             setFilter(inputRef.current?.textContent || '')
           }}
         >
-          {character && selectedCharacter
-            ? formatCharacterRefDisplay(
-                getCharacterAliasOrTitle(
-                  character,
-                  selectedCharacter?.alias_id
-                ) || '',
-                selectedCharacter.format
-              )
-            : ''}
+          {characterDisplayFormat ? characterDisplayFormat.text : ''}
         </span>
       )}
 

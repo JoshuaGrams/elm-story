@@ -440,21 +440,6 @@ export async function resetPersonaMaskFromEvent(
   }
 }
 
-export async function removeDeadImageRefs(studioId: StudioId, imageId: string) {
-  const db = new LibraryDatabase(studioId)
-
-  try {
-    const referenceEvents = await db.events
-      .where('images')
-      .equals(imageId || '')
-      .toArray()
-
-    console.log(referenceEvents)
-  } catch (error) {
-    throw error
-  }
-}
-
 export async function getEventsByImageId(studioId: StudioId, imageId: string) {
   try {
     return await new LibraryDatabase(studioId).events

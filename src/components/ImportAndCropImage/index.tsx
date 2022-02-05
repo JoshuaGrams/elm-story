@@ -87,9 +87,7 @@ const ImportAndCropImage = React.forwardRef<
     }
 
     const onSave = useCallback(async () => {
-      console.log('test')
       if (imageData && croppedAreaPixels) {
-        console.log('here')
         const croppedImageData = await getCroppedImageData(
           imageData as string,
           croppedAreaPixels,
@@ -177,8 +175,6 @@ const ImportAndCropImage = React.forwardRef<
                     onCropChange={setCrop}
                     objectFit="horizontal-cover"
                     // onCropChange={(location) => {
-                    //   console.log(location)
-                    //   console.log(zoom)
                     //   setCrop({
                     //     x: location.x < 0 ? 0 : location.x,
                     //     y: location.y < 0 ? 0 : location.y

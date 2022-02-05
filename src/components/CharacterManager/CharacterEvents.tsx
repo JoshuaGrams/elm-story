@@ -1,3 +1,6 @@
+import { capitalizeString } from '../../lib'
+import { getCharacterDetailsFromEventContent } from '../../lib/contentEditor'
+
 import React, { useState, useEffect, useContext } from 'react'
 
 import {
@@ -22,10 +25,6 @@ import { PartitionOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 import CharacterMask from './CharacterMask'
-import {
-  formatCharacterRefDisplay,
-  getCharacterDetailsFromEventContent
-} from '../../lib/contentEditor'
 
 const SceneRow: React.FC<{ scene: Scene }> = ({ scene }) => {
   const { composerDispatch } = useContext(ComposerContext)
@@ -103,7 +102,7 @@ const EventRow: React.FC<{
   useEffect(() => {
     const combinedRefs: string[] = []
 
-    singleRef && combinedRefs.push(formatCharacterRefDisplay(singleRef, 'cap'))
+    singleRef && combinedRefs.push(capitalizeString(singleRef))
 
     const characterDetails = getCharacterDetailsFromEventContent(
       JSON.parse(event.content)
@@ -111,10 +110,7 @@ const EventRow: React.FC<{
 
     characterDetails.map(({ character_id, alias_id }) => {
       if (character_id && !alias_id) {
-        const formattedCharacterTitle = formatCharacterRefDisplay(
-          character.title,
-          'cap'
-        )
+        const formattedCharacterTitle = capitalizeString(character.title)
 
         !combinedRefs.includes(formattedCharacterTitle) &&
           combinedRefs.push(formattedCharacterTitle)
@@ -124,10 +120,7 @@ const EventRow: React.FC<{
         const foundAlias = character.refs.find((ref) => ref[0] === alias_id)
 
         if (foundAlias) {
-          const formattedCharacterAlias = formatCharacterRefDisplay(
-            foundAlias[1],
-            'cap'
-          )
+          const formattedCharacterAlias = capitalizeString(foundAlias[1])
 
           !combinedRefs.includes(formattedCharacterAlias) &&
             combinedRefs.push(formattedCharacterAlias)

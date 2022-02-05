@@ -8,18 +8,11 @@ import { StudioId, WorldId } from '../../../data/types'
 
 import { ComposerContext } from '../../../contexts/ComposerContext'
 
-import { Button } from 'antd'
-import Icon, { DeleteOutlined } from '@ant-design/icons'
+import Icon from '@ant-design/icons'
 
 import { Draggable } from 'react-beautiful-dnd'
 import { Transforms, Editor } from 'slate'
-import {
-  ReactEditor,
-  useFocused,
-  useSelected,
-  useSlate,
-  useSlateStatic
-} from 'slate-react'
+import { ReactEditor, useSelected, useSlate } from 'slate-react'
 
 import {
   ALIGN_TYPE,
@@ -53,7 +46,7 @@ const CharacterElement: React.FC<{
 }) => {
   const selected = useSelected()
 
-  const { character_id, alias_id, format } = element
+  const { character_id, alias_id, transform, styles: _styles } = element
 
   return (
     <span
@@ -69,7 +62,9 @@ const CharacterElement: React.FC<{
         worldId={worldId}
         element={element}
         selectedCharacter={
-          character_id ? { character_id, alias_id, format } : undefined
+          character_id
+            ? { character_id, alias_id, transform, styles: _styles }
+            : undefined
         }
         onCharacterSelect={onCharacterSelect}
       />
