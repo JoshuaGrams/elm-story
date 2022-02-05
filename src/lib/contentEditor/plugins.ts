@@ -112,29 +112,32 @@ export const withCorrectVoidBehavior = (editor: EditorType) => {
   //   insertBreak()
   // }
 
-  // // if prev node is a void node, remove the current node and select the void node
-  // editor.deleteBackward = (unit) => {
-  //   if (
-  //     !editor.selection ||
-  //     !Range.isCollapsed(editor.selection) ||
-  //     editor.selection.anchor.offset !== 0
-  //   ) {
-  //     return deleteBackward(unit)
-  //   }
-  //   const parentPath = Path.parent(editor.selection.anchor.path)
-  //   const parentNode = Node.get(editor, parentPath)
-  //   const parentIsEmpty = Node.string(parentNode).length === 0
+  // if prev node is a void node, remove the current node and select the void node
+  // elmstorygames/feedback#221
+  editor.deleteBackward = (unit) => {
+    if (
+      !editor.selection ||
+      !Range.isCollapsed(editor.selection) ||
+      editor.selection.anchor.offset !== 0
+    ) {
+      return deleteBackward(unit)
+    }
 
-  //   if (parentIsEmpty && Path.hasPrevious(parentPath)) {
-  //     const prevNodePath = Path.previous(parentPath)
-  //     const prevNode = Node.get(editor, prevNodePath)
-  //     if (Editor.isVoid(editor, prevNode)) {
-  //       return Transforms.removeNodes(editor)
-  //     }
-  //   }
+    const parentPath = Path.parent(editor.selection.anchor.path),
+      parentNode = Node.get(editor, parentPath),
+      parentIsEmpty = Node.string(parentNode).length === 0
 
-  //   return deleteBackward(unit)
-  // }
+    if (parentIsEmpty && Path.hasPrevious(parentPath)) {
+      const prevNodePath = Path.previous(parentPath),
+        prevNode = Node.get(editor, prevNodePath)
+
+      if (Editor.isVoid(editor, prevNode)) {
+        return Transforms.removeNodes(editor)
+      }
+    }
+
+    return deleteBackward(unit)
+  }
 
   return editor
 }
