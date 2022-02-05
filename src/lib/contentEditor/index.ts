@@ -398,7 +398,8 @@ export const getCharactersIdsFromEventContent = (editor: EditorType) =>
 
 export const syncCharactersFromEventContentToEventData = async (
   studioId: StudioId,
-  event: Event,
+  eventId: ElementId,
+  eventContent: string,
   editorCharacterIds: Array<ElementId | undefined>
 ) => {
   // character is being selected by designer; skip
@@ -409,11 +410,16 @@ export const syncCharactersFromEventContentToEventData = async (
     editorCharacterIds.filter((id): id is ElementId => id !== undefined)
   )
 
-  !isEqual(syncedCharacterIds, event.characters) &&
-    (await api().events.saveEvent(studioId, {
-      ...event,
-      characters: syncedCharacterIds
-    }))
+  // elmstorygames/feedback#217
+  const foundEvent = await api().events.getEvent(studioId, eventId)
+
+  if (foundEvent && !isEqual(syncedCharacterIds, foundEvent.characters)) {
+    await api().events.saveEvent(studioId, {
+      ...foundEvent,
+      characters: syncedCharacterIds,
+      content: eventContent
+    })
+  }
 }
 
 export const getCharacterAliasOrTitle = (
@@ -511,19 +517,24 @@ export const getImageIdsFromEventContent = (editor: EditorType) =>
 
 export const syncImagesFromEventContentToEventData = async (
   studioId: StudioId,
-  event: Event,
+  eventId: ElementId,
+  eventContent: string,
   imagesToRemainById: Array<string>,
   imagesToRemoveById: Array<string>
 ) => {
-  if (!event.id) return
+  // elmstorygames/feedback#217
+  const foundEvent = await api().events.getEvent(studioId, eventId)
 
-  const cachedEventImagesById = [...event.images]
+  if (!foundEvent.id) return
+
+  const cachedEventImagesById = [...foundEvent.images]
 
   // syncs images array
   // this must come first
   await api().events.saveEvent(studioId, {
-    ...event,
-    images: imagesToRemainById
+    ...foundEvent,
+    images: imagesToRemainById,
+    content: eventContent
   })
 
   // If there aren't any images to remove, we can assume that
@@ -542,7 +553,7 @@ export const syncImagesFromEventContentToEventData = async (
       imagesToRestoreById.map(async (imageId) => {
         ipcRenderer.invoke(WINDOW_EVENT_TYPE.RESTORE_ASSET, {
           studioId,
-          worldId: event.worldId,
+          worldId: foundEvent.worldId,
           id: imageId,
           ext: 'webp'
         })
@@ -557,7 +568,7 @@ export const syncImagesFromEventContentToEventData = async (
   // record with imageId as key and length of events as value
   await api().events.removeDeadImageAssets(
     studioId,
-    event.worldId,
+    foundEvent.worldId,
     imagesToRemoveById
   )
 }

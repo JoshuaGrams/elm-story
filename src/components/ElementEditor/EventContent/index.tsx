@@ -616,56 +616,54 @@ const EventContent: React.FC<{
 
   // syncs event content and event characters array
   // from adding and removing characters via content editor
+  // elmstorygames/feedback#217
   useEffect(() => {
-    async function syncCharacters() {
-      if (!event) return
+    async function syncData() {
+      if (!event?.id) return
 
-      const charactersToRemainById = getCharactersIdsFromEventContent(editor)
+      // TODO: combine
+      const charactersToRemainById = getCharactersIdsFromEventContent(editor),
+        imagesToRemainById = getImageIdsFromEventContent(editor)
 
-      if (isEqual(characterCache, charactersToRemainById)) return
+      let content: string | undefined = undefined
 
-      logger.info(
-        `EventContent->useEffect->event.characters,editor.children->syncCharacters`
-      )
+      if (!isEqual(characterCache, charactersToRemainById)) {
+        logger.info(
+          `EventContent->useEffect->event.characters,editor.children->syncCharacters`
+        )
 
-      // TODO: lock during processing?
-      await syncCharactersFromEventContentToEventData(
-        studioId,
-        event,
-        charactersToRemainById
-      )
+        content = JSON.stringify(editor.children)
 
-      setCharacterCache(charactersToRemainById)
+        await syncCharactersFromEventContentToEventData(
+          studioId,
+          event.id,
+          content,
+          charactersToRemainById
+        )
+
+        setCharacterCache(charactersToRemainById)
+      }
+
+      if (!isEqual(imageCache, imagesToRemainById)) {
+        const imagesToRemoveById =
+          imagesToRemainById.length === 0
+            ? imageCache
+            : imageCache.filter((id) => !imagesToRemainById.includes(id))
+
+        await syncImagesFromEventContentToEventData(
+          studioId,
+          event.id,
+          content || JSON.stringify(editor.children),
+          imagesToRemainById,
+          imagesToRemoveById
+        )
+
+        setImageCache(imagesToRemainById)
+      }
     }
 
-    syncCharacters()
-  }, [event?.content, characterCache])
-
-  useEffect(() => {
-    async function syncImages() {
-      if (!event) return
-
-      const imagesToRemainById = getImageIdsFromEventContent(editor)
-
-      if (isEqual(imageCache, imagesToRemainById)) return
-
-      const imagesToRemoveById =
-        imagesToRemainById.length === 0
-          ? imageCache
-          : imageCache.filter((id) => !imagesToRemainById.includes(id))
-
-      await syncImagesFromEventContentToEventData(
-        studioId,
-        event,
-        imagesToRemainById,
-        imagesToRemoveById
-      )
-
-      setImageCache(imagesToRemainById)
-    }
-
-    syncImages()
-  }, [event?.content, imageCache])
+    syncData()
+  }, [event?.id, editor.children, characterCache, imageCache])
 
   return (
     <>
@@ -786,8 +784,8 @@ const EventContent: React.FC<{
                   style={{
                     userSelect: 'all',
                     position: 'absolute',
-                    bottom: -400,
-                    display: 'none'
+                    bottom: -400
+                    // display: 'none'
                   }}
                 >
                   {event.content}
