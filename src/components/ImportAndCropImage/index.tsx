@@ -124,7 +124,12 @@ const ImportAndCropImage = React.forwardRef<
     }))
 
     useEffect(() => {
-      imageData && onImportImageData()
+      if (imageData) {
+        setCrop({ x: 0, y: 0 })
+        setZoom(1)
+
+        onImportImageData()
+      }
     }, [imageData])
 
     useEffect(() => {
