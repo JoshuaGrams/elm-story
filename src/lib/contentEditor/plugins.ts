@@ -61,6 +61,9 @@ export const withElementReset = (editor: EditorType) => {
     const elementPath = Path.parent(editor.selection?.anchor.path),
       element = Node.get(editor, elementPath)
 
+    if (Element.isElement(element) && element.type === ELEMENT_FORMATS.IMG)
+      return deleteBackward(unit)
+
     if (
       Element.isElement(element) &&
       element.type !== ELEMENT_FORMATS.P &&
