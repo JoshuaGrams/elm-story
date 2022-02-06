@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import reactStringReplace from 'react-string-replace'
-import parseToHTML from 'html-react-parser'
+import parseToHTML, { Element, HTMLReactParserOptions } from 'html-react-parser'
 import { useDebouncedCallback } from 'use-debounce'
 
 import {
@@ -17,13 +17,14 @@ import {
   ElementId
 } from '../../../data/types'
 
-import { useVariables } from '../../../hooks'
+import { useCharacters, useVariables } from '../../../hooks'
 
-import { FormOutlined } from '@ant-design/icons'
+import { FormOutlined, LoadingOutlined } from '@ant-design/icons'
+
+import { eventContentToPreview } from '../../../lib/serialization'
 
 import styles from './styles.module.less'
-import { eventContentToPreview } from '../../../lib/serialization'
-import { debounce } from 'lodash'
+import { Spin } from 'antd'
 
 const processTemplateBlock = (
   template: string,
@@ -71,17 +72,13 @@ const decorate = (template: string, state: WorldState) => {
 
     matchExpressionCounter++
 
-    return (
-      <span
-        className={
-          match === 'esg-error' ? styles.expressionError : styles.expression
-        }
-        key={`expression-${matchExpressionCounter}`}
-        title={matchedExpression}
-      >
-        {match === 'esg-error' ? 'ERROR' : match}
-      </span>
-    )
+    return `<span
+        className="
+          ${match === 'esg-error' ? styles.expressionError : styles.expression}
+        "
+        key="expression-${matchExpressionCounter}"
+        title="Expression: ${matchedExpression}"
+      >${match === 'esg-error' ? 'ERROR' : match}</span>`
   })
 }
 
@@ -90,27 +87,34 @@ const EventSnippet: React.FC<{
   worldId: WorldId
   eventId: ElementId
   content: string
+  flatBottom: boolean
   onEditPassage: (eventId: ElementId) => void
-}> = ({ studioId, worldId, eventId, content, onEditPassage }) => {
-  const variables = useVariables(studioId, worldId, [])
+}> = ({ studioId, worldId, eventId, content, flatBottom, onEditPassage }) => {
+  const variables = useVariables(studioId, worldId, []),
+    characters = useCharacters(studioId, worldId, [])
 
   const [initialWorldState, setInitialWorldState] = useState<
       WorldState | undefined
     >(undefined),
-    [contentPreview, setContentPreview] = useState<string | undefined>(
+    // undefined is loading, null is missing
+    [contentPreview, setContentPreview] = useState<string | undefined | null>(
       undefined
     )
 
-  const parsedContent: {
-    type: 'paragraph'
-    children: { text: string }[]
-  }[] = JSON.parse(content)
+  const debouncedContentPreview = useDebouncedCallback(
+    async (content, state) => {
+      let newContentPreview =
+        (await eventContentToPreview(studioId, worldId, content)).text || null
 
-  const debouncedContentPreview = useDebouncedCallback(async (content) => {
-    setContentPreview(
-      (await eventContentToPreview(studioId, content)).text || undefined
-    )
-  }, 1000)
+      if (newContentPreview) {
+        newContentPreview = decorate(newContentPreview, state).join('')
+      }
+
+      setContentPreview(newContentPreview)
+    },
+    1000,
+    { leading: true }
+  )
 
   useEffect(() => {
     if (variables) {
@@ -130,34 +134,21 @@ const EventSnippet: React.FC<{
     }
   }, [variables])
 
-  const test = useCallback(async () => {
-    console.log('test2')
-    debounce(
-      () => {
-        console.log('test')
-        setContentPreview(
-          'plop'
-          // (await eventContentToPreview(studioId, content)).text || undefined
-        )
-      },
-      1000,
-      { leading: true }
-    )
-  }, [content])
-
   useEffect(() => {
-    debouncedContentPreview(content)
-  }, [content])
-
-  useEffect(() => {
-    console.log(contentPreview)
-  }, [contentPreview])
+    initialWorldState &&
+      characters &&
+      debouncedContentPreview(content, initialWorldState)
+  }, [content, initialWorldState, characters])
 
   return (
     <>
       {initialWorldState && (
         <div
           className={styles.EventSnippet}
+          style={{
+            borderBottomLeftRadius: flatBottom ? '0px' : '5px',
+            borderBottomRightRadius: flatBottom ? '0px' : '5px'
+          }}
           onDoubleClick={() => onEditPassage(eventId)}
         >
           <div
@@ -166,27 +157,29 @@ const EventSnippet: React.FC<{
           >
             <FormOutlined />
           </div>
-          <div className={`${styles.content} nodrag`}>
+          <div className={`${styles.content}`}>
             {contentPreview && parseToHTML(contentPreview)}
 
-            {!contentPreview && !debouncedContentPreview.isPending() && (
-              <p className={styles.missingContent}>Missing content...</p>
+            {contentPreview === undefined && (
+              <div className={styles.loadingContent}>
+                <Spin
+                  indicator={
+                    <LoadingOutlined
+                      className={styles.spin}
+                      style={{ fontSize: 24 }}
+                      spin
+                    />
+                  }
+                />
+              </div>
+            )}
+
+            {contentPreview === null && (
+              <p className={styles.missingContent}>
+                Double-click here to edit event content...
+              </p>
             )}
           </div>
-
-          {/* {parsedContent[0].children[0].text && (
-            <p>
-              {decorate(
-                parsedContent[0].children[0].text.substring(0, 100),
-                initialWorldState
-              )}
-              {parsedContent[0].children[0].text.length > 100 && '...'}{' '}
-            </p>
-          )}
-
-          {!parsedContent[0].children[0].text && parsedContent.length === 1 && (
-            <p className={styles.missingContent}>Missing content...</p>
-          )} */}
         </div>
       )}
     </>

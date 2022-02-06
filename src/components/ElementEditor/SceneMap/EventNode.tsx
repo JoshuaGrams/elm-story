@@ -797,6 +797,14 @@ const EventNode: React.FC<NodeProps<{
   //   choiceId && validateConnection()
   // }, [composer.selectedSceneMapConnectStartData?.choiceId])
 
+  const flatBottom =
+    (event &&
+      ((composer.selectedSceneMapEvent === event.id &&
+        composer.selectedWorldOutlineElement.id === event.sceneId) ||
+        event.choices.length > 0 ||
+        event.type === EVENT_TYPE.INPUT)) ||
+    false
+
   return (
     <div
       className={styles.EventNode}
@@ -858,20 +866,8 @@ const EventNode: React.FC<NodeProps<{
           <div
             className={styles.eventContentWrapper}
             style={{
-              borderBottomLeftRadius:
-                (composer.selectedSceneMapEvent === event.id &&
-                  composer.selectedWorldOutlineElement.id === event.sceneId) ||
-                event.choices.length > 0 ||
-                event.type === EVENT_TYPE.INPUT
-                  ? '0px'
-                  : '5px',
-              borderBottomRightRadius:
-                (composer.selectedSceneMapEvent === event.id &&
-                  composer.selectedWorldOutlineElement.id === event.sceneId) ||
-                event.choices.length > 0 ||
-                event.type === EVENT_TYPE.INPUT
-                  ? '0px'
-                  : '5px',
+              borderBottomLeftRadius: flatBottom ? '0px' : '5px',
+              borderBottomRightRadius: flatBottom ? '0px' : '5px',
               borderBottom:
                 event.choices.length > 0 || event.input
                   ? '1px solid hsl(0, 0%, 10%)'
@@ -889,6 +885,13 @@ const EventNode: React.FC<NodeProps<{
               studioId={data.studioId}
               eventId={event.id}
               content={event.content}
+              flatBottom={
+                event.choices.length > 0 ||
+                event.characters.length > 0 ||
+                event.type === EVENT_TYPE.INPUT ||
+                (composer.selectedSceneMapEvent === event.id &&
+                  composer.selectedWorldOutlineElement.id === event.sceneId)
+              }
               onEditPassage={(eventId) => data.onEditEvent(eventId)}
             />
 
@@ -900,6 +903,7 @@ const EventNode: React.FC<NodeProps<{
                     ? event.characters.filter((id) => id !== event.persona?.[0])
                     : event.characters
                 }
+                flatBottom={flatBottom}
               />
             )}
           </div>

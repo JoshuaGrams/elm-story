@@ -61,11 +61,18 @@ CharacterPortrait.displayName = 'CharacterPortrait'
 const EventCharacterRefGrid: React.FC<{
   studioId: StudioId
   characterIds: ElementId[]
-}> = ({ studioId, characterIds }) => {
+  flatBottom: boolean
+}> = ({ studioId, characterIds, flatBottom }) => {
   return (
     <>
       {characterIds.length > 0 && (
-        <div className={styles.EventCharacterRefGrid}>
+        <div
+          className={styles.EventCharacterRefGrid}
+          style={{
+            borderBottomLeftRadius: flatBottom ? '0px' : '5px',
+            borderBottomRightRadius: flatBottom ? '0px' : '5px'
+          }}
+        >
           {characterIds.map((id) => (
             <CharacterPortrait key={id} studioId={studioId} characterId={id} />
           ))}
