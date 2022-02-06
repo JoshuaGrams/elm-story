@@ -248,6 +248,7 @@
     "escape-html": "^1.0.3",
     "fs-extra": "^10.0.0",
     "history": "^5.0.0",
+    "html-react-parser": "^1.4.7",
     "is-hotkey": "^0.2.0",
     "jsonschema": "^1.4.0",
     "lodash": "^4.17.21",
@@ -273,6 +274,7 @@
     "slate-react": "^0.72.1",
     "source-map-support": "^0.5.19",
     "unique-names-generator": "^4.4.0",
+    "use-debounce": "^7.0.1",
     "use-resize-observer": "^7.0.0",
     "uuid": "^8.3.2"
   },

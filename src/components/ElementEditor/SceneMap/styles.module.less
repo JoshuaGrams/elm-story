@@ -835,7 +835,12 @@
   }
 
   .EventSnippet {
-    padding: 4px 10px;
+    .content {
+      padding: 4px 10px;
+      max-height: 200px;
+      overflow: hidden;
+      overflow-y: auto;
+    }
 
     &:hover .edit {
       opacity: 1;
@@ -874,6 +879,7 @@
       display: grid;
       align-items: center;
       text-decoration: underline;
+      z-index: 1;
 
       &:hover {
         cursor: pointer;

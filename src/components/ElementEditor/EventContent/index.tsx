@@ -3,6 +3,7 @@ import logger from '../../../lib/logger'
 import { ipcRenderer } from 'electron'
 import { v4 as uuid } from 'uuid'
 
+import parse from 'html-react-parser'
 import { debounce, isEqual } from 'lodash'
 import useEventListener from '@use-it/event-listener'
 import isHotkey from 'is-hotkey'
@@ -86,6 +87,10 @@ import {
   toggleElement,
   toggleLeaf
 } from '../../../lib/contentEditor'
+import {
+  eventContentToHTML,
+  eventContentToPreview
+} from '../../../lib/serialization'
 
 const saveContent = debounce(
   async (studioId: StudioId, eventId: ElementId, content) => {
@@ -780,7 +785,7 @@ const EventContent: React.FC<{
                   }}
                 />
 
-                <code
+                {/* <code
                   style={{
                     userSelect: 'all',
                     position: 'absolute',
@@ -788,8 +793,8 @@ const EventContent: React.FC<{
                     // display: 'none'
                   }}
                 >
-                  {event.content}
-                </code>
+                  {parse(eventContentToPreview(event.content).text || '')}
+                </code> */}
               </DragDropWrapper>
             </SlateContext>
           </div>

@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import reactStringReplace from 'react-string-replace'
+import parseToHTML from 'html-react-parser'
+import { useDebouncedCallback } from 'use-debounce'
 
 import {
   gameMethods,
@@ -20,6 +22,8 @@ import { useVariables } from '../../../hooks'
 import { FormOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
+import { eventContentToPreview } from '../../../lib/serialization'
+import { debounce } from 'lodash'
 
 const processTemplateBlock = (
   template: string,
@@ -91,13 +95,22 @@ const EventSnippet: React.FC<{
   const variables = useVariables(studioId, worldId, [])
 
   const [initialWorldState, setInitialWorldState] = useState<
-    WorldState | undefined
-  >(undefined)
+      WorldState | undefined
+    >(undefined),
+    [contentPreview, setContentPreview] = useState<string | undefined>(
+      undefined
+    )
 
   const parsedContent: {
     type: 'paragraph'
     children: { text: string }[]
   }[] = JSON.parse(content)
+
+  const debouncedContentPreview = useDebouncedCallback(async (content) => {
+    setContentPreview(
+      (await eventContentToPreview(studioId, content)).text || undefined
+    )
+  }, 1000)
 
   useEffect(() => {
     if (variables) {
@@ -117,6 +130,29 @@ const EventSnippet: React.FC<{
     }
   }, [variables])
 
+  const test = useCallback(async () => {
+    console.log('test2')
+    debounce(
+      () => {
+        console.log('test')
+        setContentPreview(
+          'plop'
+          // (await eventContentToPreview(studioId, content)).text || undefined
+        )
+      },
+      1000,
+      { leading: true }
+    )
+  }, [content])
+
+  useEffect(() => {
+    debouncedContentPreview(content)
+  }, [content])
+
+  useEffect(() => {
+    console.log(contentPreview)
+  }, [contentPreview])
+
   return (
     <>
       {initialWorldState && (
@@ -130,8 +166,15 @@ const EventSnippet: React.FC<{
           >
             <FormOutlined />
           </div>
+          <div className={`${styles.content} nodrag`}>
+            {contentPreview && parseToHTML(contentPreview)}
 
-          {parsedContent[0].children[0].text && (
+            {!contentPreview && !debouncedContentPreview.isPending() && (
+              <p className={styles.missingContent}>Missing content...</p>
+            )}
+          </div>
+
+          {/* {parsedContent[0].children[0].text && (
             <p>
               {decorate(
                 parsedContent[0].children[0].text.substring(0, 100),
@@ -143,7 +186,7 @@ const EventSnippet: React.FC<{
 
           {!parsedContent[0].children[0].text && parsedContent.length === 1 && (
             <p className={styles.missingContent}>Missing content...</p>
-          )}
+          )} */}
         </div>
       )}
     </>
