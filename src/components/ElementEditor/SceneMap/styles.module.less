@@ -841,7 +841,7 @@
     .content {
       padding: 4px 0;
       padding-top: 0;
-      padding-bottom: 7px;
+      padding-bottom: 0px;
       max-height: 160px;
       overflow: hidden;
       overflow-y: auto;
@@ -880,11 +880,16 @@
         aspect-ratio: 16/9;
         background-size: 100%;
         background-repeat: no-repeat;
-        margin-bottom: 12px;
+        margin-bottom: 7px;
+        margin-top: 0 !important;
+
+        &:last-of-type {
+          margin-bottom: 0;
+        }
       }
 
-      p {
-        margin-bottom: 14px;
+      div {
+        margin-bottom: 10px;
         padding: 0 10px;
 
         &:first-of-type {
@@ -892,7 +897,7 @@
         }
 
         &:last-of-type {
-          margin-bottom: 0;
+          margin-bottom: 7px;
         }
 
         :global .event-content-preview-character {

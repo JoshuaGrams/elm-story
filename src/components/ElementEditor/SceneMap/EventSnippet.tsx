@@ -175,9 +175,9 @@ const EventSnippet: React.FC<{
             )}
 
             {contentPreview === null && (
-              <p className={styles.missingContent}>
+              <div className={styles.missingContent}>
                 Double-click here to edit event content...
-              </p>
+              </div>
             )}
           </div>
         </div>

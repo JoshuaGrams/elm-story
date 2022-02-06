@@ -20,7 +20,7 @@ import { getElement } from '../../../../lib/contentEditor'
 
 export type OnImageSelect = (image: CroppedImage) => Promise<void>
 
-const ImageSelectPlaceholder = `
+export const ImageSelectPlaceholder = `
 <svg
   width="100%"
   height="100%"

@@ -1,7 +1,9 @@
 import { ipcRenderer } from 'electron'
 import { Descendant } from 'slate'
+import { getSvgUrl } from '.'
 import { StudioId, WorldId } from '../../engine/src/types'
 import api from '../api'
+import { ImageSelectPlaceholder } from '../components/ElementEditor/EventContent/Tools/ImageElementSelect'
 import {
   ELEMENT_FORMATS,
   EventContentElement,
@@ -45,7 +47,7 @@ const serializeDescendantToText = async (
   }
 
   const text: string = node.children
-    ? `<p>${(
+    ? `<div>${(
         await Promise.all(
           node.children.map(
             async (childNode) =>
@@ -56,13 +58,13 @@ const serializeDescendantToText = async (
               )
           )
         )
-      ).join('')}</p>`
+      ).join('')}</div>`
     : ''
 
   switch (node.type) {
     case ELEMENT_FORMATS.IMG:
       // TODO: show missing pic if doesn't exist
-      const [path]: [string, boolean] = await ipcRenderer.invoke(
+      const [path, exists]: [string, boolean] = await ipcRenderer.invoke(
         WINDOW_EVENT_TYPE.GET_ASSET,
         {
           studioId,
@@ -72,11 +74,9 @@ const serializeDescendantToText = async (
         }
       )
 
-      return (
-        '<div class="event-content-preview-image" style="background-image: url(' +
-        `${path.replaceAll('"', '')}` +
-        ');"></div>'
-      )
+      return `<div class="event-content-preview-image" style="background-image: url(${
+        exists ? path.replaceAll('"', '') : getSvgUrl(ImageSelectPlaceholder)
+      });"></div>`
     case ELEMENT_FORMATS.CHARACTER:
       const character = node.character_id
         ? await api().characters.getCharacter(studioId, node.character_id)
@@ -95,7 +95,7 @@ const serializeDescendantToText = async (
     case ELEMENT_FORMATS.OL:
     case ELEMENT_FORMATS.UL:
       return node.children
-        ? `<p>${(
+        ? `<div>${(
             await Promise.all(
               node.children.map(
                 async (childNode) =>
@@ -106,7 +106,7 @@ const serializeDescendantToText = async (
                   )
               )
             )
-          ).join('')}</p>`
+          ).join('')}</div>`
         : ''
     default:
       return text
@@ -138,6 +138,6 @@ export const eventContentToPreview = async (
       children[0].type === ELEMENT_FORMATS.IMG
         ? children[0].asset_id || undefined
         : undefined,
-    text: text === '<p></p>' ? undefined : text
+    text: text === '<div></div>' ? undefined : text
   }
 }
