@@ -10,7 +10,7 @@ import {
   EVENT_TYPE,
   SceneChildRefs,
   SceneParentRef
-} from './transport/types/0.6.0'
+} from './transport/types/0.7.0'
 
 import api from '../api'
 
@@ -127,11 +127,13 @@ export default async (
 
     events.map(
       ({
+        characters,
         choices,
         content,
         composer,
         ending,
         id,
+        images,
         input,
         persona,
         sceneId,
@@ -141,12 +143,14 @@ export default async (
         updated
       }) =>
         (worldData.events[id as string] = {
+          characters,
           choices,
           content,
           composer,
           ending,
           id: id as string,
           input,
+          images,
           persona,
           sceneId,
           tags,
@@ -225,12 +229,11 @@ export default async (
     )
 
     scenes.map(
-      ({ children, composer, id, jumps, parent, tags, title, updated }) =>
+      ({ children, composer, id, parent, tags, title, updated }) =>
         (worldData.scenes[id as string] = {
           children: children as SceneChildRefs,
           composer,
           id: id as string,
-          jumps,
           parent: parent as SceneParentRef,
           tags,
           title,

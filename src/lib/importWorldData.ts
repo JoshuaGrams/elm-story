@@ -13,6 +13,7 @@ import { GameDataJSON as GameDataJSON_040 } from './transport/types/0.4.0'
 import { GameDataJSON as GameDataJSON_050 } from './transport/types/0.5.0'
 import { GameDataJSON as GameDataJSON_051 } from './transport/types/0.5.1'
 import { WorldDataJSON as WorldDataJSON_060 } from './transport/types/0.6.0'
+import { WorldDataJSON as WorldDataJSON_070 } from './transport/types/0.7.0'
 
 import api from '../api'
 

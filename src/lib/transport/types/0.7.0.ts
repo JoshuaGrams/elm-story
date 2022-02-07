@@ -207,6 +207,7 @@ export type EventCharacterPersona = [
 ] // [characterId, mask, reference ID]
 
 export interface EventData {
+  characters: ElementId[]
   choices: ElementId[]
   content: string
   composer?: {
@@ -215,6 +216,7 @@ export interface EventData {
   }
   ending: boolean
   id: ElementId
+  images: string[] // asset id
   input?: ElementId // variable ID
   persona?: EventCharacterPersona
   sceneId: ElementId
