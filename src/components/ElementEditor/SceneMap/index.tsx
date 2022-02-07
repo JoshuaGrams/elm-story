@@ -1627,14 +1627,14 @@ const SceneMap: React.FC<{
                           undefined
                         : composer.selectedSceneMapConnectStartData.choiceId ||
                           undefined,
+                    // elmstorygames/feedback#222
                     inputId:
                       foundSourceNode?.data?.eventType === EVENT_TYPE.INPUT &&
                       composer.selectedSceneMapConnectStartData.handleType ===
                         'source'
-                        ? composer.selectedSceneMapConnectStartData.handleId ||
+                        ? composer.selectedSceneMapConnectStartData?.handleId ||
                           undefined
-                        : composer.selectedSceneMapConnectStartData.inputId ||
-                          undefined,
+                        : undefined,
                     originType:
                       foundSourceNode?.data?.eventType || ELEMENT_TYPE.CHOICE,
                     destinationId:
