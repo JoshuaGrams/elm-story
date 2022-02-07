@@ -23,6 +23,8 @@ import v020Upgrade from './transport/upgrade/0.2.0'
 import v040Upgrade from './transport/upgrade/0.4.0'
 import v050Upgrade from './transport/upgrade/0.5.0'
 import v060Upgrade from './transport/upgrade/0.6.0'
+import v070Upgrade from './transport/upgrade/0.7.0'
+
 import { WINDOW_EVENT_TYPE } from './events'
 
 export default (
@@ -70,21 +72,25 @@ export default (
           )
 
           upgradedWorldData = v040Upgrade(cloneDeep(upgradedWorldData))
+          // @ts-ignore
           upgradedWorldData = v050Upgrade(cloneDeep(upgradedWorldData))
+          // @ts-ignore
           upgradedWorldData = v060Upgrade(cloneDeep(upgradedWorldData))
+          // @ts-ignore
+          upgradedWorldData = v070Upgrade(cloneDeep(upgradedWorldData))
         }
 
         // #288
         // Upgrade from 0.2.0+ to 0.6.0
         if (
           semver.gte(engineVersion, '0.2.0') &&
-          semver.lt(engineVersion, '0.6.0')
+          semver.lt(engineVersion, '0.7.0')
         ) {
           upgradedWorldData = cloneDeep(worldData)
 
           // feedback#85: input is set to empty object with 0.4.0 upgrade
           // feedback#87: gameOver being switched to false before upgrade to ending
-          if (semver.lt(engineVersion, '0.5.0')) {
+          if (semver.lt(engineVersion, '0.6.0')) {
             upgradedWorldData = v040Upgrade(
               cloneDeep(worldData) as
                 | GameDataJSON_020
@@ -92,20 +98,24 @@ export default (
                 | GameDataJSON_031
             )
 
+            // @ts-ignore
             upgradedWorldData = v050Upgrade(cloneDeep(upgradedWorldData))
+            // @ts-ignore
+            upgradedWorldData = v060Upgrade(cloneDeep(upgradedWorldData))
           }
 
-          upgradedWorldData = v060Upgrade(cloneDeep(upgradedWorldData))
+          // @ts-ignore
+          upgradedWorldData = v070Upgrade(cloneDeep(upgradedWorldData))
         }
 
         // #411
-        if (semver.gte(engineVersion, '0.6.0')) upgradedWorldData = worldData
+        if (semver.gte(engineVersion, '0.7.0')) upgradedWorldData = worldData
 
         if (!upgradedWorldData)
           throw new Error('Unable to import game data. Version conflict.')
 
         // #411: always set to most recent version of app
-        upgradedWorldData._.engine = '0.6.0'
+        upgradedWorldData._.engine = '0.7.0'
 
         const {
           _,
@@ -120,7 +130,8 @@ export default (
           paths,
           scenes,
           variables
-        } = upgradedWorldData as WorldDataJSON_060
+          // @ts-ignore
+        } = upgradedWorldData as WorldDataJSON_070
 
         try {
           // Save characters
@@ -193,11 +204,13 @@ export default (
           for await (const [
             __,
             {
+              characters,
               choices,
               content,
               composer,
               ending,
               id,
+              images,
               input,
               persona,
               sceneId,
@@ -208,11 +221,13 @@ export default (
             }
           ] of Object.entries(events)) {
             await api().events.saveEvent(_.studioId, {
+              characters,
               choices,
               content,
               composer,
               ending,
               id,
+              images,
               input,
               persona,
               sceneId,
@@ -311,7 +326,7 @@ export default (
           // Save scenes
           for await (const [
             __,
-            { children, composer, id, jumps, parent, tags, title, updated }
+            { children, composer, id, parent, tags, title, updated }
           ] of Object.entries(scenes)) {
             await api().scenes.saveScene(_.studioId, {
               children,

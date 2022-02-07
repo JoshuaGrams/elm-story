@@ -1,196 +1,85 @@
-// #288: upgrades 0.6.0 data to 0.7.0
-import { pick } from 'lodash-es'
-
-import { WorldDataJSON as GameDataJSON_060 } from '../types/0.6.0'
+// upgrades 0.6.0 data to 0.7.0
+import { SceneData, WorldDataJSON as GameDataJSON_060 } from '../types/0.6.0'
 import {
+  ElementId,
   ELEMENT_TYPE,
-  ChoiceCollection,
-  ConditionCollection,
-  EffectCollection,
   EventCollection,
-  FolderCollection,
-  InputCollection,
-  JumpCollection,
-  PathCollection,
   SceneCollection,
   WorldDataJSON as WorldDataJSON_070,
-  PATH_CONDITIONS_TYPE
+  SceneChildRefs
 } from '../types/0.7.0'
 
 export default ({
   _,
+  characters,
   choices,
   conditions,
   effects,
+  events,
   folders,
   inputs,
   jumps,
-  passages,
-  routes,
+  paths,
   scenes,
   variables
 }: GameDataJSON_060): WorldDataJSON_070 => {
-  const upgradedChoices: ChoiceCollection = {}
+  const upgradedEvents: EventCollection = {}
 
-  Object.keys(choices).map((choiceId) => {
-    const choice = choices[choiceId]
+  Object.keys(events).map((eventId) => {
+    const clonedEvent = { ...events[eventId] }
 
-    upgradedChoices[choiceId] = {
-      ...pick(choice, ['id', 'tags', 'title', 'updated']),
-      eventId: choice.passageId
+    upgradedEvents[eventId] = {
+      ...clonedEvent,
+      characters: [],
+      images: []
     }
   })
 
-  const upgradedConditions: ConditionCollection = {}
-
-  Object.keys(conditions).map((conditionId) => {
-    const condition = conditions[conditionId]
-
-    upgradedConditions[conditionId] = {
-      ...pick(condition, [
-        'compare',
-        'id',
-        'tags',
-        'title',
-        'updated',
-        'variableId'
-      ]),
-      pathId: condition.routeId
-    }
-  })
-
-  const upgradedEffects: EffectCollection = {}
-
-  Object.keys(effects).map((effectId) => {
-    const effect = effects[effectId]
-
-    upgradedEffects[effectId] = {
-      ...pick(effect, ['id', 'set', 'tags', 'title', 'updated', 'variableId']),
-      pathId: effect.routeId
-    }
-  })
-
-  const events: EventCollection = {}
-
-  Object.keys(passages).map((passageId) => {
-    const passage = { ...passages[passageId] }
-
-    events[passageId] = {
-      ...pick(passage, [
-        'choices',
-        'content',
-        'id',
-        'input',
-        'sceneId',
-        'tags',
-        'title',
-        'type',
-        'updated'
-      ]),
-      composer: {
-        sceneMapPosX: passage.editor?.componentEditorPosX,
-        sceneMapPosY: passage.editor?.componentEditorPosY
-      },
-      ending: passage.gameOver
-    }
-  })
-
-  const upgradedFolders: FolderCollection = {}
-
-  Object.keys(folders).map((folderId) => {
-    const folder = { ...folders[folderId] }
-
-    upgradedFolders[folderId] = {
-      ...pick(folder, ['children', 'id', 'tags', 'title', 'updated']),
-      // @ts-ignore
-      parent:
-        folder.parent[0] === 'GAME' ? [ELEMENT_TYPE.WORLD, null] : folder.parent
-    }
-  })
-
-  const upgradedInputs: InputCollection = {}
-
-  Object.keys(inputs).map((inputId) => {
-    const input = { ...inputs[inputId] }
-
-    upgradedInputs[inputId] = {
-      ...pick(input, ['id', 'tags', 'title', 'updated', 'variableId']),
-      eventId: input.passageId
-    }
-  })
-
-  const upgradedJumps: JumpCollection = {}
+  const jumpsByScene: { [sceneId: ElementId]: ElementId[] } = {}
 
   Object.keys(jumps).map((jumpId) => {
-    const jump = { ...jumps[jumpId] }
+    const clonedJump = { ...jumps[jumpId] }
 
-    upgradedJumps[jumpId] = {
-      ...pick(jump, ['id', 'sceneId', 'tags', 'title', 'updated']),
-      composer: {
-        sceneMapPosX: jump.editor?.componentEditorPosX,
-        sceneMapPosY: jump.editor?.componentEditorPosY
-      },
-      path: [...jump.route]
+    if (!jumpId || !clonedJump.sceneId) return
+
+    if (!jumpsByScene[clonedJump.sceneId]) {
+      jumpsByScene[clonedJump.sceneId] = []
     }
-  })
 
-  const paths: PathCollection = {}
-
-  Object.keys(routes).map((routeId) => {
-    const route = { ...routes[routeId] }
-
-    paths[routeId] = {
-      ...pick(route, [
-        'choiceId',
-        'destinationId',
-        'id',
-        'inputId',
-        'originId',
-        'originType',
-        'sceneId',
-        'tags',
-        'title',
-        'updated'
-      ]),
-      conditionsType: PATH_CONDITIONS_TYPE.ALL,
-      // @ts-ignore
-      destinationType:
-        route.destinationType === 'PASSAGE'
-          ? ELEMENT_TYPE.EVENT
-          : route.destinationType
-    }
+    jumpsByScene[clonedJump.sceneId].push(jumpId)
   })
 
   const upgradedScenes: SceneCollection = {}
 
   Object.keys(scenes).map((sceneId) => {
-    const scene = { ...scenes[sceneId] }
+    const clonedScene = { ...scenes[sceneId] },
+      clonedChildren: SceneChildRefs = [...clonedScene.children]
+
+    if (clonedScene.id && jumpsByScene[clonedScene.id]) {
+      jumpsByScene[clonedScene.id].map((jumpId) =>
+        clonedChildren.push([ELEMENT_TYPE.JUMP, jumpId])
+      )
+    }
+
+    delete (clonedScene as Partial<SceneData>).jumps
 
     upgradedScenes[sceneId] = {
-      ...pick(scene, ['id', 'jumps', 'tags', 'title', 'updated']),
-      children: scene.children.map((child) => [ELEMENT_TYPE.EVENT, child[1]]),
-      composer: {
-        sceneMapTransformX: scene.editor?.componentEditorTransformX,
-        sceneMapTransformY: scene.editor?.componentEditorTransformY,
-        sceneMapTransformZoom: scene.editor?.componentEditorTransformZoom
-      },
-      // @ts-ignore
-      parent:
-        scene.parent[0] === 'GAME' ? [ELEMENT_TYPE.WORLD, null] : scene.parent
+      ...clonedScene,
+      children: clonedChildren,
     }
   })
 
   return {
     // @ts-ignore
     _,
-    characters: {},
-    choices: upgradedChoices,
-    conditions: upgradedConditions,
-    effects: upgradedEffects,
-    events,
-    folders: upgradedFolders,
-    inputs: upgradedInputs,
-    jumps: upgradedJumps,
+    characters,
+    choices,
+    conditions,
+    effects,
+    events: upgradedEvents,
+    folders,
+    inputs,
+    jumps,
     paths,
     scenes: upgradedScenes,
     variables
