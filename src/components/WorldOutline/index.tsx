@@ -992,16 +992,38 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
       try {
         switch (data.type) {
           case ELEMENT_TYPE.FOLDER:
+            const folderRemovePromises: Promise<void>[] = []
+
+            // elmstorygames/feedback#225
+            if (parent.data.type === ELEMENT_TYPE.WORLD) {
+              folderRemovePromises.push(
+                api().worlds.saveChildRefsToWorld(
+                  studioId,
+                  world.id,
+                  parent.children.map((childId) => [
+                    newTreeData.items[childId].data.type,
+                    childId as ElementId
+                  ])
+                )
+              )
+            }
+
+            if (parent.data.type === ELEMENT_TYPE.FOLDER) {
+              folderRemovePromises.push(
+                api().folders.saveChildRefsToFolder(
+                  studioId,
+                  item.data.parentId,
+                  parent.children.map((childId) => [
+                    newTreeData.items[childId].data.type,
+                    childId as ElementId
+                  ])
+                )
+              )
+            }
+
             await Promise.all([
-              await api().worlds.saveChildRefsToWorld(
-                studioId,
-                world.id,
-                parent.children.map((childId) => [
-                  newTreeData.items[childId].data.type,
-                  childId as ElementId
-                ])
-              ),
-              await api().folders.removeFolder(studioId, elementId)
+              ...folderRemovePromises,
+              api().folders.removeFolder(studioId, elementId)
             ])
             break
           case ELEMENT_TYPE.SCENE:
