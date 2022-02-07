@@ -32,6 +32,31 @@
 .importingGameDataError {
   text-align: center;
 
+  .error {
+    margin: 4px;
+    padding: 4px;
+    background: hsl(0, 0%, 8%);
+    border: 1px solid hsl(0, 0%, 8%);
+
+    &:hover {
+      border-color: var(--highlight-color);
+    }
+
+    div {
+      user-select: all;
+
+      &.message {
+        font-size: 14px;
+      }
+
+      code {
+        font-family: 'Fira Code';
+        color: hsl(0, 0%, 60%);
+        user-select: all;
+      }
+    }
+  }
+
   .additionalHelp {
     font-size: 10px;
     text-decoration: underline;

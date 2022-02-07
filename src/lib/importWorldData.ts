@@ -2,7 +2,7 @@ import { ipcRenderer } from 'electron'
 
 import { cloneDeep } from 'lodash'
 import semver from 'semver'
-import { ValidationError } from 'jsonschema'
+import validateWorldData, { ValidationError } from './transport/validate'
 
 import { WORLD_TEMPLATE } from '../data/types'
 import { GameDataJSON as GameDataJSON_013 } from './transport/types/0.1.3'
@@ -15,10 +15,6 @@ import { GameDataJSON as GameDataJSON_051 } from './transport/types/0.5.1'
 import { WorldDataJSON as WorldDataJSON_060 } from './transport/types/0.6.0'
 import { WorldDataJSON as WorldDataJSON_070 } from './transport/types/0.7.0'
 
-import api from '../api'
-
-import validateWorldData from './transport/validate'
-
 import v020Upgrade from './transport/upgrade/0.2.0'
 import v040Upgrade from './transport/upgrade/0.4.0'
 import v050Upgrade from './transport/upgrade/0.5.0'
@@ -27,32 +23,34 @@ import v070Upgrade from './transport/upgrade/0.7.0'
 
 import { WINDOW_EVENT_TYPE } from './events'
 
+import api from '../api'
+
 export default (
   worldData: GameDataJSON_013 &
     GameDataJSON_020 &
     GameDataJSON_040 &
     GameDataJSON_050 &
     GameDataJSON_051 &
-    WorldDataJSON_060,
+    WorldDataJSON_060 &
+    WorldDataJSON_070,
   jsonPath: string | undefined,
   skipValidation?: boolean
 ): {
-  errors: string[]
+  errors: ValidationError[]
   finish: () => Promise<string[]>
 } => {
-  let errors: string[] = []
+  let errors: ValidationError[] = []
   const { engine: engineVersion } = worldData._
 
   if (!worldData._?.engine)
-    errors = ['Unable to import game data. Missing engine version.']
+    errors = [
+      { message: 'Unable to import game data. Missing engine version.' }
+    ]
 
   if (worldData._?.engine && !skipValidation) {
     errors = [
       ...errors,
-      ...validateWorldData(worldData, engineVersion)[1].map(
-        (error: ValidationError | { path?: string; message: string }) =>
-          `${error.path ? `${error.path}:` : ''} ${error.message}`
-      )
+      ...validateWorldData(worldData, engineVersion)[1].map((error) => error)
     ]
   }
 

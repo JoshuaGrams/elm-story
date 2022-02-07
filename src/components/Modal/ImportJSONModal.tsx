@@ -4,9 +4,10 @@ import importWorldData from '../../lib/importWorldData'
 import React, { useContext, useEffect, useState } from 'react'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
+import { ValidationError } from '../../lib/transport/validate'
 
 import { ElementId, StudioId } from '../../data/types'
-import { WorldDataJSON } from '../../lib/transport/types/0.6.0'
+import { WorldDataJSON } from '../../lib/transport/types/0.7.0'
 
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 
@@ -35,9 +36,9 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
 
   const [importingGameData, setImportingGameData] = useState(false),
     [worldData, setWorldData] = useState<WorldDataJSON | undefined>(undefined),
-    [importingGameDataErrors, setImportingGameDataErrors] = useState<string[]>(
-      []
-    ),
+    [importingGameDataErrors, setImportingGameDataErrors] = useState<
+      ValidationError[]
+    >([]),
     [studioNotFound, setStudioNotFound] = useState<
       { id: ElementId; title: string } | boolean
     >(false),
@@ -255,16 +256,20 @@ const ImportJSONModal: React.FC<ImportJSONModalProps> = ({
               }}
             >
               {importingGameDataErrors.map((error, index) => (
-                <div
-                  key={`json-error-${index}`}
-                  style={{
-                    margin: 4,
-                    padding: 4,
-                    background: 'hsl(0, 0%, 8%)',
-                    userSelect: 'all'
-                  }}
-                >
-                  {error}
+                <div key={`json-error-${index}`} className={styles.error}>
+                  <div>{error.path && <code>{error.path}</code>}</div>
+                  <div className={styles.message}>{error.message}</div>
+                  <div>
+                    {error.params && (
+                      <>
+                        {Object.keys(error.params).map((key) => (
+                          <code>
+                            {key}: {error.params?.[key]}
+                          </code>
+                        ))}
+                      </>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
