@@ -938,146 +938,155 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
     }
   }
 
-  async function onRemove(elementId: ElementId) {
-    logger.info(`WorldOutline->onRemove->${elementId}`)
+  const onRemove = useCallback(
+    async (elementId: ElementId) => {
+      logger.info(`WorldOutline->onRemove->${elementId}`)
 
-    const item = treeData?.items[elementId],
-      data = item?.data
+      const item = treeData?.items[elementId],
+        data = item?.data
 
-    if (world.id && item && treeData) {
-      const newTreeData = removeItemFromTree(treeData, item.id as ElementId),
-        parent = newTreeData.items[item.data.parentId]
+      if (world.id && item && treeData) {
+        const newTreeData = removeItemFromTree(treeData, item.id as ElementId),
+          parent = newTreeData.items[item.data.parentId]
 
-      if (
-        (data.type === ELEMENT_TYPE.EVENT &&
-          item.id === composer.selectedSceneMapEvent) ||
-        (data.type === ELEMENT_TYPE.SCENE &&
-          composer.selectedSceneMapEvent &&
-          item.children.includes(composer.selectedSceneMapEvent))
-      ) {
-        composerDispatch({
-          type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
-          selectedSceneMapEvent: null
-        })
+        if (
+          (data.type === ELEMENT_TYPE.EVENT &&
+            item.id === composer.selectedSceneMapEvent) ||
+          (data.type === ELEMENT_TYPE.SCENE &&
+            composer.selectedSceneMapEvent &&
+            item.children.includes(composer.selectedSceneMapEvent))
+        ) {
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_EVENT,
+            selectedSceneMapEvent: null
+          })
 
-        composerDispatch({
-          type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_EVENTS,
-          totalSceneMapSelectedEvents: 0
-        })
-      }
-
-      if (
-        (data.type === ELEMENT_TYPE.JUMP &&
-          item.id === composer.selectedSceneMapJump) ||
-        (data.type === ELEMENT_TYPE.SCENE &&
-          composer.selectedSceneMapJump &&
-          item.children.includes(composer.selectedSceneMapJump))
-      ) {
-        composerDispatch({
-          type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
-          selectedSceneMapJump: null
-        })
-
-        composerDispatch({
-          type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
-          totalSceneMapSelectedJumps: 0
-        })
-      }
-
-      composerDispatch({
-        type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
-        removedElement: { id: elementId, type: data.type }
-      })
-
-      try {
-        switch (data.type) {
-          case ELEMENT_TYPE.FOLDER:
-            const folderRemovePromises: Promise<void>[] = []
-
-            // elmstorygames/feedback#225
-            if (parent.data.type === ELEMENT_TYPE.WORLD) {
-              folderRemovePromises.push(
-                api().worlds.saveChildRefsToWorld(
-                  studioId,
-                  world.id,
-                  parent.children.map((childId) => [
-                    newTreeData.items[childId].data.type,
-                    childId as ElementId
-                  ])
-                )
-              )
-            }
-
-            if (parent.data.type === ELEMENT_TYPE.FOLDER) {
-              folderRemovePromises.push(
-                api().folders.saveChildRefsToFolder(
-                  studioId,
-                  item.data.parentId,
-                  parent.children.map((childId) => [
-                    newTreeData.items[childId].data.type,
-                    childId as ElementId
-                  ])
-                )
-              )
-            }
-
-            await Promise.all([
-              ...folderRemovePromises,
-              api().folders.removeFolder(studioId, elementId)
-            ])
-            break
-          case ELEMENT_TYPE.SCENE:
-            const sceneRemovePromises: Promise<void>[] = []
-
-            if (parent.data.type === ELEMENT_TYPE.WORLD) {
-              sceneRemovePromises.push(
-                api().worlds.saveChildRefsToWorld(
-                  studioId,
-                  world.id,
-                  parent.children.map((childId) => [
-                    newTreeData.items[childId].data.type,
-                    childId as ElementId
-                  ])
-                )
-              )
-            }
-
-            if (parent.data.type === ELEMENT_TYPE.FOLDER) {
-              sceneRemovePromises.push(
-                api().folders.saveChildRefsToFolder(
-                  studioId,
-                  item.data.parentId,
-                  parent.children.map((childId) => [
-                    newTreeData.items[childId].data.type,
-                    childId as ElementId
-                  ])
-                )
-              )
-            }
-
-            sceneRemovePromises.push(
-              api().scenes.removeScene(studioId, elementId)
-            )
-
-            await Promise.all(sceneRemovePromises)
-
-            break
-          case ELEMENT_TYPE.EVENT:
-            await api().events.removeEvent(studioId, item?.id as ElementId)
-
-            break
-          case ELEMENT_TYPE.JUMP:
-            await api().jumps.removeJump(studioId, item?.id as ElementId)
-
-            break
-          default:
-            break
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_EVENTS,
+            totalSceneMapSelectedEvents: 0
+          })
         }
-      } catch (error) {
-        throw error
+
+        if (
+          (data.type === ELEMENT_TYPE.JUMP &&
+            item.id === composer.selectedSceneMapJump) ||
+          (data.type === ELEMENT_TYPE.SCENE &&
+            composer.selectedSceneMapJump &&
+            item.children.includes(composer.selectedSceneMapJump))
+        ) {
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.SCENE_MAP_SELECT_JUMP,
+            selectedSceneMapJump: null
+          })
+
+          composerDispatch({
+            type: COMPOSER_ACTION_TYPE.SCENE_MAP_TOTAL_SELECTED_JUMPS,
+            totalSceneMapSelectedJumps: 0
+          })
+        }
+
+        composerDispatch({
+          type: COMPOSER_ACTION_TYPE.ELEMENT_REMOVE,
+          removedElement: { id: elementId, type: data.type }
+        })
+
+        try {
+          switch (data.type) {
+            case ELEMENT_TYPE.FOLDER:
+              const folderRemovePromises: Promise<void>[] = []
+
+              // elmstorygames/feedback#225
+              if (parent.data.type === ELEMENT_TYPE.WORLD) {
+                folderRemovePromises.push(
+                  api().worlds.saveChildRefsToWorld(
+                    studioId,
+                    world.id,
+                    parent.children.map((childId) => [
+                      newTreeData.items[childId].data.type,
+                      childId as ElementId
+                    ])
+                  )
+                )
+              }
+
+              if (parent.data.type === ELEMENT_TYPE.FOLDER) {
+                folderRemovePromises.push(
+                  api().folders.saveChildRefsToFolder(
+                    studioId,
+                    item.data.parentId,
+                    parent.children.map((childId) => [
+                      newTreeData.items[childId].data.type,
+                      childId as ElementId
+                    ])
+                  )
+                )
+              }
+
+              await Promise.all([
+                ...folderRemovePromises,
+                api().folders.removeFolder(studioId, elementId)
+              ])
+              break
+            case ELEMENT_TYPE.SCENE:
+              const sceneRemovePromises: Promise<void>[] = []
+
+              if (parent.data.type === ELEMENT_TYPE.WORLD) {
+                sceneRemovePromises.push(
+                  api().worlds.saveChildRefsToWorld(
+                    studioId,
+                    world.id,
+                    parent.children.map((childId) => [
+                      newTreeData.items[childId].data.type,
+                      childId as ElementId
+                    ])
+                  )
+                )
+              }
+
+              if (parent.data.type === ELEMENT_TYPE.FOLDER) {
+                sceneRemovePromises.push(
+                  api().folders.saveChildRefsToFolder(
+                    studioId,
+                    item.data.parentId,
+                    parent.children.map((childId) => [
+                      newTreeData.items[childId].data.type,
+                      childId as ElementId
+                    ])
+                  )
+                )
+              }
+
+              sceneRemovePromises.push(
+                api().scenes.removeScene(studioId, elementId)
+              )
+
+              await Promise.all(sceneRemovePromises)
+
+              break
+            case ELEMENT_TYPE.EVENT:
+              await api().events.removeEvent(studioId, item?.id as ElementId)
+
+              break
+            case ELEMENT_TYPE.JUMP:
+              await api().jumps.removeJump(studioId, item?.id as ElementId)
+
+              break
+            default:
+              break
+          }
+        } catch (error) {
+          throw error
+        }
       }
-    }
-  }
+    },
+    [
+      studioId,
+      world.id,
+      treeData,
+      composer.selectedSceneMapEvent,
+      composer.selectedSceneMapJump
+    ]
+  )
 
   async function OnEditElementTitle(
     elementId: ElementId,

@@ -42,7 +42,8 @@ const createWorldOutlineTreeData = (
             title: folder.title,
             type: ELEMENT_TYPE.FOLDER,
             selected: false,
-            parentId: game.id,
+            // elmstorygames/feedback#226
+            parentId: folder.parent[1] || game.id,
             renaming: false
           }
         }
