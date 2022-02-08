@@ -184,7 +184,7 @@ const createWindow = async () => {
             worldId: WorldId
             id: string
             data: ArrayBuffer
-            ext: 'jpeg' | 'webp'
+            ext: 'jpeg' | 'webp' | 'mp3'
           }
         ): Promise<string | null> => {
           const path = `${app.getPath(

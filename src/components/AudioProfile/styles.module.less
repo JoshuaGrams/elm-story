@@ -1,0 +1,81 @@
+.AudioProfile {
+  .createProfileButton {
+    padding-top: 10px;
+
+    * {
+      width: 100%;
+    }
+  }
+
+  .player {
+    .bar {
+      display: grid;
+      grid-template-columns: 18px auto 18px;
+
+      .button {
+        height: 32px;
+        width: 18px;
+        display: grid;
+        align-items: center;
+        cursor: pointer;
+
+        &:hover {
+          * {
+            color: var(--highlight-color);
+          }
+        }
+
+        &.play {
+          * {
+            justify-self: left;
+          }
+        }
+
+        &.mute {
+          &.muted {
+            * {
+              color: var(--warning-color);
+            }
+          }
+          * {
+            justify-self: right;
+          }
+        }
+      }
+    }
+
+    .time {
+      display: grid;
+      grid-template-columns: 40px auto auto auto 40px;
+      align-items: center;
+
+      * {
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      .button {
+        width: 40px;
+
+        &.loop {
+          justify-self: right;
+        }
+
+        &.import {
+          justify-self: center;
+        }
+
+        &.delete {
+          justify-self: left;
+        }
+      }
+
+      .current,
+      .duration {
+        * {
+          color: hsl(0, 0%, 60%);
+        }
+      }
+    }
+  }
+}

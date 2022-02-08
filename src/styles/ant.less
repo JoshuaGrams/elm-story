@@ -87,6 +87,7 @@
 .ant-slider {
   .ant-slider-track {
     background-color: var(--highlight-color) !important;
+    border-radius: 2px !important;
   }
 
   &:hover .ant-slider-handle:not(.ant-tooltip-open) {
@@ -96,9 +97,14 @@
   .ant-slider-handle {
     box-shadow: none;
     border-color: var(--highlight-color);
+    border-radius: 50% !important;
 
     &:focus {
       border-color: var(--highlight-color-bright);
     }
+  }
+
+  .ant-slider-rail {
+    border-radius: 2px !important;
   }
 }

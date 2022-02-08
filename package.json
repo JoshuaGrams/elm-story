@@ -240,6 +240,7 @@
     "acorn": "^8.4.1",
     "ajv": "^8.10.0",
     "antd": "^4.12.3",
+    "date-fns": "^2.28.0",
     "dexie": "^3.1.0-alpha",
     "dexie-react-hooks": "^1.0.2",
     "electron-context-menu": "^3.0.0",

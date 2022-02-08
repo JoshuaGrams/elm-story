@@ -240,7 +240,10 @@ export type SceneParentRef = [
 export type SceneChildRef = [ELEMENT_TYPE.EVENT | ELEMENT_TYPE.JUMP, ElementId]
 export type SceneChildRefs = Array<SceneChildRef>
 
+export type AudioProfile = [string, boolean] // asset_id, looping
+
 export interface Scene extends Element {
+  audio?: AudioProfile
   children: SceneChildRefs
   worldId: WorldId
   parent: SceneParentRef

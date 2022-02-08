@@ -1,9 +1,12 @@
+import { v4 as uuid } from 'uuid'
+
 import React, { useContext } from 'react'
 
 import {
   ElementId,
   ELEMENT_TYPE,
   EVENT_TYPE,
+  Scene,
   StudioId
 } from '../../../data/types'
 
@@ -23,15 +26,21 @@ import {
 } from '@ant-design/icons'
 
 import ElementTitle from '../ElementTitle'
-import JumpDetails from '../JumpProperties'
+import AudioProfile from '../../AudioProfile'
+
+import JumpProperties from '../JumpProperties'
 import EventProperties from '../EventProperties'
-import PathDetails from '../PathProperties'
-import ChoiceDetails from '../ChoiceProperties'
+import PathProperties from '../PathProperties'
+import ChoiceProperties from '../ChoiceProperties'
+
 import ElementHelpButton from '../../ElementHelpButton'
 
-import styles from '../styles.module.less'
+import rootStyles from '../styles.module.less'
+import styles from './styles.module.less'
 
 import api from '../../../api'
+import { ipcRenderer } from 'electron'
+import { WINDOW_EVENT_TYPE } from '../../../lib/events'
 
 const getEventTypeString = (eventType: EVENT_TYPE) => {
   switch (eventType) {
@@ -44,6 +53,61 @@ const getEventTypeString = (eventType: EVENT_TYPE) => {
     default:
       return undefined
   }
+}
+
+const SceneAudio: React.FC<{ studioId: StudioId; scene: Scene }> = ({
+  studioId,
+  scene
+}) => {
+  if (!scene.id) return null
+
+  return (
+    <>
+      <div className={styles.SceneAudio}>
+        <AudioProfile
+          profile={scene.audio}
+          onImport={async (audioData) => {
+            const assetId = scene.audio?.[0] || uuid(),
+              promises: Promise<any>[] = []
+
+            try {
+              if (!scene.audio?.[0]) {
+                promises.push(
+                  api().scenes.saveScene(studioId, {
+                    ...scene,
+                    audio: [assetId, false]
+                  })
+                )
+              }
+
+              promises.push(
+                ipcRenderer.invoke(WINDOW_EVENT_TYPE.SAVE_ASSET, {
+                  studioId,
+                  worldId: scene.worldId,
+                  id: assetId,
+                  data: audioData,
+                  ext: 'mp3'
+                })
+              )
+
+              await Promise.all([...promises])
+            } catch (error) {
+              throw error
+            }
+          }}
+          onRequestAudioPath={async (assetId) => {
+            return await ipcRenderer.invoke(WINDOW_EVENT_TYPE.GET_ASSET, {
+              studioId,
+              worldId: scene.worldId,
+              id: assetId,
+              ext: 'mp3'
+            })
+          }}
+          onSelect={async (profile) => console.log(profile)}
+        />
+      </div>
+    </>
+  )
 }
 
 const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
@@ -62,8 +126,8 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
     <>
       {scene && (
         <>
-          <div className={styles.componentDetailViewWrapper}>
-            <div className={styles.content}>
+          <div className={rootStyles.componentDetailViewWrapper}>
+            <div className={rootStyles.content}>
               <ElementTitle
                 title={scene.title}
                 onUpdate={async (title) => {
@@ -92,12 +156,19 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                   }
                 }}
               />
-              <div className={styles.componentId}>{scene.id}</div>
+
+              <div className={styles.sceneAudioWrapper}>
+                <div className={styles.header}>Scene Audio</div>
+
+                <SceneAudio studioId={studioId} scene={scene} />
+              </div>
+
+              <div className={rootStyles.componentId}>{scene.id}</div>
 
               {!composer.selectedSceneMapEvent &&
                 !composer.selectedSceneMapJump &&
                 !composer.selectedSceneMapPath && (
-                  <div className={styles.multiSelection}>
+                  <div className={rootStyles.multiSelection}>
                     {composer.totalSceneMapSelectedEvents > 0 && (
                       <div>
                         Selected Events: {composer.totalSceneMapSelectedEvents}
@@ -125,14 +196,14 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                 <Collapse.Panel
                   header={
                     <>
-                      <ArrowRightOutlined className={styles.headerIcon} />{' '}
+                      <ArrowRightOutlined className={rootStyles.headerIcon} />{' '}
                       Selected Jump Event
                       <ElementHelpButton type={ELEMENT_TYPE.JUMP} />
                     </>
                   }
                   key="jump-details-panel"
                 >
-                  <JumpDetails
+                  <JumpProperties
                     studioId={studioId}
                     jumpId={composer.selectedSceneMapJump}
                   />
@@ -146,14 +217,14 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                 <Collapse.Panel
                   header={
                     <>
-                      <NodeIndexOutlined className={styles.headerIcon} />{' '}
+                      <NodeIndexOutlined className={rootStyles.headerIcon} />{' '}
                       Selected Path
                       <ElementHelpButton type={ELEMENT_TYPE.PATH} />
                     </>
                   }
                   key="path-details-panel"
                 >
-                  <PathDetails
+                  <PathProperties
                     studioId={studioId}
                     worldId={scene.worldId}
                     pathId={composer.selectedSceneMapPath}
@@ -174,7 +245,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                   <Collapse.Panel
                     header={
                       <>
-                        <AlignLeftOutlined className={styles.headerIcon} />{' '}
+                        <AlignLeftOutlined className={rootStyles.headerIcon} />{' '}
                         Selected {getEventTypeString(event.type)} Event
                         <ElementHelpButton type={ELEMENT_TYPE.EVENT} />
                       </>
@@ -193,14 +264,14 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                   <Collapse.Panel
                     header={
                       <>
-                        <BranchesOutlined className={styles.headerIcon} />{' '}
+                        <BranchesOutlined className={rootStyles.headerIcon} />{' '}
                         Selected Choice
                         <ElementHelpButton type={ELEMENT_TYPE.CHOICE} />
                       </>
                     }
                     key="choice-details-panel"
                   >
-                    <ChoiceDetails
+                    <ChoiceProperties
                       studioId={studioId}
                       choiceId={composer.selectedSceneMapChoice}
                     />
