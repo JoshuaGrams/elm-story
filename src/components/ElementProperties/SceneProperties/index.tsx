@@ -71,15 +71,6 @@ const SceneAudio: React.FC<{ studioId: StudioId; scene: Scene }> = ({
               promises: Promise<any>[] = []
 
             try {
-              if (!scene.audio?.[0]) {
-                promises.push(
-                  api().scenes.saveScene(studioId, {
-                    ...scene,
-                    audio: [assetId, false]
-                  })
-                )
-              }
-
               promises.push(
                 ipcRenderer.invoke(WINDOW_EVENT_TYPE.SAVE_ASSET, {
                   studioId,
@@ -91,6 +82,14 @@ const SceneAudio: React.FC<{ studioId: StudioId; scene: Scene }> = ({
               )
 
               await Promise.all([...promises])
+
+              if (!scene.audio?.[0]) {
+                // elmstorygames/feedback#231
+                await api().scenes.saveScene(studioId, {
+                  ...scene,
+                  audio: [assetId, false]
+                })
+              }
             } catch (error) {
               throw error
             }
@@ -157,13 +156,13 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                 }}
               />
 
+              <div className={rootStyles.componentId}>{scene.id}</div>
+
               <div className={styles.sceneAudioWrapper}>
-                <div className={styles.header}>Scene Audio</div>
+                <div className={styles.header}>Audio</div>
 
                 <SceneAudio studioId={studioId} scene={scene} />
               </div>
-
-              <div className={rootStyles.componentId}>{scene.id}</div>
 
               {!composer.selectedSceneMapEvent &&
                 !composer.selectedSceneMapJump &&

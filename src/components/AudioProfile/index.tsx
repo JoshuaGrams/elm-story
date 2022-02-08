@@ -8,8 +8,7 @@ import {
   ImportOutlined,
   LoadingOutlined,
   PauseOutlined,
-  PlayCircleOutlined,
-  PlaySquareOutlined,
+  PlayCircleFilled,
   RetweetOutlined,
   SoundOutlined
 } from '@ant-design/icons'
@@ -17,6 +16,14 @@ import {
 import Clock from '../Clock'
 
 import styles from './styles.module.less'
+
+const playerInitialState = {
+  currentTime: 0,
+  duration: 0,
+  playing: false,
+  muted: false,
+  ready: false
+}
 
 const AudioProfile: React.FC<{
   profile?: AudioProfileType
@@ -37,10 +44,7 @@ const AudioProfile: React.FC<{
     [audioPath, setAudioPath] = useState<string | undefined | null>(undefined)
 
   const [player, setPlayer] = useState({
-    currentTime: 0,
-    duration: 0,
-    playing: false,
-    muted: false
+    ...playerInitialState
   })
 
   const processAudioImport = async (
@@ -93,6 +97,9 @@ const AudioProfile: React.FC<{
     async function getAudioPath() {
       if (!profile?.[0]) return
 
+      // elmstorygames/feedback#232
+      setPlayer({ ...playerInitialState, ready: false })
+
       const [path, exists] = await onRequestAudioPath(profile[0])
 
       setAudioPath(exists ? path : null)
@@ -125,18 +132,19 @@ const AudioProfile: React.FC<{
             type="primary"
             onClick={() => setImporting(true)}
             disabled={loading}
+            size="small"
           >
             {loading ? (
               <Spin
                 indicator={
                   <LoadingOutlined
-                    style={{ color: 'var(--highlight-color)', fontSize: 14 }}
+                    style={{ color: 'var(--highlight-color)' }}
                     spin
                   />
                 }
               />
             ) : (
-              'Create Profile'
+              'Import MP3'
             )}
           </Button>
         </div>
@@ -144,7 +152,11 @@ const AudioProfile: React.FC<{
 
       {profile && audioPath && (
         <>
-          <div className={styles.player}>
+          <div
+            className={`${styles.player} ${
+              !player.ready ? styles.disabled : ''
+            }`}
+          >
             <div className={styles.bar}>
               <div
                 className={`${styles.button} ${styles.play}`}
@@ -154,7 +166,7 @@ const AudioProfile: React.FC<{
                     : playerRef.current?.play()
                 }
               >
-                {!player.playing ? <PlayCircleOutlined /> : <PauseOutlined />}
+                {!player.playing ? <PlayCircleFilled /> : <PauseOutlined />}
               </div>
 
               <Slider
@@ -171,6 +183,7 @@ const AudioProfile: React.FC<{
               <audio
                 ref={playerRef}
                 src={audioPath.replaceAll('"', '')}
+                onCanPlay={() => setPlayer({ ...player, ready: true })}
                 onPlay={() => setPlayer({ ...player, playing: true })}
                 onPause={() => setPlayer({ ...player, playing: false })}
                 onTimeUpdate={() =>
@@ -196,7 +209,7 @@ const AudioProfile: React.FC<{
               <div
                 className={`${styles.button} ${styles.mute} ${
                   player.muted ? styles.muted : ''
-                }`}
+                } `}
               >
                 <SoundOutlined
                   onClick={() => {
@@ -209,30 +222,33 @@ const AudioProfile: React.FC<{
 
             <div className={styles.time}>
               <div className={styles.current}>
-                <Clock seconds={player.currentTime} />
+                {player.ready && <Clock seconds={player.currentTime} />}
               </div>
 
               <Button
                 size="small"
                 className={`${styles.button} ${styles.loop}`}
+                disabled={!player.ready}
               >
                 <RetweetOutlined />
               </Button>
               <Button
                 size="small"
                 className={`${styles.button} ${styles.import}`}
+                disabled={!player.ready}
               >
                 <ImportOutlined />
               </Button>
               <Button
                 size="small"
                 className={`${styles.button} ${styles.delete}`}
+                disabled={!player.ready}
               >
                 <DeleteOutlined />
               </Button>
 
               <div className={styles.duration} style={{ textAlign: 'right' }}>
-                <Clock seconds={player.duration} />
+                {player.ready && <Clock seconds={player.duration} />}
               </div>
             </div>
           </div>

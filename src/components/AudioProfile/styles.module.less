@@ -4,10 +4,15 @@
 
     * {
       width: 100%;
+      font-size: 12px;
     }
   }
 
   .player {
+    &.disabled {
+      pointer-events: none;
+    }
+
     .bar {
       display: grid;
       grid-template-columns: 18px auto 18px;
@@ -73,6 +78,7 @@
       .current,
       .duration {
         * {
+          font-family: 'Fira Code';
           color: hsl(0, 0%, 60%);
         }
       }
