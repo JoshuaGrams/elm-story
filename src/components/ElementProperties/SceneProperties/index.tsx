@@ -66,6 +66,7 @@ const SceneAudio: React.FC<{ studioId: StudioId; scene: Scene }> = ({
       <div className={styles.SceneAudio}>
         <AudioProfile
           profile={scene.audio}
+          info
           onImport={async (audioData) => {
             const assetId = scene.audio?.[0] || uuid(),
               promises: Promise<any>[] = []
@@ -159,7 +160,7 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
               <div className={rootStyles.componentId}>{scene.id}</div>
 
               <div className={styles.sceneAudioWrapper}>
-                <div className={styles.header}>Audio</div>
+                <div className={styles.header}>Audio Profile</div>
 
                 <SceneAudio studioId={studioId} scene={scene} />
               </div>

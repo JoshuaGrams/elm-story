@@ -1,7 +1,10 @@
 .AudioProfile {
-  .createProfileButton {
-    padding-top: 10px;
+  .createProfileButton,
+  .player {
+    padding: 10px;
+  }
 
+  .createProfileButton {
     * {
       width: 100%;
       font-size: 12px;
@@ -9,6 +12,8 @@
   }
 
   .player {
+    padding-top: 0;
+
     &.disabled {
       pointer-events: none;
     }
@@ -47,6 +52,19 @@
           }
         }
       }
+
+      .slider {
+        &:hover {
+          :global .ant-slider-handle {
+            opacity: 1;
+          }
+        }
+
+        :global .ant-slider-handle {
+          transition: opacity 0.2s;
+          opacity: 0;
+        }
+      }
     }
 
     .time {
@@ -80,6 +98,43 @@
         * {
           font-family: 'Fira Code';
           color: hsl(0, 0%, 60%);
+        }
+      }
+    }
+  }
+
+  .info {
+    display: grid;
+    grid-template-columns: 72px auto;
+    padding: 4px;
+
+    .cover {
+      width: 72px;
+      height: 72px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      border: 1px solid hsl(0, 0%, 20%);
+      border-radius: 2px !important;
+    }
+
+    .data {
+      overflow-x: auto;
+
+      ul {
+        margin: 0px;
+        padding: 0 6px;
+        font-size: 12px;
+
+        li {
+          height: 18px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+
+          span {
+            color: hsl(0, 0%, 40%);
+            text-transform: uppercase;
+          }
         }
       }
     }
