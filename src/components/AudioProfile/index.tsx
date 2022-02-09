@@ -330,6 +330,7 @@ const AudioProfile: React.FC<{
                       ? audioPath
                       : undefined
                   }
+                  time={[player.currentTime, player.duration]}
                 />
               </Collapse.Panel>
             </Collapse>
