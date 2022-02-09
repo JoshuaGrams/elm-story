@@ -331,6 +331,9 @@ const AudioProfile: React.FC<{
                       : undefined
                   }
                   time={[player.currentTime, player.duration]}
+                  onSeek={(time) => {
+                    if (playerRef.current) playerRef.current.currentTime = time
+                  }}
                 />
               </Collapse.Panel>
             </Collapse>

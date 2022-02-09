@@ -3,7 +3,7 @@ import { Spin } from 'antd'
 import { values } from 'lodash'
 import * as mm from 'music-metadata-browser'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Marquee from 'react-fast-marquee'
 
 import styles from './styles.module.less'
@@ -16,15 +16,17 @@ const positionProgressBar = (
   const waveformWidth = waveformElement.offsetWidth
 
   progressBarElement.style.left = `${Math.round(
-    (time[0] * waveformWidth) / time[1]
+    (time[0] * waveformWidth) / time[1] - (time[0] === time[1] ? 1 : 0)
   )}px`
 }
 
 const Metadata: React.FC<{
   audioPath?: string | null
   time: [number, number] // current time, duration
-}> = ({ audioPath, time }) => {
+  onSeek: (time: number) => void
+}> = ({ audioPath, time, onSeek }) => {
   const progressBarRef = useRef<HTMLDivElement>(null),
+    seekBarRef = useRef<HTMLDivElement>(null),
     waveformRef = useRef<HTMLCanvasElement>(null)
 
   const [metadata, setMetadata] = useState<{
@@ -40,6 +42,21 @@ const Metadata: React.FC<{
       null
     ),
     [waveformLoading, setWaveformLoading] = useState(false)
+
+  const seekByClickPosition = useCallback(
+    (clickPosition: number) => {
+      if (waveformRef.current) {
+        const {
+            left: waveformLeft,
+            width: waveformWidth
+          } = waveformRef.current.getBoundingClientRect(),
+          relativeClickPosition = clickPosition - waveformLeft
+
+        onSeek((relativeClickPosition * time[1]) / waveformWidth)
+      }
+    },
+    [time, onSeek, waveformRef.current]
+  )
 
   useEffect(() => {
     async function fetchMetadata() {
@@ -236,7 +253,33 @@ const Metadata: React.FC<{
             )}
 
             <div ref={progressBarRef} className={styles.progressBar} />
-            <canvas ref={waveformRef} />
+            <div ref={seekBarRef} className={styles.seekBar} />
+
+            <canvas
+              ref={waveformRef}
+              onMouseOver={() => {
+                if (seekBarRef.current) seekBarRef.current.style.opacity = '1'
+              }}
+              onMouseOut={() => {
+                if (seekBarRef.current) seekBarRef.current.style.opacity = '0'
+              }}
+              onMouseMove={(event) => {
+                if (waveformRef.current && seekBarRef.current) {
+                  const {
+                    left: waveformLeft
+                  } = waveformRef.current.getBoundingClientRect()
+
+                  if (event.buttons === 1) {
+                    seekByClickPosition(event.clientX)
+                  }
+
+                  seekBarRef.current.style.left = `${
+                    event.clientX - waveformLeft
+                  }px`
+                }
+              }}
+              onClick={(event) => seekByClickPosition(event.clientX)}
+            />
           </div>
         </>
       )}
