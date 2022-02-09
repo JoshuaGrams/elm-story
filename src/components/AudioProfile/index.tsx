@@ -1,5 +1,3 @@
-import * as mm from 'music-metadata-browser'
-
 import React, { useEffect, useRef, useState } from 'react'
 
 import { AudioProfile as AudioProfileType } from '../../data/types'
@@ -15,12 +13,10 @@ import {
   SoundOutlined
 } from '@ant-design/icons'
 
-import Marquee from 'react-fast-marquee'
-
 import Clock from '../Clock'
+import Metadata from './Metadata'
 
 import styles from './styles.module.less'
-import { values } from 'lodash'
 
 // used when doing something with the audio file
 // that would otherwise be locked as in-use
@@ -34,16 +30,6 @@ const initialPlayerState = {
   muted: false,
   ready: false,
   loops: false
-}
-
-const initialMetadataState = {
-  artist: undefined,
-  album: undefined,
-  title: undefined,
-  cover: undefined,
-  bitrate: undefined,
-  sampleRate: undefined,
-  codecProfile: undefined
 }
 
 const AudioProfile: React.FC<{
@@ -63,15 +49,6 @@ const AudioProfile: React.FC<{
     ),
     // null doesn't exist
     [audioPath, setAudioPath] = useState<string | undefined | null>(undefined),
-    [metadata, setMetadata] = useState<{
-      artist?: string
-      album?: string
-      title?: string
-      cover?: string
-      bitrate?: number
-      sampleRate?: number
-      codecProfile?: string
-    }>({ ...initialMetadataState }),
     [removeProfile, setRemoveProfile] = useState(false) // to avoid resource being in use
 
   const [player, setPlayer] = useState({
@@ -114,7 +91,6 @@ const AudioProfile: React.FC<{
       ...initialPlayerState,
       loops: player.loops
     })
-    setMetadata({ ...initialMetadataState })
 
     setRemoveProfile(false)
   }
@@ -149,38 +125,6 @@ const AudioProfile: React.FC<{
 
     profile?.[0] && getAudioPath()
   }, [profile?.[0]])
-
-  useEffect(() => {
-    async function fetchMetadata() {
-      if (!audioPath) return
-
-      try {
-        const { format, common } = await mm.fetchFromUrl(audioPath),
-          cover = mm.selectCover(common.picture)
-
-        // TODO: we shouldn't get this unless the designer expands the info box
-        setMetadata({
-          album: common.album,
-          artist: common.artist,
-          bitrate: format.bitrate,
-          codecProfile: format.codecProfile,
-          cover: cover
-            ? `data:${cover.format};base64,${cover.data.toString('base64')}`
-            : undefined,
-          sampleRate: format.sampleRate,
-          title: common.title
-        })
-      } catch (error) {
-        throw error
-      }
-    }
-
-    if (removeProfile) {
-      return
-    }
-
-    fetchMetadata()
-  }, [audioPath])
 
   useEffect(() => {
     async function removeAudioProfile() {
@@ -244,7 +188,7 @@ const AudioProfile: React.FC<{
         </div>
       )}
 
-      {profile && audioPath && (
+      {profile && (
         <>
           <div
             className={`${styles.player} ${
@@ -274,32 +218,36 @@ const AudioProfile: React.FC<{
                 className={styles.slider}
               />
 
-              <audio
-                ref={playerRef}
-                src={audioPath}
-                onCanPlay={() => setPlayer({ ...player, ready: true })}
-                onPlay={() => setPlayer({ ...player, playing: true })}
-                onPause={() => setPlayer({ ...player, playing: false })}
-                loop={player.loops}
-                onTimeUpdate={() =>
-                  setPlayer({
-                    ...player,
-                    currentTime: Math.round(playerRef.current?.currentTime || 0)
-                  })
-                }
-                onDurationChange={() =>
-                  setPlayer({
-                    ...player,
-                    duration: Math.round(playerRef.current?.duration || 0)
-                  })
-                }
-                onVolumeChange={() =>
-                  setPlayer({
-                    ...player,
-                    muted: playerRef.current?.muted || false
-                  })
-                }
-              />
+              {audioPath && (
+                <audio
+                  ref={playerRef}
+                  src={audioPath}
+                  onCanPlay={() => setPlayer({ ...player, ready: true })}
+                  onPlay={() => setPlayer({ ...player, playing: true })}
+                  onPause={() => setPlayer({ ...player, playing: false })}
+                  loop={player.loops}
+                  onTimeUpdate={() =>
+                    setPlayer({
+                      ...player,
+                      currentTime: Math.round(
+                        playerRef.current?.currentTime || 0
+                      )
+                    })
+                  }
+                  onDurationChange={() =>
+                    setPlayer({
+                      ...player,
+                      duration: Math.round(playerRef.current?.duration || 0)
+                    })
+                  }
+                  onVolumeChange={() =>
+                    setPlayer({
+                      ...player,
+                      muted: playerRef.current?.muted || false
+                    })
+                  }
+                />
+              )}
 
               <div
                 className={`${styles.button} ${styles.mute} ${
@@ -371,93 +319,18 @@ const AudioProfile: React.FC<{
           {info && (
             <Collapse destroyInactivePanel>
               <Collapse.Panel header="Track Info" key="track-info">
-                <div
-                  className={styles.info}
-                  style={{
-                    gridTemplateColumns: metadata.cover ? '72px auto' : 'auto'
-                  }}
-                >
-                  {values(metadata).some((prop) => prop !== undefined) ? (
-                    <>
-                      {metadata.cover && (
-                        <div
-                          className={styles.cover}
-                          style={{
-                            backgroundImage: `url(${metadata.cover || ''})`
-                          }}
-                        />
-                      )}
-                      <div className={styles.data}>
-                        <ul>
-                          <li
-                            className={styles.trackHeader}
-                            title={`${metadata.artist || 'Unknown Artist'} - ${
-                              metadata.title || 'Unknown Title'
-                            }`}
-                          >
-                            {player.ready && !loading && (
-                              <Marquee
-                                speed={10}
-                                delay={2}
-                                gradient={false}
-                                pauseOnClick
-                              >
-                                <div style={{ paddingRight: 20 }}>
-                                  {metadata.artist || 'Unknown Artist'} &mdash;{' '}
-                                  {metadata.title || 'Unknown Title'}
-                                </div>
-                              </Marquee>
-                            )}
-                          </li>
-
-                          {metadata.album && (
-                            <li title={metadata.album}>
-                              <>
-                                <span>Album</span>{' '}
-                                {player.ready && !loading && metadata.album}
-                              </>
-                            </li>
-                          )}
-
-                          {metadata.bitrate && (
-                            <li
-                              title={`${metadata.bitrate / 1000}k ${
-                                metadata.codecProfile
-                                  ? ` ${metadata.codecProfile}`
-                                  : ''
-                              }`}
-                            >
-                              <>
-                                <span>Bitrate</span>{' '}
-                                {player.ready && !loading && (
-                                  <>
-                                    {metadata.bitrate / 1000}k
-                                    {metadata.codecProfile
-                                      ? ` ${metadata.codecProfile}`
-                                      : ''}
-                                  </>
-                                )}
-                              </>
-                            </li>
-                          )}
-
-                          {metadata.sampleRate && (
-                            <li title={`${metadata.sampleRate / 1000} kHz`}>
-                              <>
-                                <span>Sample Rate</span>{' '}
-                                {player.ready && !loading && (
-                                  <>{metadata.sampleRate / 1000} kHz</>
-                                )}
-                              </>
-                            </li>
-                          )}
-                        </ul>
-                      </div>
-                    </>
-                  ) : (
-                    <div className={styles.noInfo}>Missing ID3 tag data.</div>
-                  )}
-                </div>
+                <Metadata
+                  audioPath={
+                    removeProfile
+                      ? null
+                      : !removeProfile &&
+                        player.ready &&
+                        !loading &&
+                        playerRef.current?.src !== dummyAudio
+                      ? audioPath
+                      : undefined
+                  }
+                />
               </Collapse.Panel>
             </Collapse>
           )}
