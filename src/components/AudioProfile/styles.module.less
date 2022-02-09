@@ -5,6 +5,8 @@
   }
 
   .createProfileButton {
+    border-bottom: 1px solid var(--primary-border-color);
+
     * {
       width: 100%;
       font-size: 12px;
@@ -82,6 +84,10 @@
 
         &.loop {
           justify-self: right;
+
+          &.loops {
+            color: var(--highlight-color) !important;
+          }
         }
 
         &.import {
@@ -105,7 +111,7 @@
 
   .info {
     display: grid;
-    grid-template-columns: 72px auto;
+    // grid-template-columns: 72px auto;
     padding: 4px;
 
     .cover {
@@ -137,6 +143,12 @@
           }
         }
       }
+    }
+
+    .noInfo {
+      padding: 0 6px;
+      color: var(--warning-message-color);
+      font-size: 12px;
     }
   }
 }

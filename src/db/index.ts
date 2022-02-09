@@ -1045,6 +1045,14 @@ export class LibraryDatabase extends Dexie {
         jumpIds.map(async (jumpId) => await this.removeJump(jumpId))
       ])
 
+      scene?.audio?.[0] &&
+        (await ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
+          studioId: this.studioId,
+          worldId: scene.worldId,
+          id: scene.audio[0],
+          ext: 'mp3'
+        }))
+
       await this.transaction('rw', this.scenes, async () => {
         if (await this.getElement(LIBRARY_TABLE.SCENES, sceneId)) {
           logger.info(

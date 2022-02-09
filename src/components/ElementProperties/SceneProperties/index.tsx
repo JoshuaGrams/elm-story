@@ -68,10 +68,21 @@ const SceneAudio: React.FC<{ studioId: StudioId; scene: Scene }> = ({
           profile={scene.audio}
           info
           onImport={async (audioData) => {
-            const assetId = scene.audio?.[0] || uuid(),
+            const assetId = uuid(),
               promises: Promise<any>[] = []
 
             try {
+              if (scene.audio?.[0]) {
+                promises.push(
+                  ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
+                    studioId,
+                    worldId: scene.worldId,
+                    id: scene.audio[0],
+                    ext: 'mp3'
+                  })
+                )
+              }
+
               promises.push(
                 ipcRenderer.invoke(WINDOW_EVENT_TYPE.SAVE_ASSET, {
                   studioId,
@@ -84,13 +95,11 @@ const SceneAudio: React.FC<{ studioId: StudioId; scene: Scene }> = ({
 
               await Promise.all([...promises])
 
-              if (!scene.audio?.[0]) {
-                // elmstorygames/feedback#231
-                await api().scenes.saveScene(studioId, {
-                  ...scene,
-                  audio: [assetId, false]
-                })
-              }
+              // elmstorygames/feedback#231
+              await api().scenes.saveScene(studioId, {
+                ...scene,
+                audio: [assetId, scene.audio ? scene.audio[1] : false]
+              })
             } catch (error) {
               throw error
             }
@@ -103,7 +112,37 @@ const SceneAudio: React.FC<{ studioId: StudioId; scene: Scene }> = ({
               ext: 'mp3'
             })
           }}
-          onSelect={async (profile) => console.log(profile)}
+          onSelect={async (profile) => {
+            try {
+              await api().scenes.saveScene(studioId, {
+                ...scene,
+                audio: profile
+              })
+            } catch (error) {
+              throw error
+            }
+          }}
+          onRemove={async () => {
+            if (!scene.audio?.[0]) return
+
+            try {
+              await ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
+                studioId,
+                worldId: scene.worldId,
+                id: scene.audio[0],
+                ext: 'mp3'
+              })
+
+              await Promise.all([
+                api().scenes.saveScene(studioId, {
+                  ...scene,
+                  audio: undefined
+                })
+              ])
+            } catch (error) {
+              throw error
+            }
+          }}
         />
       </div>
     </>

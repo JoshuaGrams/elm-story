@@ -20,16 +20,23 @@ import Marquee from 'react-fast-marquee'
 import Clock from '../Clock'
 
 import styles from './styles.module.less'
+import { values } from 'lodash'
 
-const playerInitialState = {
+// used when doing something with the audio file
+// that would otherwise be locked as in-use
+const dummyAudio =
+  'data:audio/mp3;base64,/+MYxAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxDsAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV'
+
+const initialPlayerState = {
   currentTime: 0,
   duration: 0,
   playing: false,
   muted: false,
-  ready: false
+  ready: false,
+  loops: false
 }
 
-const metadataInitialState = {
+const initialMetadataState = {
   artist: undefined,
   album: undefined,
   title: undefined,
@@ -50,8 +57,7 @@ const AudioProfile: React.FC<{
   const importAudioInputRef = useRef<HTMLInputElement>(null),
     playerRef = useRef<HTMLMediaElement>(null)
 
-  const [importing, setImporting] = useState(false),
-    [loading, setLoading] = useState(false),
+  const [loading, setLoading] = useState(false),
     [importedAudioData, setImportedAudioData] = useState<ArrayBuffer | null>(
       null
     ),
@@ -65,16 +71,20 @@ const AudioProfile: React.FC<{
       bitrate?: number
       sampleRate?: number
       codecProfile?: string
-    }>({ ...metadataInitialState })
+    }>({ ...initialMetadataState }),
+    [removeProfile, setRemoveProfile] = useState(false) // to avoid resource being in use
 
   const [player, setPlayer] = useState({
-    ...playerInitialState
+    ...initialPlayerState,
+    loops: profile?.[1] !== undefined && profile[1]
   })
 
   const processAudioImport = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     if (event.target.files && event.target.files.length > 0) {
+      if (profile?.[0] && playerRef.current) playerRef.current.src = dummyAudio
+
       setLoading(true)
 
       const audioFile = event.target.files[0]
@@ -96,14 +106,22 @@ const AudioProfile: React.FC<{
   const reset = () => {
     if (importAudioInputRef.current) importAudioInputRef.current.value = ''
 
-    setImporting(false)
     setLoading(false)
+    setAudioPath(undefined)
     setImportedAudioData(null)
+
+    setPlayer({
+      ...initialPlayerState,
+      loops: player.loops
+    })
+    setMetadata({ ...initialMetadataState })
+
+    setRemoveProfile(false)
   }
 
   useEffect(() => {
     async function saveAudioProfile() {
-      if (!importing || !importedAudioData) return
+      if (!importedAudioData) return
 
       await onImport(importedAudioData)
 
@@ -111,18 +129,14 @@ const AudioProfile: React.FC<{
     }
 
     saveAudioProfile()
-  }, [importing, importedAudioData, profile])
-
-  useEffect(() => {
-    importing && importAudioInputRef.current?.click()
-  }, [importing, importAudioInputRef.current])
+  }, [importedAudioData, profile])
 
   useEffect(() => {
     async function getAudioPath() {
       if (!profile?.[0]) return
 
       // elmstorygames/feedback#232
-      setPlayer({ ...playerInitialState, ready: false })
+      setPlayer({ ...initialPlayerState, ready: false, loops: player.loops })
 
       try {
         const [path, exists] = await onRequestAudioPath(profile[0])
@@ -140,12 +154,11 @@ const AudioProfile: React.FC<{
     async function fetchMetadata() {
       if (!audioPath) return
 
-      console.log(audioPath)
-
       try {
         const { format, common } = await mm.fetchFromUrl(audioPath),
           cover = mm.selectCover(common.picture)
 
+        // TODO: we shouldn't get this unless the designer expands the info box
         setMetadata({
           album: common.album,
           artist: common.artist,
@@ -162,28 +175,56 @@ const AudioProfile: React.FC<{
       }
     }
 
+    if (removeProfile) {
+      return
+    }
+
     fetchMetadata()
   }, [audioPath])
 
   useEffect(() => {
-    console.log(player)
-  }, [player])
+    async function removeAudioProfile() {
+      if (removeProfile && playerRef.current) {
+        setAudioPath(dummyAudio)
+      }
+    }
+
+    removeAudioProfile()
+  }, [removeProfile, playerRef.current])
+
+  useEffect(() => {
+    async function updateProfile() {
+      profile?.[0] && onSelect([profile[0], player.loops])
+    }
+
+    updateProfile()
+  }, [player.loops])
+
+  useEffect(() => {
+    async function removeAudioProfile() {
+      if (removeProfile && playerRef.current?.src === dummyAudio) {
+        if (onRemove) await onRemove()
+      }
+    }
+
+    removeAudioProfile()
+  }, [removeProfile, player.duration])
 
   return (
     <div className={styles.AudioProfile}>
+      <input
+        ref={importAudioInputRef}
+        type="file"
+        accept="audio/mp3"
+        style={{ display: 'none' }}
+        onChange={processAudioImport}
+      />
+
       {!profile && (
         <div className={styles.createProfileButton}>
-          <input
-            ref={importAudioInputRef}
-            type="file"
-            accept="audio/mp3"
-            style={{ display: 'none' }}
-            onChange={processAudioImport}
-          />
-
           <Button
             type="primary"
-            onClick={() => setImporting(true)}
+            onClick={() => importAudioInputRef.current?.click()}
             disabled={loading}
             size="small"
           >
@@ -207,7 +248,7 @@ const AudioProfile: React.FC<{
         <>
           <div
             className={`${styles.player} ${
-              !player.ready ? styles.disabled : ''
+              !player.ready || loading ? styles.disabled : ''
             }`}
           >
             <div className={styles.bar}>
@@ -221,7 +262,6 @@ const AudioProfile: React.FC<{
               >
                 {!player.playing ? <PlayCircleFilled /> : <PauseOutlined />}
               </div>
-
               <Slider
                 value={player.currentTime}
                 max={player.duration}
@@ -240,6 +280,7 @@ const AudioProfile: React.FC<{
                 onCanPlay={() => setPlayer({ ...player, ready: true })}
                 onPlay={() => setPlayer({ ...player, playing: true })}
                 onPause={() => setPlayer({ ...player, playing: false })}
+                loop={player.loops}
                 onTimeUpdate={() =>
                   setPlayer({
                     ...player,
@@ -276,33 +317,53 @@ const AudioProfile: React.FC<{
 
             <div className={styles.time}>
               <div className={styles.current}>
-                {player.ready && <Clock seconds={player.currentTime} />}
+                {player.ready && !loading && (
+                  <Clock seconds={player.currentTime} />
+                )}
               </div>
 
               <Button
                 size="small"
-                className={`${styles.button} ${styles.loop}`}
-                disabled={!player.ready}
+                className={`${styles.button} ${styles.loop} ${
+                  profile[1] ? styles.loops : ''
+                }`}
+                onClick={() => setPlayer({ ...player, loops: !player.loops })}
+                disabled={!player.ready || loading}
               >
                 <RetweetOutlined />
               </Button>
               <Button
                 size="small"
                 className={`${styles.button} ${styles.import}`}
-                disabled={!player.ready}
+                onClick={() => importAudioInputRef.current?.click()}
+                disabled={!player.ready || loading}
               >
-                <ImportOutlined />
+                {loading ? (
+                  <Spin
+                    indicator={
+                      <LoadingOutlined
+                        style={{ color: 'var(--highlight-color)' }}
+                        spin
+                      />
+                    }
+                  />
+                ) : (
+                  <ImportOutlined />
+                )}
               </Button>
               <Button
                 size="small"
                 className={`${styles.button} ${styles.delete}`}
-                disabled={!player.ready}
+                disabled={!player.ready || loading}
+                onClick={() => setRemoveProfile(true)}
               >
                 <DeleteOutlined />
               </Button>
 
               <div className={styles.duration} style={{ textAlign: 'right' }}>
-                {player.ready && <Clock seconds={player.duration} />}
+                {player.ready && !loading && (
+                  <Clock seconds={player.duration} />
+                )}
               </div>
             </div>
           </div>
@@ -310,71 +371,83 @@ const AudioProfile: React.FC<{
           {info && (
             <Collapse destroyInactivePanel>
               <Collapse.Panel header="Track Info" key="track-info">
-                <div className={styles.info}>
-                  <div
-                    className={styles.cover}
-                    style={{
-                      backgroundImage: `url(${metadata.cover || ''})`
-                    }}
-                  />
-                  <div className={styles.data}>
-                    <ul>
-                      <li
-                        className={styles.trackHeader}
-                        title={`${metadata.artist} - ${metadata.title}`}
-                      >
-                        {player.ready && (
-                          <Marquee
-                            speed={10}
-                            delay={2}
-                            gradient={false}
-                            // gradientColor={[10, 10, 10]}
-                            // gradientWidth={20}
-                            pauseOnClick
+                <div
+                  className={styles.info}
+                  style={{
+                    gridTemplateColumns: metadata.cover ? '72px auto' : 'auto'
+                  }}
+                >
+                  {values(metadata).some((prop) => prop !== undefined) ? (
+                    <>
+                      {metadata.cover && (
+                        <div
+                          className={styles.cover}
+                          style={{
+                            backgroundImage: `url(${metadata.cover || ''})`
+                          }}
+                        />
+                      )}
+                      <div className={styles.data}>
+                        <ul>
+                          <li
+                            className={styles.trackHeader}
+                            title={`${metadata.artist} - ${metadata.title}`}
                           >
-                            <div style={{ paddingRight: 20 }}>
-                              {metadata.artist} &mdash; {metadata.title}
-                            </div>
-                          </Marquee>
-                        )}
-                      </li>
+                            {player.ready && !loading && (
+                              <Marquee
+                                speed={10}
+                                delay={2}
+                                gradient={false}
+                                pauseOnClick
+                              >
+                                <div style={{ paddingRight: 20 }}>
+                                  {metadata.artist} &mdash; {metadata.title}
+                                </div>
+                              </Marquee>
+                            )}
+                          </li>
 
-                      {metadata.album && (
-                        <li title={metadata.album}>
-                          <>
-                            <span>Album</span> {player.ready && metadata.album}
-                          </>
-                        </li>
-                      )}
-
-                      {metadata.bitrate && (
-                        <li title={`${metadata.bitrate / 1000}k`}>
-                          <>
-                            <span>Bitrate</span>{' '}
-                            {player.ready && (
+                          {metadata.album && (
+                            <li title={metadata.album}>
                               <>
-                                {metadata.bitrate / 1000}k
-                                {metadata.codecProfile
-                                  ? ` ${metadata.codecProfile}`
-                                  : ''}
+                                <span>Album</span>{' '}
+                                {player.ready && !loading && metadata.album}
                               </>
-                            )}
-                          </>
-                        </li>
-                      )}
+                            </li>
+                          )}
 
-                      {metadata.sampleRate && (
-                        <li title={`${metadata.sampleRate}`}>
-                          <>
-                            <span>Sample Rate</span>{' '}
-                            {player.ready && (
-                              <>{metadata.sampleRate / 1000} kHz</>
-                            )}
-                          </>
-                        </li>
-                      )}
-                    </ul>
-                  </div>
+                          {metadata.bitrate && (
+                            <li title={`${metadata.bitrate}k`}>
+                              <>
+                                <span>Bitrate</span>{' '}
+                                {player.ready && !loading && (
+                                  <>
+                                    {metadata.bitrate / 1000}k
+                                    {metadata.codecProfile
+                                      ? ` ${metadata.codecProfile}`
+                                      : ''}
+                                  </>
+                                )}
+                              </>
+                            </li>
+                          )}
+
+                          {metadata.sampleRate && (
+                            <li title={`${metadata.sampleRate}`}>
+                              <>
+                                <span>Sample Rate</span>{' '}
+                                {player.ready && !loading && (
+                                  <>{metadata.sampleRate / 1000} kHz</>
+                                )}
+                              </>
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    </>
+                  ) : (
+                    <div className={styles.noInfo}>Missing ID3 tag data.</div>
+                  )}
                 </div>
               </Collapse.Panel>
             </Collapse>
