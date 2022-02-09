@@ -1,10 +1,13 @@
-import { LoadingOutlined } from '@ant-design/icons'
-import { Spin } from 'antd'
+import logger from '../../lib/logger'
+
 import { values } from 'lodash'
 import * as mm from 'music-metadata-browser'
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Marquee from 'react-fast-marquee'
+
+import { Spin } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
 
 import styles from './styles.module.less'
 
@@ -141,12 +144,16 @@ const Metadata: React.FC<{
           )
         }
 
-        waveformRef.current.style.display = 'unset'
-        progressBarRef.current.style.display = 'unset'
+        try {
+          waveformRef.current.style.display = 'unset'
+          progressBarRef.current.style.display = 'unset'
 
-        positionProgressBar(waveformRef.current, progressBarRef.current, time)
+          positionProgressBar(waveformRef.current, progressBarRef.current, time)
 
-        setWaveformLoading(false)
+          setWaveformLoading(false)
+        } catch (error) {
+          logger.error('Unable to set waveformRef styles')
+        }
       }
     }
 
