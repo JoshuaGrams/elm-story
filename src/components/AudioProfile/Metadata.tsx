@@ -113,24 +113,23 @@ const Metadata: React.FC<{
 
         if (!context) return
 
-        context.fillStyle = 'hsl(0, 0%, 4%)'
-        context.fillRect(0, 0, width, height)
+        context.clearRect(0, 0, width, height)
 
         const audioContext = new AudioContext(),
           audioBuffer = await audioContext.decodeAudioData(audioArrayBuffer)
 
-        var data = audioBuffer.getChannelData(0)
-        var step = Math.ceil(data.length / width)
-        var amp = height / 2
+        const data = audioBuffer.getChannelData(0),
+          step = Math.ceil(data.length / width),
+          amp = height / 2
 
         context.fillStyle = 'hsl(0, 0%, 25%)'
 
         for (var i = 0; i < width; i++) {
-          var min = 1.0
-          var max = -1.0
+          let min = 1.0,
+            max = -1.0
 
-          for (var j = 0; j < step; j++) {
-            var datum = data[i * step + j]
+          for (let j = 0; j < step; j++) {
+            let datum = data[i * step + j]
 
             if (datum < min) min = datum * 0.9
             if (datum > max) max = datum * 0.9
