@@ -391,7 +391,9 @@ const AudioProfile: React.FC<{
                         <ul>
                           <li
                             className={styles.trackHeader}
-                            title={`${metadata.artist} - ${metadata.title}`}
+                            title={`${metadata.artist || 'Unknown Artist'} - ${
+                              metadata.title || 'Unknown Title'
+                            }`}
                           >
                             {player.ready && !loading && (
                               <Marquee
@@ -401,7 +403,8 @@ const AudioProfile: React.FC<{
                                 pauseOnClick
                               >
                                 <div style={{ paddingRight: 20 }}>
-                                  {metadata.artist} &mdash; {metadata.title}
+                                  {metadata.artist || 'Unknown Artist'} &mdash;{' '}
+                                  {metadata.title || 'Unknown Title'}
                                 </div>
                               </Marquee>
                             )}
@@ -417,7 +420,13 @@ const AudioProfile: React.FC<{
                           )}
 
                           {metadata.bitrate && (
-                            <li title={`${metadata.bitrate}k`}>
+                            <li
+                              title={`${metadata.bitrate / 1000}k ${
+                                metadata.codecProfile
+                                  ? ` ${metadata.codecProfile}`
+                                  : ''
+                              }`}
+                            >
                               <>
                                 <span>Bitrate</span>{' '}
                                 {player.ready && !loading && (
@@ -433,7 +442,7 @@ const AudioProfile: React.FC<{
                           )}
 
                           {metadata.sampleRate && (
-                            <li title={`${metadata.sampleRate}`}>
+                            <li title={`${metadata.sampleRate / 1000} kHz`}>
                               <>
                                 <span>Sample Rate</span>{' '}
                                 {player.ready && !loading && (
