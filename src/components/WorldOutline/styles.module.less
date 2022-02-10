@@ -126,15 +126,28 @@
       // elmstorygames/feedback#148
       .title {
         color: hsl(0, 0%, 60%);
-        right: 40px;
+        right: 51px;
       }
 
       .extraInfo {
         display: flex;
         align-items: center;
 
+        &.scene {
+          position: absolute;
+          right: 0;
+          top: 0;
+          width: 47px;
+          height: 100%;
+        }
+
+        .audio {
+          transition: color 0.2s;
+        }
+
         .persona {
           transition: color 0.2s;
+          margin-left: 4px;
         }
 
         .ending {
@@ -144,7 +157,7 @@
           display: grid;
           align-items: center;
           justify-content: center;
-          margin-left: 4px;
+          margin-left: 1px;
 
           &.isEnding {
             div {

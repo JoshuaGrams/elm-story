@@ -14,6 +14,8 @@ import {
   COMPOSER_ACTION_TYPE
 } from '../../contexts/ComposerContext'
 
+import { useEvent, useJump, useScene } from '../../hooks'
+
 import { RenderItemParams } from '@atlaskit/tree'
 
 import { Badge, Button, Typography } from 'antd'
@@ -26,13 +28,14 @@ import {
   PartitionOutlined,
   QuestionOutlined,
   RightOutlined,
+  SoundOutlined,
   UserOutlined
 } from '@ant-design/icons'
 
 import ContextMenu from './ContextMenu'
 
 import styles from './styles.module.less'
-import { useEvent, useJump } from '../../hooks'
+
 import api from '../../api'
 
 const { Text } = Typography
@@ -54,10 +57,16 @@ const EventBadge: React.FC<{ eventId: ElementId }> = React.memo(
       <Badge
         children={
           <div className={styles.extraInfo}>
+            <SoundOutlined
+              className={styles.audio}
+              style={{ color: event?.audio ? '#999' : '#222' }}
+            />
+
             <UserOutlined
               className={styles.persona}
               style={{ color: event?.persona ? '#999' : '#222' }}
             />
+
             <div
               className={`${styles.ending} ${
                 event?.ending ? styles.isEnding : ''
@@ -73,6 +82,34 @@ const EventBadge: React.FC<{ eventId: ElementId }> = React.memo(
     )
   }
 )
+
+// elmstorygames/feedback#234
+const SceneBadge: React.FC<{
+  sceneId: ElementId
+}> = React.memo(({ sceneId }) => {
+  const { app } = useContext(AppContext)
+
+  if (!app.selectedStudioId) return null
+
+  const scene = useScene(app.selectedStudioId, sceneId, [sceneId])
+
+  return (
+    <div className={`${styles.extraInfo} ${styles.scene}`}>
+      <SoundOutlined
+        className={styles.audio}
+        style={{ color: scene?.audio ? '#999' : '#222' }}
+      />
+
+      <Badge
+        overflowCount={99}
+        count={scene?.children.length}
+        showZero
+        size="small"
+        className={`${styles.badge}`}
+      />
+    </div>
+  )
+})
 
 const JumpBadge: React.FC<{
   jumpId: ElementId
@@ -278,7 +315,8 @@ const ElementItem = ({
               </Text>
             )}
             {!item.data.renaming && (
-              <Text ellipsis className={styles.title}>
+              // elmstorygames/feedback#235
+              <Text ellipsis className={styles.title} title={elementTitle}>
                 {elementTitle}
               </Text>
             )}{' '}
@@ -290,15 +328,19 @@ const ElementItem = ({
                 {elementType === ELEMENT_TYPE.JUMP && (
                   <JumpBadge jumpId={item.id as string} />
                 )}
-                {/* folders and scenes */}
-                {(elementType === ELEMENT_TYPE.FOLDER ||
-                  elementType === ELEMENT_TYPE.SCENE) && (
+
+                {elementType === ELEMENT_TYPE.FOLDER && (
                   <Badge
                     overflowCount={99}
                     count={item.children.length}
                     size="small"
                     className={styles.badge}
                   />
+                )}
+
+                {/* elmstorygames/feedback#234 */}
+                {elementType === ELEMENT_TYPE.SCENE && (
+                  <SceneBadge sceneId={item.id as string} />
                 )}
               </>
             )}
