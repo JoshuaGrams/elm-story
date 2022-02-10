@@ -113,7 +113,9 @@ const Metadata: React.FC<{
 
         if (!context) return
 
-        context.clearRect(0, 0, width, height)
+        context.fillStyle = 'hsla(0, 0%, 4%, 60%)'
+        context.fillRect(0, 0, width, height)
+        // context.clearRect(0, 0, width, height)
 
         const audioContext = new AudioContext(),
           audioBuffer = await audioContext.decodeAudioData(audioArrayBuffer)
@@ -122,8 +124,6 @@ const Metadata: React.FC<{
           step = Math.ceil(data.length / width),
           amp = height / 2
 
-        context.fillStyle = 'hsl(0, 0%, 25%)'
-
         for (var i = 0; i < width; i++) {
           let min = 1.0,
             max = -1.0
@@ -131,21 +131,38 @@ const Metadata: React.FC<{
           for (let j = 0; j < step; j++) {
             let datum = data[i * step + j]
 
-            if (datum < min) min = datum * 0.9
-            if (datum > max) max = datum * 0.9
+            if (datum < min) {
+              min = datum * 0.9
+            }
+
+            if (datum > max) {
+              max = datum * 0.9
+            }
           }
 
-          context.fillRect(
-            i,
-            (1 + min) * amp,
-            1,
-            Math.max(1, (max - min) * amp)
-          )
+          const _height = Math.max(1, (max - min) * amp)
+
+          // const gradient = context.createLinearGradient(
+          //   i,
+          //   (1 + min) * amp,
+          //   i,
+          //   (1 + min) * amp + _height
+          // )
+
+          // gradient.addColorStop(0, 'hsl(0, 0%, 8%)')
+          // gradient.addColorStop(0.5, 'hsl(0, 0%, 50%)')
+          // gradient.addColorStop(1, 'hsl(0, 0%, 8%)')
+
+          context.fillStyle = 'hsl(262, 100%, 65%)'
+
+          context.globalCompositeOperation = 'source-over'
+
+          context.fillRect(i, (1 + min) * amp, 1, _height)
         }
 
         try {
-          waveformRef.current.style.display = 'unset'
-          progressBarRef.current.style.display = 'unset'
+          waveformRef.current.style.opacity = '1'
+          progressBarRef.current.style.opacity = '1'
 
           positionProgressBar(waveformRef.current, progressBarRef.current, time)
 
@@ -258,9 +275,6 @@ const Metadata: React.FC<{
               </div>
             )}
 
-            <div ref={progressBarRef} className={styles.progressBar} />
-            <div ref={seekBarRef} className={styles.seekBar} />
-
             <canvas
               ref={waveformRef}
               onMouseOver={() => {
@@ -270,13 +284,26 @@ const Metadata: React.FC<{
                 if (seekBarRef.current) seekBarRef.current.style.opacity = '0'
               }}
               onMouseMove={(event) => {
-                if (waveformRef.current && seekBarRef.current) {
+                if (
+                  waveformRef.current &&
+                  seekBarRef.current &&
+                  progressBarRef.current
+                ) {
                   const {
                     left: waveformLeft
                   } = waveformRef.current.getBoundingClientRect()
 
                   if (event.buttons === 1) {
+                    // progressBarRef.current.style.borderRightColor =
+                    //   'var(--highlight-color)'
+                    // seekBarRef.current.style.opacity = '0'
                     seekByClickPosition(event.clientX)
+                  }
+
+                  if (event.buttons === 0) {
+                    // progressBarRef.current.style.borderRightColor =
+                    //   'hsla(0, 0%, 0%, 50%)'
+                    // seekBarRef.current.style.opacity = '1'
                   }
 
                   seekBarRef.current.style.left = `${
@@ -286,6 +313,9 @@ const Metadata: React.FC<{
               }}
               onClick={(event) => seekByClickPosition(event.clientX)}
             />
+
+            <div ref={progressBarRef} className={styles.progressBar} />
+            <div ref={seekBarRef} className={styles.seekBar} />
           </div>
         </>
       )}
