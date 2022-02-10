@@ -132,11 +132,11 @@ const Metadata: React.FC<{
             let datum = data[i * step + j]
 
             if (datum < min) {
-              min = datum * 0.9
+              min = datum * 0.95
             }
 
             if (datum > max) {
-              max = datum * 0.9
+              max = datum * 0.95
             }
           }
 
@@ -153,6 +153,8 @@ const Metadata: React.FC<{
           // gradient.addColorStop(0.5, 'hsl(0, 0%, 50%)')
           // gradient.addColorStop(1, 'hsl(0, 0%, 8%)')
 
+          console.log(_height)
+
           context.fillStyle = 'hsl(262, 100%, 65%)'
 
           context.globalCompositeOperation = 'source-over'
@@ -161,12 +163,12 @@ const Metadata: React.FC<{
         }
 
         try {
-          waveformRef.current.style.opacity = '1'
-          progressBarRef.current.style.opacity = '1'
-
           positionProgressBar(waveformRef.current, progressBarRef.current, time)
 
           setWaveformLoading(false)
+
+          waveformRef.current.style.opacity = '1'
+          progressBarRef.current.style.opacity = '1'
         } catch (error) {
           logger.error('Unable to set waveformRef styles')
         }
@@ -293,6 +295,10 @@ const Metadata: React.FC<{
                     left: waveformLeft
                   } = waveformRef.current.getBoundingClientRect()
 
+                  seekBarRef.current.style.left = `${
+                    event.clientX - waveformLeft
+                  }px`
+
                   if (event.buttons === 1) {
                     // progressBarRef.current.style.borderRightColor =
                     //   'var(--highlight-color)'
@@ -305,10 +311,6 @@ const Metadata: React.FC<{
                     //   'hsla(0, 0%, 0%, 50%)'
                     // seekBarRef.current.style.opacity = '1'
                   }
-
-                  seekBarRef.current.style.left = `${
-                    event.clientX - waveformLeft
-                  }px`
                 }
               }}
               onClick={(event) => seekByClickPosition(event.clientX)}
