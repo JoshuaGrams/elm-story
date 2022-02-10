@@ -8,7 +8,8 @@ import {
   WorldId,
   Event,
   EVENT_TYPE,
-  StudioId
+  StudioId,
+  ELEMENT_TYPE
 } from '../../../data/types'
 
 import {
@@ -30,6 +31,7 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox'
 import ElementTitle from '../ElementTitle'
 import EventTypeSelect from '../../EventTypeSelect'
 import VariableSelectForInput from '../../VariableSelectForInput'
+import ElementAudio from '../../ElementAudio'
 
 import parentStyles from '../styles.module.less'
 import styles from './styles.module.less'
@@ -331,7 +333,15 @@ const EventProperties: React.FC<{
             />
             <div className={parentStyles.componentId}>{event.id}</div>
 
-            <EventTypeSelect studioId={studioId} event={event} />
+            <div className={styles.eventAudioWrapper}>
+              <div className={styles.header}>Audio Profile</div>
+
+              <ElementAudio
+                studioId={studioId}
+                elementType={ELEMENT_TYPE.EVENT}
+                element={event}
+              />
+            </div>
 
             <Persona
               studioId={studioId}
@@ -346,6 +356,8 @@ const EventProperties: React.FC<{
                 inputId={event.input}
               />
             )}
+
+            <EventTypeSelect studioId={studioId} event={event} />
 
             {event.id && (
               <StoryworldEndingToggle studioId={studioId} event={event} />

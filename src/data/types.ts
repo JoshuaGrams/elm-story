@@ -291,6 +291,7 @@ export enum EVENT_TYPE {
 export type EventPersona = [ElementId, CHARACTER_MASK_TYPE, string | undefined] // [characterId, mask, reference ID]
 
 export interface Event extends Element {
+  audio?: AudioProfile
   characters: ElementId[]
   choices: ElementId[]
   content: string

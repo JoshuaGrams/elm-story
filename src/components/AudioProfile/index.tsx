@@ -170,7 +170,6 @@ const AudioProfile: React.FC<{
       {!profile && (
         <div className={styles.createProfileButton}>
           <Button
-            type="primary"
             onClick={() => importAudioInputRef.current?.click()}
             disabled={loading}
             size="small"

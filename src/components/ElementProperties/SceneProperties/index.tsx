@@ -1,12 +1,9 @@
-import { v4 as uuid } from 'uuid'
-
 import React, { useContext } from 'react'
 
 import {
   ElementId,
   ELEMENT_TYPE,
   EVENT_TYPE,
-  Scene,
   StudioId
 } from '../../../data/types'
 
@@ -26,7 +23,7 @@ import {
 } from '@ant-design/icons'
 
 import ElementTitle from '../ElementTitle'
-import AudioProfile from '../../AudioProfile'
+import ElementAudio from '../../ElementAudio'
 
 import JumpProperties from '../JumpProperties'
 import EventProperties from '../EventProperties'
@@ -39,8 +36,6 @@ import rootStyles from '../styles.module.less'
 import styles from './styles.module.less'
 
 import api from '../../../api'
-import { ipcRenderer } from 'electron'
-import { WINDOW_EVENT_TYPE } from '../../../lib/events'
 
 const getEventTypeString = (eventType: EVENT_TYPE) => {
   switch (eventType) {
@@ -53,100 +48,6 @@ const getEventTypeString = (eventType: EVENT_TYPE) => {
     default:
       return undefined
   }
-}
-
-const SceneAudio: React.FC<{ studioId: StudioId; scene: Scene }> = ({
-  studioId,
-  scene
-}) => {
-  if (!scene.id) return null
-
-  return (
-    <>
-      <div className={styles.SceneAudio}>
-        <AudioProfile
-          profile={scene.audio}
-          info
-          onImport={async (audioData) => {
-            const assetId = uuid(),
-              promises: Promise<any>[] = []
-
-            try {
-              if (scene.audio?.[0]) {
-                promises.push(
-                  ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
-                    studioId,
-                    worldId: scene.worldId,
-                    id: scene.audio[0],
-                    ext: 'mp3'
-                  })
-                )
-              }
-
-              promises.push(
-                ipcRenderer.invoke(WINDOW_EVENT_TYPE.SAVE_ASSET, {
-                  studioId,
-                  worldId: scene.worldId,
-                  id: assetId,
-                  data: audioData,
-                  ext: 'mp3'
-                })
-              )
-
-              await Promise.all([...promises])
-
-              // elmstorygames/feedback#231
-              await api().scenes.saveScene(studioId, {
-                ...scene,
-                audio: [assetId, scene.audio ? scene.audio[1] : false]
-              })
-            } catch (error) {
-              throw error
-            }
-          }}
-          onRequestAudioPath={async (assetId) => {
-            return await ipcRenderer.invoke(WINDOW_EVENT_TYPE.GET_ASSET, {
-              studioId,
-              worldId: scene.worldId,
-              id: assetId,
-              ext: 'mp3'
-            })
-          }}
-          onSelect={async (profile) => {
-            try {
-              await api().scenes.saveScene(studioId, {
-                ...scene,
-                audio: profile
-              })
-            } catch (error) {
-              throw error
-            }
-          }}
-          onRemove={async () => {
-            if (!scene.audio?.[0]) return
-
-            try {
-              await ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
-                studioId,
-                worldId: scene.worldId,
-                id: scene.audio[0],
-                ext: 'mp3'
-              })
-
-              await Promise.all([
-                api().scenes.saveScene(studioId, {
-                  ...scene,
-                  audio: undefined
-                })
-              ])
-            } catch (error) {
-              throw error
-            }
-          }}
-        />
-      </div>
-    </>
-  )
 }
 
 const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
@@ -201,7 +102,11 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
               <div className={styles.sceneAudioWrapper}>
                 <div className={styles.header}>Audio Profile</div>
 
-                <SceneAudio studioId={studioId} scene={scene} />
+                <ElementAudio
+                  studioId={studioId}
+                  elementType={ELEMENT_TYPE.SCENE}
+                  element={scene}
+                />
               </div>
 
               {!composer.selectedSceneMapEvent &&
