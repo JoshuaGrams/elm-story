@@ -157,7 +157,13 @@ const EventSnippet: React.FC<{
           >
             <FormOutlined />
           </div>
-          <div className={`${styles.content}`}>
+          <div
+            className={`${styles.content}`}
+            style={{
+              borderBottomLeftRadius: flatBottom ? '0px' : '5px',
+              borderBottomRightRadius: flatBottom ? '0px' : '5px'
+            }}
+          >
             {contentPreview && parseToHTML(contentPreview)}
 
             {contentPreview === undefined && (
