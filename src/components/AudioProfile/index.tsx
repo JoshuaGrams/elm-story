@@ -269,9 +269,9 @@ const AudioProfile: React.FC<{
 
             <div className={styles.time}>
               <div className={styles.current} title="Current time">
-                {player.ready && !loading && (
-                  <Clock seconds={player.currentTime} />
-                )}
+                <Clock
+                  seconds={player.ready && !loading ? player.currentTime : -1}
+                />
               </div>
 
               <Button
@@ -320,9 +320,9 @@ const AudioProfile: React.FC<{
                 style={{ textAlign: 'right' }}
                 title="Duration"
               >
-                {player.ready && !loading && (
-                  <Clock seconds={player.duration} />
-                )}
+                <Clock
+                  seconds={player.ready && !loading ? player.duration : -1}
+                />
               </div>
             </div>
           </div>
