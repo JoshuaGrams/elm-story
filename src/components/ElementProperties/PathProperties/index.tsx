@@ -1,4 +1,5 @@
 import logger from '../../../lib/logger'
+import { getRandomElementName } from '../../../lib'
 
 import React, { useEffect, useState } from 'react'
 
@@ -278,7 +279,7 @@ const PathDetails: React.FC<{
         worldId: path.worldId,
         pathId,
         variableId: foundVariable.id,
-        title: 'Untitled Condition',
+        title: getRandomElementName(2),
         compare: [
           foundVariable.id,
           COMPARE_OPERATOR_TYPE.EQ,
@@ -300,7 +301,7 @@ const PathDetails: React.FC<{
         worldId: path.worldId,
         pathId,
         variableId: foundVariable.id,
-        title: 'Untitled Effect',
+        title: getRandomElementName(2),
         set: [
           foundVariable.id,
           SET_OPERATOR_TYPE.ASSIGN,

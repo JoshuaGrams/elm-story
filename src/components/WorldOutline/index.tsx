@@ -1,6 +1,7 @@
 import logger from '../../lib/logger'
 import { cloneDeep } from 'lodash-es'
 import createWorldOutlineTreeData from '../../lib/createWorldOutlineTreeData'
+import { getRandomElementName } from '../../lib'
 
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 
@@ -581,10 +582,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
           childType === ELEMENT_TYPE.FOLDER
         ) {
           let childId: ElementId,
-            childTitle: string =
-              childType === ELEMENT_TYPE.SCENE
-                ? 'Untitled Scene'
-                : 'Untitled Folder'
+            childTitle: string = getRandomElementName(2)
 
           try {
             childId =
@@ -684,7 +682,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
 
         try {
           if (childType === ELEMENT_TYPE.FOLDER) {
-            childTitle = 'Untitled Folder'
+            childTitle = getRandomElementName(2)
 
             childId = await api().folders.saveFolder(studioId, {
               children: [],
@@ -700,7 +698,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
           }
 
           if (childType === ELEMENT_TYPE.SCENE) {
-            childTitle = 'Untitled Scene'
+            childTitle = getRandomElementName(2)
 
             childId = await api().scenes.saveScene(studioId, {
               children: [],
@@ -808,7 +806,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                 images: [],
                 worldId: world.id,
                 sceneId: parentItem.id as string,
-                title: 'Untitled Event',
+                title: getRandomElementName(2),
                 type: EVENT_TYPE.CHOICE,
                 tags: []
               })
@@ -868,7 +866,7 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                 path: [parentItem.id as string],
                 sceneId: parentItem.id as string,
                 tags: [],
-                title: 'Untitled Jump',
+                title: getRandomElementName(2),
                 worldId: world.id
               })
             } catch (error) {
@@ -1262,7 +1260,8 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                 hasChildren: false,
                 isChildrenLoading: false,
                 data: {
-                  title: 'Untitled Event',
+                  // elmstorygames/feedback#165
+                  title: event.title,
                   type: ELEMENT_TYPE.EVENT,
                   selected: false,
                   parentId: event.sceneId,
@@ -1311,7 +1310,8 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
                 hasChildren: false,
                 isChildrenLoading: false,
                 data: {
-                  title: 'Untitled Jump',
+                  // elmstorygames/feedback#165
+                  title: jump.title,
                   type: ELEMENT_TYPE.JUMP,
                   selected: false,
                   parentId: jump.sceneId,

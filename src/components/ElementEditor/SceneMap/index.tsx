@@ -1,4 +1,5 @@
 import logger from '../../../lib/logger'
+import { getRandomElementName } from '../../../lib'
 
 import React, { useContext, useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash-es'
@@ -229,7 +230,7 @@ async function addElementToScene(
           images: [],
           worldId: scene.worldId,
           sceneId: scene.id,
-          title: 'Untitled Event',
+          title: getRandomElementName(2),
           choices: [],
           content: JSON.stringify([...DEFAULT_EVENT_CONTENT]),
           tags: [],
@@ -251,7 +252,7 @@ async function addElementToScene(
         const jump = await api().jumps.saveJump(studioId, {
           worldId: scene.worldId,
           sceneId: scene.id,
-          title: 'Untitled Jump',
+          title: getRandomElementName(2),
           path: [scene.id],
           tags: [],
           composer: {
@@ -553,7 +554,7 @@ const SceneMap: React.FC<{
         }
 
         await api().paths.savePath(studioId, {
-          title: 'Untitled Path',
+          title: getRandomElementName(2),
           worldId: scene.worldId,
           conditionsType: PATH_CONDITIONS_TYPE.ALL,
           sceneId,
@@ -1609,7 +1610,7 @@ const SceneMap: React.FC<{
                   }
 
                   await api().paths.savePath(studioId, {
-                    title: 'Untitled Path',
+                    title: getRandomElementName(2),
                     worldId: scene.worldId,
                     conditionsType: PATH_CONDITIONS_TYPE.ALL,
                     sceneId,
@@ -1732,7 +1733,7 @@ const SceneMap: React.FC<{
                     }
 
                     await api().paths.savePath(studioId, {
-                      title: 'Untitled Path',
+                      title: getRandomElementName(2),
                       worldId: scene.worldId,
                       conditionsType: PATH_CONDITIONS_TYPE.ALL,
                       sceneId,

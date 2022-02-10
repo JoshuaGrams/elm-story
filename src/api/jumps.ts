@@ -1,5 +1,6 @@
 import { LibraryDatabase, LIBRARY_TABLE } from '../db'
 import { v4 as uuid } from 'uuid'
+import { getRandomElementName } from '../lib'
 
 import {
   ElementId,
@@ -120,7 +121,7 @@ export async function switchJumpToChoiceOrInputEventType(
         await api().inputs.saveInput(studioId, {
           eventId: newEventId,
           tags: [],
-          title: 'Untitled Input',
+          title: getRandomElementName(2),
           worldId: jump.worldId
         })
       ).id
@@ -138,7 +139,7 @@ export async function switchJumpToChoiceOrInputEventType(
         input: inputId,
         sceneId: jump.sceneId,
         tags: [],
-        title: 'Untitled Event',
+        title: getRandomElementName(2),
         type: eventType,
         worldId: jump.worldId
       }),

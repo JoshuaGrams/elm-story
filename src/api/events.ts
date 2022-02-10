@@ -1,6 +1,7 @@
 import { LibraryDatabase, LIBRARY_TABLE } from '../db'
 import { ipcRenderer } from 'electron'
 import { v4 as uuid } from 'uuid'
+import { getRandomElementName } from '../lib'
 
 import { WINDOW_EVENT_TYPE } from '../lib/events'
 
@@ -176,7 +177,7 @@ export async function switchEventFromChoiceToInputType(
         worldId: event.worldId,
         eventId: event.id,
         tags: [],
-        title: 'Untitled Input',
+        title: getRandomElementName(2),
         variableId: undefined
       })
 
@@ -204,7 +205,7 @@ export async function switchEventFromChoiceOrInputToJumpType(
           path: [event.sceneId],
           sceneId: event.sceneId,
           tags: [],
-          title: 'Untitled Jump',
+          title: getRandomElementName(2),
           worldId: event.worldId
         }),
         api().scenes.getChildRefsBySceneRef(studioId, event.sceneId),

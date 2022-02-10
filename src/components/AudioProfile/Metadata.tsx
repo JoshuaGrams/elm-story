@@ -153,8 +153,6 @@ const Metadata: React.FC<{
           // gradient.addColorStop(0.5, 'hsl(0, 0%, 50%)')
           // gradient.addColorStop(1, 'hsl(0, 0%, 8%)')
 
-          console.log(_height)
-
           context.fillStyle = 'hsl(262, 100%, 65%)'
 
           context.globalCompositeOperation = 'source-over'

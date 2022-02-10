@@ -1,4 +1,9 @@
 import { Area } from 'react-easy-crop/types'
+import {
+  uniqueNamesGenerator,
+  adjectives,
+  colors
+} from 'unique-names-generator'
 
 export const getSvgUrl = (svg: string) =>
   `data:image/svg+xml;base64,${btoa(svg)}`
@@ -61,3 +66,20 @@ export const capitalizeString = (text: string) =>
     /(^\w|\s\w)(\S*)/g,
     (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase()
   )
+
+export const getRandomElementName = (length?: number) => {
+  let randomName = ''
+
+  if (!length) length = 1
+
+  for (let i = 0; i < length; i++) {
+    randomName += `${uniqueNamesGenerator({
+      dictionaries: [i === 0 ? colors : adjectives],
+      length: 1
+    })}`
+
+    if (i !== length - 1) randomName += ' '
+  }
+
+  return capitalizeString(randomName)
+}

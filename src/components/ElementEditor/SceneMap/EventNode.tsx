@@ -2,7 +2,6 @@ import logger from '../../../lib/logger'
 
 import React, {
   memo,
-  ReactEventHandler,
   useCallback,
   useContext,
   useEffect,
@@ -46,11 +45,7 @@ import {
 import { Handle, Position, NodeProps, Connection } from 'react-flow-renderer'
 
 import { Dropdown, Menu, Typography } from 'antd'
-import {
-  BranchesOutlined,
-  FacebookFilled,
-  PlusOutlined
-} from '@ant-design/icons'
+import { BranchesOutlined, PlusOutlined } from '@ant-design/icons'
 
 import NodeTitle from './NodeTitle'
 import EventPersonaPane from './EventPersona'
@@ -1059,7 +1054,7 @@ const EventNode: React.FC<NodeProps<{
                             id: choiceId,
                             worldId: event.worldId,
                             eventId: data.eventId,
-                            title: 'Untitled Choice',
+                            title: `Choice ${choices.length + 1}`,
                             tags: []
                           })
 
