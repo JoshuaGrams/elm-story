@@ -200,6 +200,7 @@ const AudioProfile: React.FC<{
             <div className={styles.bar}>
               <div
                 className={`${styles.button} ${styles.play}`}
+                title={player.playing ? 'Pause track' : 'Play track'}
                 onClick={() =>
                   player.playing
                     ? playerRef.current?.pause()
@@ -255,6 +256,7 @@ const AudioProfile: React.FC<{
                 className={`${styles.button} ${styles.mute} ${
                   player.muted ? styles.muted : ''
                 } `}
+                title={player.muted ? 'Unmute' : 'Mute'}
               >
                 <SoundOutlined
                   onClick={() => {
@@ -266,7 +268,7 @@ const AudioProfile: React.FC<{
             </div>
 
             <div className={styles.time}>
-              <div className={styles.current}>
+              <div className={styles.current} title="Current time">
                 {player.ready && !loading && (
                   <Clock seconds={player.currentTime} />
                 )}
@@ -279,6 +281,7 @@ const AudioProfile: React.FC<{
                 }`}
                 onClick={() => setPlayer({ ...player, loops: !player.loops })}
                 disabled={!player.ready || loading}
+                title={player.loops ? 'Disable looping' : 'Enable looping'}
               >
                 <RetweetOutlined />
               </Button>
@@ -287,6 +290,7 @@ const AudioProfile: React.FC<{
                 className={`${styles.button} ${styles.import}`}
                 onClick={() => importAudioInputRef.current?.click()}
                 disabled={!player.ready || loading}
+                title="Replace MP3"
               >
                 {loading ? (
                   <Spin
@@ -306,11 +310,16 @@ const AudioProfile: React.FC<{
                 className={`${styles.button} ${styles.delete}`}
                 disabled={!player.ready || loading}
                 onClick={() => setRemoveProfile(true)}
+                title="Remove Profile"
               >
                 <DeleteOutlined />
               </Button>
 
-              <div className={styles.duration} style={{ textAlign: 'right' }}>
+              <div
+                className={styles.duration}
+                style={{ textAlign: 'right' }}
+                title="Duration"
+              >
                 {player.ready && !loading && (
                   <Clock seconds={player.duration} />
                 )}

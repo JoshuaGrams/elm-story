@@ -13,7 +13,11 @@ import Cropper from 'react-easy-crop'
 import { Button, Slider } from 'antd'
 
 import styles from './styles.module.less'
-import { BorderInnerOutlined, FileImageOutlined } from '@ant-design/icons'
+import {
+  BorderInnerOutlined,
+  FileImageOutlined,
+  ImportOutlined
+} from '@ant-design/icons'
 
 export enum IMPORT_IMAGE_TYPE {
   INLINE = 'INLINE'
@@ -202,7 +206,7 @@ const ImportAndCropImage = React.forwardRef<
                     <Button
                       className={styles.side}
                       onClick={() => setGridEnabled(!gridEnabled)}
-                      title="Toggle grid..."
+                      title={gridEnabled ? 'Disable grid' : 'Enable grid'}
                     >
                       <BorderInnerOutlined
                         className={gridEnabled ? styles.enabled : ''}
@@ -225,10 +229,10 @@ const ImportAndCropImage = React.forwardRef<
 
                     <Button
                       className={styles.side}
-                      title="Select new image..."
+                      title="Replace image"
                       onClick={onSelectNewImage}
                     >
-                      <FileImageOutlined />
+                      <ImportOutlined />
                     </Button>
                   </div>
                 </div>
