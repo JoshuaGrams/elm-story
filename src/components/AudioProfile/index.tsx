@@ -148,6 +148,9 @@ const AudioProfile: React.FC<{
     async function removeAudioProfile() {
       if (removeProfile && playerRef.current?.src === dummyAudio) {
         if (onRemove) await onRemove()
+
+        // elmstorygames/feedback#233
+        reset()
       }
     }
 
