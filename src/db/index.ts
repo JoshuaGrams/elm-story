@@ -1774,6 +1774,14 @@ export class LibraryDatabase extends Dexie {
         }
       }
 
+      event?.audio?.[0] &&
+        (await ipcRenderer.invoke(WINDOW_EVENT_TYPE.REMOVE_ASSET, {
+          studioId: this.studioId,
+          worldId: event.worldId,
+          id: event.audio[0],
+          ext: 'mp3'
+        }))
+
       if (event?.id && event.images.length > 0) {
         await api().events.removeDeadImageAssets(
           this.studioId,

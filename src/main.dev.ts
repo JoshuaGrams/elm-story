@@ -261,7 +261,10 @@ const createWindow = async () => {
             if (!(await fs.pathExists(assetPath))) return
 
             if (trash) {
-              await fs.move(assetPath, `${userTrashPath}/${id}.${ext}`)
+              // elmstorygames/feedback#239
+              await fs.move(assetPath, `${userTrashPath}/${id}.${ext}`, {
+                overwrite: true
+              })
             }
 
             if (!trash) {
