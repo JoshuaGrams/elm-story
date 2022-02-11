@@ -1582,12 +1582,20 @@ const SceneMap: React.FC<{
 
                 if (nodeId && targetNodeId && nodeId !== targetNodeId) {
                   const foundSourceNode:
-                    | FlowElement<NodeData>
-                    | undefined = elements.find(
-                    (element) =>
-                      element.id ===
-                      (handleType === 'source' ? nodeId : targetNodeId)
-                  )
+                      | FlowElement<NodeData>
+                      | undefined = elements.find(
+                      (element) =>
+                        element.id ===
+                        (handleType === 'source' ? nodeId : targetNodeId)
+                    ),
+                    // elmstorygames/feedback#241
+                    foundDestinationNode:
+                      | FlowElement<{ type: ELEMENT_TYPE }>
+                      | undefined = elements.find(
+                      (element) =>
+                        element.id ===
+                        (handleType === 'source' ? targetNodeId : nodeId)
+                    )
 
                   if (events && composer.selectedSceneMapConnectStartData) {
                     const foundEvent = events.find(
@@ -1644,9 +1652,7 @@ const SceneMap: React.FC<{
                         ? nodeId
                         : targetNodeId,
                     destinationType:
-                      foundSourceNode?.data?.type === ELEMENT_TYPE.JUMP
-                        ? ELEMENT_TYPE.JUMP
-                        : ELEMENT_TYPE.EVENT,
+                      foundDestinationNode?.data?.type || ELEMENT_TYPE.EVENT,
                     tags: []
                   })
                 }
