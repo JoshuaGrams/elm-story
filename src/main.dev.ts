@@ -54,6 +54,10 @@ contextMenu({
 
 let mainWindow: BrowserWindow | null = null
 
+const userDataPath = app.getPath('userData'),
+  userCachePath = `${userDataPath}/.cache`,
+  userTrashPath = `${userDataPath}/.trash`
+
 logger.info(`ENV: ${process.env.NODE_ENV}`)
 
 if (process.env.NODE_ENV === 'production') {
@@ -187,9 +191,7 @@ const createWindow = async () => {
             ext: 'jpeg' | 'webp' | 'mp3'
           }
         ): Promise<string | null> => {
-          const path = `${app.getPath(
-            'userData'
-          )}/assets/${studioId}/${worldId}/${id}.${ext}`
+          const path = `${userDataPath}/assets/${studioId}/${worldId}/${id}.${ext}`
 
           try {
             await outputFile(path, Buffer.from(data))
@@ -219,9 +221,8 @@ const createWindow = async () => {
             ext: 'jpeg' | 'webp'
           }
         ) => {
-          const userDataPath = app.getPath('userData'),
-            assetsPath = `${userDataPath}/assets/${studioId}/${worldId}`,
-            assetInTrashPath = `${userDataPath}/.trash/${id}.${ext}`
+          const assetsPath = `${userDataPath}/assets/${studioId}/${worldId}`,
+            assetInTrashPath = `${userTrashPath}/${id}.${ext}`
 
           try {
             if (!(await fs.pathExists(assetInTrashPath))) return
@@ -253,15 +254,14 @@ const createWindow = async () => {
             trash?: boolean
           }
         ) => {
-          const userDataPath = app.getPath('userData'),
-            assetsPath = `${userDataPath}/assets/${studioId}/${worldId}`,
+          const assetsPath = `${userDataPath}/assets/${studioId}/${worldId}`,
             assetPath = `${assetsPath}/${id}.${ext}`
 
           try {
             if (!(await fs.pathExists(assetPath))) return
 
             if (trash) {
-              await fs.move(assetPath, `${userDataPath}/.trash/${id}.${ext}`)
+              await fs.move(assetPath, `${userTrashPath}/${id}.${ext}`)
             }
 
             if (!trash) {
@@ -288,7 +288,7 @@ const createWindow = async () => {
           if (type === 'GAME' && !worldId)
             throw 'Unable to remove storyworld assets. Missing ID.'
 
-          const root = `${app.getPath('userData')}/assets`
+          const root = `${userDataPath}/assets`
 
           let path: string | undefined
 
@@ -321,32 +321,45 @@ const createWindow = async () => {
             studioId: StudioId
             worldId: WorldId
             id: string
-            ext: 'jpeg' | 'webp'
+            ext: 'jpeg' | 'webp' | 'mp3'
           }
         ) => {
-          let platformPath: string
+          let platformAssetPath: string
 
           switch (os.platform()) {
             case PLATFORM_TYPE.WINDOWS:
-              platformPath = `${app.getPath(
-                'userData'
-              )}/assets/${studioId}/${worldId}/${id}.${ext}`.replace(/\\/g, '/')
+              platformAssetPath = `${userDataPath}/assets/${studioId}/${worldId}/${id}.${ext}`.replace(
+                /\\/g,
+                '/'
+              )
               break
             case PLATFORM_TYPE.MACOS:
             case PLATFORM_TYPE.LINUX:
             default:
-              platformPath = `${app.getPath(
-                'userData'
-              )}/assets/${studioId}/${worldId}/${id}.${ext}`
+              platformAssetPath = `${userDataPath}/assets/${studioId}/${worldId}/${id}.${ext}`
 
               break
           }
 
-          const exists = await fs.pathExists(platformPath)
+          const exists = await fs.pathExists(platformAssetPath)
 
-          // return exists ? `"${platformPath}"` : null
+          if (!exists) return [`"${platformAssetPath}"`, exists]
 
-          return [`"${platformPath}"`, exists]
+          // elmstorygames/feedback#238
+          // copy asset to cache if asset is mp3 and return url
+          if (ext === 'mp3') {
+            const platformAssetCopyPath = `${userCachePath}/${id}.${ext}`
+
+            try {
+              await fs.copy(platformAssetPath, platformAssetCopyPath)
+
+              return [`"${platformAssetCopyPath}"`, true]
+            } catch (error) {
+              throw error
+            }
+          }
+
+          return [`"${platformAssetPath}"`, exists]
         }
       )
 
@@ -396,9 +409,10 @@ const createWindow = async () => {
 
             await fs.copy(
               `${worldDirectory}/assets`,
-              `${app.getPath(
-                'userData'
-              )}/assets/${studioId}/${worldId}/`.replace(/\\/g, '/')
+              `${userDataPath}/assets/${studioId}/${worldId}/`.replace(
+                /\\/g,
+                '/'
+              )
             )
           } catch (error) {
             // directory doesn't exist; skip
@@ -447,9 +461,10 @@ const createWindow = async () => {
 
                   try {
                     await fs.copy(
-                      `${app.getPath('userData')}/assets/${
-                        parsedWorldData._.studioId
-                      }/${parsedWorldData._.id}`.replace(/\\/g, '/'),
+                      `${userDataPath}/assets/${parsedWorldData._.studioId}/${parsedWorldData._.id}`.replace(
+                        /\\/g,
+                        '/'
+                      ),
                       `${savePathFull}/assets`
                     )
                   } catch (error) {
@@ -471,9 +486,10 @@ const createWindow = async () => {
 
                   try {
                     await fs.copy(
-                      `${app.getPath('userData')}/assets/${
-                        parsedWorldData._.studioId
-                      }/${parsedWorldData._.id}/`.replace(/\\/g, '/'),
+                      `${userDataPath}/assets/${parsedWorldData._.studioId}/${parsedWorldData._.id}/`.replace(
+                        /\\/g,
+                        '/'
+                      ),
                       `${savePathFull}/assets/content`
                     )
                   } catch (error) {
@@ -639,7 +655,10 @@ const createWindow = async () => {
 }
 
 // elmstorygames/feedback#110
-fs.emptyDir(`${app.getPath('userData')}/.trash`)
+fs.emptyDir(`${userTrashPath}`)
+
+// elmstorygames/feedback#238
+fs.emptyDir(`${userCachePath}`)
 
 /**
  * Add event listeners...
