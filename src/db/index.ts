@@ -1960,7 +1960,8 @@ export class LibraryDatabase extends Dexie {
 
           await this.choices.delete(choiceId)
         } else {
-          throw new Error(
+          // elmstorygames/feedback#240
+          logger.error(
             `removeChoice->Unable to remove choice with ID: '${choiceId}'. Does not exist.`
           )
         }
@@ -2074,7 +2075,8 @@ export class LibraryDatabase extends Dexie {
 
           await this.inputs.delete(inputId)
         } else {
-          throw new Error(
+          // elmstorygames/feedback#240
+          logger.error(
             `removeInput->Unable to remove input with ID: '${inputId}'. Does not exist.`
           )
         }

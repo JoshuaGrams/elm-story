@@ -272,7 +272,7 @@ const createWindow = async () => {
             }
           } catch (error) {
             // TODO: return error to app
-            throw error
+            // see api().events.removeDeadImageAssets
           }
         }
       )
