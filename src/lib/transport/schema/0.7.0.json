@@ -17,6 +17,7 @@
               }
             ],
             "minItems": 2,
+            "maxItems": 2,
             "items": false
           }
         },
@@ -84,6 +85,7 @@
                 }
               ],
               "minItems": 2,
+              "maxItems": 2,
               "items": false
             }
           },
@@ -123,6 +125,7 @@
               { "type": "string" }
             ],
             "minItems": 3,
+            "maxItems": 3,
             "items": false
           },
           "id": { "type": "string" },
@@ -159,6 +162,7 @@
               { "type": "string" }
             ],
             "minItems": 3,
+            "maxItems": 3,
             "items": false
           },
           "tags": { "type": "array", "items": { "type": "string" } },
@@ -183,6 +187,13 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
+          "audio": {
+            "type": "array",
+            "prefixItems": [{ "type": "string" }, { "type": "boolean" }],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
+          },
           "characters": { "type": "array", "items": { "type": "string" } },
           "choices": { "type": "array", "items": { "type": "string" } },
           "content": { "type": "string" },
@@ -244,10 +255,11 @@
                   "type": "string"
                 },
                 {
-                  "type": ["string"]
+                  "type": "string"
                 }
               ],
               "minItems": 2,
+              "maxItems": 2,
               "items": false
             }
           },
@@ -259,6 +271,7 @@
               { "type": ["string", "null"] }
             ],
             "minItems": 2,
+            "maxItems": 2,
             "items": false
           },
           "tags": { "type": "array", "items": { "type": "string" } },
@@ -351,6 +364,13 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
+          "audio": {
+            "type": "array",
+            "prefixItems": [{ "type": "string" }, { "type": "boolean" }],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
+          },
           "children": {
             "type": "array",
             "items": {
@@ -364,6 +384,7 @@
                 }
               ],
               "minItems": 2,
+              "maxItems": 2,
               "items": false
             }
           },
@@ -384,6 +405,7 @@
               { "type": ["string", "null"] }
             ],
             "minItems": 2,
+            "maxItems": 2,
             "items": false
           },
           "tags": { "type": "array", "items": { "type": "string" } },

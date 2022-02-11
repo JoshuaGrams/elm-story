@@ -207,6 +207,7 @@ export type EventCharacterPersona = [
 ] // [characterId, mask, reference ID]
 
 export interface EventData {
+  audio?: AudioProfile
   characters: ElementId[]
   choices: ElementId[]
   content: string
@@ -297,7 +298,10 @@ export interface PathCollection {
   [pathId: string]: PathData
 }
 
+export type AudioProfile = [string, boolean] // asset_id, looping
+
 export interface SceneData {
+  audio?: AudioProfile
   children: SceneChildRefs
   composer?: {
     sceneMapTransformX?: number

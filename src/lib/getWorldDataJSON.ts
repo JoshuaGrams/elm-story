@@ -127,6 +127,7 @@ export default async (
 
     events.map(
       ({
+        audio,
         characters,
         choices,
         content,
@@ -143,6 +144,7 @@ export default async (
         updated
       }) =>
         (worldData.events[id as string] = {
+          audio,
           characters,
           choices,
           content,
@@ -229,8 +231,9 @@ export default async (
     )
 
     scenes.map(
-      ({ children, composer, id, parent, tags, title, updated }) =>
+      ({ audio, children, composer, id, parent, tags, title, updated }) =>
         (worldData.scenes[id as string] = {
+          audio,
           children: children as SceneChildRefs,
           composer,
           id: id as string,

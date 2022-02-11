@@ -202,6 +202,7 @@ export default (
           for await (const [
             __,
             {
+              audio,
               characters,
               choices,
               content,
@@ -219,6 +220,7 @@ export default (
             }
           ] of Object.entries(events)) {
             await api().events.saveEvent(_.studioId, {
+              audio,
               characters,
               choices,
               content,
@@ -324,9 +326,10 @@ export default (
           // Save scenes
           for await (const [
             __,
-            { children, composer, id, parent, tags, title, updated }
+            { audio, children, composer, id, parent, tags, title, updated }
           ] of Object.entries(scenes)) {
             await api().scenes.saveScene(_.studioId, {
+              audio,
               children,
               composer,
               id,
