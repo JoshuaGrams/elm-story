@@ -1,10 +1,13 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import reactStringReplace from 'react-string-replace'
+import parseToHTML from 'html-react-parser'
 
 import {
   VARIABLE_TYPE,
   EngineLiveEventStateCollection,
-  EventCharacterPersona
+  EventCharacterPersona,
+  StudioId,
+  WorldId
 } from '../types'
 import {
   gameMethods,
@@ -16,6 +19,7 @@ import {
 import { EngineContext } from '../contexts/EngineContext'
 
 import EventCharacterReference from './EventCharacterReference'
+import { eventContentToEventStreamContent } from '../lib/serialization'
 
 const processTemplateBlock = (
   template: string,
@@ -68,13 +72,13 @@ const decorate = (
     matchExpressionCounter++
 
     return highlightExpressions ? (
-      <span
-        className={match === 'esg-error' ? `expression-error` : `expression`}
-        key={`expression-${matchExpressionCounter}`}
-        title={matchedExpression}
+      `<span
+        className="${match === 'esg-error' ? `expression-error` : `expression`}"
+        key="${`expression-${matchExpressionCounter}`}"
+        title="${matchedExpression}"
       >
-        {match === 'esg-error' ? 'ERROR' : match}
-      </span>
+        ${match === 'esg-error' ? 'ERROR' : match}
+      </span>`
     ) : match === 'esg-error' ? (
       <span
         className="expression-error"
@@ -84,44 +88,48 @@ const decorate = (
         ERROR
       </span>
     ) : (
-      <span key={`span-${matchExpressionCounter}`}>{match}</span>
+      `<span key="${`span-${matchExpressionCounter}`}">${match}</span>`
     )
   })
 }
 
 const EventContent: React.FC<{
+  studioId: StudioId
+  worldId: WorldId
   content: string
   persona?: EventCharacterPersona
   state: EngineLiveEventStateCollection
-}> = React.memo(({ content, persona, state }) => {
+}> = React.memo(({ studioId, worldId, content, persona, state }) => {
   const { engine } = useContext(EngineContext)
 
-  const parsedContent: {
-    type: 'paragraph'
-    children: { text: string }[]
-  }[] = JSON.parse(content)
+  const [serializedContent, setSerializedContent] = useState<{
+    startingElement?: string
+    text: string
+  } | null>(null)
+
+  useEffect(() => {
+    async function serializeContent() {
+      setSerializedContent(
+        await eventContentToEventStreamContent(studioId, worldId, content)
+      )
+    }
+
+    serializeContent()
+  }, [content])
 
   return (
     <div>
-      {parsedContent.map((descendant, index) => {
-        return (
-          <p key={`content-p-text-${index}`}>
-            {persona && index === 0 && (
-              <EventCharacterReference persona={persona} />
-            )}
+      {serializedContent?.startingElement &&
+        parseToHTML(serializedContent?.startingElement)}
 
-            {decorate(
-              descendant.children[0].text,
-              state,
-              engine.devTools.highlightExpressions
-            )}
-          </p>
-        )
-      })}
-
-      {!parsedContent[0].children[0].text && parsedContent.length === 1 && (
-        <div className="engine-warning-message">Event content required.</div>
-      )}
+      {serializedContent &&
+        parseToHTML(
+          decorate(
+            serializedContent.text,
+            state,
+            engine.devTools.highlightExpressions
+          ).join('')
+        )}
     </div>
   )
 })

@@ -207,6 +207,8 @@ export type EventCharacterPersona = [
 ] // [characterId, mask, reference ID]
 
 export interface EventData {
+  audio?: AudioProfile
+  characters: ElementId[]
   choices: ElementId[]
   content: string
   composer?: {
@@ -214,6 +216,7 @@ export interface EventData {
     sceneMapPosY?: number
   }
   ending: boolean
+  images: string[]
   id: ElementId
   input?: ElementId // variable ID
   persona?: EventCharacterPersona
@@ -295,7 +298,10 @@ export interface PathCollection {
   [pathId: string]: PathData
 }
 
+export type AudioProfile = [string, boolean] // asset_id, looping
+
 export interface SceneData {
+  audio?: AudioProfile
   children: SceneChildRefs
   composer?: {
     sceneMapTransformX?: number
@@ -432,10 +438,13 @@ export interface EngineEffectCollection {
 }
 
 export interface EngineEventData {
+  audio?: AudioProfile
+  characters: ElementId[]
   choices: ElementId[]
   content: string
   ending: boolean
   id: ElementId
+  images: string[]
   input?: ElementId
   persona?: EventCharacterPersona
   sceneId: ElementId
@@ -535,9 +544,9 @@ export interface EnginePathCollection {
 }
 
 export interface EngineSceneData {
+  audio?: AudioProfile
   children: SceneChildRefs
   id: ElementId
-  jumps: ElementId[]
   worldId: WorldId
 }
 

@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import reactStringReplace from 'react-string-replace'
-import parseToHTML, { Element, HTMLReactParserOptions } from 'html-react-parser'
+import parseToHTML from 'html-react-parser'
 import { useDebouncedCallback } from 'use-debounce'
 
 import {

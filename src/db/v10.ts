@@ -44,7 +44,13 @@ export default (database: Dexie) => {
         eventsTable.toCollection().modify((event: Event) => {
           event.characters = []
           event.images = []
-        })
+        }),
+        tx
+          .table(LIBRARY_TABLE.WORLDS)
+          .toCollection()
+          .modify((world) => {
+            world.engine = '0.7.0'
+          })
       ])
     })
 }

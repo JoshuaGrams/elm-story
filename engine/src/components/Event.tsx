@@ -160,7 +160,8 @@ export const Event: React.FC<{
             <div
               style={{
                 display: event.persona ? 'grid' : 'unset',
-                gridTemplateColumns: event.persona ? '12.5rem auto' : 'unset'
+                gridTemplateColumns: event.persona ? '12.5rem auto' : 'unset',
+                paddingLeft: event.persona ? '1.4rem' : 'unset'
               }}
             >
               {event.persona && (
@@ -168,6 +169,8 @@ export const Event: React.FC<{
               )}
 
               <EventContent
+                studioId={studioId}
+                worldId={worldId}
                 content={event.content}
                 persona={event.persona}
                 state={liveEvent.state}

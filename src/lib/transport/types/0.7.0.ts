@@ -543,7 +543,6 @@ export interface EnginePathCollection {
 export interface EngineSceneData {
   children: SceneChildRefs
   id: ElementId
-  jumps: ElementId[]
   worldId: WorldId
 }
 

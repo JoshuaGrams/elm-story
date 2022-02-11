@@ -554,7 +554,7 @@ export const findDestinationEvent = async (
   if (foundLocation) {
     return foundLocation
   } else {
-    throw 'Unable to find destination. Missing passage.'
+    throw 'Unable to find destination. Missing event.'
   }
 }
 

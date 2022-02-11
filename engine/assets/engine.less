@@ -240,9 +240,6 @@
   .live-event-past {
     transition: color 1s;
     color: var(--event-past-text-color);
-  }
-
-  .live-event-past .event-character-mask {
     filter: grayscale(100%);
     opacity: 0.4;
   }
@@ -252,36 +249,78 @@
   }
 
   .event-content {
-    padding: 1.4rem 1rem;
+    padding-top: 1.4rem;
     border-bottom: var(--event-content-bottom-border);
     height: auto;
+
+    .event-character-mask {
+      transition: filter 1s, opacity 1s;
+      width: 10rem;
+      height: 12.5rem;
+      border-radius: 0.4rem;
+      border: var(--event-character-mask-border);
+      padding: 0.4rem;
+      box-sizing: unset;
+
+      .event-character-mask-portrait {
+        border-radius: 0.2rem;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+      }
+    }
+
+    .event-character-reference {
+      transition: color 1s;
+      color: var(--event-character-reference-text-color);
+      text-transform: uppercase;
+    }
+
+    .event-content-image {
+      aspect-ratio: 16/9;
+      width: 100%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      margin-bottom: 2rem;
+    }
+
+    :last-child {
+      margin-bottom: 0 !important;
+    }
+
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    ol,
+    ul,
+    blockquote {
+      padding: 0 1rem;
+      margin-bottom: 2rem;
+    }
+
+    ol,
+    ul {
+      list-style-type: unset;
+      margin-bottom: 2rem;
+
+      li {
+        margin-left: 2rem;
+      }
+    }
+
+    blockquote {
+      margin-left: 1.5rem;
+      padding-left: 1.3rem;
+      font-style: italic;
+      border-left: 1px solid var(--primary-color);
+      margin-bottom: 2rem;
+    }
   }
 
-  .event-content .event-character-mask {
-    transition: filter 1s, opacity 1s;
-    width: 10rem;
-    height: 12.5rem;
-    border-radius: 0.4rem;
-    border: var(--event-character-mask-border);
-    padding: 0.4rem;
-    box-sizing: unset;
-  }
-
-  .event-content .event-character-mask .event-character-mask-portrait {
-    border-radius: 0.2rem;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-  }
-
-  .event-content .event-character-reference {
-    transition: color 1s;
-    color: var(--event-character-reference-text-color);
-    text-transform: uppercase;
-  }
-
-  .event-content .expression {
+  .event-content .event-content .expression {
     border-bottom: 1px dashed var(--primary-color);
   }
 
@@ -351,6 +390,10 @@
 
   .event-content-input {
     width: 100%;
+    box-sizing: border-box;
+    padding-left: 1.4rem;
+    margin-top: 1.4rem;
+    border-top: 1px solid var(--renderer-border-color);
 
     form {
       width: 100%;
