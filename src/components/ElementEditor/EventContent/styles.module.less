@@ -16,9 +16,15 @@
   z-index: 6;
   background: hsla(0, 0%, 1%, 0.9);
   overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 10px;
 
   .contentContainer {
-    width: clamp(45ch, 50%, 75ch);
+    // width: clamp(45ch, 50%, 75ch);
+    // elmstorygames/feedback#244
+    min-width: 320px;
+    max-width: 680px;
+    box-sizing: content-box;
     min-height: 100%;
     margin: 0px auto;
     box-shadow: 0px 0px 30px black;

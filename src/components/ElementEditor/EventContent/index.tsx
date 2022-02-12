@@ -1,9 +1,22 @@
 import logger from '../../../lib/logger'
+import {
+  deleteAll,
+  getCharactersIdsFromEventContent,
+  getElement,
+  getImageIdsFromEventContent,
+  isElementActive,
+  isElementEmpty,
+  isLeafActive,
+  showCommandMenu,
+  syncCharactersFromEventContentToEventData,
+  syncImagesFromEventContentToEventData,
+  toggleElement,
+  toggleLeaf
+} from '../../../lib/contentEditor'
 
 import { ipcRenderer } from 'electron'
 import { v4 as uuid } from 'uuid'
 
-import parse from 'html-react-parser'
 import { debounce, isEqual } from 'lodash'
 import useEventListener from '@use-it/event-listener'
 import isHotkey from 'is-hotkey'
@@ -73,24 +86,6 @@ import EventContentToolbar from './EventContentToolbar'
 import api from '../../../api'
 
 import styles from './styles.module.less'
-import {
-  deleteAll,
-  getCharactersIdsFromEventContent,
-  getElement,
-  getImageIdsFromEventContent,
-  isElementActive,
-  isElementEmpty,
-  isLeafActive,
-  showCommandMenu,
-  syncCharactersFromEventContentToEventData,
-  syncImagesFromEventContentToEventData,
-  toggleElement,
-  toggleLeaf
-} from '../../../lib/contentEditor'
-import {
-  eventContentToHTML,
-  eventContentToPreview
-} from '../../../lib/serialization'
 
 const saveContent = debounce(
   async (studioId: StudioId, eventId: ElementId, content) => {
@@ -688,7 +683,7 @@ const EventContent: React.FC<{
             })
           }
         >
-          <div className={styles.contentContainer}>
+          <div className={`${styles.contentContainer}`}>
             <h1 className={styles.eventTitle}>{event.title}</h1>
 
             <SlateContext
