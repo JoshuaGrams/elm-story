@@ -26,9 +26,7 @@ const EventCharacterReference: React.FC<{
   return (
     <>
       {reference && (
-        <span className={`event-character-reference`}>
-          {reference} &mdash;{' '}
-        </span>
+        <div className={`event-character-reference`}>{reference}</div>
       )}
     </>
   )

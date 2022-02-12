@@ -4,18 +4,6 @@
   height: 100%;
   min-width: 32rem;
 
-  ul {
-    list-style: none;
-  }
-
-  li {
-    margin-bottom: 1.4rem;
-  }
-
-  li:last-child {
-    margin-bottom: 0;
-  }
-
   a {
     color: var(--link-color);
     cursor: pointer;
@@ -43,6 +31,7 @@
     padding: 0 1.2rem;
     border-radius: 0;
     border-radius: 0.4rem;
+    font-size: 1.6rem;
   }
 
   button:hover {
@@ -72,10 +61,12 @@
     align-items: center;
 
     span {
-      font-size: 1.4rem;
+      font-size: 1.6rem;
     }
 
     button {
+      font-size: 1.6rem;
+
       &:disabled {
         pointer-events: none;
         opacity: 0;
@@ -152,6 +143,7 @@
     width: fit-content;
     margin: 0 auto;
     margin-bottom: 0.6rem;
+    font-size: 1.6rem;
   }
 
   #title-card-btns button:last-child {
@@ -240,9 +232,6 @@
   .live-event-past {
     transition: color 1s;
     color: var(--event-past-text-color);
-  }
-
-  .live-event-past .event-character-mask {
     filter: grayscale(100%);
     opacity: 0.4;
   }
@@ -252,50 +241,136 @@
   }
 
   .event-content {
-    padding: 1.4rem 1rem;
+    padding-top: 1.4rem;
     border-bottom: var(--event-content-bottom-border);
     height: auto;
-  }
 
-  .event-content .event-character-mask {
-    transition: filter 1s, opacity 1s;
-    width: 10rem;
-    height: 12.5rem;
-    border-radius: 0.4rem;
-    border: var(--event-character-mask-border);
-    padding: 0.4rem;
-    box-sizing: unset;
-  }
+    .event-content-with-persona {
+      p,
+      h1,
+      h2,
+      h3,
+      h4,
+      ol,
+      ul {
+        padding-left: 0;
+      }
+    }
 
-  .event-content .event-character-mask .event-character-mask-portrait {
-    border-radius: 0.2rem;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-  }
+    .event-character-mask {
+      transition: filter 1s, opacity 1s;
+      width: 10rem;
+      height: 12.5rem;
+      border-radius: 0.4rem;
+      border: var(--event-character-mask-border);
+      padding: 0.4rem;
+      box-sizing: unset;
 
-  .event-content .event-character-reference {
-    transition: color 1s;
-    color: var(--event-character-reference-text-color);
-    text-transform: uppercase;
-  }
+      .event-character-mask-portrait {
+        border-radius: 0.2rem;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+      }
+    }
 
-  .event-content .expression {
-    border-bottom: 1px dashed var(--primary-color);
-  }
+    .event-character-reference {
+      transition: color 1s;
+      color: var(--event-character-reference-text-color);
+      text-transform: uppercase;
+      margin-bottom: 1.4rem;
+      border-bottom: 1px solid var(--renderer-border-color);
+    }
 
-  .event-content .expression-error {
-    border-bottom: 1px dashed red;
-  }
+    .event-content-image {
+      aspect-ratio: 16/9;
+      width: 100%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      margin-bottom: 1.4rem;
+    }
 
-  .event-content p {
-    margin-bottom: 1.4rem;
-    line-height: 2.8rem;
-  }
+    :last-child {
+      margin-bottom: 0 !important;
+    }
 
-  .event-content p:last-child {
-    margin-bottom: 0;
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    ol,
+    ul,
+    blockquote {
+      padding: 0 1rem;
+      margin-bottom: 1.4rem;
+      hyphens: auto;
+      font-size: 1.6rem;
+    }
+
+    p {
+      line-height: 2.8rem;
+    }
+
+    ol {
+      list-style-type: decimal !important;
+    }
+
+    ul {
+      list-style-type: circle !important;
+    }
+
+    h1 {
+      font-size: 3.2rem;
+    }
+
+    h2 {
+      font-size: 2.4rem;
+    }
+
+    h3 {
+      font-size: 1.8rem;
+    }
+
+    h4 {
+      font-size: 1.6rem;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-weight: bold;
+    }
+
+    ol,
+    ul {
+      padding-left: 2rem;
+      margin-bottom: 1.4rem;
+      margin-left: 2.8rem;
+
+      li {
+        margin-left: 0rem;
+        margin-bottom: 0.8rem;
+      }
+    }
+
+    blockquote {
+      margin-left: 1.5rem;
+      padding-left: 1.3rem;
+      font-style: italic;
+      border-left: 1px solid var(--primary-color);
+      line-height: 2.8rem;
+    }
+
+    .expression {
+      border-bottom: 1px dashed var(--primary-color);
+    }
+
+    .expression-error {
+      border-bottom: 1px dashed red;
+    }
   }
 
   .event-content-choices,
@@ -310,8 +385,10 @@
 
     button {
       text-align: left;
-      max-width: 25rem;
       word-break: normal;
+      hyphens: auto;
+      padding: 0.4rem 1rem 0.6rem 1rem;
+      font-size: 1.6rem;
     }
 
     &:last-child {
@@ -351,6 +428,10 @@
 
   .event-content-input {
     width: 100%;
+    box-sizing: border-box;
+    padding-left: 1.4rem;
+    margin-top: 1.4rem;
+    border-top: 1px solid var(--renderer-border-color);
 
     form {
       width: 100%;

@@ -155,7 +155,7 @@ export const Event: React.FC<{
         }}
         ref={eventRef}
       >
-        {event && (
+        {event?.id && (
           <>
             <div
               style={{
@@ -163,6 +163,7 @@ export const Event: React.FC<{
                 gridTemplateColumns: event.persona ? '12.5rem auto' : 'unset',
                 paddingLeft: event.persona ? '1.4rem' : 'unset'
               }}
+              className={`${event.persona ? 'event-content-with-persona' : ''}`}
             >
               {event.persona && (
                 <EventCharacterMask eventId={eventId} persona={event.persona} />
@@ -171,6 +172,7 @@ export const Event: React.FC<{
               <EventContent
                 studioId={studioId}
                 worldId={worldId}
+                eventId={event.id}
                 content={event.content}
                 persona={event.persona}
                 state={liveEvent.state}

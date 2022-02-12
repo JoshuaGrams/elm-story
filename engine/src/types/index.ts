@@ -374,6 +374,7 @@ export interface EngineDevToolsLiveEvent {
     id?: string
     url?: string
     exists?: boolean
+    ext?: 'jpeg' | 'webp' | 'mp3'
   }
 }
 

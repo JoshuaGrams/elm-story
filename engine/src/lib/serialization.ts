@@ -28,26 +28,29 @@ const wrapNodeContent = (node: EventContentNode, text: string) => {
 const serializeDescendantToText = async (
   studioId: StudioId,
   worldId: WorldId,
-  node: EventContentNode
+  node: EventContentNode,
+  isComposer?: boolean
 ): Promise<string> => {
+  let formattedNode: string = node.text
+
   if (node.text) {
     if (node.u) {
-      return `<u>${node.text}</u>`
+      formattedNode = `<u>${formattedNode}</u>`
     }
 
     if (node.em) {
-      return `<em>${node.text}</em>`
+      formattedNode = `<em>${formattedNode}</em>`
     }
 
     if (node.strong) {
-      return `<strong>${node.text}</strong>`
+      formattedNode = `<strong>${formattedNode}</strong>`
     }
 
     if (node.s) {
-      return `<s>${node.text}</s>`
+      formattedNode = `<s>${formattedNode}</s>`
     }
 
-    return node.text
+    return formattedNode
   }
 
   const text: string = node.children
@@ -60,7 +63,8 @@ const serializeDescendantToText = async (
                 await serializeDescendantToText(
                   studioId,
                   worldId,
-                  childNode as EventContentNode
+                  childNode as EventContentNode,
+                  isComposer
                 )
             )
           )
@@ -70,7 +74,8 @@ const serializeDescendantToText = async (
 
   switch (node.type) {
     case ELEMENT_FORMATS.IMG:
-      return `<div class="event-content-image" style="background-image: url(../../data/0-7-test_0.0.1/assets/${node.asset_id}.webp);"></div>`
+      // replaced with instance of ElementImage
+      return `<div data-type="img" data-asset-id="${node.asset_id}"></div>`
     case ELEMENT_FORMATS.CHARACTER:
       const displayFormat = node.character_id
         ? getCharacterRefDisplayFormat(
@@ -84,11 +89,8 @@ const serializeDescendantToText = async (
           )
         : null
 
-      return `<span class="event-content-character" style="fontWeight:${
-        displayFormat?.styles?.fontWeight || ''
-      }; fontStyle:${displayFormat?.styles?.fontStyle || ''}; textDecoration:${
-        displayFormat?.styles?.textDecoration || ''
-      };">${displayFormat?.text || ''}</span>`
+      // prettier-ignore
+      return `<span class="event-content-character" style="fontWeight:${displayFormat?.styles?.fontWeight || ''}; fontStyle:${displayFormat?.styles?.fontStyle || ''}; textDecoration:${displayFormat?.styles?.textDecoration || ''};">${displayFormat?.text || ''}</span>`
     case ELEMENT_FORMATS.OL:
     case ELEMENT_FORMATS.UL:
       return node.children
@@ -99,7 +101,8 @@ const serializeDescendantToText = async (
                   await serializeDescendantToText(
                     studioId,
                     worldId,
-                    childNode as EventContentNode
+                    childNode as EventContentNode,
+                    isComposer
                   )
               )
             )
@@ -113,12 +116,18 @@ const serializeDescendantToText = async (
 export const eventContentToEventStreamContent = async (
   studioId: StudioId,
   worldId: WorldId,
-  content: string
+  content: string,
+  isComposer?: boolean
 ) => {
   const children: EventContentNode[] = JSON.parse(content),
     startingElement =
       children[0].type === ELEMENT_FORMATS.IMG
-        ? await serializeDescendantToText(studioId, worldId, children[0])
+        ? await serializeDescendantToText(
+            studioId,
+            worldId,
+            children[0],
+            isComposer
+          )
         : undefined
 
   const text = (
@@ -126,9 +135,14 @@ export const eventContentToEventStreamContent = async (
       children
         // .filter((childNode) => isTextNode(childNode))
         .map(async (childNode, index) => {
-          if (startingElement && index === 0) return ''
+          // if (startingElement && index === 0) return ''
 
-          return await serializeDescendantToText(studioId, worldId, childNode)
+          return await serializeDescendantToText(
+            studioId,
+            worldId,
+            childNode,
+            isComposer
+          )
         })
     )
   )

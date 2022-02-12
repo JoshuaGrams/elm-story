@@ -18,6 +18,7 @@ import {
   COMPOSER_ACTION_TYPE
 } from '../../contexts/ComposerContext'
 
+// @ts-ignore
 import Runtime from './embedded/Runtime'
 
 const Storyteller: React.FC<{
@@ -67,15 +68,16 @@ const Storyteller: React.FC<{
         }
         break
       case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.GET_ASSET_URL:
-        const [url, exists]: [string, boolean] = await ipcRenderer.invoke(
-          WINDOW_EVENT_TYPE.GET_ASSET,
-          {
-            studioId,
-            worldId,
-            id: detail.asset?.id,
-            ext: 'jpeg'
-          }
-        )
+        const [url, exists, ext]: [
+          string,
+          boolean,
+          'jpeg' | 'webp' | 'mp3'
+        ] = await ipcRenderer.invoke(WINDOW_EVENT_TYPE.GET_ASSET, {
+          studioId,
+          worldId,
+          id: detail.asset?.id,
+          ext: detail.asset?.ext
+        })
 
         window.dispatchEvent(
           new CustomEvent<EngineDevToolsLiveEvent>(
@@ -85,8 +87,10 @@ const Storyteller: React.FC<{
                 eventType: ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RETURN_ASSET_URL,
                 eventId: detail.eventId,
                 asset: {
+                  id: detail.asset?.id,
                   url,
-                  exists
+                  exists,
+                  ext
                 }
               }
             }
@@ -137,7 +141,7 @@ const Storyteller: React.FC<{
   return (
     <div ref={runtimeWrapperRef} style={{ width: '100%', height: '100%' }}>
       <div id="runtime" style={runtimeStyles}>
-        {/* <Runtime studioId={studioId} world={{ id: worldId }} /> */}
+        <Runtime studioId={studioId} world={{ id: worldId }} />
       </div>
     </div>
   )

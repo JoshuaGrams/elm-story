@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import {
@@ -46,19 +46,22 @@ const EventCharacterMask: React.FC<{
     [persona]
   )
 
-  const processEvent: (event: Event) => void = (event) => {
-    const { detail } = event as CustomEvent<EngineDevToolsLiveEvent>
+  const processEvent = useCallback(
+    (event: Event) => {
+      const { detail } = event as CustomEvent<EngineDevToolsLiveEvent>
 
-    switch (detail.eventType) {
-      case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RETURN_ASSET_URL:
-        if (detail.asset?.url && detail.eventId === eventId) {
-          setMaskUrl(detail.asset.url)
-        }
-        break
-      default:
-        break
-    }
-  }
+      switch (detail.eventType) {
+        case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RETURN_ASSET_URL:
+          if (detail.asset?.url && detail.eventId === eventId) {
+            setMaskUrl(detail.asset.url)
+          }
+          break
+        default:
+          break
+      }
+    },
+    [mask?.assetId]
+  )
 
   useEffect(() => {
     async function getMaskUrl() {
@@ -83,7 +86,8 @@ const EventCharacterMask: React.FC<{
                   eventType: ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.GET_ASSET_URL,
                   eventId,
                   asset: {
-                    id: mask.assetId
+                    id: mask.assetId,
+                    ext: 'jpeg'
                   }
                 }
               }
