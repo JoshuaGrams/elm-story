@@ -157,6 +157,12 @@ const AudioProfile: React.FC<{
     removeAudioProfile()
   }, [removeProfile, player.duration])
 
+  useEffect(() => {
+    return () => {
+      setAudioPath(dummyAudio)
+    }
+  }, [])
+
   return (
     <div className={styles.AudioProfile}>
       <input

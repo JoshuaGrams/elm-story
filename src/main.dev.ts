@@ -346,7 +346,7 @@ const createWindow = async () => {
 
           const exists = await fs.pathExists(platformAssetPath)
 
-          if (!exists) return [`"${platformAssetPath}"`, exists]
+          if (!exists) return [`"${platformAssetPath}"`, false]
 
           // elmstorygames/feedback#238
           // copy asset to cache if asset is mp3 and return url
@@ -354,6 +354,13 @@ const createWindow = async () => {
             const platformAssetCopyPath = `${userCachePath}/${id}.${ext}`
 
             try {
+              // elmstorygames/feedback#243
+              const assetCacheExists = await fs.pathExists(
+                platformAssetCopyPath
+              )
+
+              if (assetCacheExists) return [`"${platformAssetCopyPath}"`, true]
+
               await fs.copy(platformAssetPath, platformAssetCopyPath)
 
               return [`"${platformAssetCopyPath}"`, true]
