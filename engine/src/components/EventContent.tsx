@@ -204,7 +204,7 @@ const EventContent: React.FC<{
     }
 
     serializeAndParseContent()
-  }, [content, characters, engine.devTools.highlightExpressions])
+  }, [content, characters, engine.devTools])
 
   return (
     <div>

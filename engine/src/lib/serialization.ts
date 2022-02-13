@@ -75,11 +75,14 @@ const serializeDescendantToText = async (
 
   switch (node.type) {
     case ELEMENT_FORMATS.IMG:
-      // replaced with instance of ElementImage
+      if (!node.asset_id) return ''
+
+      // replaced with EventImage
       return `<div data-type="img" data-asset-id="${node.asset_id}"></div>`
     case ELEMENT_FORMATS.CHARACTER:
       if (!node.character_id) return ''
 
+      // replaced with EventCharacterElement
       return `<span data-type="character" data-character-id="${node.character_id}" data-character-alias-id="${node.alias_id}" data-character-ref-transform="${node.transform}" data-character-ref-styles="${node.styles}"></span>`
     case ELEMENT_FORMATS.OL:
     case ELEMENT_FORMATS.UL:

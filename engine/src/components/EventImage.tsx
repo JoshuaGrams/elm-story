@@ -52,9 +52,14 @@ const EventImage: React.FC<{
       }
 
       if (!engine.isComposer && assetId) {
+        // local development
         setBackgroundImage(
           `url(../../data/0-7-test_0.0.1/assets/${assetId}.webp)`
         )
+
+        // PWA
+        // setBackgroundImage(`url(./assets/content/${assetId}.webp)`)
+
         return
       }
 
@@ -76,7 +81,7 @@ const EventImage: React.FC<{
     }
 
     getImageUrl()
-  }, [eventId, assetId])
+  }, [eventId, assetId, engine.devTools])
 
   useEffect(() => {
     if (engine.isComposer) {
