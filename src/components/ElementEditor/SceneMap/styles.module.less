@@ -972,6 +972,19 @@
     border-radius: 4px;
     transition: box-shadow 0.2s;
 
+    &.missing {
+      background-color: red;
+
+      div {
+        display: grid;
+        align-items: center;
+      }
+
+      &:hover {
+        cursor: default;
+      }
+    }
+
     &:hover {
       cursor: pointer;
       box-shadow: 0px 4px 8px 0px hsla(0, 0%, 6%, 1);

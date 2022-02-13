@@ -8,21 +8,29 @@ import { getCharacterReference } from './api'
 const wrapNodeContent = (node: EventContentNode, text: string) => {
   switch (node.type) {
     case ELEMENT_FORMATS.P:
-      return `<p style="text-align:${node.align || ''}">${text}</p>`
+      return `<p style="text-align:${node.align || ''}">${text || '&nbsp;'}</p>`
     case ELEMENT_FORMATS.H1:
-      return `<h1 style="text-align:${node.align || ''}">${text}</h1>`
+      return `<h1 style="text-align:${node.align || ''}">${
+        text || '&nbsp;'
+      }</h1>`
     case ELEMENT_FORMATS.H2:
-      return `<h2 style="text-align:${node.align || ''}">${text}</h2>`
+      return `<h2 style="text-align:${node.align || ''}">${
+        text || '&nbsp;'
+      }</h2>`
     case ELEMENT_FORMATS.H3:
-      return `<h3 style="text-align:${node.align || ''}">${text}</h3>`
+      return `<h3 style="text-align:${node.align || ''}">${
+        text || '&nbsp;'
+      }</h3>`
     case ELEMENT_FORMATS.H4:
-      return `<h4 style="text-align:${node.align || ''}">${text}</h4>`
+      return `<h4 style="text-align:${node.align || ''}">${
+        text || '&nbsp;'
+      }</h4>`
     case ELEMENT_FORMATS.LI:
       return `<li>${text}</li>`
     case ELEMENT_FORMATS.BLOCKQUOTE:
       return `<blockquote>${text}</blockquote>`
     default:
-      return `<div>${text}</div>`
+      return `<p>${text || '&nbsp;'}</p>`
   }
 }
 
@@ -75,8 +83,6 @@ const serializeDescendantToText = async (
 
   switch (node.type) {
     case ELEMENT_FORMATS.IMG:
-      if (!node.asset_id) return ''
-
       // replaced with EventImage
       return `<div data-type="img" data-asset-id="${node.asset_id}"></div>`
     case ELEMENT_FORMATS.CHARACTER:
@@ -112,20 +118,31 @@ export const eventContentToEventStreamContent = async (
   content: EventContentNode[],
   isComposer?: boolean
 ) => {
-  const children: EventContentNode[] = content,
-    startingElement =
-      children[0].type === ELEMENT_FORMATS.IMG
-        ? await serializeDescendantToText(
-            studioId,
-            worldId,
-            children[0],
-            isComposer
-          )
-        : undefined
+  // const firstNode = content[0] as EventContentNode
+
+  // if (
+  //   content.length === 1 &&
+  //   firstNode.type !== ELEMENT_FORMATS.IMG &&
+  //   (firstNode.children[0] as EventContentNode).text === ''
+  // ) {
+  //   return {
+  //     text: `<p class="engine-warning-message">Event content required.</p>`
+  //   }
+  // }
+
+  const startingElement =
+    content[0].type === ELEMENT_FORMATS.IMG
+      ? await serializeDescendantToText(
+          studioId,
+          worldId,
+          content[0],
+          isComposer
+        )
+      : undefined
 
   const text = (
     await Promise.all(
-      children
+      content
         // .filter((childNode) => isTextNode(childNode))
         .map(async (childNode, index) => {
           // if (startingElement && index === 0) return ''
@@ -145,8 +162,12 @@ export const eventContentToEventStreamContent = async (
   return {
     startingElement,
     text:
-      text === '<div></div>'
-        ? `<div class="engine-warning-message">Event content required.</div>`
+      text === '<p></p>' ||
+      text === '<h1></h1>' ||
+      text === '<h2></h2>' ||
+      text === '<h3></h3>' ||
+      text === '<h4></h4>'
+        ? `<p class="engine-warning-message">Event content required.</p>`
         : text
   }
 }

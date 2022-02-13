@@ -9,6 +9,8 @@ import {
   COMPOSER_ACTION_TYPE
 } from '../../../contexts/ComposerContext'
 
+import { UserOutlined } from '@ant-design/icons'
+
 import CharacterMask from '../../CharacterManager/CharacterMask'
 
 import styles from './styles.module.less'
@@ -50,6 +52,17 @@ const CharacterPortrait: React.FC<{
               )?.assetId
             }
           />
+        </div>
+      )}
+
+      {!character?.id && (
+        <div
+          className={`${styles.CharacterPortrait} ${styles.missing} nodrag`}
+          title={`Character ${characterId} not found...`}
+        >
+          <div style={{ aspectRatio: '4/5' }}>
+            <UserOutlined />
+          </div>
         </div>
       )}
     </>

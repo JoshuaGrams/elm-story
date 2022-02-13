@@ -13,7 +13,8 @@ import {
   EventCharacterPersona,
   StudioId,
   WorldId,
-  ElementId
+  ElementId,
+  EngineCharacterData
 } from '../types'
 import {
   gameMethods,
@@ -96,14 +97,18 @@ const decorate = (
 const useCharacters = (studioId: StudioId, characterIds: ElementId[]) => {
   const characters = useLiveQuery(
     async () => {
-      return await Promise.all(
+      const characters = await Promise.all(
         characterIds.map((id) =>
           new LibraryDatabase(studioId).characters.get(id)
         )
       )
+
+      return characters.filter(
+        (character): character is EngineCharacterData => character !== undefined
+      )
     },
     [flattenEventContent],
-    null
+    undefined
   )
 
   return characters
@@ -123,10 +128,7 @@ const EventContent: React.FC<{
       parsedContentAsJSON
     )
 
-  const characters =
-    referencedCharacterIds.length > 0
-      ? useCharacters(studioId, referencedCharacterIds)
-      : null
+  const characters = useCharacters(studioId, referencedCharacterIds)
 
   const { engine } = useContext(EngineContext)
 
