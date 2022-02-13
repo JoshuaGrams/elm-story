@@ -230,12 +230,14 @@ export const Element: React.FC<{
   switch (element.type) {
     case ELEMENT_FORMATS.BLOCKQUOTE:
       content = (
-        <blockquote
-          className={_isElementEmptyAndSelected ? styles.empty : ''}
-          {...attributes}
-        >
-          {children}
-        </blockquote>
+        <div className={styles.blockquoteWrapper}>
+          <blockquote
+            className={_isElementEmptyAndSelected ? styles.empty : ''}
+            {...attributes}
+          >
+            {children}
+          </blockquote>
+        </div>
       )
       break
     case ELEMENT_FORMATS.UL:

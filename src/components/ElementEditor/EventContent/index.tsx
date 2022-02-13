@@ -684,7 +684,7 @@ const EventContent: React.FC<{
           }
         >
           <div className={`${styles.contentContainer}`}>
-            <h1 className={styles.eventTitle}>{event.title}</h1>
+            {/* <h1 className={styles.eventTitle}>{event.title}</h1> */}
 
             <SlateContext
               editor={editor}

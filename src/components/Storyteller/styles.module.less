@@ -1,0 +1,20 @@
+.Storyteller {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 44px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--highlight-color);
+    border: unset;
+
+    &:hover {
+      background-color: var(--highlight-color-bright);
+    }
+  }
+
+  ::-webkit-scrollbar-track {
+    border: unset;
+    border-left: 0.1rem solid hsl(0, 0%, 8%);
+  }
+}

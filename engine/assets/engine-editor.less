@@ -4,6 +4,7 @@
   --primary-color: hsl(265, 100%, 60%);
   --primary-color-brighter: hsl(265, 100%, 65%);
   --primary-color-darker: hsl(265, 100%, 55%);
+  --primary-color-darkest: hsl(265, 100%, 35%);
   --warning-color: hsl(50, 100%, 50%);
 
   --white: hsl(0, 0%, 97%);
@@ -11,6 +12,8 @@
 
   --min-interaction-height: 4.4rem;
   --runtime-width: 680px;
+
+  --input-selection-text-color: var(--white);
 
   --btn-text-color: var(--white);
 
@@ -79,53 +82,84 @@
     }
   }
 
-  #engine-xray {
-    * {
-      font-family: 'Inter' !important;
+  #engine-xray-wrapper {
+    width: 100%;
+    bottom: 0;
+    position: absolute;
+    background: hsl(0, 0%, 5%);
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 14px !important;
+      height: 14px !important;
     }
 
-    table {
-      width: 100%;
+    &::-webkit-scrollbar-thumb {
+      background-color: hsl(0, 0%, 6%) !important;
+      border: 1px solid hsl(0, 0%, 0%) !important;
 
-      tbody tr:hover {
-        background: hsl(0, 0%, 6%);
+      &:hover {
+        background-color: hsl(0, 0%, 8%) !important;
       }
 
-      th,
-      td {
-        padding: 0.4rem 0.4rem 0.2rem 0.4rem;
-      }
-
-      th {
-        font-size: 1.2rem;
-        text-transform: uppercase;
-        font-weight: normal;
-        color: var(--primary-color);
-        padding-bottom: 0.4rem;
-        border-bottom: 1px solid var(--primary-color);
-      }
-
-      td {
-        font-size: 1rem;
-        border-bottom: 1px solid var(--renderer-border-color);
-        border-right: 1px solid var(--renderer-border-color);
-      }
-
-      td:last-child {
-        border-right: none;
-      }
-
-      th.xray-row-id,
-      td.xray-row-id {
-        width: 10rem;
+      &:active {
+        background-color: hsl(0, 0%, 10%) !important;
       }
     }
 
-    table.event-data {
-      position: sticky;
-      top: 0;
-      border-top: 1px solid var(--border-color-20);
-      background: black;
+    &::-webkit-scrollbar-track {
+      border: 1px solid hsl(0, 0%, 0%) !important;
+      background-color: hsl(0, 0%, 2%) !important;
+    }
+
+    #engine-xray {
+      * {
+        font-family: 'Inter' !important;
+      }
+
+      table {
+        width: 100%;
+
+        tbody tr:hover {
+          background: hsl(0, 0%, 9%);
+        }
+
+        th,
+        td {
+          padding: 0.4rem 0.4rem 0.2rem 0.4rem;
+        }
+
+        th {
+          font-size: 1rem;
+          text-transform: uppercase;
+          font-weight: normal;
+          color: var(--primary-color);
+          padding-bottom: 0.4rem;
+          border-bottom: 1px solid var(--primary-color);
+        }
+
+        td {
+          font-size: 1.2rem;
+          border-bottom: 1px solid var(--renderer-border-color);
+          border-right: 1px solid var(--renderer-border-color);
+        }
+
+        td:last-child {
+          border-right: none;
+        }
+
+        th.xray-row-id,
+        td.xray-row-id {
+          width: 10rem;
+        }
+      }
+
+      table.event-data {
+        position: sticky;
+        top: 0;
+        border-top: 1px solid black;
+        background: hsl(0, 0%, 5%);
+      }
     }
   }
 }

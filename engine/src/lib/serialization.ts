@@ -106,7 +106,7 @@ const serializeDescendantToText = async (
                   )
               )
             )
-          ).join('')}</ol>`
+          ).join('')}${node.type === ELEMENT_FORMATS.OL ? '</ol>' : '</ul>'}`
         : ''
     default:
       return text

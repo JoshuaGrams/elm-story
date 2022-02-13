@@ -88,13 +88,9 @@ const Renderer: React.FC = () => {
                   {engine.worldInfo && engine.devTools.xrayVisible && (
                     <div
                       style={{
-                        height: ENGINE_XRAY_CONTAINER_HEIGHT,
-                        width: '100%',
-                        bottom: 0,
-                        position: 'absolute',
-                        background: 'black',
-                        overflowY: 'auto'
+                        height: ENGINE_XRAY_CONTAINER_HEIGHT
                       }}
+                      id="engine-xray-wrapper"
                     >
                       {engine.liveEventsInStream.length > 0 && (
                         <EventXRay event={engine.liveEventsInStream[0]} />

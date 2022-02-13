@@ -23,8 +23,8 @@
     // width: clamp(45ch, 50%, 75ch);
     // elmstorygames/feedback#244
     min-width: 320px;
-    max-width: 680px;
-    box-sizing: content-box;
+    max-width: 676px;
+    // box-sizing: content-box;
     min-height: 100%;
     margin: 0px auto;
     box-shadow: 0px 0px 30px black;
@@ -49,7 +49,7 @@
 
     .editable {
       height: 100%;
-      padding-top: 10px;
+      padding-top: 14px;
 
       .DraggableWrapper {
         &:hover .dragHandle {
@@ -71,6 +71,11 @@
           opacity: 0;
           border-radius: 2px;
         }
+      }
+
+      * {
+        font-family: 'Literata';
+        hyphens: auto;
       }
 
       p *,
@@ -107,21 +112,68 @@
         }
       }
 
-      blockquote {
-        border-left: 2px solid var(--highlight-color);
-        margin-left: 20px;
-        padding-left: 20px;
-        font-style: italic;
+      .blockquoteWrapper {
+        padding-bottom: 14px;
+        padding-right: 44px;
+
+        blockquote {
+          border-left: 1px solid var(--highlight-color);
+          margin-left: 15px;
+          padding-left: 13px;
+          font-style: italic;
+          margin-left: 30px;
+          margin-bottom: 0;
+        }
+      }
+
+      ol,
+      ul {
+        list-style-position: inside;
+      }
+
+      ol,
+      ul {
+        margin-left: 28px;
+        padding: 0;
       }
 
       ul {
-        list-style-type: unset;
+        list-style-type: disc;
+
+        li::before {
+          content: '';
+          margin-left: -0.6rem;
+        }
+      }
+
+      ol,
+      ul,
+      li,
+      blockquote {
+        font-size: 16px;
+      }
+
+      ol,
+      ul {
+        padding-bottom: 14px;
+        margin-bottom: 0;
+      }
+
+      li {
+        margin-bottom: 8px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
 
       p {
         * {
           font-size: 16px;
         }
+
+        // this should be 28, but better matches preview
+        line-height: 27px;
 
         &.empty:after {
           content: "Type '/' for commands...";
@@ -130,24 +182,32 @@
       }
 
       h1 {
+        font-size: 32px;
+
         &.empty:after {
           content: 'Heading 1';
         }
       }
 
       h2 {
+        font-size: 24px;
+
         &.empty:after {
           content: 'Heading 2';
         }
       }
 
       h3 {
+        font-size: 18px;
+
         &.empty:after {
           content: 'Heading 3';
         }
       }
 
       h4 {
+        font-size: 16px;
+
         &.empty:after {
           content: 'Heading 4';
         }

@@ -17,8 +17,8 @@
     border: none;
 
     &::selection {
-      color: var(--input-selection-text-color);
-      background: var(--primary-color-darkest);
+      color: var(--input-selection-text-color) !important;
+      background: var(--primary-color-darkest) !important;
     }
   }
 
@@ -250,10 +250,17 @@
       h1,
       h2,
       h3,
-      h4,
+      h4 {
+        padding-left: 0;
+      }
+
       ol,
       ul {
-        padding-left: 0;
+        margin-left: 1.4rem;
+      }
+
+      blockquote {
+        margin-left: 1.5rem;
       }
     }
 
@@ -303,7 +310,7 @@
     ol,
     ul,
     blockquote {
-      padding: 0 1rem;
+      padding: 0 1.4rem;
       margin-bottom: 1.4rem;
       hyphens: auto;
       font-size: 1.6rem;
@@ -318,7 +325,7 @@
     }
 
     ul {
-      list-style-type: circle !important;
+      list-style-type: disc !important;
     }
 
     h1 {
@@ -337,18 +344,10 @@
       font-size: 1.6rem;
     }
 
-    h1,
-    h2,
-    h3,
-    h4 {
-      font-weight: bold;
-    }
-
     ol,
     ul {
-      padding-left: 2rem;
-      margin-bottom: 1.4rem;
-      margin-left: 2.8rem;
+      padding-left: 2.8rem;
+      list-style-position: inside;
 
       li {
         margin-left: 0rem;
@@ -356,12 +355,20 @@
       }
     }
 
+    ul {
+      li::before {
+        content: '';
+        margin-left: -0.6rem;
+      }
+    }
+
     blockquote {
-      margin-left: 1.5rem;
+      margin-left: 3rem;
       padding-left: 1.3rem;
       font-style: italic;
       border-left: 1px solid var(--primary-color);
       line-height: 2.8rem;
+      padding-right: 4.4rem;
     }
 
     .expression {
