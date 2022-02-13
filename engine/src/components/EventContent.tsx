@@ -26,6 +26,11 @@ import { EngineContext } from '../contexts/EngineContext'
 
 import EventCharacterReference from './EventCharacterReference'
 import EventImage from './EventImage'
+import EventCharacterElement from './EventCharacterElement'
+import {
+  CharacterElementStyleTypes,
+  CharacterElementTransformType
+} from '../types/eventContentTypes'
 
 const processTemplateBlock = (
   template: string,
@@ -156,6 +161,38 @@ const EventContent: React.FC<{
                       ? undefined
                       : node.attribs['data-asset-id']
                   return <EventImage eventId={eventId} assetId={assetId} />
+                }
+
+                if (node.attribs['data-type'] === 'character') {
+                  const characterId =
+                      node.attribs['data-character-id'] === 'undefined'
+                        ? undefined
+                        : node.attribs['data-character-id'],
+                    aliasId =
+                      node.attribs['data-character-alias-id'] === 'undefined'
+                        ? undefined
+                        : node.attribs['data-character-alias-id'],
+                    transform =
+                      node.attribs['data-character-ref-transform'] ===
+                      'undefined'
+                        ? undefined
+                        : node.attribs['data-character-ref-transform'],
+                    styles =
+                      node.attribs['data-character-ref-styles'] === 'undefined'
+                        ? undefined
+                        : node.attribs['data-character-ref-styles'].split(',')
+
+                  return (
+                    <EventCharacterElement
+                      studioId={studioId}
+                      characterId={characterId}
+                      aliasId={aliasId}
+                      transform={
+                        transform as CharacterElementTransformType | undefined
+                      }
+                      styles={styles as CharacterElementStyleTypes | undefined}
+                    />
+                  )
                 }
               }
 

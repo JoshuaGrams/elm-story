@@ -427,7 +427,7 @@ export const getCharacterAliasOrTitle = (
   aliasId?: string
 ): string | null =>
   aliasId
-    ? character.refs.find((ref) => ref[0] === aliasId)?.[1] || null
+    ? character.refs.find((ref) => ref[0] === aliasId)?.[1] || character.title
     : character.title
 
 export const isEndOfLine = (editor: EditorType) => {

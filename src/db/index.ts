@@ -275,13 +275,11 @@ export class LibraryDatabase extends Dexie {
     try {
       const character = await this.characters.get(characterId)
 
-      if (character) {
-        return character
-      } else {
-        throw new Error(
+      if (!character)
+        logger.error(
           `Unable to get character with ID: ${characterId}. Does not exist.`
         )
-      }
+      return character
     } catch (error) {
       throw error
     }

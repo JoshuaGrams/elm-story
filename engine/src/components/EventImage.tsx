@@ -99,7 +99,7 @@ const EventImage: React.FC<{
   return (
     <div
       className="event-content-image"
-      title={!assetId ? 'Image not set.' : ''}
+      title={!assetId ? 'Image not set...' : ''}
       style={{
         backgroundImage: backgroundImage || 'none'
       }}

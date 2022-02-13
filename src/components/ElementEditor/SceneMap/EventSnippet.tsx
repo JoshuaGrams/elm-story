@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import reactStringReplace from 'react-string-replace'
-import parseToHTML from 'html-react-parser'
+import parseToHTML, { Element } from 'html-react-parser'
 import { useDebouncedCallback } from 'use-debounce'
 
 import {
@@ -19,7 +19,7 @@ import {
 
 import { useCharacters, useVariables } from '../../../hooks'
 
-import { FormOutlined, LoadingOutlined } from '@ant-design/icons'
+import { FormOutlined, LoadingOutlined, UserOutlined } from '@ant-design/icons'
 
 import { eventContentToPreview } from '../../../lib/serialization'
 
@@ -164,7 +164,29 @@ const EventSnippet: React.FC<{
               borderBottomRightRadius: flatBottom ? '0px' : '5px'
             }}
           >
-            {contentPreview && parseToHTML(contentPreview)}
+            {contentPreview &&
+              parseToHTML(contentPreview, {
+                replace: (node) => {
+                  if (node instanceof Element && node.attribs) {
+                    if (node.attribs['data-type'] === 'missing-character') {
+                      const characterId =
+                        node.attribs['data-character-id'] === 'undefined'
+                          ? undefined
+                          : node.attribs['data-character-id']
+                      return (
+                        <span
+                          title={`Character ${characterId} not found...`}
+                          style={{ background: 'red' }}
+                        >
+                          <UserOutlined />
+                        </span>
+                      )
+                    }
+                  }
+
+                  return node
+                }
+              })}
 
             {contentPreview === undefined && (
               <div className={styles.loadingContent}>

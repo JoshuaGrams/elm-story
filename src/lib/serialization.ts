@@ -91,7 +91,7 @@ const serializeDescendantToText = async (
               node.transform || 'cap'
             ).text
           }</span>` || ''
-        : ''
+        : `<span data-type="missing-character" data-character-id="${node.character_id}"/>`
     case ELEMENT_FORMATS.OL:
     case ELEMENT_FORMATS.UL:
       return node.children

@@ -78,20 +78,9 @@ const serializeDescendantToText = async (
       // replaced with instance of ElementImage
       return `<div data-type="img" data-asset-id="${node.asset_id}"></div>`
     case ELEMENT_FORMATS.CHARACTER:
-      const displayFormat = node.character_id
-        ? getCharacterRefDisplayFormat(
-            (await getCharacterReference(
-              studioId,
-              node.character_id,
-              node.alias_id
-            )) || '',
-            node.transform || 'cap',
-            node.styles
-          )
-        : null
+      if (!node.character_id) return ''
 
-      // prettier-ignore
-      return `<span class="event-content-character" style="fontWeight:${displayFormat?.styles?.fontWeight || ''}; fontStyle:${displayFormat?.styles?.fontStyle || ''}; textDecoration:${displayFormat?.styles?.textDecoration || ''};">${displayFormat?.text || ''}</span>`
+      return `<span data-type="character" data-character-id="${node.character_id}" data-character-alias-id="${node.alias_id}" data-character-ref-transform="${node.transform}" data-character-ref-styles="${node.styles}"></span>`
     case ELEMENT_FORMATS.OL:
     case ELEMENT_FORMATS.UL:
       return node.children
