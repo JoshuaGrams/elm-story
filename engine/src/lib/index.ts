@@ -1,8 +1,13 @@
 import {
   AllowedCharacterDisplayFormatStyles,
   CharacterDisplayFormat,
+  CharacterElement,
   CharacterElementStyleTypes,
-  CharacterElementTransformType
+  CharacterElementTransformType,
+  Descendant,
+  ELEMENT_FORMATS,
+  EventContentElement,
+  EventContentLeaf
 } from '../types/eventContentTypes'
 
 export const AUTO_ENGINE_BOOKMARK_KEY = '___auto___'
@@ -84,3 +89,28 @@ export const getCharacterRefDisplayFormat = (
 
   return { text: transText, styles: _styles }
 }
+
+export const flattenEventContent = (
+  content: Descendant[]
+): Array<EventContentLeaf | EventContentElement> => {
+  const flatEventContent = content.flatMap((element) => {
+    // @ts-ignore
+    return element.children
+      ? // @ts-ignore
+        [element, ...flattenEventContent(element.children)]
+      : element
+  })
+
+  return flatEventContent
+}
+
+export const getCharactersIdsFromEventContent = (children: Descendant[]) =>
+  flattenEventContent(children)
+    .filter(
+      (element): element is CharacterElement =>
+        // @ts-ignore
+        element.type === ELEMENT_FORMATS.CHARACTER &&
+        // @ts-ignore
+        element.character_id !== undefined
+    )
+    .map(({ character_id }) => character_id as string)

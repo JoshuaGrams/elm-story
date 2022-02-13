@@ -2,6 +2,7 @@
 import { getCharacterRefDisplayFormat } from '.'
 import { StudioId, WorldId } from '../types'
 import { ELEMENT_FORMATS, EventContentNode } from '../types/eventContentTypes'
+
 import { getCharacterReference } from './api'
 
 const wrapNodeContent = (node: EventContentNode, text: string) => {
@@ -116,10 +117,10 @@ const serializeDescendantToText = async (
 export const eventContentToEventStreamContent = async (
   studioId: StudioId,
   worldId: WorldId,
-  content: string,
+  content: EventContentNode[],
   isComposer?: boolean
 ) => {
-  const children: EventContentNode[] = JSON.parse(content),
+  const children: EventContentNode[] = content,
     startingElement =
       children[0].type === ELEMENT_FORMATS.IMG
         ? await serializeDescendantToText(

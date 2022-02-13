@@ -1,4 +1,7 @@
 import { eventContentToEventStreamContent } from '../lib/serialization'
+import { flattenEventContent, getCharactersIdsFromEventContent } from '../lib'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { LibraryDatabase } from '../lib/db'
 
 import React, { useContext, useEffect, useState } from 'react'
 import reactStringReplace from 'react-string-replace'
@@ -85,6 +88,16 @@ const decorate = (
   })
 }
 
+const useCharacters = (studioId: StudioId, characterIds: ElementId[]) => {
+  const characters = useLiveQuery(async () => {
+    return await Promise.all(
+      characterIds.map((id) => new LibraryDatabase(studioId).characters.get(id))
+    )
+  }, [flattenEventContent])
+
+  return characters
+}
+
 const EventContent: React.FC<{
   studioId: StudioId
   worldId: WorldId
@@ -93,6 +106,14 @@ const EventContent: React.FC<{
   persona?: EventCharacterPersona
   state: EngineLiveEventStateCollection
 }> = React.memo(({ studioId, worldId, eventId, content, persona, state }) => {
+  // elmstorygames/feedback#245
+  const parsedContentAsJSON = JSON.parse(content),
+    referencedCharacterIds = getCharactersIdsFromEventContent(
+      parsedContentAsJSON
+    )
+
+  const characters = useCharacters(studioId, referencedCharacterIds)
+
   const { engine } = useContext(EngineContext)
 
   const [parsedContent, setParsedContent] = useState<
@@ -101,10 +122,12 @@ const EventContent: React.FC<{
 
   useEffect(() => {
     async function serializeAndParseContent() {
+      if (!content || !characters) return
+
       const serializedContent = await eventContentToEventStreamContent(
         studioId,
         worldId,
-        content,
+        parsedContentAsJSON,
         engine.isComposer
       )
 
@@ -136,7 +159,7 @@ const EventContent: React.FC<{
     }
 
     serializeAndParseContent()
-  }, [content])
+  }, [content, characters])
 
   return (
     <div>
