@@ -159,7 +159,7 @@ const EventContent: React.FC<{
     }
 
     serializeAndParseContent()
-  }, [content, characters])
+  }, [content, characters, engine.devTools.highlightExpressions])
 
   return (
     <div>
