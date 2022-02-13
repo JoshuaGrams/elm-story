@@ -91,7 +91,7 @@ const saveContent = debounce(
   async (studioId: StudioId, eventId: ElementId, content) => {
     await api().events.saveEventContent(studioId, eventId, content)
   },
-  100
+  1000
 )
 
 const defaultCommandMenuProps = {
