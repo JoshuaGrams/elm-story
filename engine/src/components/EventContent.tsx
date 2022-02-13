@@ -89,11 +89,17 @@ const decorate = (
 }
 
 const useCharacters = (studioId: StudioId, characterIds: ElementId[]) => {
-  const characters = useLiveQuery(async () => {
-    return await Promise.all(
-      characterIds.map((id) => new LibraryDatabase(studioId).characters.get(id))
-    )
-  }, [flattenEventContent])
+  const characters = useLiveQuery(
+    async () => {
+      return await Promise.all(
+        characterIds.map((id) =>
+          new LibraryDatabase(studioId).characters.get(id)
+        )
+      )
+    },
+    [flattenEventContent],
+    null
+  )
 
   return characters
 }
@@ -112,7 +118,10 @@ const EventContent: React.FC<{
       parsedContentAsJSON
     )
 
-  const characters = useCharacters(studioId, referencedCharacterIds)
+  const characters =
+    referencedCharacterIds.length > 0
+      ? useCharacters(studioId, referencedCharacterIds)
+      : null
 
   const { engine } = useContext(EngineContext)
 
@@ -122,7 +131,7 @@ const EventContent: React.FC<{
 
   useEffect(() => {
     async function serializeAndParseContent() {
-      if (!content || !characters) return
+      if (!content) return
 
       const serializedContent = await eventContentToEventStreamContent(
         studioId,
@@ -142,12 +151,11 @@ const EventContent: React.FC<{
             replace: (node) => {
               if (node instanceof Element && node.attribs) {
                 if (node.attribs['data-type'] === 'img') {
-                  return (
-                    <EventImage
-                      eventId={eventId}
-                      assetId={node.attribs['data-asset-id']}
-                    />
-                  )
+                  const assetId =
+                    node.attribs['data-asset-id'] === 'undefined'
+                      ? undefined
+                      : node.attribs['data-asset-id']
+                  return <EventImage eventId={eventId} assetId={assetId} />
                 }
               }
 

@@ -46,22 +46,23 @@ const EventCharacterMask: React.FC<{
     [persona]
   )
 
-  const processEvent = useCallback(
-    (event: Event) => {
-      const { detail } = event as CustomEvent<EngineDevToolsLiveEvent>
+  const processEvent = (event: Event) => {
+    const { detail } = event as CustomEvent<EngineDevToolsLiveEvent>
 
-      switch (detail.eventType) {
-        case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RETURN_ASSET_URL:
-          if (detail.asset?.url && detail.eventId === eventId) {
-            setMaskUrl(detail.asset.url)
-          }
-          break
-        default:
-          break
-      }
-    },
-    [mask?.assetId]
-  )
+    switch (detail.eventType) {
+      case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RETURN_ASSET_URL:
+        if (
+          detail.asset?.url &&
+          detail.eventId === eventId &&
+          detail.asset.id === mask?.assetId
+        ) {
+          setMaskUrl(detail.asset.url)
+        }
+        break
+      default:
+        break
+    }
+  }
 
   useEffect(() => {
     async function getMaskUrl() {
@@ -105,18 +106,22 @@ const EventCharacterMask: React.FC<{
   }, [mask?.assetId])
 
   useEffect(() => {
-    window.addEventListener(
-      ENGINE_DEVTOOLS_LIVE_EVENTS.COMPOSER_TO_ENGINE,
-      processEvent
-    )
-
-    return () => {
-      window.removeEventListener(
+    if (engine.isComposer) {
+      window.addEventListener(
         ENGINE_DEVTOOLS_LIVE_EVENTS.COMPOSER_TO_ENGINE,
         processEvent
       )
     }
-  }, [])
+
+    return () => {
+      if (engine.isComposer) {
+        window.removeEventListener(
+          ENGINE_DEVTOOLS_LIVE_EVENTS.COMPOSER_TO_ENGINE,
+          processEvent
+        )
+      }
+    }
+  }, [mask])
 
   return (
     <div className="event-character-mask">

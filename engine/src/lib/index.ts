@@ -20,6 +20,9 @@ export const DEFAULT_ENGINE_SETTINGS_KEY = '__default__'
 export const scrollElementToBottom = (element: HTMLElement, smooth?: boolean) =>
   element.scrollIntoView({ block: 'end', behavior: smooth ? 'smooth' : 'auto' })
 
+export const getSvgUrl = (svg: string) =>
+  `data:image/svg+xml;base64,${btoa(svg)}`
+
 export const capitalizeString = (text: string) =>
   text.replace(
     /(^\w|\s\w)(\S*)/g,
