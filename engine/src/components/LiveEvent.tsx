@@ -150,16 +150,18 @@ const LiveEvent: React.FC<{ data: EngineLiveEventData }> = ({ data }) => {
               id: nextLiveEventId
             })
 
-            engineDispatch({
-              type: ENGINE_ACTION_TYPE.UPDATE_LIVE_EVENT_IN_STREAM,
-              liveEvent: currentLiveEvent
-            })
+            setTimeout(() => {
+              engineDispatch({
+                type: ENGINE_ACTION_TYPE.UPDATE_LIVE_EVENT_IN_STREAM,
+                liveEvent: currentLiveEvent
+              })
 
-            engineDispatch({
-              type: ENGINE_ACTION_TYPE.APPEND_LIVE_EVENTS_TO_STREAM,
-              liveEvents: [nextLiveEvent],
-              reset: liveEventType === ENGINE_LIVE_EVENT_TYPE.RESTART
-            })
+              engineDispatch({
+                type: ENGINE_ACTION_TYPE.APPEND_LIVE_EVENTS_TO_STREAM,
+                liveEvents: [nextLiveEvent],
+                reset: liveEventType === ENGINE_LIVE_EVENT_TYPE.RESTART
+              })
+            }, 10)
           }
         }
       }
