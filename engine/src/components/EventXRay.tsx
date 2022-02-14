@@ -136,7 +136,7 @@ const EventXRay: React.FC<{
             <td title={event.type}>{event.type}</td>
           </tr>
           <tr>
-            <td className="event-data-starting-col">Event</td>
+            <td className="event-data-starting-col">Content</td>
             <td>
               <a title={`Select Scene (${sceneId})`} onClick={selectScene}>
                 {sceneTitle}
