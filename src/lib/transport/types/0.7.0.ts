@@ -356,12 +356,15 @@ export enum ENGINE_THEME {
 
 export enum ENGINE_DEVTOOLS_LIVE_EVENT_TYPE {
   OPEN_EVENT = 'OPEN_EVENT',
+  OPEN_SCENE = 'OPEN_SCENE',
   RESET = 'RESET',
   TOGGLE_EXPRESSIONS = 'TOGGLE_EXPRESSIONS',
   TOGGLE_BLOCKED_CHOICES = 'TOGGLE_BLOCKED_CHOICES',
   TOGGLE_XRAY = 'TOGGLE_XRAY',
   GET_ASSET_URL = 'GET_ASSET_URL',
-  RETURN_ASSET_URL = 'RETURN_ASSET_URL'
+  RETURN_ASSET_URL = 'RETURN_ASSET_URL',
+  GET_EVENT_DATA = 'GET_EVENT_DATA',
+  RETURN_EVENT_DATA = 'RETURN_EVENT_DATA'
 }
 
 export enum ENGINE_DEVTOOLS_LIVE_EVENTS {
@@ -372,6 +375,15 @@ export enum ENGINE_DEVTOOLS_LIVE_EVENTS {
 export interface EngineDevToolsLiveEvent {
   eventType: ENGINE_DEVTOOLS_LIVE_EVENT_TYPE
   eventId?: ElementId
+  scene?: {
+    id?: ElementId
+    title?: string
+  }
+  event?: {
+    title?: string
+    sceneId?: ElementId
+    sceneTitle?: string
+  }
   asset?: {
     id?: string
     url?: string

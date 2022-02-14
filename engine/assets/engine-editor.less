@@ -119,10 +119,36 @@
       }
 
       table {
+        &.event-data {
+          position: sticky;
+          top: 0;
+          border-top: 1px solid black;
+          background: hsla(0, 0%, 5%, 0.9);
+          backdrop-filter: blur(0.2rem);
+        }
+
         width: 100%;
 
         tbody tr:hover {
           background: hsl(0, 0%, 9%);
+        }
+
+        td {
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+
+          &.event-data-starting-col {
+            width: 8rem;
+            max-width: 8rem;
+            min-width: 8rem;
+          }
+
+          &.event-data-var-id-col {
+            width: 15rem;
+            max-width: 15rem;
+            min-width: 15rem;
+          }
         }
 
         th,
@@ -153,13 +179,6 @@
         td.xray-row-id {
           width: 10rem;
         }
-      }
-
-      table.event-data {
-        position: sticky;
-        top: 0;
-        border-top: 1px solid black;
-        background: hsl(0, 0%, 5%);
       }
     }
   }

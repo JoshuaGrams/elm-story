@@ -30,16 +30,18 @@ const EventImage: React.FC<{
   const processEvent = (event: Event) => {
     const { detail } = event as CustomEvent<EngineDevToolsLiveEvent>
 
-    if (
-      detail?.asset?.url &&
-      detail.asset.id === assetId &&
-      eventId === detail.eventId
-    ) {
-      setBackgroundImage(`url(${detail.asset.url})`)
-    }
+    if (detail.eventType === ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RETURN_ASSET_URL) {
+      if (
+        detail?.asset?.url &&
+        detail.asset.id === assetId &&
+        eventId === detail.eventId
+      ) {
+        setBackgroundImage(`url(${detail.asset.url})`)
+      }
 
-    if (!detail?.asset?.url) {
-      setBackgroundImage(`url(${getSvgUrl(placeholder)}`)
+      if (!detail?.asset?.url) {
+        setBackgroundImage(`url(${getSvgUrl(placeholder)}`)
+      }
     }
   }
 

@@ -81,7 +81,8 @@ const SceneDetails: React.FC<{ studioId: StudioId; sceneId: ElementId }> = ({
                       type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
                       renamedElement: {
                         id: scene.id,
-                        newTitle: title
+                        newTitle: title,
+                        type: ELEMENT_TYPE.SCENE
                       }
                     })
 

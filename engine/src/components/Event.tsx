@@ -198,7 +198,10 @@ export const Event: React.FC<{
         )}
 
         {!event && (
-          <div className="engine-warning-message">
+          <div
+            className="engine-warning-message"
+            style={{ padding: '1.4rem', paddingTop: 0 }}
+          >
             Event missing or has been removed.{' '}
             <a
               onClick={async () => {

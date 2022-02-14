@@ -44,7 +44,8 @@ const JumpDetails: React.FC<{
                     type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
                     renamedElement: {
                       id: jump.id,
-                      newTitle: title
+                      newTitle: title,
+                      type: ELEMENT_TYPE.JUMP
                     }
                   })
                 }

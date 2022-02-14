@@ -1153,7 +1153,8 @@ const WorldOutline: React.FC<{ studioId: StudioId; world: World }> = ({
           type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
           renamedElement: {
             id: elementId,
-            newTitle: title || treeData.items[elementId].data.title
+            newTitle: title || treeData.items[elementId].data.title,
+            type: treeData.items[elementId].data.type
           }
         })
 

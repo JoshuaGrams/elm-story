@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { ElementId, StudioId } from '../../../data/types'
+import { ElementId, ELEMENT_TYPE, StudioId } from '../../../data/types'
 
 import { useFolder } from '../../../hooks'
 
@@ -41,7 +41,8 @@ const FolderDetails: React.FC<{
                     type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
                     renamedElement: {
                       id: folder.id,
-                      newTitle: title
+                      newTitle: title,
+                      type: ELEMENT_TYPE.FOLDER
                     }
                   })
                 }

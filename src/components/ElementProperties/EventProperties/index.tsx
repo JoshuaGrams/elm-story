@@ -325,7 +325,8 @@ const EventProperties: React.FC<{
                     type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
                     renamedElement: {
                       id: event.id,
-                      newTitle: title
+                      newTitle: title,
+                      type: ELEMENT_TYPE.EVENT
                     }
                   })
                 }

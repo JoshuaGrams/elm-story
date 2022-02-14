@@ -1563,19 +1563,19 @@ export class LibraryDatabase extends Dexie {
     }
   }
 
-  public async getEvent(eventId: ElementId): Promise<Event> {
+  public async getEvent(eventId: ElementId): Promise<Event | undefined> {
     try {
       const event = await this.events.get(eventId)
 
       if (event) {
         return event
       } else {
-        throw new Error(
-          `Unable to get event with ID: ${eventId}. Does not exist.`
-        )
+        logger.error(`Unable to get event with ID: ${eventId}. Does not exist.`)
+
+        return undefined
       }
     } catch (error) {
-      throw error
+      logger.error(`Unable to get event with ID: ${eventId}. ${error}.`)
     }
   }
 

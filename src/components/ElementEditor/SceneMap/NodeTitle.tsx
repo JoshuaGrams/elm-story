@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 
-import { StudioId, Event, Jump } from '../../../data/types'
+import { StudioId, Event, Jump, ELEMENT_TYPE } from '../../../data/types'
 
 import {
   ComposerContext,
@@ -62,7 +62,9 @@ const NodeTitle: React.FC<{
           )}
 
           {jump && (
-            <ArrowRightOutlined className={`${styles.headerIcon} ${styles.jump}`} />
+            <ArrowRightOutlined
+              className={`${styles.headerIcon} ${styles.jump}`}
+            />
           )}
 
           <Typography.Text
@@ -98,7 +100,8 @@ const NodeTitle: React.FC<{
                     type: COMPOSER_ACTION_TYPE.ELEMENT_RENAME,
                     renamedElement: {
                       id: event?.id || jump?.id,
-                      newTitle
+                      newTitle,
+                      type: ELEMENT_TYPE.EVENT
                     }
                   })
                 } catch (error) {
