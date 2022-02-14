@@ -62,7 +62,8 @@ const ExportWorldMenu: React.FC<{ studioId: StudioId; world: World }> = ({
       const worldDataAsString = await getWorldDataJSON(
         studioId,
         world.id,
-        app.version
+        app.version,
+        type === WORLD_EXPORT_TYPE.PWA
       )
 
       setTimeout(() => {

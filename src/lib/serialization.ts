@@ -1,41 +1,18 @@
+// #UPDATE
 import { ipcRenderer } from 'electron'
-import { Descendant } from 'slate'
 import { getSvgUrl } from '.'
-import { StudioId, WorldId } from '../../engine/src/types'
-import api from '../api'
+
 import { ImageSelectPlaceholder } from '../components/ElementEditor/EventContent/Tools/ImageElementSelect'
-import {
-  ELEMENT_FORMATS,
-  EventContentElement,
-  EventContentLeaf,
-  EventContentNode,
-  SUPPORTED_TEXT_BLOCK_NODE
-} from '../data/eventContentTypes'
+
+import { StudioId, WorldId } from '../../engine/src/types'
+import { ELEMENT_FORMATS, EventContentNode } from '../data/eventContentTypes'
 import {
   getCharacterAliasOrTitle,
   getCharacterRefDisplayFormat
 } from './contentEditor'
 import { WINDOW_EVENT_TYPE } from './events'
 
-const isTextBlockNode = (node: EventContentNode) =>
-  SUPPORTED_TEXT_BLOCK_NODE.includes(node.type)
-
-const isTextNode = (node: EventContentNode) =>
-  SUPPORTED_TEXT_BLOCK_NODE.includes(node.type)
-
-const serializeDescendantToHTML = (node: EventContentNode) => {
-  if (node.type === ELEMENT_FORMATS.IMG) {
-  }
-
-  if (isTextBlockNode(node)) {
-  }
-}
-
-export const eventContentToHTML = (content: string, assetBasePath: string) => {
-  const children: EventContentNode[] = JSON.parse(content)
-
-  return content
-}
+import api from '../api'
 
 const serializeDescendantToText = async (
   studioId: StudioId,

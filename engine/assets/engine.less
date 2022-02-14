@@ -227,13 +227,15 @@
 
   .live-event {
     overflow: hidden;
-  }
+    transition: 1s;
+    filter: grayscale(0%);
+    opacity: 1;
 
-  .live-event-past {
-    transition: color 1s;
-    color: var(--event-past-text-color);
-    filter: grayscale(100%);
-    opacity: 0.4;
+    &.live-event-past {
+      transition: 1s;
+      filter: grayscale(100%);
+      opacity: 0.4;
+    }
   }
 
   .live-event-past .event-character-reference {

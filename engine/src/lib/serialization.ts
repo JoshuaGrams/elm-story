@@ -1,9 +1,9 @@
 // #UPDATE
-import { getCharacterRefDisplayFormat } from '.'
+// Many similarities between this and pwaSerialization.ts in app
+// This is used to serialization when the storyteller is used in the composer
+// and needs hot-reloading
 import { StudioId, WorldId } from '../types'
 import { ELEMENT_FORMATS, EventContentNode } from '../types/eventContentTypes'
-
-import { getCharacterReference } from './api'
 
 const wrapNodeContent = (node: EventContentNode, text: string) => {
   switch (node.type) {
@@ -118,18 +118,6 @@ export const eventContentToEventStreamContent = async (
   content: EventContentNode[],
   isComposer?: boolean
 ) => {
-  // const firstNode = content[0] as EventContentNode
-
-  // if (
-  //   content.length === 1 &&
-  //   firstNode.type !== ELEMENT_FORMATS.IMG &&
-  //   (firstNode.children[0] as EventContentNode).text === ''
-  // ) {
-  //   return {
-  //     text: `<p class="engine-warning-message">Event content required.</p>`
-  //   }
-  // }
-
   const startingElement =
     content[0].type === ELEMENT_FORMATS.IMG
       ? await serializeDescendantToText(
@@ -142,18 +130,14 @@ export const eventContentToEventStreamContent = async (
 
   const text = (
     await Promise.all(
-      content
-        // .filter((childNode) => isTextNode(childNode))
-        .map(async (childNode, index) => {
-          // if (startingElement && index === 0) return ''
-
-          return await serializeDescendantToText(
-            studioId,
-            worldId,
-            childNode,
-            isComposer
-          )
-        })
+      content.map(async (childNode) => {
+        return await serializeDescendantToText(
+          studioId,
+          worldId,
+          childNode,
+          isComposer
+        )
+      })
     )
   )
     .filter((text) => text)

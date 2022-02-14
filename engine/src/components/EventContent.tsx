@@ -30,7 +30,8 @@ import EventImage from './EventImage'
 import EventCharacterElement from './EventCharacterElement'
 import {
   CharacterElementStyleTypes,
-  CharacterElementTransformType
+  CharacterElementTransformType,
+  EventContentNode
 } from '../types/eventContentTypes'
 
 const processTemplateBlock = (
@@ -122,15 +123,23 @@ const EventContent: React.FC<{
   persona?: EventCharacterPersona
   state: EngineLiveEventStateCollection
 }> = React.memo(({ studioId, worldId, eventId, content, persona, state }) => {
-  // elmstorygames/feedback#245
-  const parsedContentAsJSON = JSON.parse(content),
+  const { engine } = useContext(EngineContext)
+
+  let parsedContentAsJSON: EventContentNode[],
+    referencedCharacterIds,
+    characters
+
+  // also for local testing
+  if (engine.isComposer) {
+    // elmstorygames/feedback#245
+    parsedContentAsJSON = JSON.parse(content)
+
     referencedCharacterIds = getCharactersIdsFromEventContent(
       parsedContentAsJSON
     )
 
-  const characters = useCharacters(studioId, referencedCharacterIds)
-
-  const { engine } = useContext(EngineContext)
+    characters = useCharacters(studioId, referencedCharacterIds)
+  }
 
   const [parsedContent, setParsedContent] = useState<
     string | JSX.Element | JSX.Element[]
@@ -140,69 +149,85 @@ const EventContent: React.FC<{
     async function serializeAndParseContent() {
       if (!content) return
 
-      const serializedContent = await eventContentToEventStreamContent(
-        studioId,
-        worldId,
-        parsedContentAsJSON,
-        engine.isComposer
-      )
-
-      setParsedContent(
-        parseToHTML(
-          decorate(
-            serializedContent.text,
-            state,
-            engine.devTools.highlightExpressions
-          ).join(''),
-          {
-            replace: (node) => {
-              if (node instanceof Element && node.attribs) {
-                if (node.attribs['data-type'] === 'img') {
-                  const assetId =
-                    node.attribs['data-asset-id'] === 'undefined'
-                      ? undefined
-                      : node.attribs['data-asset-id']
-                  return <EventImage eventId={eventId} assetId={assetId} />
-                }
-
-                if (node.attribs['data-type'] === 'character') {
-                  const characterId =
-                      node.attribs['data-character-id'] === 'undefined'
-                        ? undefined
-                        : node.attribs['data-character-id'],
-                    aliasId =
-                      node.attribs['data-character-alias-id'] === 'undefined'
-                        ? undefined
-                        : node.attribs['data-character-alias-id'],
-                    transform =
-                      node.attribs['data-character-ref-transform'] ===
-                      'undefined'
-                        ? undefined
-                        : node.attribs['data-character-ref-transform'],
-                    styles =
-                      node.attribs['data-character-ref-styles'] === 'undefined'
-                        ? undefined
-                        : node.attribs['data-character-ref-styles'].split(',')
-
-                  return (
-                    <EventCharacterElement
-                      studioId={studioId}
-                      characterId={characterId}
-                      aliasId={aliasId}
-                      transform={
-                        transform as CharacterElementTransformType | undefined
-                      }
-                      styles={styles as CharacterElementStyleTypes | undefined}
-                    />
-                  )
-                }
-              }
-
-              return node
-            }
-          }
+      // use this for local dev as well
+      if (engine.isComposer && parsedContentAsJSON) {
+        const serializedContent = await eventContentToEventStreamContent(
+          studioId,
+          worldId,
+          parsedContentAsJSON,
+          engine.isComposer
         )
-      )
+
+        setParsedContent(
+          parseToHTML(
+            decorate(
+              serializedContent.text,
+              state,
+              engine.devTools.highlightExpressions
+            ).join(''),
+            {
+              replace: (node) => {
+                if (node instanceof Element && node.attribs) {
+                  if (node.attribs['data-type'] === 'img') {
+                    const assetId =
+                      node.attribs['data-asset-id'] === 'undefined'
+                        ? undefined
+                        : node.attribs['data-asset-id']
+                    return <EventImage eventId={eventId} assetId={assetId} />
+                  }
+
+                  if (node.attribs['data-type'] === 'character') {
+                    const characterId =
+                        node.attribs['data-character-id'] === 'undefined'
+                          ? undefined
+                          : node.attribs['data-character-id'],
+                      aliasId =
+                        node.attribs['data-character-alias-id'] === 'undefined'
+                          ? undefined
+                          : node.attribs['data-character-alias-id'],
+                      transform =
+                        node.attribs['data-character-ref-transform'] ===
+                        'undefined'
+                          ? undefined
+                          : node.attribs['data-character-ref-transform'],
+                      styles =
+                        node.attribs['data-character-ref-styles'] ===
+                        'undefined'
+                          ? undefined
+                          : node.attribs['data-character-ref-styles'].split(',')
+
+                    return (
+                      <EventCharacterElement
+                        studioId={studioId}
+                        characterId={characterId}
+                        aliasId={aliasId}
+                        transform={
+                          transform as CharacterElementTransformType | undefined
+                        }
+                        styles={
+                          styles as CharacterElementStyleTypes | undefined
+                        }
+                      />
+                    )
+                  }
+                }
+
+                return node
+              }
+            }
+          )
+        )
+      }
+
+      if (!engine.isComposer) {
+        setParsedContent(
+          parseToHTML(
+            decorate(content, state, engine.devTools.highlightExpressions).join(
+              ''
+            )
+          )
+        )
+      }
     }
 
     serializeAndParseContent()

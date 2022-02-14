@@ -1,3 +1,5 @@
+import { eventContentToHTML } from './serial/html'
+
 import {
   ElementId,
   WorldId,
@@ -17,7 +19,8 @@ import api from '../api'
 export default async (
   studioId: StudioId,
   worldId: WorldId,
-  schemaVersion: string
+  schemaVersion: string,
+  serializeContentToHTML: boolean
 ): Promise<string> => {
   try {
     const studio = await api().studios.getStudio(studioId),
@@ -125,41 +128,51 @@ export default async (
         })
     )
 
-    events.map(
-      ({
-        audio,
-        characters,
-        choices,
-        content,
-        composer,
-        ending,
-        id,
-        images,
-        input,
-        persona,
-        sceneId,
-        tags,
-        title,
-        type,
-        updated
-      }) =>
-        (worldData.events[id as string] = {
+    await Promise.all(
+      events.map(
+        async ({
           audio,
           characters,
           choices,
           content,
           composer,
           ending,
-          id: id as string,
-          input,
+          id,
           images,
+          input,
           persona,
           sceneId,
           tags,
           title,
           type,
-          updated: updated as number
-        })
+          updated
+        }) =>
+          (worldData.events[id as string] = {
+            audio,
+            characters,
+            choices,
+            content: serializeContentToHTML
+              ? (
+                  await eventContentToHTML(
+                    studioId,
+                    worldId,
+                    JSON.parse(content)
+                  )
+                ).text
+              : content,
+            composer,
+            ending,
+            id: id as string,
+            input,
+            images,
+            persona,
+            sceneId,
+            tags,
+            title,
+            type,
+            updated: updated as number
+          })
+      )
     )
 
     folders.map(
