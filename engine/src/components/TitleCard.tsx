@@ -62,7 +62,10 @@ const TitleCard: React.FC<{
           </div>
 
           <div id="title-card-footer">
-            made with <a href="http://elmstory.com">Elm Story</a>
+            made with{' '}
+            <a href="http://elmstory.com" target="_blank">
+              Elm Story
+            </a>
           </div>
         </div>
       )}

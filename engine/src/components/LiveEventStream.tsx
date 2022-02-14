@@ -25,7 +25,7 @@ import {
 } from '../types'
 import {
   INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY,
-  scrollElementToBottom
+  scrollElementToTop
 } from '../lib'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
@@ -35,7 +35,8 @@ import { ENGINE_XRAY_CONTAINER_HEIGHT } from './EventXRay'
 import LiveEvent from './LiveEvent'
 
 const LiveEventStream: React.FC = React.memo(() => {
-  const liveEventsRef = useRef<HTMLDivElement>(null)
+  const liveEventsRef = useRef<HTMLDivElement>(null),
+    currentLifeEventRef = useRef<HTMLDivElement>(null)
 
   const { engine, engineDispatch } = useContext(EngineContext),
     { settings } = useContext(SettingsContext)
@@ -279,11 +280,14 @@ const LiveEventStream: React.FC = React.memo(() => {
 
   useResizeObserver(
     liveEventsRef,
-    () => liveEventsRef.current && scrollElementToBottom(liveEventsRef.current)
+    () =>
+      currentLifeEventRef.current &&
+      scrollElementToTop(currentLifeEventRef.current)
   )
 
   useEffect(() => {
-    liveEventsRef.current && scrollElementToBottom(liveEventsRef.current)
+    currentLifeEventRef.current &&
+      scrollElementToTop(currentLifeEventRef.current)
   }, [engine.devTools.xrayVisible])
 
   return (
@@ -300,11 +304,22 @@ const LiveEventStream: React.FC = React.memo(() => {
         }}
       >
         <div id="live-events" ref={liveEventsRef}>
-          {liveEventStreamTransitions((styles, liveEvent) => (
-            <animated.div style={styles}>
-              <LiveEvent key={liveEvent.id} data={liveEvent} />
-            </animated.div>
-          ))}
+          {liveEventStreamTransitions((styles, liveEvent) => {
+            // console.log(engine.currentLiveEvent)
+            // console.log(liveEvent)
+            return (
+              <animated.div
+                style={styles}
+                ref={
+                  engine.currentLiveEvent === liveEvent.id
+                    ? currentLifeEventRef
+                    : null
+                }
+              >
+                <LiveEvent key={liveEvent.id} data={liveEvent} />
+              </animated.div>
+            )
+          })}
         </div>
       </div>
     </>

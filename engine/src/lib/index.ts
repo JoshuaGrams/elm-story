@@ -17,8 +17,11 @@ export const ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE = '___passthrough___'
 export const ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE = '___storyover___'
 export const DEFAULT_ENGINE_SETTINGS_KEY = '__default__'
 
-export const scrollElementToBottom = (element: HTMLElement, smooth?: boolean) =>
-  element.scrollIntoView({ block: 'end', behavior: smooth ? 'smooth' : 'auto' })
+export const scrollElementToTop = (element: HTMLElement, smooth?: boolean) =>
+  element.scrollIntoView({
+    block: 'start',
+    behavior: smooth ? 'smooth' : 'auto'
+  })
 
 export const getSvgUrl = (svg: string) =>
   `data:image/svg+xml;base64,${btoa(svg)}`

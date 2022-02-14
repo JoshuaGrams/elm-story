@@ -143,6 +143,13 @@ const LiveEvent: React.FC<{ data: EngineLiveEventData }> = ({ data }) => {
           const currentLiveEvent = await getLiveEvent(studioId, data.id)
 
           if (currentLiveEvent) {
+            // elmstorygames/feedback#214
+            // this was at bottom of stack... any side effects?
+            engineDispatch({
+              type: ENGINE_ACTION_TYPE.SET_CURRENT_LIVE_EVENT,
+              id: nextLiveEventId
+            })
+
             engineDispatch({
               type: ENGINE_ACTION_TYPE.UPDATE_LIVE_EVENT_IN_STREAM,
               liveEvent: currentLiveEvent
@@ -152,11 +159,6 @@ const LiveEvent: React.FC<{ data: EngineLiveEventData }> = ({ data }) => {
               type: ENGINE_ACTION_TYPE.APPEND_LIVE_EVENTS_TO_STREAM,
               liveEvents: [nextLiveEvent],
               reset: liveEventType === ENGINE_LIVE_EVENT_TYPE.RESTART
-            })
-
-            engineDispatch({
-              type: ENGINE_ACTION_TYPE.SET_CURRENT_LIVE_EVENT,
-              id: nextLiveEventId
             })
           }
         }
