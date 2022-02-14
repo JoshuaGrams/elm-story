@@ -48,7 +48,7 @@ const TitleCard: React.FC<{
                 !autoBookmark.data.liveEventId ? onStartWorld : onContinueWorld
               }
             >
-              {!autoBookmark.data.liveEventId ? 'START' : 'CONTINUE'}
+              {!autoBookmark.data.liveEventId ? 'Start' : 'Continue'}
             </button>
 
             <button
@@ -57,7 +57,7 @@ const TitleCard: React.FC<{
                 settingsDispatch({ type: SETTINGS_ACTION_TYPE.OPEN })
               }
             >
-              SETTINGS
+              Settings
             </button>
           </div>
 

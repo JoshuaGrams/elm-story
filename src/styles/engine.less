@@ -140,7 +140,7 @@
 
   #title-card-btns button {
     display: block;
-    width: fit-content;
+    width: 100%;
     margin: 0 auto;
     margin-bottom: 0.6rem;
     font-size: 1.6rem;
@@ -166,7 +166,7 @@
     width: 100%;
     height: var(--title-bar-height);
     border-bottom: 0.1rem solid var(--renderer-border-color);
-    background: var(--title-bar-background-color);
+    background-color: var(--title-bar-background-color);
     z-index: var(--title-bar-z-index);
     display: inline-grid;
   }
@@ -227,19 +227,15 @@
 
   .live-event {
     overflow: hidden;
-    transition: 1s;
+    transition: filter 1s, opacity 1s;
     filter: grayscale(0%);
     opacity: 1;
 
     &.live-event-past {
-      transition: 1s;
+      transition: filter 1s, opacity 1s;
       filter: grayscale(100%);
       opacity: 0.4;
     }
-  }
-
-  .live-event-past .event-character-reference {
-    color: var(--event-character-reference-past-text-color) !important;
   }
 
   .event-content {
@@ -267,7 +263,6 @@
     }
 
     .event-character-mask {
-      transition: filter 1s, opacity 1s;
       width: 10rem;
       height: 12.5rem;
       border-radius: 0.4rem;
@@ -285,7 +280,6 @@
     }
 
     .event-character-reference {
-      transition: color 1s;
       color: var(--event-character-reference-text-color);
       text-transform: uppercase;
       margin-bottom: 1.4rem;

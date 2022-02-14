@@ -144,11 +144,20 @@ const EventChoice: React.FC<{
             }`}
           >
             <button
-              onClick={submitChoice}
+              onClick={eventResult?.id !== data.id ? submitChoice : undefined}
               disabled={eventResult || !openPath ? true : false}
               className={!openPath ? 'closed-route' : ''}
             >
-              {data.title}
+              <span
+                style={{
+                  filter:
+                    eventResult && eventResult.id !== data.id
+                      ? 'blur(2px)'
+                      : 'unset'
+                }}
+              >
+                {data.title}
+              </span>
             </button>
           </div>
         )}

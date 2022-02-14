@@ -1,5 +1,6 @@
 :root {
   --text-size: 62.5%;
+  --font-family: 'Literata';
 
   --primary-color: hsl(265, 100%, 60%);
   --primary-color-brighter: hsl(265, 100%, 65%);
@@ -28,7 +29,6 @@
 html[data-theme='BOOK'] {
   --background-color: var(--white);
   --text-color: var(--black);
-  --font-family: 'Literata';
 
   --btn-background-color: var(--primary-color);
   --btn-background-color-hover: var(--primary-color-brighter);
@@ -46,18 +46,17 @@ html[data-theme='BOOK'] {
   --event-character-reference-past-text-color: hsl(0, 0%, 70%);
   --event-past-text-color: hsl(0, 0%, 70%);
   --event-past-choice-background-color: hsl(0, 0%, 90%);
-  --event-past-choice-border: none;
+  --event-past-choice-border: 1px solid transparent;
   --event-past-choice-text-color: hsl(0, 0%, 80%);
   --event-past-choice-result-background-color: var(
     --event-past-choice-background-color
   );
-  --event-past-choice-result-text-color: hsl(0, 0%, 40%);
+  --event-past-choice-result-text-color: hsl(0, 0%, 30%);
 }
 
 html[data-theme='CONSOLE'] {
   --background-color: var(--black);
   --text-color: var(--white);
-  --font-family: 'Fira Code';
 
   --btn-background-color: transparent;
   --btn-background-color-hover: var(--primary-color-darker);
@@ -81,5 +80,5 @@ html[data-theme='CONSOLE'] {
   --event-past-choice-result-background-color: var(
     --event-past-choice-background-color
   );
-  --event-past-choice-result-text-color: hsl(0, 0%, 60%);
+  --event-past-choice-result-text-color: hsl(0, 0%, 70%);
 }

@@ -62,7 +62,7 @@ const Settings: React.FC = () => {
                 }
                 onClick={() => setTheme(ENGINE_THEME.CONSOLE)}
               >
-                Console
+                Dark
               </a>{' '}
               |{' '}
               <a
@@ -73,7 +73,7 @@ const Settings: React.FC = () => {
                 }
                 onClick={() => setTheme(ENGINE_THEME.BOOK)}
               >
-                Book
+                Light
               </a>
             </p>
           </div>
