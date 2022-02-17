@@ -1,5 +1,5 @@
 // #UPDATE
-// Many similarities between this and pwaSerialization.ts in app
+// Many similarities between this and serial/html.ts in app
 // This is used to serialization when the storyteller is used in the composer
 // and needs hot-reloading
 import { StudioId, WorldId } from '../types'
@@ -118,40 +118,53 @@ export const eventContentToEventStreamContent = async (
   content: EventContentNode[],
   isComposer?: boolean
 ) => {
-  const startingElement =
-    content[0].type === ELEMENT_FORMATS.IMG
-      ? await serializeDescendantToText(
-          studioId,
-          worldId,
-          content[0],
-          isComposer
-        )
-      : undefined
+  const missingContent =
+    content[0].type !== ELEMENT_FORMATS.IMG &&
+    !content[0].text &&
+    content.length === 1
 
-  const text = (
-    await Promise.all(
-      content.map(async (childNode) => {
-        return await serializeDescendantToText(
-          studioId,
-          worldId,
-          childNode,
-          isComposer
-        )
-      })
+  let startingElement: string | undefined, text: string | undefined
+
+  if (!missingContent) {
+    startingElement =
+      content[0].type === ELEMENT_FORMATS.IMG
+        ? await serializeDescendantToText(
+            studioId,
+            worldId,
+            content[0],
+            isComposer
+          )
+        : undefined
+
+    text = (
+      await Promise.all(
+        content.map(async (childNode) => {
+          return await serializeDescendantToText(
+            studioId,
+            worldId,
+            childNode,
+            isComposer
+          )
+        })
+      )
     )
-  )
-    .filter((text) => text)
-    .join('')
+      .filter((text) => text)
+      .join('')
+
+    return {
+      startingElement,
+      text:
+        text === '<p></p>' ||
+        text === '<h1></h1>' ||
+        text === '<h2></h2>' ||
+        text === '<h3></h3>' ||
+        text === '<h4></h4>'
+          ? `<p class="engine-warning-message">Event content required.</p>`
+          : text
+    }
+  }
 
   return {
-    startingElement,
-    text:
-      text === '<p></p>' ||
-      text === '<h1></h1>' ||
-      text === '<h2></h2>' ||
-      text === '<h3></h3>' ||
-      text === '<h4></h4>'
-        ? `<p class="engine-warning-message">Event content required.</p>`
-        : text
+    text: `<p class="engine-warning-message">Missing event content. This warning will not display in publication.</p>`
   }
 }

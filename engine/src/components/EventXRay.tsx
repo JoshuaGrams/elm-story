@@ -41,7 +41,7 @@ const EventXRay: React.FC<{
     if (
       detail.eventType === ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RETURN_EVENT_DATA
     ) {
-      if (!sceneId || sceneId === detail?.event?.sceneId) {
+      if (!sceneTitle || detail.eventId === event.destination) {
         setSceneTitle(detail?.event?.sceneTitle || sceneTitle || undefined)
         setSceneId(detail?.event?.sceneId || sceneId || undefined)
       }

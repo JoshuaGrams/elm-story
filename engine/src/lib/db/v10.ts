@@ -6,7 +6,9 @@ import {
   SceneData,
   JumpData,
   ElementId,
-  EventData
+  EventData,
+  EngineSettingsData,
+  ENGINE_FONT
 } from '../../types'
 import { LIBRARY_TABLE } from '.'
 
@@ -21,7 +23,8 @@ export default (database: Dexie) => {
     .upgrade(async (tx) => {
       const eventsTable = tx.table(LIBRARY_TABLE.EVENTS),
         jumpsTable = tx.table(LIBRARY_TABLE.JUMPS),
-        scenesTable = tx.table(LIBRARY_TABLE.SCENES)
+        scenesTable = tx.table(LIBRARY_TABLE.SCENES),
+        settingsTable = tx.table(LIBRARY_TABLE.SETTINGS)
 
       const jumps: JumpData[] = await jumpsTable.toArray(),
         jumpsByScene: { [sceneId: ElementId]: ElementId[] } = {}
@@ -50,6 +53,9 @@ export default (database: Dexie) => {
         eventsTable.toCollection().modify((event: EventData) => {
           event.characters = []
           event.images = []
+        }),
+        settingsTable.toCollection().modify((setting: EngineSettingsData) => {
+          setting.font = ENGINE_FONT.SANS
         }),
         tx
           .table(LIBRARY_TABLE.WORLDS)

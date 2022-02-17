@@ -50,7 +50,10 @@ export type NextLiveEventProcessor = ({
   state?: EngineLiveEventStateCollection // override of event state for input type
 }) => Promise<void>
 
-const LiveEvent: React.FC<{ data: EngineLiveEventData }> = ({ data }) => {
+const LiveEvent: React.FC<{ data: EngineLiveEventData; animated: boolean }> = ({
+  data,
+  animated
+}) => {
   const { engine, engineDispatch } = useContext(EngineContext)
 
   if (!engine.worldInfo) return null
@@ -74,6 +77,11 @@ const LiveEvent: React.FC<{ data: EngineLiveEventData }> = ({ data }) => {
       await saveLiveEventResult(studioId, data.id, liveEventResult)
 
       const nextLiveEventId = uuid()
+
+      engineDispatch({
+        type: ENGINE_ACTION_TYPE.SET_CURRENT_LIVE_EVENT,
+        id: nextLiveEventId
+      })
 
       let liveEventType: ENGINE_LIVE_EVENT_TYPE | undefined
 
@@ -145,10 +153,10 @@ const LiveEvent: React.FC<{ data: EngineLiveEventData }> = ({ data }) => {
           if (currentLiveEvent) {
             // elmstorygames/feedback#214
             // this was at bottom of stack... any side effects?
-            engineDispatch({
-              type: ENGINE_ACTION_TYPE.SET_CURRENT_LIVE_EVENT,
-              id: nextLiveEventId
-            })
+            // engineDispatch({
+            //   type: ENGINE_ACTION_TYPE.SET_CURRENT_LIVE_EVENT,
+            //   id: nextLiveEventId
+            // })
 
             setTimeout(() => {
               engineDispatch({
@@ -177,6 +185,7 @@ const LiveEvent: React.FC<{ data: EngineLiveEventData }> = ({ data }) => {
           <Event
             eventId={data.destination}
             liveEvent={liveEvent}
+            animated={animated}
             onPathFound={gotoNextLiveEvent}
           />
         </>

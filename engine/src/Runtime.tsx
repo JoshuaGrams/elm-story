@@ -12,7 +12,7 @@ import Installer from './components/Installer'
 import Renderer from './components/Renderer'
 
 import Settings from './components/Settings'
-import Theme from './components/Theme'
+import Presentation from './components/Presentation'
 
 import StartingDestinationGate from './components/StartingDestinationGate'
 import DevTools from './components/DevTools'
@@ -71,11 +71,11 @@ const Runtime: React.FC<{
                 isComposer={isEditor}
               >
                 <SettingsProvider>
-                  <Theme>
+                  <Presentation>
                     <Settings />
 
                     <Renderer />
-                  </Theme>
+                  </Presentation>
                 </SettingsProvider>
               </Installer>
             )}

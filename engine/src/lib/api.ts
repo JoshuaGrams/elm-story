@@ -31,7 +31,9 @@ import {
   EngineLiveEventResult,
   CHARACTER_MASK_TYPE,
   CharacterMask,
-  PATH_CONDITIONS_TYPE
+  PATH_CONDITIONS_TYPE,
+  EngineSettingsData,
+  ENGINE_FONT
 } from '../types'
 import {
   AUTO_ENGINE_BOOKMARK_KEY,
@@ -207,6 +209,7 @@ export const saveEngineDefaultWorldCollectionData = async (
           DEFAULT_ENGINE_SETTINGS: {
             worldId,
             id: `${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`,
+            font: ENGINE_FONT.SERIF,
             theme: ENGINE_THEME.CONSOLE
           }
         })
@@ -1260,10 +1263,11 @@ export const getSettingsDefault = async (
   }
 }
 
-export const saveThemeSetting = async (
+export const savePresentationSettings = async (
   studioId: StudioId,
   worldId: WorldId,
-  theme: ENGINE_THEME
+  theme: ENGINE_THEME,
+  font: ENGINE_FONT
 ) => {
   try {
     const libraryDatabase = new LibraryDatabase(studioId),
@@ -1276,7 +1280,8 @@ export const saveThemeSetting = async (
         `${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`,
         {
           ...foundSettings,
-          theme
+          theme,
+          font
         }
       )
     } else {
@@ -1287,13 +1292,16 @@ export const saveThemeSetting = async (
   }
 }
 
-export const getThemeSetting = async (studioId: StudioId, worldId: WorldId) => {
+export const getPresentationSettings = async (
+  studioId: StudioId,
+  worldId: WorldId
+) => {
   try {
-    return (
-      await new LibraryDatabase(studioId).settings.get(
-        `${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`
-      )
-    )?.theme
+    const settings = await new LibraryDatabase(studioId).settings.get(
+      `${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`
+    )
+
+    return { theme: settings?.theme, font: settings?.font }
   } catch (error) {
     throw error
   }

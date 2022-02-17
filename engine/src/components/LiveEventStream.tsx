@@ -33,6 +33,7 @@ import { SettingsContext } from '../contexts/SettingsContext'
 
 import { ENGINE_XRAY_CONTAINER_HEIGHT } from './EventXRay'
 import LiveEvent from './LiveEvent'
+import AcceleratedDiv from './AcceleratedDiv'
 
 const LiveEventStream: React.FC = React.memo(() => {
   const liveEventsRef = useRef<HTMLDivElement>(null),
@@ -45,7 +46,9 @@ const LiveEventStream: React.FC = React.memo(() => {
 
   const { studioId, id: worldId } = engine.worldInfo
 
-  const [checkedJumpsOnQuery, setCheckedJumpsOnQuery] = useState(false)
+  const [checkedJumpsOnQuery, setCheckedJumpsOnQuery] = useState(false),
+    // used for first render work
+    [animated, setAnimated] = useState(false)
 
   const getRecentLiveEvents = useCallback(async () => {
     if (engine.installed && engine.currentLiveEvent && engine.worldInfo) {
@@ -272,23 +275,21 @@ const LiveEventStream: React.FC = React.memo(() => {
   const liveEventStreamTransitions = useTransition(engine.liveEventsInStream, {
     from: { opacity: 0 },
     enter: { opacity: 1 },
-    config: { clamp: true, mass: 100, tension: 500, friction: 60 },
-    trail: 50,
-    delay: 250,
-    keys: engine.liveEventsInStream.map((event) => event.id)
+    config: { clamp: true },
+    trail: 250,
+    delay: 500,
+    keys: engine.liveEventsInStream.map((event) => event.id),
+    onRest: () => setAnimated(true)
   })
 
   useResizeObserver(
     liveEventsRef,
     () =>
       currentLifeEventRef.current &&
-      scrollElementToTop(currentLifeEventRef.current)
+      currentLifeEventRef.current.scrollIntoView({
+        block: 'start'
+      })
   )
-
-  useEffect(() => {
-    currentLifeEventRef.current &&
-      scrollElementToTop(currentLifeEventRef.current)
-  }, [engine.devTools.xrayVisible])
 
   return (
     <>
@@ -305,19 +306,21 @@ const LiveEventStream: React.FC = React.memo(() => {
       >
         <div id="live-events" ref={liveEventsRef}>
           {liveEventStreamTransitions((styles, liveEvent) => {
-            // console.log(engine.currentLiveEvent)
-            // console.log(liveEvent)
             return (
-              <animated.div
-                style={styles}
+              <AcceleratedDiv
+                style={{ ...styles, transform: 'translate3d(0,0,0)' }}
                 ref={
                   engine.currentLiveEvent === liveEvent.id
                     ? currentLifeEventRef
                     : null
                 }
               >
-                <LiveEvent key={liveEvent.id} data={liveEvent} />
-              </animated.div>
+                <LiveEvent
+                  key={liveEvent.id}
+                  data={liveEvent}
+                  animated={animated}
+                />
+              </AcceleratedDiv>
             )
           })}
         </div>

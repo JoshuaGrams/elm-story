@@ -12,6 +12,11 @@ import {
 import { EngineContext } from '../contexts/EngineContext'
 
 import { getCharacterMask } from '../lib/api'
+import { useQuery } from 'react-query'
+import { LibraryDatabase, LIBRARY_TABLE } from '../lib/db'
+
+import { useSpring, config, animated } from 'react-spring'
+import AcceleratedDiv from './AcceleratedDiv'
 
 const placeholder = `<svg width="200" height="250" viewBox="0 0 200 250" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_2_3)">
@@ -36,14 +41,35 @@ const EventCharacterMask: React.FC<{
 
   const { studioId } = engine.worldInfo
 
-  const [maskUrl, setMaskUrl] = useState<string>(
-    `data:image/svg+xml;base64,${btoa(placeholder)}`
+  const [maskUrl, setMaskUrl] = useState<string | undefined>(undefined)
+
+  const character = useLiveQuery(
+    () => new LibraryDatabase(studioId).characters.get(persona[0]),
+    [persona[0]]
   )
 
-  const mask = useLiveQuery(
-    async () =>
-      persona && (await getCharacterMask(studioId, persona?.[0], persona?.[1])),
-    [persona]
+  const [styles, api] = useSpring(() => ({
+    from: {
+      opacity: 0
+    },
+    config: config.gentle
+  }))
+
+  const { data: mask, isLoading: isMaskLoading } = useQuery(
+    [`character-mask-${eventId}`, persona, character],
+    async () => {
+      if (persona && character) {
+        const mask = await getCharacterMask(
+          studioId,
+          persona?.[0],
+          persona?.[1]
+        )
+
+        return mask || null
+      }
+
+      return undefined
+    }
   )
 
   const processEvent = (event: Event) => {
@@ -66,6 +92,14 @@ const EventCharacterMask: React.FC<{
 
   useEffect(() => {
     async function getMaskUrl() {
+      if (isMaskLoading) return
+
+      if (mask === null || (mask && !mask.assetId)) {
+        setMaskUrl(`data:image/svg+xml;base64,${btoa(placeholder)}`)
+
+        return
+      }
+
       if (mask?.assetId) {
         if (!engine.isComposer) {
           // local development
@@ -73,7 +107,7 @@ const EventCharacterMask: React.FC<{
           // TODO:
           // setMaskUrl(`../../data/0-7-test_0.0.1/assets/${mask.assetId}.jpeg`)
 
-          // PWA
+          // #PWA
           setMaskUrl(`./assets/content/${mask.assetId}.jpeg`)
         }
 
@@ -95,10 +129,6 @@ const EventCharacterMask: React.FC<{
             )
           )
         }
-      }
-
-      if (!mask?.assetId) {
-        setMaskUrl(`data:image/svg+xml;base64,${btoa(placeholder)}`)
       }
     }
 
@@ -123,13 +153,15 @@ const EventCharacterMask: React.FC<{
     }
   }, [mask])
 
+  useEffect(() => {
+    if (maskUrl) api.start({ opacity: 1 })
+  }, [maskUrl])
+
   return (
     <div className="event-character-mask">
-      <div
+      <AcceleratedDiv
+        style={{ ...styles, backgroundImage: `url(${maskUrl})` }}
         className="event-character-mask-portrait"
-        style={{
-          backgroundImage: `url(${maskUrl})`
-        }}
       />
     </div>
   )

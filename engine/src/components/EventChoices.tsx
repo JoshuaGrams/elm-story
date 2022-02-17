@@ -1,6 +1,13 @@
-import React, { useCallback, useContext, useRef } from 'react'
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useQuery } from 'react-query'
+import { useSpring } from 'react-spring'
 
 import { LibraryDatabase } from '../lib/db'
 import { findOpenPath, getChoicesFromEventWithOpenPath } from '../lib/api'
@@ -24,6 +31,23 @@ import { PathProcessor, translateLiveEventResultValue } from './Event'
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
 import LiveEventLoopbackButton from './LiveEventLoopbackButton'
+import AcceleratedDiv from './AcceleratedDiv'
+import useResizeObserver from '@react-hook/resize-observer'
+
+export const PassthroughIcon = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="100%"
+    height="24"
+    fill="currentColor"
+    viewBox="0 0 16 16"
+  >
+    <path
+      fillRule="evenodd"
+      d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z"
+    />
+  </svg>
+)
 
 const EventPassthroughChoice: React.FC<{
   paths: EnginePathData[]
@@ -34,7 +58,11 @@ const EventPassthroughChoice: React.FC<{
   ({ paths: routes, liveEvent: event, onSubmitPath, originId }) => {
     const { engine } = useContext(EngineContext)
 
-    if (!engine.worldInfo) return null
+    if (
+      !engine.worldInfo
+      // event.result?.value === ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE
+    )
+      return null
 
     const { studioId, id: worldId } = engine.worldInfo
 
@@ -71,36 +99,81 @@ const EventPassthroughChoice: React.FC<{
       [openPath]
     )
 
+    const passthroughRef = useRef<HTMLDivElement>(null)
+
+    const [height, setHeight] = useState(
+      event.result?.value === ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE ? -1 : 0
+    )
+
+    const [styles, springApi] = useSpring(
+      () => ({
+        height,
+        opacity: 1,
+        overflow: 'hidden',
+        config: {
+          clamp: true
+        },
+        onRest: () => {
+          event.result?.value === ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE &&
+            setHeight(-1)
+        }
+      }),
+      [height, event.result?.value]
+    )
+
+    useEffect(() => {
+      engine.currentLiveEvent !== event.result?.id &&
+        event.result?.value === ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE &&
+        springApi.start({ delay: 600, height: -1, opacity: 0 })
+    }, [event.result?.value])
+
+    useEffect(() => {
+      passthroughRef.current &&
+        setHeight(passthroughRef.current.getBoundingClientRect().height)
+    }, [passthroughRef.current])
+
     return (
-      <div
-        className={`event-content-choice ${
-          event.result?.value === ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE
-            ? 'event-content-choice-result'
-            : ''
-        }`}
-      >
-        <>
-          <button
-            onClick={submitChoice}
-            disabled={
-              event.result || (!openPath && !openRouteIsLoading) ? true : false
-            }
-            className={
-              !event.result && !openPath && !openRouteIsLoading
-                ? 'closed-route'
-                : ''
-            }
-          >
-            {event.result?.value === ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE
-              ? 'Continue'
-              : engine.currentLiveEvent === event.id &&
-                !openPath &&
-                !openRouteIsLoading
-              ? 'Route Required'
-              : 'Continue'}
-          </button>
-        </>
-      </div>
+      <>
+        {height !== -1 && (
+          <AcceleratedDiv style={styles}>
+            <div
+              ref={passthroughRef}
+              className={`event-content-choice ${
+                event.result?.value === ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE
+                  ? 'event-content-choice-result'
+                  : ''
+              }`}
+            >
+              <button
+                onClick={submitChoice}
+                disabled={
+                  event.result || (!openPath && !openRouteIsLoading)
+                    ? true
+                    : false
+                }
+                className={`event-content-choice-passthrough
+                  ${
+                    !event.result && !openPath && !openRouteIsLoading
+                      ? 'closed-route'
+                      : ''
+                  }
+                `}
+              >
+                {event.result?.value ===
+                ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE ? (
+                  <>{PassthroughIcon}</>
+                ) : engine.currentLiveEvent === event.id &&
+                  !openPath &&
+                  !openRouteIsLoading ? (
+                  'Route Required'
+                ) : (
+                  <>{PassthroughIcon}</>
+                )}
+              </button>
+            </div>
+          </AcceleratedDiv>
+        )}
+      </>
     )
   }
 )
@@ -121,6 +194,11 @@ const EventChoice: React.FC<{
     openPath,
     originId
   }) => {
+    // this hides the other choices
+    // if (eventResult && eventResult?.id !== data.id) return null
+
+    const { engine } = useContext(EngineContext)
+
     const submitChoice = useCallback(
       async () =>
         openPath &&
@@ -135,31 +213,89 @@ const EventChoice: React.FC<{
       [openPath]
     )
 
+    const choiceWrapperRef = useRef<HTMLDivElement>(null),
+      choiceRef = useRef<HTMLDivElement>(null)
+
+    const [height, setHeight] = useState(
+      eventResult && eventResult?.id !== data.id ? -1 : 0
+    )
+
+    const [styles, springApi] = useSpring(
+      () => ({
+        height,
+        opacity: 1,
+        overflow: 'hidden',
+        config: {
+          clamp: true
+        },
+        onRest: () =>
+          eventResult && eventResult?.id !== data.id && setHeight(-1)
+      }),
+      [height, eventResult?.id, data.id]
+    )
+
+    useEffect(() => {
+      engine.currentLiveEvent !== eventResult?.id &&
+        eventResult &&
+        eventResult?.id !== data.id &&
+        springApi.start({
+          delay: 600,
+          height: 0,
+          opacity: 0
+        })
+    }, [eventResult?.id, data.id])
+
+    useEffect(() => {
+      if (choiceRef.current) {
+        height !== -1 &&
+          setHeight(choiceRef.current.getBoundingClientRect().height)
+      }
+    }, [height, choiceRef.current])
+
+    useResizeObserver(choiceRef, () => {
+      if (choiceRef.current) {
+        springApi.start({
+          height: choiceRef.current.getBoundingClientRect().height,
+          immediate: true
+        })
+      }
+    })
+
     return (
       <>
-        {(!eventResult || openPath) && (
-          <div
-            className={`event-content-choice ${
-              eventResult?.id === data.id ? 'event-content-choice-result' : ''
-            }`}
-          >
-            <button
-              onClick={eventResult?.id !== data.id ? submitChoice : undefined}
-              disabled={eventResult || !openPath ? true : false}
-              className={!openPath ? 'closed-route' : ''}
-            >
-              <span
-                style={{
-                  filter:
-                    eventResult && eventResult.id !== data.id
-                      ? 'blur(2px)'
-                      : 'unset'
-                }}
+        {height !== -1 && (
+          <AcceleratedDiv style={styles} ref={choiceWrapperRef}>
+            {(!eventResult || openPath) && (
+              <div
+                ref={choiceRef}
+                className={`event-content-choice ${
+                  eventResult?.id === data.id
+                    ? 'event-content-choice-result'
+                    : ''
+                }`}
               >
-                {data.title}
-              </span>
-            </button>
-          </div>
+                <button
+                  onClick={
+                    eventResult?.id !== data.id ? submitChoice : undefined
+                  }
+                  disabled={eventResult || !openPath ? true : false}
+                  className={!openPath ? 'closed-route' : ''}
+                >
+                  <span
+                    style={{
+                      filter:
+                        eventResult && eventResult.id !== data.id
+                          ? 'blur(3px)'
+                          : 'unset'
+                    }}
+                  >
+                    <span className="event-content-choice-icon">&raquo;</span>
+                    <span>{data.title}</span>
+                  </span>
+                </button>
+              </div>
+            )}
+          </AcceleratedDiv>
         )}
       </>
     )
@@ -277,7 +413,7 @@ const EventChoices: React.FC<{
 
           {choices.length === 0 && pathPassthroughs.length === 0 && (
             <div className="event-content-choice">
-              <>
+              <div>
                 {engine.currentLiveEvent !==
                   `${INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY}${worldId}` && (
                   <>
@@ -308,7 +444,7 @@ const EventChoices: React.FC<{
                     Route Required
                   </button>
                 )}
-              </>
+              </div>
             </div>
           )}
 
@@ -328,20 +464,30 @@ const EventChoices: React.FC<{
               onClick={restartWorld}
               disabled={liveEvent.result ? true : false}
             >
-              {translateLiveEventResultValue(
-                liveEvent.result?.value || 'Restart'
+              {liveEvent.result?.value ? (
+                translateLiveEventResultValue(liveEvent.result?.value)
+              ) : (
+                <>
+                  <span className="event-content-choice-icon">&raquo;</span>{' '}
+                  <span>Restart</span>
+                </>
               )}
             </button>
           </div>
 
           {!engine.isComposer && (
             <div className="event-content-choice">
+              <div></div>
               <button
                 onClick={() =>
                   engineDispatch({ type: ENGINE_ACTION_TYPE.STOP })
                 }
+                disabled={liveEvent.result ? true : false}
               >
-                Title Screen
+                <>
+                  <span className="event-content-choice-icon">&raquo;</span>{' '}
+                  <span>Title Screen</span>
+                </>
               </button>
             </div>
           )}

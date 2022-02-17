@@ -1,9 +1,12 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { EventCharacterPersona } from '../types'
 
 import { EngineContext } from '../contexts/EngineContext'
+
+import { useSpring, config } from 'react-spring'
+import AcceleratedDiv from './AcceleratedDiv'
 
 import { getCharacterReference } from '../lib/api'
 
@@ -16,6 +19,13 @@ const EventCharacterReference: React.FC<{
 
   const { studioId } = engine.worldInfo
 
+  const [styles, api] = useSpring(() => ({
+    from: {
+      opacity: 0
+    },
+    config: config.gentle
+  }))
+
   const reference = useLiveQuery(
     async () =>
       persona &&
@@ -23,12 +33,14 @@ const EventCharacterReference: React.FC<{
     [persona]
   )
 
+  useEffect(() => {
+    if (reference) api.start({ opacity: 1 })
+  }, [reference])
+
   return (
-    <>
-      {reference && (
-        <div className={`event-character-reference`}>{reference}</div>
-      )}
-    </>
+    <AcceleratedDiv style={styles} className={`event-character-reference`}>
+      {reference}
+    </AcceleratedDiv>
   )
 })
 

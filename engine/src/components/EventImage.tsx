@@ -60,7 +60,7 @@ const EventImage: React.FC<{
         //   `url(../../data/0-7-test_0.0.1/assets/${assetId}.webp)`
         // )
 
-        // PWA
+        // #PWA
         setBackgroundImage(`url(./assets/content/${assetId}.webp)`)
 
         return

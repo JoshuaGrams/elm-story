@@ -129,7 +129,7 @@ const EventContent: React.FC<{
     referencedCharacterIds,
     characters
 
-  // also for local testing
+  // #PWA: also for local testing
   if (engine.isComposer) {
     // elmstorygames/feedback#245
     parsedContentAsJSON = JSON.parse(content)
@@ -149,7 +149,7 @@ const EventContent: React.FC<{
     async function serializeAndParseContent() {
       if (!content) return
 
-      // use this for local dev as well
+      // #PWA: use this for local dev as well
       if (engine.isComposer && parsedContentAsJSON) {
         const serializedContent = await eventContentToEventStreamContent(
           studioId,
@@ -219,6 +219,7 @@ const EventContent: React.FC<{
         )
       }
 
+      // #PWA: disable full block for local dev
       if (!engine.isComposer) {
         setParsedContent(
           parseToHTML(

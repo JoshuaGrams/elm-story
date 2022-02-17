@@ -1,7 +1,6 @@
-import React, { useCallback, useContext, useRef } from 'react'
+import React, { useCallback, useContext, useRef, useState } from 'react'
 import useResizeObserver from '@react-hook/resize-observer'
-import { useSpring } from '@react-spring/core'
-import { animated } from '@react-spring/web'
+import { useSpring } from 'react-spring'
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { findDestinationEvent, getLiveEventInitial, getEvent } from '../lib/api'
@@ -28,9 +27,9 @@ import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
 import EventCharacterMask from './EventCharacterMask'
 import EventContent from './EventContent'
-import EventChoices from './EventChoices'
+import EventChoices, { PassthroughIcon } from './EventChoices'
 import EventInput from './EventInput'
-import { LiveEventLoopbackButtonContent } from './LiveEventLoopbackButton'
+import AcceleratedDiv from './AcceleratedDiv'
 
 export type PathProcessor = ({
   originId: origin,
@@ -45,35 +44,57 @@ export type PathProcessor = ({
 }) => Promise<void>
 
 // TODO: move to event
+// TODO: only used with EventInput?
 export function translateLiveEventResultValue(value: string) {
+  let finalValue: JSX.Element
+
   switch (value) {
     case ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE:
-      return <>Continue</>
+      finalValue = <>{PassthroughIcon}</>
+      break
     case ENGINE_LIVE_EVENT_LOOPBACK_RESULT_VALUE:
-      return <>{LiveEventLoopbackButtonContent}</>
+      finalValue = <>{PassthroughIcon}</>
+      break
     case ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE:
-      return <>Restart</>
+      finalValue = <>Restart</>
+      break
     default:
-      return <>{value}</>
+      finalValue = <>{value}</>
+      break
   }
+
+  return (
+    <>
+      <span className="event-content-choice-icon">&raquo;</span>{' '}
+      <span>{finalValue}</span>
+    </>
+  )
 }
 
 export const Event: React.FC<{
   eventId: ElementId
   liveEvent: EngineLiveEventData
+  animated: boolean
   onPathFound: NextLiveEventProcessor
-}> = React.memo(({ eventId, liveEvent, onPathFound }) => {
+}> = React.memo(({ eventId, liveEvent, animated, onPathFound }) => {
   const { engine, engineDispatch } = useContext(EngineContext)
 
   if (!engine.worldInfo) return null
 
   const eventRef = useRef<HTMLDivElement>(null)
 
+  const [introDone, setIntroDone] = useState(false)
+
   const { studioId, id: worldId } = engine.worldInfo
 
   const event = useLiveQuery(
-    () => new LibraryDatabase(studioId).events.get(eventId),
-    [eventId]
+    async () => {
+      const foundEvent = await new LibraryDatabase(studioId).events.get(eventId)
+
+      return foundEvent || null
+    },
+    [eventId],
+    undefined
   )
 
   const processPath: PathProcessor = useCallback(
@@ -133,18 +154,23 @@ export const Event: React.FC<{
 
   const [styles, api] = useSpring(() => ({
     height: 0,
-    overflow: 'hidden'
+    config: { clamp: true },
+    overflow: 'hidden',
+    immediate: !animated || introDone
   }))
 
   useResizeObserver(eventRef, () => {
-    eventRef.current &&
+    if (eventRef.current) {
       api.start({
-        height: eventRef.current.getBoundingClientRect().height + 1 // handles border bottom change
+        immediate: !animated || introDone,
+        height: eventRef.current.getBoundingClientRect().height + 1, // handles border bottom change,
+        onRest: () => setIntroDone(true)
       })
+    }
   })
 
   return (
-    <animated.div style={styles}>
+    <AcceleratedDiv style={{ ...styles, transform: 'translate3d(0,0,0)' }}>
       <div
         className="event-content"
         style={{
@@ -160,7 +186,7 @@ export const Event: React.FC<{
             <div
               style={{
                 display: event.persona ? 'grid' : 'unset',
-                gridTemplateColumns: event.persona ? '12.5rem auto' : 'unset',
+                gridTemplateColumns: event.persona ? '20% auto' : 'unset',
                 paddingLeft: event.persona ? '1.4rem' : 'unset'
               }}
               className={`${event.persona ? 'event-content-with-persona' : ''}`}
@@ -196,8 +222,7 @@ export const Event: React.FC<{
             )}
           </>
         )}
-
-        {!event && (
+        {event === null && (
           <div
             className="engine-warning-message"
             style={{ padding: '1.4rem', paddingTop: 0 }}
@@ -217,7 +242,7 @@ export const Event: React.FC<{
           </div>
         )}
       </div>
-    </animated.div>
+    </AcceleratedDiv>
   )
 })
 

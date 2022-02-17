@@ -1,15 +1,17 @@
 import React, { createContext, useMemo, useReducer } from 'react'
 
-import { ENGINE_THEME } from '../types'
+import { ENGINE_FONT, ENGINE_THEME } from '../types'
 
 interface SettingsContext {
   open: boolean
+  font: ENGINE_FONT | undefined
   theme: ENGINE_THEME | undefined
 }
 
 export enum SETTINGS_ACTION_TYPE {
   CLOSE = 'CLOSE',
   OPEN = 'OPEN',
+  SET_FONT = 'SET_FONT',
   SET_THEME = 'SET_THEME'
 }
 
@@ -20,6 +22,11 @@ type SettingsActionType =
       closeSettings: boolean
       theme: ENGINE_THEME
       type: SETTINGS_ACTION_TYPE.SET_THEME
+    }
+  | {
+      closeSettings: boolean
+      font: ENGINE_FONT
+      type: SETTINGS_ACTION_TYPE.SET_FONT
     }
 
 const settingsReducer = (
@@ -36,6 +43,12 @@ const settingsReducer = (
       return {
         ...state,
         open: true
+      }
+    case SETTINGS_ACTION_TYPE.SET_FONT:
+      return {
+        ...state,
+        font: action.font,
+        open: action.closeSettings ? false : true
       }
     case SETTINGS_ACTION_TYPE.SET_THEME:
       return {
@@ -55,6 +68,7 @@ interface SettingsContextType {
 
 const defaultSettingsState: SettingsContext = {
   open: false,
+  font: undefined,
   theme: undefined
 }
 

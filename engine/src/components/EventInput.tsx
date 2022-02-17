@@ -38,37 +38,52 @@ const EventInput: React.FC<{
   const [inputValue, setInputValue] = useState<string | number | undefined>(''),
     [routeError, setRouteError] = useState<boolean>(false)
 
-  const input = useLiveQuery(() =>
-    new LibraryDatabase(studioId).inputs.where({ eventId: event.id }).first()
+  const input = useLiveQuery(
+    async () => {
+      const input = new LibraryDatabase(studioId).inputs
+        .where({ eventId: event.id })
+        .first()
+
+      return input || null
+    },
+    [event.id],
+    undefined
   )
 
-  const inputVariable = useLiveQuery(async () => {
-    let variable: EngineVariableData | undefined
+  const inputVariable = useLiveQuery(
+    async () => {
+      if (input === null) return null
 
-    if (input?.variableId) {
-      variable = await new LibraryDatabase(studioId).variables.get(
-        input.variableId
-      )
+      let variable: EngineVariableData | null
 
-      if (variable) {
-        let value: string | number | undefined =
-          liveEvent.state[variable.id].value
+      if (input?.variableId) {
+        variable =
+          (await new LibraryDatabase(studioId).variables.get(
+            input.variableId
+          )) || null
 
-        switch (liveEvent.state[variable.id].type) {
-          case VARIABLE_TYPE.NUMBER:
-            value = Number(value)
-            break
-          default:
-            value = undefined
-            break
+        if (variable) {
+          let value: string | number | undefined =
+            liveEvent.state[variable.id].value
+
+          switch (liveEvent.state[variable.id].type) {
+            case VARIABLE_TYPE.NUMBER:
+              value = Number(value)
+              break
+            default:
+              value = undefined
+              break
+          }
+
+          setInputValue(value || variable?.initialValue)
         }
 
-        setInputValue(value || variable?.initialValue)
+        return variable
       }
-    }
-
-    return variable
-  }, [input])
+    },
+    [input],
+    undefined
+  )
 
   const submitInput = useCallback(
     async (boolValue?: 'true' | 'false') => {
@@ -121,6 +136,7 @@ const EventInput: React.FC<{
 
   return (
     <div
+      style={{ height: 44 }}
       className={`${
         !liveEvent.result ? 'event-content-input' : 'event-content-input-result'
       }`}
@@ -137,36 +153,40 @@ const EventInput: React.FC<{
                     submitInput()
                   }}
                 >
-                  <input
-                    ref={inputRef}
-                    id={input.id}
-                    autoComplete="off"
-                    // #400
-                    spellCheck="false"
-                    autoFocus
-                    type={
-                      inputVariable.type === VARIABLE_TYPE.STRING
-                        ? 'text'
-                        : 'number'
-                    }
-                    placeholder="Response..."
-                    value={inputValue}
-                    onChange={(event) => setInputValue(event.target.value)}
-                    onFocus={(event) => event.target.select()}
-                  />
+                  <div className="event-content-input-wrapper">
+                    <input
+                      ref={inputRef}
+                      id={input.id}
+                      autoComplete="off"
+                      // #400
+                      spellCheck="false"
+                      autoFocus
+                      type={
+                        inputVariable.type === VARIABLE_TYPE.STRING
+                          ? 'text'
+                          : 'number'
+                      }
+                      placeholder="Response..."
+                      value={inputValue}
+                      onChange={(event) => setInputValue(event.target.value)}
+                      onFocus={(event) => event.target.select()}
+                    />
 
-                  <button type="submit">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z" />
-                      <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                    </svg>
-                  </button>
+                    <button type="submit" style={{ border: 'none' }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="17.5"
+                        height="17.5"
+                        fill="currentColor"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
                 </form>
               )}
 
@@ -195,7 +215,7 @@ const EventInput: React.FC<{
             </>
           )}
 
-          {!inputVariable && (
+          {inputVariable === null && (
             <div className="engine-warning-message">
               Input variable required.
             </div>
@@ -204,9 +224,11 @@ const EventInput: React.FC<{
       )}
 
       {liveEvent.result && (
-        <button disabled={true}>
-          {translateLiveEventResultValue(liveEvent.result.value)}
-        </button>
+        <div className="event-content-choice ">
+          <button disabled={true}>
+            {translateLiveEventResultValue(liveEvent.result.value)}
+          </button>
+        </div>
       )}
     </div>
   )

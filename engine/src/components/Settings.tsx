@@ -1,8 +1,8 @@
 import React, { useCallback, useContext } from 'react'
 
-import { resetWorld, saveThemeSetting } from '../lib/api'
+import { resetWorld, savePresentationSettings } from '../lib/api'
 
-import { ENGINE_THEME } from '../types'
+import { ENGINE_FONT, ENGINE_THEME } from '../types'
 
 import { EngineContext } from '../contexts/EngineContext'
 import {
@@ -38,9 +38,32 @@ const Settings: React.FC = () => {
         closeSettings: true
       })
 
-      await saveThemeSetting(studioId, worldId, theme)
+      await savePresentationSettings(
+        studioId,
+        worldId,
+        theme,
+        settings.font || ENGINE_FONT.SERIF
+      )
     },
-    [studioId]
+    [studioId, settings.font]
+  )
+
+  const setFont = useCallback(
+    async (font: ENGINE_FONT) => {
+      settingsDispatch({
+        type: SETTINGS_ACTION_TYPE.SET_FONT,
+        font,
+        closeSettings: true
+      })
+
+      await savePresentationSettings(
+        studioId,
+        worldId,
+        settings.theme || ENGINE_THEME.CONSOLE,
+        font
+      )
+    },
+    [studioId, settings.theme]
   )
 
   if (!settings.open) return null
@@ -57,23 +80,44 @@ const Settings: React.FC = () => {
               <a
                 className={
                   settings.theme === ENGINE_THEME.CONSOLE
-                    ? 'settings-active-theme'
+                    ? 'settings-active'
                     : ''
                 }
                 onClick={() => setTheme(ENGINE_THEME.CONSOLE)}
               >
                 Dark
               </a>{' '}
-              |{' '}
+              <span>|</span>{' '}
               <a
                 className={
-                  settings.theme === ENGINE_THEME.BOOK
-                    ? 'settings-active-theme'
-                    : ''
+                  settings.theme === ENGINE_THEME.BOOK ? 'settings-active' : ''
                 }
                 onClick={() => setTheme(ENGINE_THEME.BOOK)}
               >
                 Light
+              </a>
+            </p>
+          </div>
+
+          <div>
+            <h2>Font</h2>
+            <p>
+              <a
+                className={
+                  settings.font === ENGINE_FONT.SERIF ? 'settings-active' : ''
+                }
+                onClick={() => setFont(ENGINE_FONT.SERIF)}
+              >
+                Serif
+              </a>{' '}
+              <span>|</span>{' '}
+              <a
+                className={
+                  settings.font === ENGINE_FONT.SANS ? 'settings-active' : ''
+                }
+                onClick={() => setFont(ENGINE_FONT.SANS)}
+              >
+                Sans
               </a>
             </p>
           </div>

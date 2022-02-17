@@ -347,6 +347,11 @@ export interface WorldDataJSON {
   variables: VariableCollection
 }
 
+export enum ENGINE_FONT {
+  SANS = 'SANS',
+  SERIF = 'SERIF'
+}
+
 export enum ENGINE_THEME {
   BOOK = 'BOOK',
   CONSOLE = 'CONSOLE'
@@ -569,6 +574,7 @@ export interface EngineSceneCollection {
 
 export interface EngineSettingsData {
   id: string // or DEFAULT_ENGINE_SETTINGS_KEY
+  font: ENGINE_FONT
   theme: ENGINE_THEME
   worldId: WorldId
 }

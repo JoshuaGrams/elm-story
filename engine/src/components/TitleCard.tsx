@@ -37,9 +37,9 @@ const TitleCard: React.FC<{
 
           <div id="title-card-world-version">v{engine.worldInfo.version}</div>
 
-          <div id="title-card-world-designer">
+          {/* <div id="title-card-world-designer">
             designed by {engine.worldInfo.designer}
-          </div>
+          </div> */}
 
           <div id="title-card-btns">
             <button
@@ -48,6 +48,7 @@ const TitleCard: React.FC<{
                 !autoBookmark.data.liveEventId ? onStartWorld : onContinueWorld
               }
             >
+              <span className="event-content-choice-icon">&raquo;</span>
               {!autoBookmark.data.liveEventId ? 'Start' : 'Continue'}
             </button>
 
@@ -57,6 +58,7 @@ const TitleCard: React.FC<{
                 settingsDispatch({ type: SETTINGS_ACTION_TYPE.OPEN })
               }
             >
+              <span className="event-content-choice-icon">&raquo;</span>
               Settings
             </button>
           </div>

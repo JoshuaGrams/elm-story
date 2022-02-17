@@ -144,6 +144,9 @@ const Storyteller: React.FC<{
 
         sceneData = await api().scenes.getScene(studioId, eventData.sceneId)
 
+        console.log('---')
+        console.log(sceneData)
+
         if (!sceneData?.id) return
 
         window.dispatchEvent(
