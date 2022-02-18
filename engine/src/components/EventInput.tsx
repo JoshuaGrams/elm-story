@@ -136,7 +136,6 @@ const EventInput: React.FC<{
 
   return (
     <div
-      style={{ height: 44 }}
       className={`${
         !liveEvent.result ? 'event-content-input' : 'event-content-input-result'
       }`}
@@ -172,11 +171,14 @@ const EventInput: React.FC<{
                       onFocus={(event) => event.target.select()}
                     />
 
-                    <button type="submit" style={{ border: 'none' }}>
+                    <button
+                      type="submit"
+                      style={{ border: 'none', padding: 0 }}
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="17.5"
-                        height="17.5"
+                        width="3.2rem"
+                        height="3.2rem"
                         fill="currentColor"
                         viewBox="0 0 16 16"
                       >
@@ -224,7 +226,7 @@ const EventInput: React.FC<{
       )}
 
       {liveEvent.result && (
-        <div className="event-content-choice ">
+        <div className="event-content-choice">
           <button disabled={true}>
             {translateLiveEventResultValue(liveEvent.result.value)}
           </button>
