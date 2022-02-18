@@ -35,7 +35,7 @@ const Settings: React.FC = () => {
       settingsDispatch({
         type: SETTINGS_ACTION_TYPE.SET_THEME,
         theme,
-        closeSettings: true
+        closeSettings: false
       })
 
       await savePresentationSettings(
@@ -53,7 +53,7 @@ const Settings: React.FC = () => {
       settingsDispatch({
         type: SETTINGS_ACTION_TYPE.SET_FONT,
         font,
-        closeSettings: true
+        closeSettings: false
       })
 
       await savePresentationSettings(
@@ -74,121 +74,131 @@ const Settings: React.FC = () => {
         <SettingsTitleBar />
 
         <div id="settings-content">
-          <div>
-            <h2>Theme</h2>
-            <p>
-              <a
-                className={
-                  settings.theme === ENGINE_THEME.CONSOLE
-                    ? 'settings-active'
-                    : ''
-                }
-                onClick={() => setTheme(ENGINE_THEME.CONSOLE)}
-              >
-                Dark
-              </a>{' '}
-              <span>|</span>{' '}
-              <a
-                className={
-                  settings.theme === ENGINE_THEME.BOOK ? 'settings-active' : ''
-                }
-                onClick={() => setTheme(ENGINE_THEME.BOOK)}
-              >
-                Light
-              </a>
-            </p>
-          </div>
+          <section>
+            <h1>Interface</h1>
 
-          <div>
-            <h2>Font</h2>
-            <p>
-              <a
-                className={
-                  settings.font === ENGINE_FONT.SERIF ? 'settings-active' : ''
-                }
-                onClick={() => setFont(ENGINE_FONT.SERIF)}
-              >
-                Serif
-              </a>{' '}
-              <span>|</span>{' '}
-              <a
-                className={
-                  settings.font === ENGINE_FONT.SANS ? 'settings-active' : ''
-                }
-                onClick={() => setFont(ENGINE_FONT.SANS)}
-              >
-                Sans
-              </a>
-            </p>
-          </div>
-
-          <div>
-            <h2>Title</h2>
-            <p>{title}</p>
-          </div>
-
-          {description && (
             <div>
-              <h2>Description</h2>
-              <p>{description}</p>
-            </div>
-          )}
-
-          <div>
-            <h2>Studio</h2>
-            <p>{studioTitle}</p>
-          </div>
-
-          <div>
-            <h2>Designer</h2>
-            <p>{designer}</p>
-          </div>
-
-          <div>
-            <h2>Version</h2>
-            <p>{version}</p>
-          </div>
-
-          {copyright && (
-            <div>
-              <h2>Copyright</h2>
-              <p>{copyright}</p>
-            </div>
-          )}
-
-          {website && (
-            <div>
-              <h2>Website</h2>
+              <h2>Theme</h2>
               <p>
-                <a href={website} target="_blank">
-                  {website}
+                <a
+                  className={
+                    settings.theme === ENGINE_THEME.CONSOLE
+                      ? 'settings-active'
+                      : ''
+                  }
+                  onClick={() => setTheme(ENGINE_THEME.CONSOLE)}
+                >
+                  Dark
+                </a>{' '}
+                <span>|</span>{' '}
+                <a
+                  className={
+                    settings.theme === ENGINE_THEME.BOOK
+                      ? 'settings-active'
+                      : ''
+                  }
+                  onClick={() => setTheme(ENGINE_THEME.BOOK)}
+                >
+                  Light
                 </a>
               </p>
             </div>
-          )}
 
-          {import.meta.env.MODE === 'development' && (
             <div>
-              <h2>Storyteller Mode</h2>
-              <p>{import.meta.env.MODE}</p>
-            </div>
-          )}
-
-          <div>
-            <h2>Tools</h2>
-            <p>
-              <a
-                onClick={async () => {
-                  if (engine.worldInfo?.id) {
-                    await resetWorld(studioId, worldId)
-                    location.reload()
+              <h2>Font</h2>
+              <p>
+                <a
+                  className={
+                    settings.font === ENGINE_FONT.SERIF ? 'settings-active' : ''
                   }
-                }}
-              >
-                Reset World
-              </a>
-            </p>
-          </div>
+                  onClick={() => setFont(ENGINE_FONT.SERIF)}
+                >
+                  Serif
+                </a>{' '}
+                <span>|</span>{' '}
+                <a
+                  className={
+                    settings.font === ENGINE_FONT.SANS ? 'settings-active' : ''
+                  }
+                  onClick={() => setFont(ENGINE_FONT.SANS)}
+                >
+                  Sans
+                </a>
+              </p>
+            </div>
+          </section>
+
+          <section>
+            <h1>Storyworld</h1>
+
+            <div>
+              <h2>Title</h2>
+              <p>{title}</p>
+            </div>
+
+            {description && (
+              <div>
+                <h2>Description</h2>
+                <p>{description}</p>
+              </div>
+            )}
+
+            <div>
+              <h2>Studio</h2>
+              <p>{studioTitle}</p>
+            </div>
+
+            <div>
+              <h2>Designer</h2>
+              <p>{designer}</p>
+            </div>
+
+            <div>
+              <h2>Version</h2>
+              <p>{version}</p>
+            </div>
+
+            {copyright && (
+              <div>
+                <h2>Copyright</h2>
+                <p>{copyright}</p>
+              </div>
+            )}
+
+            {website && (
+              <div>
+                <h2>Website</h2>
+                <p>
+                  <a href={website} target="_blank">
+                    {website}
+                  </a>
+                </p>
+              </div>
+            )}
+
+            {import.meta.env.MODE === 'development' && (
+              <div>
+                <h2>Storyteller Mode</h2>
+                <p>{import.meta.env.MODE}</p>
+              </div>
+            )}
+
+            <div>
+              <h2>Tools</h2>
+              <p>
+                <a
+                  onClick={async () => {
+                    if (engine.worldInfo?.id) {
+                      await resetWorld(studioId, worldId)
+                      location.reload()
+                    }
+                  }}
+                >
+                  Reset World
+                </a>
+              </p>
+            </div>
+          </section>
         </div>
       </div>
     </>
