@@ -88,7 +88,7 @@ const EventCharacterElement: React.FC<{
         </span>
       ) : character === null ? (
         <span
-          style={{ backgroundColor: 'red' }}
+          style={{ backgroundColor: 'var(--warning-color)' }}
           title={`Character ${characterId} not found...`}
         >
           {missingCharacterIcon}

@@ -663,7 +663,9 @@ const SelectedCharacter: React.FC<{
             (character !== undefined &&
               elementCharacterData?.alias_id &&
               aliasOrTitle === null)) && (
-            <span style={{ background: 'red', cursor: 'pointer' }}>
+            <span
+              style={{ background: 'var(--warning-color)', cursor: 'pointer' }}
+            >
               <UserOutlined onClick={() => onClick(true)} />
             </span>
           )}

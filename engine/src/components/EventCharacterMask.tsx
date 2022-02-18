@@ -82,7 +82,7 @@ const EventCharacterMask: React.FC<{
           detail.eventId === eventId &&
           detail.asset.id === mask?.assetId
         ) {
-          setMaskUrl(detail.asset.url)
+          setMaskUrl(detail.asset.url.replaceAll('"', ''))
         }
         break
       default:
@@ -108,7 +108,7 @@ const EventCharacterMask: React.FC<{
           // setMaskUrl(`../../data/0-7-test_0.0.1/assets/${mask.assetId}.jpeg`)
 
           // #PWA
-          setMaskUrl(`./assets/content/${mask.assetId}.jpeg`)
+          setMaskUrl(`assets/content/${mask.assetId}.jpeg`)
         }
 
         if (engine.isComposer) {
@@ -160,7 +160,10 @@ const EventCharacterMask: React.FC<{
   return (
     <div className="event-character-mask">
       <AcceleratedDiv
-        style={{ ...styles, backgroundImage: `url(${maskUrl})` }}
+        style={{
+          ...styles,
+          backgroundImage: maskUrl ? `url(${maskUrl})` : 'none'
+        }}
         className="event-character-mask-portrait"
       />
     </div>

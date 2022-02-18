@@ -57,8 +57,12 @@ const CharacterPortrait: React.FC<{
 
       {!character?.id && (
         <div
-          className={`${styles.CharacterPortrait} ${styles.missing} nodrag`}
-          title={`Character ${characterId} not found...`}
+          className={`${styles.CharacterPortrait} ${
+            character === null ? styles.missing : styles.loading
+          } nodrag`}
+          title={
+            character === null ? `Character ${characterId} not found...` : ''
+          }
         >
           <div style={{ aspectRatio: '4/5' }}>
             <UserOutlined />

@@ -176,7 +176,7 @@ const EventSnippet: React.FC<{
                       return (
                         <span
                           title={`Character ${characterId} not found...`}
-                          style={{ background: 'red' }}
+                          style={{ background: 'var(--warning-color)' }}
                         >
                           <UserOutlined />
                         </span>

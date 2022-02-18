@@ -160,7 +160,9 @@ const Settings: React.FC = () => {
             <div>
               <h2>Website</h2>
               <p>
-                <a href={website}>{website}</a>
+                <a href={website} target="_blank">
+                  {website}
+                </a>
               </p>
             </div>
           )}

@@ -39,7 +39,7 @@ const EventImage: React.FC<{
   //   : getSvgUrl(placeholder)
   // #PWA
   let imageUrl = assetId
-    ? `./assets/content/${assetId}.webp`
+    ? `assets/content/${assetId}.webp`
     : getSvgUrl(placeholder)
 
   // testing
@@ -51,10 +51,12 @@ const EventImage: React.FC<{
     string
   >('none')
 
-  const { src, error, isLoading } = useImage({
-    srcList: imageUrl,
-    useSuspense: false
-  })
+  const { src, error, isLoading } = engine.isComposer
+    ? { src: null, error: null, isLoading: null }
+    : useImage({
+        srcList: imageUrl,
+        useSuspense: false
+      })
 
   const processEvent = (event: Event) => {
     const { detail } = event as CustomEvent<EngineDevToolsLiveEvent>
@@ -65,7 +67,9 @@ const EventImage: React.FC<{
         detail.asset.id === assetId &&
         eventId === detail.eventId
       ) {
-        setResolvedBackgroundImage(`url(${detail.asset.url})`)
+        setResolvedBackgroundImage(
+          `url(${detail.asset.url.replaceAll('"', '')})`
+        )
       }
 
       if (!detail?.asset?.url) {
@@ -121,6 +125,7 @@ const EventImage: React.FC<{
         <div
           className="event-content-image"
           title={!assetId ? 'Image not set...' : ''}
+          data-test={engine.isComposer}
           style={{
             backgroundImage: resolvedBackgroundImage || 'none'
           }}
@@ -133,7 +138,7 @@ const EventImage: React.FC<{
           title={!assetId ? 'Image not set...' : ''}
           style={{ background: 'unset' }}
         >
-          {!error && (
+          {!error && src && (
             <>
               {isLoading && <div className="event-content-image-loading" />}
               {!isLoading && <img src={src} />}{' '}
@@ -141,11 +146,17 @@ const EventImage: React.FC<{
           )}
 
           {error && (
-            <div
-              className="event-content-image-error"
-              style={{ backgroundImage: `url(${getSvgUrl(missing)})` }}
-              title="Image not found..."
-            />
+            <>
+              {navigator.onLine && (
+                <div
+                  className="event-content-image-error"
+                  style={{ backgroundImage: `url(${getSvgUrl(missing)})` }}
+                  title="Image not found..."
+                />
+              )}
+
+              {!navigator.onLine && <img src={imageUrl} />}
+            </>
           )}
         </div>
       )}

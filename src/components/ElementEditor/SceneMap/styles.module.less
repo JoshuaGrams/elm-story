@@ -972,9 +972,8 @@
     border-radius: 4px;
     transition: box-shadow 0.2s;
 
+    &.loading,
     &.missing {
-      background-color: red;
-
       div {
         display: grid;
         align-items: center;
@@ -983,6 +982,10 @@
       &:hover {
         cursor: default;
       }
+    }
+
+    &.missing {
+      background-color: var(--warning-color);
     }
 
     &:hover {

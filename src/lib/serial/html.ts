@@ -95,7 +95,7 @@ const serializeDescendantToText = async (
   switch (node.type) {
     case ELEMENT_FORMATS.IMG:
       // prettier-ignore
-      return `<div className="event-content-image" title="${!node.asset_id ? 'Image not set...' : ''}" style="backgroundImage:url(${node.asset_id ? `./assets/content/${node.asset_id}.webp` : getSvgUrl(imgPlaceholder)})"></div>`
+      return `<div className="event-content-image" title="${!node.asset_id ? 'Image not set...' : ''}" style="backgroundImage:url(${node.asset_id ? `assets/content/${node.asset_id}.webp` : getSvgUrl(imgPlaceholder)})"></div>`
     case ELEMENT_FORMATS.CHARACTER:
       if (!node.character_id) return `<span>I AM ERROR</span>`
 
