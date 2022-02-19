@@ -62,21 +62,22 @@ const EventInput: React.FC<{
             input.variableId
           )) || null
 
-        if (variable) {
-          let value: string | number | undefined =
-            liveEvent.state[variable.id].value
+        // elmstorygames/feedback#264
+        // if (variable) {
+        //   let value: string | number | undefined =
+        //     liveEvent.state[variable.id].value
 
-          switch (liveEvent.state[variable.id].type) {
-            case VARIABLE_TYPE.NUMBER:
-              value = Number(value)
-              break
-            default:
-              value = undefined
-              break
-          }
+        //   switch (liveEvent.state[variable.id].type) {
+        //     case VARIABLE_TYPE.NUMBER:
+        //       value = Number(value)
+        //       break
+        //     default:
+        //       value = undefined
+        //       break
+        //   }
 
-          setInputValue(value || variable?.initialValue)
-        }
+        //   setInputValue(value || variable?.initialValue)
+        // }
 
         return variable
       }
@@ -166,9 +167,9 @@ const EventInput: React.FC<{
                           : 'number'
                       }
                       placeholder="Response..."
-                      value={inputValue}
                       onChange={(event) => setInputValue(event.target.value)}
-                      onFocus={(event) => event.target.select()}
+                      // elmstorygames/feedback#264
+                      onFocus={(event) => event.target.focus()}
                     />
 
                     <button
