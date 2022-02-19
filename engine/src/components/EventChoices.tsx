@@ -24,7 +24,8 @@ import {
   EngineLiveEventData,
   EngineEventData,
   EnginePathData,
-  EngineLiveEventResult
+  EngineLiveEventResult,
+  ENGINE_MOTION
 } from '../types'
 import { PathProcessor, translateLiveEventResultValue } from './Event'
 
@@ -33,6 +34,7 @@ import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 import LiveEventLoopbackButton from './LiveEventLoopbackButton'
 import AcceleratedDiv from './AcceleratedDiv'
 import useResizeObserver from '@react-hook/resize-observer'
+import { SettingsContext } from '../contexts/SettingsContext'
 
 export const PassthroughIcon = (
   <svg
@@ -56,7 +58,8 @@ const EventPassthroughChoice: React.FC<{
   originId?: ElementId
 }> = React.memo(
   ({ paths: routes, liveEvent: event, onSubmitPath, originId }) => {
-    const { engine } = useContext(EngineContext)
+    const { engine } = useContext(EngineContext),
+      { settings } = useContext(SettingsContext)
 
     if (
       !engine.worldInfo
@@ -107,6 +110,7 @@ const EventPassthroughChoice: React.FC<{
 
     const [styles, springApi] = useSpring(
       () => ({
+        immediate: settings.motion === ENGINE_MOTION.REDUCED,
         height,
         opacity: 1,
         overflow: 'hidden',
@@ -124,7 +128,12 @@ const EventPassthroughChoice: React.FC<{
     useEffect(() => {
       engine.currentLiveEvent !== event.result?.id &&
         event.result?.value === ENGINE_EVENT_PASSTHROUGH_RESULT_VALUE &&
-        springApi.start({ delay: 600, height: -1, opacity: 0 })
+        springApi.start({
+          delay: 600,
+          height: -1,
+          opacity: 0,
+          immediate: settings.motion === ENGINE_MOTION.REDUCED
+        })
     }, [event.result?.value])
 
     useEffect(() => {
@@ -197,7 +206,8 @@ const EventChoice: React.FC<{
     // this hides the other choices
     // if (eventResult && eventResult?.id !== data.id) return null
 
-    const { engine } = useContext(EngineContext)
+    const { engine } = useContext(EngineContext),
+      { settings } = useContext(SettingsContext)
 
     const submitChoice = useCallback(
       async () =>
@@ -222,6 +232,7 @@ const EventChoice: React.FC<{
 
     const [styles, springApi] = useSpring(
       () => ({
+        immediate: settings.motion === ENGINE_MOTION.REDUCED,
         height,
         opacity: 1,
         overflow: 'hidden',
@@ -239,6 +250,7 @@ const EventChoice: React.FC<{
         eventResult &&
         eventResult?.id !== data.id &&
         springApi.start({
+          immediate: settings.motion === ENGINE_MOTION.REDUCED,
           delay: 600,
           height: 0,
           opacity: 0

@@ -6,6 +6,7 @@ import {
   EngineDevToolsLiveEvent,
   ENGINE_DEVTOOLS_LIVE_EVENTS,
   ENGINE_DEVTOOLS_LIVE_EVENT_TYPE,
+  ENGINE_MOTION,
   EventCharacterPersona
 } from '../types'
 
@@ -17,6 +18,7 @@ import { LibraryDatabase, LIBRARY_TABLE } from '../lib/db'
 
 import { useSpring, config, animated } from 'react-spring'
 import AcceleratedDiv from './AcceleratedDiv'
+import { SettingsContext } from '../contexts/SettingsContext'
 
 const placeholder = `<svg width="200" height="250" viewBox="0 0 200 250" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_2_3)">
@@ -35,7 +37,8 @@ const EventCharacterMask: React.FC<{
   eventId: ElementId
   persona: EventCharacterPersona
 }> = React.memo(({ eventId, persona }) => {
-  const { engine } = useContext(EngineContext)
+  const { engine } = useContext(EngineContext),
+    { settings } = useContext(SettingsContext)
 
   if (!engine.worldInfo) return null
 
@@ -49,6 +52,7 @@ const EventCharacterMask: React.FC<{
   )
 
   const [styles, api] = useSpring(() => ({
+    immediate: settings.motion === ENGINE_MOTION.REDUCED,
     from: {
       opacity: 0
     },

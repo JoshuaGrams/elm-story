@@ -168,7 +168,7 @@ const Settings: React.FC = () => {
             </div>
 
             <div>
-              <h2>Scale</h2>
+              <h2>Size</h2>
               <p>
                 <a
                   className={
@@ -193,7 +193,7 @@ const Settings: React.FC = () => {
             </div>
 
             <div>
-              <h2>Animation</h2>
+              <h2>Motion</h2>
               <p>
                 <a
                   className={

@@ -21,7 +21,8 @@ import { LibraryDatabase } from '../lib/db'
 
 import {
   EngineLiveEventStateCollection,
-  EngineVariableCollection
+  EngineVariableCollection,
+  ENGINE_MOTION
 } from '../types'
 import {
   INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY,
@@ -273,6 +274,7 @@ const LiveEventStream: React.FC = React.memo(() => {
   })
 
   const liveEventStreamTransitions = useTransition(engine.liveEventsInStream, {
+    // immediate: settings.motion === ENGINE_MOTION.REDUCED,
     from: { opacity: 0 },
     enter: { opacity: 1 },
     config: { clamp: true },

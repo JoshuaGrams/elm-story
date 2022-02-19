@@ -14,7 +14,8 @@ import {
   EngineLiveEventStateCollection,
   EngineEventData,
   EnginePathData,
-  EngineLiveEventResult
+  EngineLiveEventResult,
+  ENGINE_MOTION
 } from '../types'
 import {
   ENGINE_LIVE_EVENT_STORY_OVER_RESULT_VALUE,
@@ -30,6 +31,7 @@ import EventContent from './EventContent'
 import EventChoices, { PassthroughIcon } from './EventChoices'
 import EventInput from './EventInput'
 import AcceleratedDiv from './AcceleratedDiv'
+import { SettingsContext } from '../contexts/SettingsContext'
 
 export type PathProcessor = ({
   originId: origin,
@@ -77,7 +79,8 @@ export const Event: React.FC<{
   animated: boolean
   onPathFound: NextLiveEventProcessor
 }> = React.memo(({ eventId, liveEvent, animated, onPathFound }) => {
-  const { engine, engineDispatch } = useContext(EngineContext)
+  const { engine, engineDispatch } = useContext(EngineContext),
+    { settings } = useContext(SettingsContext)
 
   if (!engine.worldInfo) return null
 
@@ -156,13 +159,15 @@ export const Event: React.FC<{
     height: 0,
     config: { clamp: true },
     overflow: 'hidden',
-    immediate: !animated || introDone
+    immediate:
+      !animated || introDone || settings.motion === ENGINE_MOTION.REDUCED
   }))
 
   useResizeObserver(eventRef, () => {
     if (eventRef.current) {
       api.start({
-        immediate: !animated || introDone,
+        immediate:
+          !animated || introDone || settings.motion === ENGINE_MOTION.REDUCED,
         height: eventRef.current.getBoundingClientRect().height + 1, // handles border bottom change,
         onRest: () => setIntroDone(true)
       })
