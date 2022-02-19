@@ -1332,10 +1332,10 @@
   resolved "https://registry.yarnpkg.com/@fontsource/inter/-/inter-4.5.1.tgz#058d8a02354f3c78e369d452c15d33557ec1b705"
   integrity sha512-mvtOvXNNVLlF1p/UbLgLrmz2RCOl6Ow+TqyiK10SosoLKX7edsXYiHFHb7XIZdjII6F2sJVPPsJXWhBnbXT2DQ==
 
-"@fontsource/literata@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@fontsource/literata/-/literata-4.5.0.tgz#786f4fa5194597ec4cfc12783df4c1725a8db7f5"
-  integrity sha512-tuj9lhrkkAEB/nO/XYknP9BkNKJ/E7qMAYGW5NEheIp3Nu1YowQRRJsb/GGHS6CIsbynpZkGgvF2OXnIoi7lUw==
+"@fontsource/roboto-serif@^4.5.1":
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/@fontsource/roboto-serif/-/roboto-serif-4.5.1.tgz#2f0f894d1be39a22c40f5ec0f85cc13c2591737e"
+  integrity sha512-VDsrVF5oKflcxKELu1g4wLD2Y8Mkq6HJ3d2Bhf6V37LVY27DJNHkX7dcLjDyWqcUoyikjc0lCk6uTz/FlCSKhQ==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"

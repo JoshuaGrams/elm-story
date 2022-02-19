@@ -8,10 +8,10 @@
   a {
     color: var(--link-color);
     cursor: pointer;
-  }
 
-  a:hover {
-    color: var(--link-hover-color);
+    &:hover {
+      color: var(--link-hover-color) !important;
+    }
   }
 
   input {
@@ -100,20 +100,32 @@
         }
       }
 
-      div {
+      section {
         margin-bottom: 1.8rem;
 
-        span {
-          color: var(--renderer-border-color);
+        h1 {
+          text-transform: uppercase;
+          font-size: 1.6rem;
+          border-bottom: 0.1rem solid var(--primary-color);
+          margin-bottom: 1.4rem;
+          font-weight: normal;
         }
 
-        h2 {
-          font-size: 1.3rem;
-          text-transform: uppercase;
-          margin-bottom: 0.8rem;
-          border-bottom: 0.1rem solid var(--renderer-border-color);
-          font-weight: normal;
-          color: var(--settings-header-text-color);
+        div {
+          margin-bottom: 1.4rem;
+
+          span {
+            color: var(--renderer-border-color);
+          }
+
+          h2 {
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
+            border-bottom: 0.1rem solid var(--renderer-border-color);
+            font-weight: normal;
+            color: var(--settings-header-text-color);
+          }
         }
       }
     }

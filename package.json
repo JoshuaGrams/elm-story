@@ -234,7 +234,7 @@
     "@atlaskit/tree": "^8.2.0",
     "@fontsource/fira-mono": "^4.5.0",
     "@fontsource/inter": "^4.5.1",
-    "@fontsource/literata": "^4.5.0",
+    "@fontsource/roboto-serif": "^4.5.1",
     "@react-hook/resize-observer": "^1.2.4",
     "@use-it/event-listener": "^0.1.6",
     "acorn": "^8.4.1",
