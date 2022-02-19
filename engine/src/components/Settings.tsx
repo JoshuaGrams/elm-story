@@ -49,7 +49,7 @@ const Settings: React.FC = () => {
         motion
       })
     },
-    [studioId, settings.font]
+    [studioId, theme, font, motion, size]
   )
 
   const setFont = useCallback(
@@ -67,7 +67,7 @@ const Settings: React.FC = () => {
         motion
       })
     },
-    [studioId, settings.theme]
+    [studioId, theme, font, motion, size]
   )
 
   const setSize = useCallback(
@@ -85,7 +85,7 @@ const Settings: React.FC = () => {
         size: selectedSize
       })
     },
-    [studioId, settings.theme]
+    [studioId, theme, font, motion, size]
   )
 
   const setMotion = useCallback(
@@ -103,7 +103,7 @@ const Settings: React.FC = () => {
         size
       })
     },
-    [studioId, settings.theme]
+    [studioId, theme, font, motion, size]
   )
 
   if (!settings.open) return null
