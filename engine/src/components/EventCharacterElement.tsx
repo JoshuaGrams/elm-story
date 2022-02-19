@@ -16,8 +16,8 @@ const missingCharacterIcon = (
     viewBox="64 64 896 896"
     focusable="false"
     data-icon="user"
-    width="1em"
-    height="1em"
+    width="1rem"
+    height="1rem"
     fill="currentColor"
     aria-hidden="true"
   >
