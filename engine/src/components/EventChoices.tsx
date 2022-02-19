@@ -285,7 +285,7 @@ const EventChoice: React.FC<{
                     style={{
                       filter:
                         eventResult && eventResult.id !== data.id
-                          ? 'blur(3px)'
+                          ? 'blur(0.3rem)'
                           : 'unset'
                     }}
                   >

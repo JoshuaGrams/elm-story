@@ -347,14 +347,24 @@ export interface WorldDataJSON {
   variables: VariableCollection
 }
 
+export enum ENGINE_THEME {
+  BOOK = 'BOOK',
+  CONSOLE = 'CONSOLE'
+}
+
 export enum ENGINE_FONT {
   SANS = 'SANS',
   SERIF = 'SERIF'
 }
 
-export enum ENGINE_THEME {
-  BOOK = 'BOOK',
-  CONSOLE = 'CONSOLE'
+export enum ENGINE_MOTION {
+  FULL = 'FULL',
+  REDUCED = 'REDUCED'
+}
+
+export enum ENGINE_SIZE {
+  DEFAULT = 'DEFAULT',
+  LARGE = 'LARGE'
 }
 
 export enum ENGINE_DEVTOOLS_LIVE_EVENT_TYPE {
@@ -574,8 +584,10 @@ export interface EngineSceneCollection {
 
 export interface EngineSettingsData {
   id: string // or DEFAULT_ENGINE_SETTINGS_KEY
-  font: ENGINE_FONT
   theme: ENGINE_THEME
+  font: ENGINE_FONT
+  size: ENGINE_SIZE
+  motion: ENGINE_MOTION
   worldId: WorldId
 }
 

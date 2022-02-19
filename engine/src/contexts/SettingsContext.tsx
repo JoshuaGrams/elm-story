@@ -1,18 +1,22 @@
 import React, { createContext, useMemo, useReducer } from 'react'
 
-import { ENGINE_FONT, ENGINE_THEME } from '../types'
+import { ENGINE_MOTION, ENGINE_FONT, ENGINE_SIZE, ENGINE_THEME } from '../types'
 
 interface SettingsContext {
   open: boolean
-  font: ENGINE_FONT | undefined
   theme: ENGINE_THEME | undefined
+  font: ENGINE_FONT | undefined
+  size: ENGINE_SIZE | undefined
+  motion: ENGINE_MOTION | undefined
 }
 
 export enum SETTINGS_ACTION_TYPE {
   CLOSE = 'CLOSE',
   OPEN = 'OPEN',
+  SET_THEME = 'SET_THEME',
   SET_FONT = 'SET_FONT',
-  SET_THEME = 'SET_THEME'
+  SET_SIZE = 'SET_SCALE',
+  SET_MOTION = 'SET_ANIMATION'
 }
 
 type SettingsActionType =
@@ -27,6 +31,16 @@ type SettingsActionType =
       closeSettings: boolean
       font: ENGINE_FONT
       type: SETTINGS_ACTION_TYPE.SET_FONT
+    }
+  | {
+      closeSettings: boolean
+      size: ENGINE_SIZE
+      type: SETTINGS_ACTION_TYPE.SET_SIZE
+    }
+  | {
+      closeSettings: boolean
+      motion: ENGINE_MOTION
+      type: SETTINGS_ACTION_TYPE.SET_MOTION
     }
 
 const settingsReducer = (
@@ -44,16 +58,28 @@ const settingsReducer = (
         ...state,
         open: true
       }
+    case SETTINGS_ACTION_TYPE.SET_THEME:
+      return {
+        ...state,
+        theme: action.theme,
+        open: action.closeSettings ? false : true
+      }
     case SETTINGS_ACTION_TYPE.SET_FONT:
       return {
         ...state,
         font: action.font,
         open: action.closeSettings ? false : true
       }
-    case SETTINGS_ACTION_TYPE.SET_THEME:
+    case SETTINGS_ACTION_TYPE.SET_SIZE:
       return {
         ...state,
-        theme: action.theme,
+        size: action.size,
+        open: action.closeSettings ? false : true
+      }
+    case SETTINGS_ACTION_TYPE.SET_MOTION:
+      return {
+        ...state,
+        motion: action.motion,
         open: action.closeSettings ? false : true
       }
     default:
@@ -68,8 +94,10 @@ interface SettingsContextType {
 
 const defaultSettingsState: SettingsContext = {
   open: false,
+  theme: undefined,
   font: undefined,
-  theme: undefined
+  motion: undefined,
+  size: undefined
 }
 
 export const SettingsContext = createContext<SettingsContextType>({

@@ -8,7 +8,9 @@ import {
   ElementId,
   EventData,
   EngineSettingsData,
-  ENGINE_FONT
+  ENGINE_FONT,
+  ENGINE_MOTION,
+  ENGINE_SIZE
 } from '../../types'
 import { LIBRARY_TABLE } from '.'
 
@@ -56,6 +58,8 @@ export default (database: Dexie) => {
         }),
         settingsTable.toCollection().modify((setting: EngineSettingsData) => {
           setting.font = ENGINE_FONT.SANS
+          setting.motion = ENGINE_MOTION.FULL
+          setting.size = ENGINE_SIZE.DEFAULT
         }),
         tx
           .table(LIBRARY_TABLE.WORLDS)

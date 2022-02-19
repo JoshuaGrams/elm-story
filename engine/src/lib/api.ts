@@ -33,7 +33,9 @@ import {
   CharacterMask,
   PATH_CONDITIONS_TYPE,
   EngineSettingsData,
-  ENGINE_FONT
+  ENGINE_FONT,
+  ENGINE_MOTION,
+  ENGINE_SIZE
 } from '../types'
 import {
   AUTO_ENGINE_BOOKMARK_KEY,
@@ -209,8 +211,10 @@ export const saveEngineDefaultWorldCollectionData = async (
           DEFAULT_ENGINE_SETTINGS: {
             worldId,
             id: `${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`,
+            theme: ENGINE_THEME.CONSOLE,
             font: ENGINE_FONT.SERIF,
-            theme: ENGINE_THEME.CONSOLE
+            motion: ENGINE_MOTION.FULL,
+            size: ENGINE_SIZE.DEFAULT
           }
         })
       )
@@ -1266,9 +1270,15 @@ export const getSettingsDefault = async (
 export const savePresentationSettings = async (
   studioId: StudioId,
   worldId: WorldId,
-  theme: ENGINE_THEME,
-  font: ENGINE_FONT
+  settings: {
+    theme?: ENGINE_THEME
+    font?: ENGINE_FONT
+    size?: ENGINE_SIZE
+    motion?: ENGINE_MOTION
+  }
 ) => {
+  const { theme, font, motion, size } = settings
+
   try {
     const libraryDatabase = new LibraryDatabase(studioId),
       foundSettings = await libraryDatabase.settings.get(
@@ -1280,8 +1290,10 @@ export const savePresentationSettings = async (
         `${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`,
         {
           ...foundSettings,
-          theme,
-          font
+          theme: theme || ENGINE_THEME.BOOK,
+          font: font || ENGINE_FONT.SANS,
+          motion: motion || ENGINE_MOTION.FULL,
+          size: size || ENGINE_SIZE.DEFAULT
         }
       )
     } else {
@@ -1301,7 +1313,12 @@ export const getPresentationSettings = async (
       `${DEFAULT_ENGINE_SETTINGS_KEY}${worldId}`
     )
 
-    return { theme: settings?.theme, font: settings?.font }
+    return {
+      theme: settings?.theme,
+      font: settings?.font,
+      motion: settings?.motion,
+      size: settings?.size
+    }
   } catch (error) {
     throw error
   }

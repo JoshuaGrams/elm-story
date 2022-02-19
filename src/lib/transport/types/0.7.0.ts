@@ -354,6 +354,21 @@ export enum ENGINE_THEME {
   CONSOLE = 'CONSOLE'
 }
 
+export enum ENGINE_FONT {
+  SANS = 'SANS',
+  SERIF = 'SERIF'
+}
+
+export enum ENGINE_SIZE {
+  DEFAULT = 'DEFAULT',
+  LARGE = 'LARGE'
+}
+
+export enum ENGINE_MOTION {
+  FULL = 'FULL',
+  REDUCED = 'REDUCED'
+}
+
 export enum ENGINE_DEVTOOLS_LIVE_EVENT_TYPE {
   OPEN_EVENT = 'OPEN_EVENT',
   OPEN_SCENE = 'OPEN_SCENE',
@@ -566,6 +581,9 @@ export interface EngineSceneCollection {
 export interface EngineSettingsData {
   id: string // or DEFAULT_ENGINE_SETTINGS_KEY
   theme: ENGINE_THEME
+  font: ENGINE_FONT
+  size: ENGINE_SIZE
+  motion: ENGINE_MOTION
   worldId: WorldId
 }
 

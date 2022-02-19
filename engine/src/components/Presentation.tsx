@@ -44,6 +44,24 @@ const Presentation: React.FC = ({ children }) => {
   }, [presentationSettings?.font])
 
   useEffect(() => {
+    presentationSettings?.motion &&
+      settingsDispatch({
+        type: SETTINGS_ACTION_TYPE.SET_MOTION,
+        motion: presentationSettings.motion,
+        closeSettings: true
+      })
+  }, [presentationSettings?.motion])
+
+  useEffect(() => {
+    presentationSettings?.size &&
+      settingsDispatch({
+        type: SETTINGS_ACTION_TYPE.SET_SIZE,
+        size: presentationSettings.size,
+        closeSettings: true
+      })
+  }, [presentationSettings?.size])
+
+  useEffect(() => {
     settings.theme &&
       document.documentElement.setAttribute('data-theme', settings.theme)
   }, [settings.theme])
@@ -53,7 +71,25 @@ const Presentation: React.FC = ({ children }) => {
       document.documentElement.setAttribute('data-font', settings.font)
   }, [settings.font])
 
-  return <>{settings.theme && settings.font && children}</>
+  useEffect(() => {
+    settings.motion &&
+      document.documentElement.setAttribute('data-motion', settings.motion)
+  }, [settings.motion])
+
+  useEffect(() => {
+    settings.size &&
+      document.documentElement.setAttribute('data-size', settings.size)
+  }, [settings.size])
+
+  return (
+    <>
+      {settings.theme &&
+        settings.font &&
+        settings.motion &&
+        settings.size &&
+        children}
+    </>
+  )
 }
 
 Presentation.displayName = 'Presentation'

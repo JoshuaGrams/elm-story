@@ -17,8 +17,8 @@
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 44px;
+  width: 0.4rem;
+  height: 4.4rem;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -31,10 +31,6 @@
 
 ::-webkit-scrollbar-track {
   border-left: 0.1rem solid var(--renderer-border-color);
-}
-
-html {
-  font-size: var(--text-size);
 }
 
 * {
@@ -56,14 +52,34 @@ body {
   overflow: hidden;
 }
 
-@media only screen and (min-width: 680px) {
-  #runtime {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0%);
-    width: var(--runtime-width);
-    border-left: 1px solid var(--renderer-border-color);
-    border-right: 1px solid var(--renderer-border-color);
-    height: 100%;
+html[data-size='DEFAULT'] {
+  font-size: var(--text-size);
+
+  @media only screen and (min-width: 43em) {
+    #runtime {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, 0%);
+      width: var(--runtime-width);
+      border-left: 0.1rem solid var(--renderer-border-color);
+      border-right: 0.1rem solid var(--renderer-border-color);
+      height: 100%;
+    }
+  }
+}
+
+html[data-size='LARGE'] {
+  font-size: 78.125% !important;
+
+  @media only screen and (min-width: 54em) {
+    #runtime {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, 0%);
+      width: var(--runtime-width);
+      border-left: 0.1rem solid var(--renderer-border-color);
+      border-right: 0.1rem solid var(--renderer-border-color);
+      height: 100%;
+    }
   }
 }
