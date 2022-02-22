@@ -8,6 +8,7 @@ import React, {
   useEffect
 } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { useSpring } from 'react-spring'
 
 import { findOpenPath, getPathsFromInput } from '../lib/api'
 import { LibraryDatabase } from '../lib/db'
@@ -16,18 +17,24 @@ import {
   VARIABLE_TYPE,
   EngineLiveEventData,
   EngineEventData,
-  EngineVariableData
+  EngineVariableData,
+  ENGINE_MOTION
 } from '../types'
 import { PathProcessor, translateLiveEventResultValue } from './Event'
 
 import { EngineContext } from '../contexts/EngineContext'
+import { SettingsContext } from '../contexts/SettingsContext'
+
+import AcceleratedDiv from './AcceleratedDiv'
+import useResizeObserver from '@react-hook/resize-observer'
 
 const EventInput: React.FC<{
   event: EngineEventData
   liveEvent: EngineLiveEventData
   onSubmitPath: PathProcessor
 }> = React.memo(({ event, liveEvent, onSubmitPath }) => {
-  const { engine } = useContext(EngineContext)
+  const { engine } = useContext(EngineContext),
+    { settings } = useContext(SettingsContext)
 
   if (!engine.worldInfo) return null
 
@@ -35,7 +42,8 @@ const EventInput: React.FC<{
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [inputValue, setInputValue] = useState<string | number | undefined>(''),
+  const [showInput, setShowInput] = useState(false),
+    [inputValue, setInputValue] = useState<string | number | undefined>(''),
     [routeError, setRouteError] = useState<boolean>(false)
 
   const input = useLiveQuery(
@@ -131,109 +139,177 @@ const EventInput: React.FC<{
     [liveEvent, input, inputVariable, inputValue]
   )
 
+  const inputContainerRef = useRef<HTMLDivElement>(null)
+
+  const [height, setHeight] = useState(0)
+
+  const [styles, springApi] = useSpring(
+    () => ({
+      immediate: settings.motion === ENGINE_MOTION.REDUCED,
+      height,
+      opacity: 1,
+      overflow: 'hidden',
+      config: {
+        clamp: true
+      }
+    }),
+    [height]
+  )
+
+  useResizeObserver(inputContainerRef, () => {
+    inputContainerRef.current &&
+      springApi.start({
+        immediate: settings.motion === ENGINE_MOTION.REDUCED,
+        height: inputContainerRef.current.getBoundingClientRect().height
+      })
+  })
+
   useEffect(() => {
     inputValue && setRouteError(false)
   }, [inputValue])
 
   return (
-    <div
-      className={`${
-        !liveEvent.result ? 'event-content-input' : 'event-content-input-result'
-      }`}
-    >
-      {!liveEvent.result && input && (
-        <>
-          {inputVariable && (
-            <>
-              {inputVariable.type !== VARIABLE_TYPE.BOOLEAN && (
-                <form
-                  onSubmit={(event) => {
-                    event.preventDefault()
+    <AcceleratedDiv style={styles}>
+      <div
+        className={`${
+          !liveEvent.result
+            ? 'event-content-input'
+            : 'event-content-input-result'
+        }`}
+        ref={inputContainerRef}
+      >
+        {!liveEvent.result && input && (
+          <>
+            {inputVariable && (
+              <>
+                {inputVariable.type !== VARIABLE_TYPE.BOOLEAN && (
+                  <form
+                    onSubmit={(event) => {
+                      event.preventDefault()
 
-                    submitInput()
-                  }}
-                >
-                  <div className="event-content-input-wrapper">
-                    <input
-                      ref={inputRef}
-                      id={input.id}
-                      autoComplete="off"
-                      // #400
-                      spellCheck="false"
-                      autoFocus
-                      type={
-                        inputVariable.type === VARIABLE_TYPE.STRING
-                          ? 'text'
-                          : 'number'
-                      }
-                      placeholder="Response..."
-                      onChange={(event) => setInputValue(event.target.value)}
-                      // elmstorygames/feedback#264
-                      onFocus={(event) => event.target.focus()}
-                    />
-
-                    <button
-                      type="submit"
-                      style={{ border: 'none', padding: 0 }}
+                      submitInput()
+                    }}
+                  >
+                    <div
+                      className="event-content-input-wrapper"
+                      style={{
+                        display: showInput ? 'inline-grid' : 'block',
+                        gridTemplateColumns: showInput
+                          ? '1fr var(--min-interaction-height)'
+                          : 'unset'
+                      }}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="3.2rem"
-                        height="3.2rem"
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"
-                        />
-                      </svg>
+                      <>
+                        {/* elmstorygames/feedback#272 */}
+                        {!showInput && (
+                          <button
+                            className="event-content-input-cta"
+                            onClick={() => setShowInput(true)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="100%"
+                              height="100%"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M14 5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h12zM2 4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H2z" />
+                              <path d="M13 10.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm0-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-5 0A.25.25 0 0 1 8.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 8 8.75v-.5zm2 0a.25.25 0 0 1 .25-.25h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5a.25.25 0 0 1-.25-.25v-.5zm1 2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-5-2A.25.25 0 0 1 6.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 6 8.75v-.5zm-2 0A.25.25 0 0 1 4.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 4 8.75v-.5zm-2 0A.25.25 0 0 1 2.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 2 8.75v-.5zm11-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-2 0a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-2 0A.25.25 0 0 1 9.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 9 6.75v-.5zm-2 0A.25.25 0 0 1 7.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 7 6.75v-.5zm-2 0A.25.25 0 0 1 5.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 5 6.75v-.5zm-3 0A.25.25 0 0 1 2.25 6h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5A.25.25 0 0 1 2 6.75v-.5zm0 4a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm2 0a.25.25 0 0 1 .25-.25h5.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-5.5a.25.25 0 0 1-.25-.25v-.5z" />
+                            </svg>
+                          </button>
+                        )}
+
+                        {showInput && (
+                          <>
+                            <input
+                              ref={inputRef}
+                              id={input.id}
+                              autoComplete="off"
+                              // #400
+                              spellCheck="false"
+                              autoFocus
+                              type={
+                                inputVariable.type === VARIABLE_TYPE.STRING
+                                  ? 'text'
+                                  : 'number'
+                              }
+                              placeholder="Response..."
+                              onChange={(event) =>
+                                setInputValue(event.target.value)
+                              }
+                              // elmstorygames/feedback#264
+                              onFocus={(event) => event.target.focus()}
+                              onBlur={() =>
+                                !inputRef.current?.value && setShowInput(false)
+                              }
+                            />
+
+                            <button
+                              type="submit"
+                              style={{ border: 'none', padding: 0 }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="3.2rem"
+                                height="3.2rem"
+                                fill="currentColor"
+                                viewBox="0 0 16 16"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"
+                                />
+                              </svg>
+                            </button>
+                          </>
+                        )}
+                      </>
+                    </div>
+                  </form>
+                )}
+
+                {inputVariable.type === VARIABLE_TYPE.BOOLEAN && (
+                  <div className="event-content-choices">
+                    <button
+                      className="event-content-choice"
+                      key="event-content-input-yes-btn"
+                      onClick={() => submitInput('true')}
+                    >
+                      Yes
+                    </button>
+                    <button
+                      className="event-content-choice"
+                      key="event-content-input-no-btn"
+                      onClick={() => submitInput('false')}
+                    >
+                      No
                     </button>
                   </div>
-                </form>
-              )}
+                )}
 
-              {inputVariable.type === VARIABLE_TYPE.BOOLEAN && (
-                <div className="event-content-choices">
-                  <button
-                    className="event-content-choice"
-                    key="event-content-input-yes-btn"
-                    onClick={() => submitInput('true')}
-                  >
-                    Yes
-                  </button>
-                  <button
-                    className="event-content-choice"
-                    key="event-content-input-no-btn"
-                    onClick={() => submitInput('false')}
-                  >
-                    No
-                  </button>
-                </div>
-              )}
+                {routeError && (
+                  <div className="engine-warning-message">Missing route.</div>
+                )}
+              </>
+            )}
 
-              {routeError && (
-                <div className="engine-warning-message">Missing route.</div>
-              )}
-            </>
-          )}
+            {inputVariable === null && (
+              <div className="engine-warning-message">
+                Input variable required.
+              </div>
+            )}
+          </>
+        )}
 
-          {inputVariable === null && (
-            <div className="engine-warning-message">
-              Input variable required.
-            </div>
-          )}
-        </>
-      )}
-
-      {liveEvent.result && (
-        <div className="event-content-choice">
-          <button disabled={true}>
-            {translateLiveEventResultValue(liveEvent.result.value)}
-          </button>
-        </div>
-      )}
-    </div>
+        {liveEvent.result && (
+          <div className="event-content-choice">
+            <button disabled={true}>
+              {translateLiveEventResultValue(liveEvent.result.value)}
+            </button>
+          </div>
+        )}
+      </div>
+    </AcceleratedDiv>
   )
 })
 
