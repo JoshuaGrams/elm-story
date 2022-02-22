@@ -6,7 +6,7 @@ import {
   ELEMENT_TYPE,
   WorldDataJSON,
   ESGEngineCollectionData
-} from '../transport/types/0.6.0'
+} from '../transport/types/0.7.0'
 
 function filterCollectionChildProps<T extends object, U extends keyof T>(
   collectionToFilter: { [ElementId: string]: T },
@@ -83,6 +83,7 @@ function format(worldData: WorldDataJSON): string {
       'variableId'
     ]),
     events: filterCollectionChildProps(events, [
+      'audio',
       'choices',
       'content',
       'ending',
@@ -105,7 +106,7 @@ function format(worldData: WorldDataJSON): string {
       'originType',
       'sceneId'
     ]),
-    scenes: filterCollectionChildProps(scenes, ['children', 'id', 'jumps']),
+    scenes: filterCollectionChildProps(scenes, ['audio', 'children', 'id']),
     variables: filterCollectionChildProps(variables, [
       'id',
       'initialValue',

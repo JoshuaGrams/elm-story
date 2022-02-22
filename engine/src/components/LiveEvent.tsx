@@ -78,6 +78,8 @@ const LiveEvent: React.FC<{ data: EngineLiveEventData; animated: boolean }> = ({
 
       const nextLiveEventId = uuid()
 
+      // This live event does not yet exist in the database!
+      // useLiveQuery in combination with useQuery for fresh data
       engineDispatch({
         type: ENGINE_ACTION_TYPE.SET_CURRENT_LIVE_EVENT,
         id: nextLiveEventId

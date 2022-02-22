@@ -15,13 +15,14 @@ import {
 } from '../lib'
 
 import TitleCard from './TitleCard'
+import AudioMixer from './AudioMixer'
 import EventStreamTitleBar from './LiveEventStreamTitleBar'
 import LiveEventStream from './LiveEventStream'
 
 import EventXRay, { ENGINE_XRAY_CONTAINER_HEIGHT } from './EventXRay'
 import ResetNotification from './ResetNotification'
 
-const Renderer: React.FC = () => {
+const Renderer: React.FC = React.memo(() => {
   const { engine, engineDispatch } = useContext(EngineContext)
 
   const { data: autoBookmark } = useQuery(
@@ -80,6 +81,8 @@ const Renderer: React.FC = () => {
 
           {engine.playing && (
             <>
+              <AudioMixer />
+
               {!engine.isComposer && <EventStreamTitleBar />}
               <LiveEventStream />
 
@@ -107,7 +110,7 @@ const Renderer: React.FC = () => {
       )}
     </div>
   )
-}
+})
 
 Renderer.displayName = 'Renderer'
 

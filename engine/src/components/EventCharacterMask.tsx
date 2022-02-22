@@ -108,11 +108,11 @@ const EventCharacterMask: React.FC<{
         if (!engine.isComposer) {
           // local development
           // to see mask images, uncomment... but remember to re-comment out when done!
-          // DEV:
-          setMaskUrl(`../../data/0-7-test_0.0.1/assets/${mask.assetId}.jpeg`)
+          // #DEV:
+          // setMaskUrl(`../../data/0-7-test_0.0.1/assets/${mask.assetId}.jpeg`)
 
           // #PWA
-          // setMaskUrl(`assets/content/${mask.assetId}.jpeg`)
+          setMaskUrl(`assets/content/${mask.assetId}.jpeg`)
         }
 
         if (engine.isComposer) {

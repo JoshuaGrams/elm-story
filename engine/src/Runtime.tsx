@@ -29,9 +29,9 @@ const Runtime: React.FC<{
     packed?: boolean
   }
 }> = React.memo(({ studioId, world: { id, data, packed } }) => {
-  const isEditor = studioId ? true : false
+  const isComposer = studioId ? true : false
 
-  const worldMeta = !isEditor || data ? localStorage.getItem(id) : null
+  const worldMeta = !isComposer || data ? localStorage.getItem(id) : null
 
   const engineData: ESGEngineCollectionData | undefined = data
     ? packed
@@ -49,13 +49,13 @@ const Runtime: React.FC<{
       <EngineProvider>
         {_studioId && (
           <>
-            {isEditor && (
+            {isComposer && (
               <StartingDestinationGate studioId={_studioId} worldId={id}>
                 <Installer
                   studioId={_studioId}
                   worldId={id}
                   data={engineData}
-                  isComposer={isEditor}
+                  isComposer={isComposer}
                 >
                   <DevTools />
                   <Renderer />
@@ -63,12 +63,12 @@ const Runtime: React.FC<{
               </StartingDestinationGate>
             )}
 
-            {!isEditor && (
+            {!isComposer && (
               <Installer
                 studioId={_studioId}
                 worldId={id}
                 data={engineData}
-                isComposer={isEditor}
+                isComposer={isComposer}
               >
                 <SettingsProvider>
                   <Presentation>

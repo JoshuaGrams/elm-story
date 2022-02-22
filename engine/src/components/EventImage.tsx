@@ -33,14 +33,14 @@ const EventImage: React.FC<{
 }> = ({ eventId, assetId }) => {
   const { engine } = useContext(EngineContext)
 
-  // DEV
-  let imageUrl = assetId
-    ? `../../data/0-7-test_0.0.1/assets/${assetId}.webp`
-    : getSvgUrl(placeholder)
-  // #PWA
+  // #DEV
   // let imageUrl = assetId
-  //   ? `assets/content/${assetId}.webp`
+  //   ? `../../data/0-7-test_0.0.1/assets/${assetId}.webp`
   //   : getSvgUrl(placeholder)
+  // #PWA
+  let imageUrl = assetId
+    ? `assets/content/${assetId}.webp`
+    : getSvgUrl(placeholder)
 
   // testing
   // imageUrl =
