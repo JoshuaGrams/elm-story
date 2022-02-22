@@ -20,24 +20,29 @@ const DevTools: React.FC = () => {
           type: ENGINE_ACTION_TYPE.SET_INSTALLED,
           installed: false
         })
-        break
+        return
+      case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.TOGGLE_CHARACTERS:
+        engineDispatch({
+          type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_CHARACTERS
+        })
+        return
       case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.TOGGLE_EXPRESSIONS:
         engineDispatch({
           type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_EXPRESSIONS
         })
-        break
+        return
       case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.TOGGLE_BLOCKED_CHOICES:
         engineDispatch({
           type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_BLOCKED_CHOICES
         })
-        break
+        return
       case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.TOGGLE_XRAY:
         engineDispatch({
           type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_XRAY
         })
-        break
+        return
       default:
-        break
+        return
     }
   }
 

@@ -498,11 +498,17 @@
     .expression-error {
       border-bottom: 0.1rem dashed red;
     }
+
+    .event-content-character-highlight {
+      border-bottom: 0.1rem dashed var(--primary-color);
+    }
   }
 
   .event-content-choices,
   .event-content-input-result {
-    margin-top: 1.4rem;
+    padding-top: 1.4rem;
+    display: grid;
+    align-items: center;
 
     button {
       box-sizing: border-box;
@@ -514,7 +520,7 @@
       width: 100%;
       word-break: normal;
       hyphens: auto;
-      padding: 0.9rem 0rem 1.4rem 0rem;
+      padding: 1.4rem 0;
       font-size: 1.6rem;
       border-top: 0.1rem solid var(--event-choice-top-border-color) !important;
       color: var(--event-choice-text-color);
@@ -532,7 +538,7 @@
   }
 
   .event-content-input-result {
-    min-height: 5.4rem;
+    // min-height: 5.4rem;
 
     .event-content-choice {
       height: 100%;
@@ -541,7 +547,7 @@
     button {
       height: 100%;
       padding: 0 !important;
-      padding: 0.9rem 0 1.4rem 0 !important;
+      padding: 1.4rem 0 !important;
     }
   }
 
@@ -588,12 +594,12 @@
   .event-content-input-result button:disabled {
     cursor: not-allowed;
     padding: 0 1.4rem;
+    height: 100%;
   }
 
   .event-content-input {
     width: 100%;
-    margin-top: 1.4rem;
-    height: 5.3rem;
+    padding-top: 1.4rem;
 
     form {
       padding: 0 1.4rem;
@@ -601,20 +607,24 @@
 
       .event-content-input-wrapper {
         border-top: 0.1rem solid var(--event-choice-top-border-color);
-        // margin: 0 1.4rem;
-        grid-template-columns: 1fr var(--min-interaction-height);
         box-sizing: border-box;
-        display: inline-grid;
         width: 100%;
-        height: 5.3rem;
+        padding: 1.4rem 0;
+
+        .event-content-input-cta {
+          width: 100%;
+          display: grid;
+          align-items: center;
+          justify-items: center;
+        }
 
         input {
           height: 100%;
           background: transparent;
           color: var(--text-color);
           font-size: 1.6rem;
-          padding-left: 1.7rem;
-          padding-bottom: 0.5rem;
+          padding-left: 1.9rem;
+          padding-bottom: 1.6rem;
           box-sizing: border-box;
         }
 
@@ -624,12 +634,17 @@
           border-radius: 0;
           border: none;
           background: transparent;
-          display: grid;
-          align-items: center;
-          justify-items: center;
+          position: relative;
+          // display: grid;
 
-          path {
-            fill: var(--primary-color);
+          svg {
+            position: absolute;
+            left: 0;
+            top: -0.4rem;
+
+            path {
+              fill: var(--primary-color);
+            }
           }
 
           &:hover {

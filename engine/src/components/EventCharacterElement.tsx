@@ -29,9 +29,10 @@ const EventCharacterElement: React.FC<{
   studioId: StudioId
   characterId?: ElementId
   aliasId?: string
+  highlight?: boolean
   transform?: CharacterElementTransformType
   styles?: CharacterElementStyleTypes
-}> = ({ studioId, characterId, aliasId, transform, styles }) => {
+}> = ({ studioId, characterId, aliasId, highlight, transform, styles }) => {
   if (!characterId) return null
 
   const character = useLiveQuery(
@@ -47,8 +48,9 @@ const EventCharacterElement: React.FC<{
   )
 
   const [characterDisplayFormat, setCharacterDisplayFormat] = useState<
-    CharacterDisplayFormat | undefined
-  >(undefined)
+      CharacterDisplayFormat | undefined
+    >(undefined),
+    [highlightProps, setHighlightProps] = useState({})
 
   useEffect(() => {
     async function getCharRef() {
@@ -74,10 +76,22 @@ const EventCharacterElement: React.FC<{
     getCharRef()
   }, [character])
 
+  useEffect(() => {
+    setHighlightProps(
+      character && highlight
+        ? {
+            className: 'event-content-character-highlight',
+            title: character.title
+          }
+        : {}
+    )
+  }, [character, highlight])
+
   return (
     <>
       {character ? (
         <span
+          {...highlightProps}
           style={{
             fontWeight: characterDisplayFormat?.styles?.fontWeight,
             fontStyle: characterDisplayFormat?.styles?.fontStyle,

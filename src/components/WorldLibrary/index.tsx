@@ -4,7 +4,7 @@ import React, { useState, useEffect, useContext } from 'react'
 
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 import { StudioId, Studio } from '../../data/types'
-import { WorldDataJSON } from '../../lib/transport/types/0.6.0'
+import { WorldDataJSON } from '../../lib/transport/types/0.7.0'
 
 import { useWorlds, useStudios } from '../../hooks'
 import { WORLD_SORT } from '../../hooks/useWorlds'

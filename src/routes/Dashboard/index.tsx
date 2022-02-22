@@ -2,7 +2,7 @@ import { ipcRenderer } from 'electron'
 
 import React, { useContext, useState } from 'react'
 
-import { WorldDataJSON } from '../../lib/transport/types/0.6.0'
+import { WorldDataJSON } from '../../lib/transport/types/0.7.0'
 import { WINDOW_EVENT_TYPE } from '../../lib/events'
 
 import { AppContext } from '../../contexts/AppContext'

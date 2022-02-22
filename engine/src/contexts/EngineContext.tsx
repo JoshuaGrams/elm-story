@@ -7,6 +7,7 @@ import { ElementId, EngineLiveEventData, WorldId, StudioId } from '../types'
 interface EngineState {
   currentLiveEvent: ElementId | undefined
   devTools: {
+    highlightCharacters: boolean
     highlightExpressions: boolean
     blockedChoicesVisible: boolean
     xrayVisible: boolean
@@ -48,8 +49,9 @@ export enum ENGINE_ACTION_TYPE {
   SET_UPDATE_WORLD = 'SET_UPDATE_WORLD',
   STOP = 'STOP',
   SHOW_RESET_NOTIFICATION = 'SHOW_RESET_NOTIFICATION',
-  TOGGLE_DEVTOOLS_BLOCKED_CHOICES = 'TOGGLE_DEVTOOLS_BLOCKED_CHOICES',
   TOGGLE_DEVTOOLS_EXPRESSIONS = 'TOGGLE_DEVTOOLS_EXPRESSIONS',
+  TOGGLE_DEVTOOLS_CHARACTERS = 'TOGGLE_DEVTOOLS_CHARACTERS',
+  TOGGLE_DEVTOOLS_BLOCKED_CHOICES = 'TOGGLE_DEVTOOLS_BLOCKED_CHOICES',
   TOGGLE_DEVTOOLS_XRAY = 'TOGGLE_DEVTOOLS_XRAY',
   UPDATE_LIVE_EVENT_IN_STREAM = 'UPDATE_EVENT_IN_STREAM'
 }
@@ -93,6 +95,7 @@ type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION }
   | { type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION; message: string }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_BLOCKED_CHOICES }
+  | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_CHARACTERS }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_EXPRESSIONS }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_XRAY }
 
@@ -195,6 +198,14 @@ const engineReducer = (
           blockedChoicesVisible: !state.devTools.blockedChoicesVisible
         }
       }
+    case ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_CHARACTERS:
+      return {
+        ...state,
+        devTools: {
+          ...state.devTools,
+          highlightCharacters: !state.devTools.highlightCharacters
+        }
+      }
     case ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_EXPRESSIONS:
       return {
         ...state,
@@ -224,6 +235,7 @@ interface EngineContextType {
 const defaultEngineState: EngineState = {
   currentLiveEvent: undefined,
   devTools: {
+    highlightCharacters: false,
     blockedChoicesVisible: false,
     highlightExpressions: false,
     xrayVisible: false

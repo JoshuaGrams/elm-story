@@ -7,7 +7,7 @@ import {
   EngineDevToolsLiveEvent,
   ENGINE_DEVTOOLS_LIVE_EVENTS,
   ENGINE_DEVTOOLS_LIVE_EVENT_TYPE
-} from '../../../lib/transport/types/0.6.0'
+} from '../../../lib/transport/types/0.7.0'
 
 import { useWorld } from '../../../hooks'
 
@@ -19,7 +19,8 @@ export const StoryworldPreviewTools: React.FC<{
   studioId: StudioId
   worldId: WorldId
 }> = () => {
-  const [highlightExpressions, setHighlightExpressions] = useState(false),
+  const [highlightCharacters, setHighlightCharacters] = useState(false),
+    [highlightExpressions, setHighlightExpressions] = useState(false),
     [blockedChoicesVisible, setBlockedChoicesVisible] = useState(false),
     [xrayVisible, setXrayVisible] = useState(false)
 
@@ -45,6 +46,7 @@ export const StoryworldPreviewTools: React.FC<{
       >
         Reset
       </Menu.Item>
+
       <Menu.Item
         onClick={() => {
           setXrayVisible(!xrayVisible)
@@ -58,6 +60,23 @@ export const StoryworldPreviewTools: React.FC<{
       >
         XRAY
       </Menu.Item>
+
+      <Menu.Item
+        onClick={() => {
+          setHighlightCharacters(!highlightCharacters)
+          dispatchEngineDevToolsEvent(
+            ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.TOGGLE_CHARACTERS
+          )
+        }}
+        className={`${
+          highlightCharacters
+            ? 'esg-menu-item-enabled'
+            : 'esg-menu-item-disabled'
+        }`}
+      >
+        Characters
+      </Menu.Item>
+
       <Menu.Item
         onClick={() => {
           setHighlightExpressions(!highlightExpressions)

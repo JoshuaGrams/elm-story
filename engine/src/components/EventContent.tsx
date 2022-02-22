@@ -201,6 +201,7 @@ const EventContent: React.FC<{
                         studioId={studioId}
                         characterId={characterId}
                         aliasId={aliasId}
+                        highlight={engine.devTools.highlightCharacters}
                         transform={
                           transform as CharacterElementTransformType | undefined
                         }
