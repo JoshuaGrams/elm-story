@@ -173,7 +173,7 @@ export interface ChoiceCollection {
 }
 
 export interface ConditionData {
-  compare: [ElementId, COMPARE_OPERATOR_TYPE, string]
+  compare: [ElementId, COMPARE_OPERATOR_TYPE, string, VARIABLE_TYPE]
   id: ElementId
   pathId: ElementId
   tags: string[]
@@ -189,7 +189,7 @@ export interface ConditionCollection {
 export interface EffectData {
   id: ElementId
   pathId: ElementId
-  set: [ElementId, SET_OPERATOR_TYPE, string]
+  set: [ElementId, SET_OPERATOR_TYPE, string, VARIABLE_TYPE]
   tags: string[]
   title: string
   updated: number
@@ -443,7 +443,7 @@ export interface EngineChoiceCollection {
 }
 
 export interface EngineConditionData {
-  compare: [ElementId, COMPARE_OPERATOR_TYPE, string]
+  compare: [ElementId, COMPARE_OPERATOR_TYPE, string, VARIABLE_TYPE]
   id: ElementId
   pathId: ElementId
   variableId: ElementId
@@ -457,7 +457,7 @@ export interface EngineConditionCollection {
 export interface EngineEffectData {
   id: ElementId
   pathId: ElementId
-  set: [ElementId, SET_OPERATOR_TYPE, string]
+  set: [ElementId, SET_OPERATOR_TYPE, string, VARIABLE_TYPE]
   variableId: ElementId
   worldId: WorldId
 }

@@ -105,7 +105,7 @@ export default async (
     conditions.map(
       ({ compare, id, pathId, tags, title, updated, variableId }) =>
         (worldData.conditions[id as string] = {
-          compare: [compare[0], compare[1], compare[2]],
+          compare,
           id: id as string,
           pathId,
           tags,

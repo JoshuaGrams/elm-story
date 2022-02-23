@@ -106,13 +106,20 @@ const RouteConditionRow: React.FC<{
                   valueToSet = newValue ? `${newValue}` : ''
                   break
                 case VARIABLE_TYPE.NUMBER:
-                  if (isNaN(newValue as any)) {
+                  if (newValue !== '-' && isNaN(newValue as any)) {
                     reset?.()
                     return
                   }
 
-                  if (!isNaN(newValue as any) || newValue === '' || !newValue) {
-                    valueToSet = `${newValue || 0}`
+                  if (
+                    !isNaN(newValue as any) ||
+                    newValue === '' ||
+                    newValue === '-' ||
+                    !newValue
+                  ) {
+                    valueToSet = `${
+                      newValue ? (newValue === '-' ? 0 : newValue) : '0'
+                    }`
 
                     if (newValue === null) shouldReset = true
                   } else {
@@ -213,13 +220,20 @@ const RouteEffectRow: React.FC<{
                   valueToSet = newValue ? `${newValue}` : ''
                   break
                 case VARIABLE_TYPE.NUMBER:
-                  if (isNaN(newValue as any)) {
+                  if (newValue !== '-' && isNaN(newValue as any)) {
                     reset?.()
                     return
                   }
 
-                  if (!isNaN(newValue as any) || newValue === '' || !newValue) {
-                    valueToSet = `${newValue || 0}`
+                  if (
+                    !isNaN(newValue as any) ||
+                    newValue === '' ||
+                    newValue === '-' ||
+                    !newValue
+                  ) {
+                    valueToSet = `${
+                      newValue ? (newValue === '-' ? 0 : newValue) : '0'
+                    }`
 
                     if (newValue === null) shouldReset = true
                   } else {
@@ -305,7 +319,8 @@ const PathDetails: React.FC<{
         set: [
           foundVariable.id,
           SET_OPERATOR_TYPE.ASSIGN,
-          foundVariable.initialValue
+          foundVariable.initialValue,
+          foundVariable.type
         ],
         tags: []
       }))

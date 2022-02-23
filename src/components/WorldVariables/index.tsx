@@ -207,17 +207,30 @@ export const VariableRow: React.FC<{
         if (
           !isNaN(changedValues.initialValue as any) ||
           changedValues.initialValue === '' ||
+          changedValues.initialValue === '-' ||
           !changedValues.initialValue
         ) {
           await api().variables.saveVariableInitialValue(
             studioId,
             variable.id,
-            `${changedValues.initialValue || 0}`
+            `${
+              changedValues.initialValue
+                ? changedValues.initialValue === '-'
+                  ? '0'
+                  : changedValues.initialValue
+                : '0'
+              // changedValues.initialValue
+              //   ? Number.isSafeInteger(changedValues.initialValue)
+              //     ? changedValues.initialValue
+              //     : parseFloat(changedValues.initialValue).toFixed(2)
+              //   : '0'
+            }`
           )
 
           // #298: detect user pressing return or clicking outside
-          changedValues.initialValue === null &&
+          if (changedValues.initialValue === null) {
             editVariableInitialValueForm.resetFields()
+          }
         } else {
           editVariableInitialValueForm.resetFields()
           variableInitialValueInputRef.current?.focus()
@@ -237,7 +250,7 @@ export const VariableRow: React.FC<{
     | undefined => {
     if (rowType === VARIABLE_ROW_TYPE.VARIABLE) {
       if (variable?.type === VARIABLE_TYPE.NUMBER) {
-        return Number(variable.initialValue || 0) || 0
+        return variable.initialValue || '0'
       } else {
         return variable?.initialValue || undefined
       }
@@ -246,7 +259,7 @@ export const VariableRow: React.FC<{
         case VARIABLE_TYPE.BOOLEAN:
           return value || 'false'
         case VARIABLE_TYPE.NUMBER:
-          return Number(value) || 0
+          return value || '0'
         case VARIABLE_TYPE.STRING:
           return value || undefined
         default:
@@ -444,7 +457,20 @@ export const VariableRow: React.FC<{
 
                   {variable.type === VARIABLE_TYPE.NUMBER && (
                     <Form.Item name="initialValue">
-                      <InputNumber ref={variableInitialValueInputRef} />
+                      <InputNumber
+                        ref={variableInitialValueInputRef}
+                        // formatter={(value) => {
+                        //   const valueAsFloat = value
+                        //     ? parseFloat(value as string)
+                        //     : 0
+
+                        //   return `${
+                        //     Number.isSafeInteger(valueAsFloat)
+                        //       ? value || ''
+                        //       : valueAsFloat.toFixed(2)
+                        //   }`
+                        // }}
+                      />
                     </Form.Item>
                   )}
                 </Form>

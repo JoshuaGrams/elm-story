@@ -586,9 +586,13 @@
     color: var(--event-past-choice-result-text-color);
   }
 
-  .event-content-choice .closed-route {
-    border: 0.1rem dashed var(--warning-color) !important;
-    color: var(--warning-color) !important;
+  .event-content-choice {
+    .closed-route {
+      border: 0.1rem dashed var(--warning-color) !important;
+      padding-left: 1.4rem;
+      padding-right: 1.4rem;
+      color: var(--warning-color) !important;
+    }
   }
 
   .event-content-input-result button:disabled {

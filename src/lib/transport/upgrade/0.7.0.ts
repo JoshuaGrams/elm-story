@@ -6,7 +6,9 @@ import {
   EventCollection,
   SceneCollection,
   WorldDataJSON as WorldDataJSON_070,
-  SceneChildRefs
+  SceneChildRefs,
+  ConditionCollection,
+  EffectCollection
 } from '../types/0.7.0'
 
 export default ({
@@ -65,7 +67,34 @@ export default ({
 
     upgradedScenes[sceneId] = {
       ...clonedScene,
-      children: clonedChildren,
+      children: clonedChildren
+    }
+  })
+
+  // elmstorygames/feedback#276
+  const upgradedConditions: ConditionCollection = {}
+
+  Object.keys(conditions).map((conditionId) => {
+    const clonedCondition = { ...conditions[conditionId] }
+
+    upgradedConditions[conditionId] = {
+      ...clonedCondition,
+      compare: [
+        ...clonedCondition.compare,
+        variables[clonedCondition.variableId].type
+      ]
+    }
+  })
+
+  // elmstorygames/feedback#276
+  const upgradedEffects: EffectCollection = {}
+
+  Object.keys(effects).map((effectId) => {
+    const clonedEffect = { ...effects[effectId] }
+
+    upgradedEffects[effectId] = {
+      ...clonedEffect,
+      set: [...clonedEffect.set, variables[clonedEffect.variableId].type]
     }
   })
 
@@ -74,8 +103,8 @@ export default ({
     _,
     characters,
     choices,
-    conditions,
-    effects,
+    conditions: upgradedConditions,
+    effects: upgradedEffects,
     events: upgradedEvents,
     folders,
     inputs,

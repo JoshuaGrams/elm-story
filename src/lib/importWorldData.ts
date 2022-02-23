@@ -170,7 +170,7 @@ export default (
             { compare, id, pathId, tags, title, updated, variableId }
           ] of Object.entries(conditions)) {
             await api().conditions.saveCondition(_.studioId, {
-              compare: [...compare, variables[variableId].type],
+              compare,
               id,
               pathId,
               tags,

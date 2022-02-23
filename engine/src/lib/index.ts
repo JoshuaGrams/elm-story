@@ -120,3 +120,15 @@ export const getCharactersIdsFromEventContent = (children: Descendant[]) =>
         element.character_id !== undefined
     )
     .map(({ character_id }) => character_id as string)
+
+export const formatNumberFromString = (value: string) => {
+  if (value === '-') return '-'
+
+  const parsedAsFloat = parseFloat(value)
+
+  return `${
+    Number.isSafeInteger(parsedAsFloat)
+      ? parsedAsFloat
+      : parsedAsFloat.toFixed(2)
+  }`
+}

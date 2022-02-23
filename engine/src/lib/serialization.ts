@@ -120,7 +120,8 @@ export const eventContentToEventStreamContent = async (
 ) => {
   const missingContent =
     content[0].type !== ELEMENT_FORMATS.IMG &&
-    !content[0].text &&
+    // @ts-ignore
+    !content[0].children?.[0].text &&
     content.length === 1
 
   let startingElement: string | undefined, text: string | undefined

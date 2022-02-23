@@ -279,7 +279,7 @@ export interface Effect extends Element {
   worldId: WorldId
   pathId: ElementId
   variableId: ElementId
-  set: [ElementId, SET_OPERATOR_TYPE, string] // variable ref
+  set: [ElementId, SET_OPERATOR_TYPE, string, VARIABLE_TYPE] // variable ref
 }
 
 export enum EVENT_TYPE {

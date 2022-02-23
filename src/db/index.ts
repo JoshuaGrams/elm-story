@@ -1499,7 +1499,12 @@ export class LibraryDatabase extends Dexie {
           if (effect) {
             await this.effects.update(effectId, {
               ...effect,
-              set: [effect.set[0], newSetOperatorType, effect.set[2]],
+              set: [
+                effect.set[0],
+                newSetOperatorType,
+                effect.set[2],
+                effect.set[3]
+              ],
               updated: Date.now()
             })
           } else {
@@ -1525,7 +1530,7 @@ export class LibraryDatabase extends Dexie {
           if (effect) {
             await this.effects.update(effectId, {
               ...effect,
-              set: [effect.set[0], effect.set[1], newValue],
+              set: [effect.set[0], effect.set[1], newValue, effect.set[3]],
               updated: Date.now()
             })
           } else {

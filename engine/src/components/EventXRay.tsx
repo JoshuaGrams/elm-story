@@ -8,10 +8,12 @@ import {
   EngineDevToolsLiveEvent,
   EngineLiveEventData,
   ENGINE_DEVTOOLS_LIVE_EVENTS,
-  ENGINE_DEVTOOLS_LIVE_EVENT_TYPE
+  ENGINE_DEVTOOLS_LIVE_EVENT_TYPE,
+  VARIABLE_TYPE
 } from '../types'
 
 import { EngineContext } from '../contexts/EngineContext'
+import { formatNumberFromString } from '../lib'
 
 export const ENGINE_XRAY_CONTAINER_HEIGHT = 250
 
@@ -182,10 +184,36 @@ const EventXRay: React.FC<{
                       </td>
                       <td title={type}>{type}</td>
                       <td title={initialValue || 'undefined'}>
-                        {initialValue || 'undefined'}
+                        {!initialValue && <>undefined</>}
+
+                        {initialValue && (
+                          <>
+                            {type === VARIABLE_TYPE.NUMBER && (
+                              <>{formatNumberFromString(initialValue)}</>
+                            )}
+
+                            {type !== VARIABLE_TYPE.NUMBER && (
+                              <>{initialValue}</>
+                            )}
+                          </>
+                        )}
                       </td>
-                      <td title={initialValue || 'undefined'}>
-                        {event.state[id]?.value || 'undefined'}
+                      <td title={event.state[id]?.value || 'undefined'}>
+                        {!event.state[id]?.value && <>undefined</>}
+
+                        {event.state[id]?.value && (
+                          <>
+                            {type === VARIABLE_TYPE.NUMBER && (
+                              <>
+                                {formatNumberFromString(event.state[id].value)}
+                              </>
+                            )}
+
+                            {type !== VARIABLE_TYPE.NUMBER && (
+                              <>{event.state[id].value}</>
+                            )}
+                          </>
+                        )}
                       </td>
                     </tr>
                   </>

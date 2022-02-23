@@ -174,7 +174,7 @@ const EventPassthroughChoice: React.FC<{
                 ) : engine.currentLiveEvent === event.id &&
                   !openPath &&
                   !openRouteIsLoading ? (
-                  'Route Required'
+                  'Open path not found...'
                 ) : (
                   <>{PassthroughIcon}</>
                 )}
@@ -453,7 +453,7 @@ const EventChoices: React.FC<{
                 {engine.currentLiveEvent ===
                   `${INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY}${worldId}` && (
                   <button disabled={true} className="closed-route">
-                    Route Required
+                    Open path not found...
                   </button>
                 )}
               </div>

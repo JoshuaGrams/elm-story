@@ -32,7 +32,6 @@ import {
   CHARACTER_MASK_TYPE,
   CharacterMask,
   PATH_CONDITIONS_TYPE,
-  EngineSettingsData,
   ENGINE_FONT,
   ENGINE_MOTION,
   ENGINE_SIZE
@@ -40,6 +39,7 @@ import {
 import {
   AUTO_ENGINE_BOOKMARK_KEY,
   DEFAULT_ENGINE_SETTINGS_KEY,
+  formatNumberFromString,
   INITIAL_LIVE_ENGINE_EVENT_ORIGIN_KEY
 } from '../lib'
 
@@ -671,34 +671,43 @@ export const processEffectsByRoute = async (
     const newState: EngineLiveEventStateCollection = cloneDeep(state)
 
     effects.map((effect) => {
+      const isNumber = effect.set[3] === VARIABLE_TYPE.NUMBER
+
       if (effect.id && newState[effect.variableId]) {
         switch (effect.set[1]) {
           case SET_OPERATOR_TYPE.ASSIGN:
             newState[effect.variableId].value = effect.set[2]
             break
           case SET_OPERATOR_TYPE.ADD:
-            newState[effect.variableId].value = `${
+            newState[effect.variableId].value = `${(
               Number(newState[effect.variableId].value) + Number(effect.set[2])
-            }`
+            ).toFixed(2)}`
             break
           case SET_OPERATOR_TYPE.SUBTRACT:
-            newState[effect.variableId].value = `${
+            newState[effect.variableId].value = `${(
               Number(newState[effect.variableId].value) - Number(effect.set[2])
-            }`
+            ).toFixed(2)}`
             break
           case SET_OPERATOR_TYPE.MULTIPLY:
-            newState[effect.variableId].value = `${
+            newState[effect.variableId].value = `${(
               Number(newState[effect.variableId].value) * Number(effect.set[2])
-            }`
+            ).toFixed(2)}`
             break
           case SET_OPERATOR_TYPE.DIVIDE:
-            newState[effect.variableId].value = `${
+            newState[effect.variableId].value = `${(
               Number(newState[effect.variableId].value) / Number(effect.set[2])
-            }`
+            ).toFixed(2)}`
             break
           default:
             break
         }
+      }
+
+      if (isNumber) {
+        // elmstorygames/feedback#276
+        newState[effect.variableId].value = formatNumberFromString(
+          newState[effect.variableId].value
+        )
       }
     })
 
