@@ -126,6 +126,8 @@ export const formatNumberFromString = (value: string) => {
 
   const parsedAsFloat = parseFloat(value)
 
+  if (Number.isNaN(parsedAsFloat)) return 'ERROR'
+
   return `${
     Number.isSafeInteger(parsedAsFloat)
       ? parsedAsFloat

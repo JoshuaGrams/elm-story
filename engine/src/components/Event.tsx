@@ -67,7 +67,7 @@ export function translateLiveEventResultValue(value: string) {
 
   return (
     <>
-      <span className="event-content-choice-icon">&raquo;</span>{' '}
+      <span className="event-content-choice-icon">&raquo;</span>
       <span>{finalValue}</span>
     </>
   )

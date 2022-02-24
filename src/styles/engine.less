@@ -534,6 +534,12 @@
       &:hover {
         color: var(--primary-color-brighter);
       }
+
+      .event-content-choice-icon {
+        color: var(--primary-color);
+        transition: color 0.2s;
+        padding-right: 0.6rem;
+      }
     }
   }
 
@@ -552,12 +558,6 @@
   }
 
   .event-content-choice {
-    .event-content-choice-icon {
-      color: var(--primary-color);
-      transition: color 0.2s;
-      padding-right: 0.6rem;
-    }
-
     display: grid;
     padding: 0 1.4rem !important;
     border: none !important;
@@ -603,7 +603,7 @@
 
   .event-content-input {
     width: 100%;
-    padding-top: 1.4rem;
+    // padding-top: 1.4rem; moved to inline style
 
     form {
       padding: 0 1.4rem;
@@ -627,7 +627,7 @@
           background: transparent;
           color: var(--text-color);
           font-size: 1.6rem;
-          padding-left: 1.9rem;
+          padding-left: 1.6rem; // 1.9?
           padding-bottom: 1.6rem;
           box-sizing: border-box;
         }

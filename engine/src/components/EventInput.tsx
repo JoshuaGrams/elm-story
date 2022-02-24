@@ -44,7 +44,7 @@ const EventInput: React.FC<{
 
   const [showInput, setShowInput] = useState(false),
     [inputValue, setInputValue] = useState<string | number | undefined>(''),
-    [routeError, setRouteError] = useState<boolean>(false)
+    [pathError, setPathError] = useState<boolean>(false)
 
   const input = useLiveQuery(
     async () => {
@@ -96,7 +96,8 @@ const EventInput: React.FC<{
 
   const submitInput = useCallback(
     async (boolValue?: 'true' | 'false') => {
-      if (input && inputVariable && inputValue) {
+      // elmstorygames/feedback#278
+      if (input && inputVariable && (inputValue || boolValue)) {
         const stateWithInputValue = cloneDeep(liveEvent.state)
 
         stateWithInputValue[inputVariable.id].value =
@@ -104,33 +105,34 @@ const EventInput: React.FC<{
           // #400
           `${typeof inputValue === 'string' ? inputValue.trim() : inputValue}`
 
-        const foundOpenRoute = await findOpenPath(
+        const foundOpenPath = await findOpenPath(
           studioId,
           await getPathsFromInput(studioId, input.id),
           stateWithInputValue
         )
 
         // if event.origin, loopback
-        if (foundOpenRoute || liveEvent.origin) {
-          setRouteError(false)
+        if (foundOpenPath || liveEvent.origin) {
+          setPathError(false)
 
           onSubmitPath({
             originId: liveEvent.origin,
             result: {
               id: input.id,
-              value: boolValue
-                ? boolValue === 'true'
-                  ? 'Yes'
-                  : 'No'
-                : `${inputValue}`
+              value:
+                boolValue !== undefined
+                  ? boolValue === 'true'
+                    ? 'Yes'
+                    : 'No'
+                  : `${inputValue}`
             },
-            path: foundOpenRoute,
+            path: foundOpenPath,
             state: stateWithInputValue
           })
         }
 
-        if (!foundOpenRoute && !liveEvent.origin) {
-          setRouteError(true)
+        if (!foundOpenPath && !liveEvent.origin) {
+          setPathError(true)
         }
       }
 
@@ -165,7 +167,7 @@ const EventInput: React.FC<{
   })
 
   useEffect(() => {
-    inputValue && setRouteError(false)
+    inputValue && setPathError(false)
   }, [inputValue])
 
   return (
@@ -176,6 +178,12 @@ const EventInput: React.FC<{
             ? 'event-content-input'
             : 'event-content-input-result'
         }`}
+        style={{
+          paddingTop:
+            inputVariable?.type === VARIABLE_TYPE.BOOLEAN && !liveEvent.result
+              ? 0
+              : '1.4rem'
+        }}
         ref={inputContainerRef}
       >
         {!liveEvent.result && input && (
@@ -270,25 +278,33 @@ const EventInput: React.FC<{
 
                 {inputVariable.type === VARIABLE_TYPE.BOOLEAN && (
                   <div className="event-content-choices">
-                    <button
-                      className="event-content-choice"
-                      key="event-content-input-yes-btn"
-                      onClick={() => submitInput('true')}
-                    >
-                      Yes
-                    </button>
-                    <button
-                      className="event-content-choice"
-                      key="event-content-input-no-btn"
-                      onClick={() => submitInput('false')}
-                    >
-                      No
-                    </button>
+                    <div style={{ padding: '0 1.4rem' }}>
+                      <button
+                        className="event-content-choice-boolean"
+                        key="event-content-input-yes-btn"
+                        onClick={() => submitInput('true')}
+                      >
+                        <span className="event-content-choice-icon">
+                          &raquo;
+                        </span>
+                        Yes
+                      </button>
+                      <button
+                        className="event-content-choice-boolean"
+                        key="event-content-input-no-btn"
+                        onClick={() => submitInput('false')}
+                      >
+                        <span className="event-content-choice-icon">
+                          &raquo;
+                        </span>
+                        No
+                      </button>
+                    </div>
                   </div>
                 )}
 
-                {routeError && (
-                  <div className="engine-warning-message">Missing route.</div>
+                {pathError && (
+                  <div className="engine-warning-message">Missing path.</div>
                 )}
               </>
             )}
