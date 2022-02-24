@@ -96,6 +96,7 @@ export default (database: Dexie) => {
         settingsTable.toCollection().modify((setting: EngineSettingsData) => {
           setting.font = ENGINE_FONT.SANS
           setting.motion = ENGINE_MOTION.FULL
+          setting.muted = false
           setting.size = ENGINE_SIZE.DEFAULT
         }),
         tx

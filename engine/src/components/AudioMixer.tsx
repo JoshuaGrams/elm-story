@@ -1,17 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useQuery } from 'react-query'
+import { AudioMixerProfiles, useAudioMixer } from '../lib/hooks/useAudioMixer'
 
 import { LibraryDatabase } from '../lib/db'
 
-import { EngineContext } from '../contexts/EngineContext'
 import { AudioProfile } from '../types'
 
+import { EngineContext } from '../contexts/EngineContext'
+import { SettingsContext } from '../contexts/SettingsContext'
+
 import { getEvent, getScene } from '../lib/api'
-import { AudioMixerProfiles, useAudioMixer } from '../lib/hooks/useAudioMixer'
 
 const AudioMixer: React.FC = React.memo(() => {
-  const { engine } = useContext(EngineContext)
+  const { engine } = useContext(EngineContext),
+    { settings } = useContext(SettingsContext)
 
   const [audio, setAudio] = useState<{
     scene: AudioProfile | undefined
@@ -27,7 +30,7 @@ const AudioMixer: React.FC = React.memo(() => {
     event: undefined
   })
 
-  const audioMixer = useAudioMixer({ profiles })
+  const audioMixer = useAudioMixer({ profiles, muted: settings.muted })
 
   const currentLiveEventData = useLiveQuery(
     async () => {
@@ -67,10 +70,6 @@ const AudioMixer: React.FC = React.memo(() => {
       setProfiles(profilesData)
     }
   }, [profilesData])
-
-  useEffect(() => {
-    console.log(audioMixer)
-  }, [audioMixer])
 
   return null
 })

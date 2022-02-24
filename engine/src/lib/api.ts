@@ -214,6 +214,7 @@ export const saveEngineDefaultWorldCollectionData = async (
             theme: ENGINE_THEME.CONSOLE,
             font: ENGINE_FONT.SERIF,
             motion: ENGINE_MOTION.FULL,
+            muted: false,
             size: ENGINE_SIZE.DEFAULT
           }
         })
@@ -1284,9 +1285,10 @@ export const savePresentationSettings = async (
     font?: ENGINE_FONT
     size?: ENGINE_SIZE
     motion?: ENGINE_MOTION
+    muted: boolean
   }
 ) => {
-  const { theme, font, motion, size } = settings
+  const { theme, font, motion, muted, size } = settings
 
   try {
     const libraryDatabase = new LibraryDatabase(studioId),
@@ -1302,6 +1304,7 @@ export const savePresentationSettings = async (
           theme: theme || ENGINE_THEME.BOOK,
           font: font || ENGINE_FONT.SANS,
           motion: motion || ENGINE_MOTION.FULL,
+          muted,
           size: size || ENGINE_SIZE.DEFAULT
         }
       )
@@ -1326,6 +1329,7 @@ export const getPresentationSettings = async (
       theme: settings?.theme,
       font: settings?.font,
       motion: settings?.motion,
+      muted: settings?.muted,
       size: settings?.size
     }
   } catch (error) {

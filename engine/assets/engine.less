@@ -262,7 +262,17 @@
   }
 
   #live-event-stream-title-bar {
-    grid-template-columns: var(--title-bar-height) 1fr var(--title-bar-height);
+    grid-template-columns: var(--title-bar-height) 1fr var(--title-bar-height) var(
+        --title-bar-height
+      );
+
+    .live-event-stream-title-bar-audio-muted {
+      svg {
+        path {
+          fill: hsl(0, 0%, 60%);
+        }
+      }
+    }
   }
 
   #live-event-stream {

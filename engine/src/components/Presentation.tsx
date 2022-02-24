@@ -53,6 +53,15 @@ const Presentation: React.FC = ({ children }) => {
   }, [presentationSettings?.motion])
 
   useEffect(() => {
+    presentationSettings?.muted &&
+      settingsDispatch({
+        type: SETTINGS_ACTION_TYPE.SET_MUTED,
+        muted: presentationSettings.muted,
+        closeSettings: true
+      })
+  }, [presentationSettings?.muted])
+
+  useEffect(() => {
     presentationSettings?.size &&
       settingsDispatch({
         type: SETTINGS_ACTION_TYPE.SET_SIZE,

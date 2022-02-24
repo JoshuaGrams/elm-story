@@ -30,7 +30,7 @@ const Settings: React.FC = () => {
     website
   } = engine.worldInfo
 
-  const { theme, font, motion, size } = settings
+  const { theme, font, motion, muted, size } = settings
 
   const setTheme = useCallback(
     async (selectedTheme: ENGINE_THEME) => {
@@ -40,16 +40,15 @@ const Settings: React.FC = () => {
         closeSettings: false
       })
 
-      const {} = settings
-
       await savePresentationSettings(studioId, worldId, {
         theme: selectedTheme,
         font,
+        motion,
         size,
-        motion
+        muted
       })
     },
-    [studioId, theme, font, motion, size]
+    [studioId, worldId, theme, font, motion, muted, size]
   )
 
   const setFont = useCallback(
@@ -63,11 +62,12 @@ const Settings: React.FC = () => {
       await savePresentationSettings(studioId, worldId, {
         theme,
         font: selectedFont,
-        size: size,
-        motion
+        motion,
+        muted,
+        size: size
       })
     },
-    [studioId, theme, font, motion, size]
+    [studioId, worldId, theme, font, motion, muted, size]
   )
 
   const setSize = useCallback(
@@ -82,10 +82,11 @@ const Settings: React.FC = () => {
         theme,
         font,
         motion,
+        muted,
         size: selectedSize
       })
     },
-    [studioId, theme, font, motion, size]
+    [studioId, worldId, theme, font, motion, muted, size]
   )
 
   const setMotion = useCallback(
@@ -100,10 +101,11 @@ const Settings: React.FC = () => {
         theme,
         font,
         motion: selectedMotion,
+        muted,
         size
       })
     },
-    [studioId, theme, font, motion, size]
+    [studioId, worldId, theme, font, motion, muted, size]
   )
 
   if (!settings.open) return null

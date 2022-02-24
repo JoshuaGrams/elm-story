@@ -589,6 +589,7 @@ export interface EngineSettingsData {
   font: ENGINE_FONT
   size: ENGINE_SIZE
   motion: ENGINE_MOTION
+  muted: boolean
   worldId: WorldId
 }
 

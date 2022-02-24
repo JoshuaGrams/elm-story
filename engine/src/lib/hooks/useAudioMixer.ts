@@ -11,13 +11,13 @@ export type AudioSubTrack = { source?: string; audio?: Howl; primary: boolean }
 const useAudioTrack = ({
   type,
   source,
-  playing,
+  muted,
   loop,
   volume
 }: {
   type: AudioTrackType
   source?: string
-  playing: boolean
+  muted: boolean
   loop?: boolean
   volume?: number
 }) => {
@@ -77,11 +77,8 @@ const useAudioTrack = ({
       }),
       subTrackToFadeIn = track.find((subTrack) => subTrack.primary)
 
-    console.log(subTrackToFadeOut?.source)
-
     if (subTrackToFadeOut?.audio) {
       subTrackToFadeOut.audio.once('fade', () => {
-        console.log('test')
         subTrackToFadeOut.audio?.stop()
 
         // const resetSubTrack: AudioSubTrack = {
@@ -97,7 +94,6 @@ const useAudioTrack = ({
         // )
       })
 
-      console.log('here')
       subTrackToFadeOut.audio.fade(volume || 1, 0, 1000)
     }
 
@@ -126,39 +122,40 @@ const useAudioTrack = ({
 }
 export const useAudioMixer = ({
   profiles,
-  playing = false,
+  muted,
   onEnd
 }: {
   profiles: AudioMixerProfiles
-  playing?: boolean
+  muted: boolean
   onEnd?: (type: 'SCENE' | 'EVENT', source: string) => void
 }) => {
   const sceneTrack = useAudioTrack({
       type: 'SCENE',
       // #DEV
-      // source: profiles.scene?.[0]
-      //   ? `../../data/0-7-test_0.0.1/assets/${profiles.scene[0]}.mp3`
-      //   : undefined,
-      // #PWA
       source: profiles.scene?.[0]
-        ? `assets/content/${profiles.scene[0]}.mp3`
+        ? `../../data/0-7-test_0.0.1/assets/${profiles.scene[0]}.mp3`
         : undefined,
-      playing,
+      // #PWA
+      // source: profiles.scene?.[0]
+      //   ? `assets/content/${profiles.scene[0]}.mp3`
+      //   : undefined,
+      muted,
       loop: profiles.scene?.[1],
-      volume: profiles.event ? 0.3 : 1
+      volume: muted ? -1 : profiles.event ? 0.3 : 1
     }),
     eventTrack = useAudioTrack({
       type: 'EVENT',
       // #DEV
-      // source: profiles.event?.[0]
-      //   ? `../../data/0-7-test_0.0.1/assets/${profiles.event[0]}.mp3`
-      //   : undefined,
-      // #PWA
       source: profiles.event?.[0]
-        ? `assets/content/${profiles.event[0]}.mp3`
+        ? `../../data/0-7-test_0.0.1/assets/${profiles.event[0]}.mp3`
         : undefined,
-      playing,
-      loop: profiles.event?.[1]
+      // #PWA
+      // source: profiles.event?.[0]
+      //   ? `assets/content/${profiles.event[0]}.mp3`
+      //   : undefined,
+      muted,
+      loop: profiles.event?.[1],
+      volume: muted ? -1 : 1
     })
 
   return { sceneTrack, eventTrack }

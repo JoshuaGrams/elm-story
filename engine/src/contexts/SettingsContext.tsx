@@ -8,6 +8,7 @@ interface SettingsContext {
   font: ENGINE_FONT | undefined
   size: ENGINE_SIZE | undefined
   motion: ENGINE_MOTION | undefined
+  muted: boolean
 }
 
 export enum SETTINGS_ACTION_TYPE {
@@ -15,8 +16,9 @@ export enum SETTINGS_ACTION_TYPE {
   OPEN = 'OPEN',
   SET_THEME = 'SET_THEME',
   SET_FONT = 'SET_FONT',
-  SET_SIZE = 'SET_SCALE',
-  SET_MOTION = 'SET_ANIMATION'
+  SET_MOTION = 'SET_ANIMATION',
+  SET_MUTED = 'SET_MUTED',
+  SET_SIZE = 'SET_SCALE'
 }
 
 type SettingsActionType =
@@ -34,13 +36,18 @@ type SettingsActionType =
     }
   | {
       closeSettings: boolean
-      size: ENGINE_SIZE
-      type: SETTINGS_ACTION_TYPE.SET_SIZE
+      motion: ENGINE_MOTION
+      type: SETTINGS_ACTION_TYPE.SET_MOTION
     }
   | {
       closeSettings: boolean
-      motion: ENGINE_MOTION
-      type: SETTINGS_ACTION_TYPE.SET_MOTION
+      muted: boolean
+      type: SETTINGS_ACTION_TYPE.SET_MUTED
+    }
+  | {
+      closeSettings: boolean
+      size: ENGINE_SIZE
+      type: SETTINGS_ACTION_TYPE.SET_SIZE
     }
 
 const settingsReducer = (
@@ -70,16 +77,23 @@ const settingsReducer = (
         font: action.font,
         open: action.closeSettings ? false : true
       }
-    case SETTINGS_ACTION_TYPE.SET_SIZE:
-      return {
-        ...state,
-        size: action.size,
-        open: action.closeSettings ? false : true
-      }
+
     case SETTINGS_ACTION_TYPE.SET_MOTION:
       return {
         ...state,
         motion: action.motion,
+        open: action.closeSettings ? false : true
+      }
+    case SETTINGS_ACTION_TYPE.SET_MUTED:
+      return {
+        ...state,
+        muted: action.muted,
+        open: action.closeSettings ? false : true
+      }
+    case SETTINGS_ACTION_TYPE.SET_SIZE:
+      return {
+        ...state,
+        size: action.size,
         open: action.closeSettings ? false : true
       }
     default:
@@ -97,6 +111,7 @@ const defaultSettingsState: SettingsContext = {
   theme: undefined,
   font: undefined,
   motion: undefined,
+  muted: false,
   size: undefined
 }
 
