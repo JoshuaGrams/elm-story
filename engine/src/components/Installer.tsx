@@ -60,7 +60,7 @@ const Installer: React.FC<{
 
           if (isComposer) {
             engineDispatch({ type: ENGINE_ACTION_TYPE.SET_IS_COMPOSER })
-            engineDispatch({ type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION })
+            engineDispatch({ type: ENGINE_ACTION_TYPE.HIDE_ERROR_NOTIFICATION })
 
             // #421
             const foundWorld = await getWorldInfo(studioId, worldId)

@@ -29,7 +29,7 @@ interface EngineState {
     website?: string
   }
   playing: boolean
-  resetNotification: {
+  errorNotification: {
     message: string | undefined
     showing: boolean
   }
@@ -40,7 +40,7 @@ export enum ENGINE_ACTION_TYPE {
   APPEND_LIVE_EVENTS_TO_STREAM = 'APPEND_EVENTS_TO_STREAM',
   CLEAR_EVENT_STREAM = 'CLEAR_EVENT_STREAM',
   SET_WORLD_INFO = 'SET_GAME_INFO',
-  HIDE_RESET_NOTIFICATION = 'HIDE_RESET_NOTIFICATION',
+  HIDE_ERROR_NOTIFICATION = 'HIDE_ERROR_NOTIFICATION',
   PLAY = 'PLAY', // sets currentEvent
   SET_INSTALLED = 'SET_INSTALLED',
   SET_INSTALL_ID = 'SET_INSTALL_ID',
@@ -48,7 +48,7 @@ export enum ENGINE_ACTION_TYPE {
   SET_CURRENT_LIVE_EVENT = 'SET_CURRENT_EVENT',
   SET_UPDATE_WORLD = 'SET_UPDATE_WORLD',
   STOP = 'STOP',
-  SHOW_RESET_NOTIFICATION = 'SHOW_RESET_NOTIFICATION',
+  SHOW_ERROR_NOTIFICATION = 'SHOW_ERROR_NOTIFICATION',
   TOGGLE_DEVTOOLS_EXPRESSIONS = 'TOGGLE_DEVTOOLS_EXPRESSIONS',
   TOGGLE_DEVTOOLS_CHARACTERS = 'TOGGLE_DEVTOOLS_CHARACTERS',
   TOGGLE_DEVTOOLS_BLOCKED_CHOICES = 'TOGGLE_DEVTOOLS_BLOCKED_CHOICES',
@@ -92,8 +92,8 @@ type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.SET_UPDATE_WORLD; updating: boolean }
   | { type: ENGINE_ACTION_TYPE.PLAY; fromEvent: ElementId | undefined }
   | { type: ENGINE_ACTION_TYPE.STOP }
-  | { type: ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION }
-  | { type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION; message: string }
+  | { type: ENGINE_ACTION_TYPE.HIDE_ERROR_NOTIFICATION }
+  | { type: ENGINE_ACTION_TYPE.SHOW_ERROR_NOTIFICATION; message: string }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_BLOCKED_CHOICES }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_CHARACTERS }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_EXPRESSIONS }
@@ -175,15 +175,15 @@ const engineReducer = (
         liveEventsInStream: [],
         playing: false
       }
-    case ENGINE_ACTION_TYPE.HIDE_RESET_NOTIFICATION:
+    case ENGINE_ACTION_TYPE.HIDE_ERROR_NOTIFICATION:
       return {
         ...state,
-        resetNotification: { message: undefined, showing: false }
+        errorNotification: { message: undefined, showing: false }
       }
-    case ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION:
+    case ENGINE_ACTION_TYPE.SHOW_ERROR_NOTIFICATION:
       return {
         ...state,
-        resetNotification: { message: action.message, showing: true }
+        errorNotification: { message: action.message, showing: true }
       }
     case ENGINE_ACTION_TYPE.SET_UPDATE_WORLD:
       return {
@@ -246,7 +246,7 @@ const defaultEngineState: EngineState = {
   isComposer: false,
   worldInfo: undefined,
   playing: false,
-  resetNotification: {
+  errorNotification: {
     message: undefined,
     showing: false
   },

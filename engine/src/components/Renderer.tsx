@@ -20,7 +20,7 @@ import EventStreamTitleBar from './LiveEventStreamTitleBar'
 import LiveEventStream from './LiveEventStream'
 
 import EventXRay, { ENGINE_XRAY_CONTAINER_HEIGHT } from './EventXRay'
-import ResetNotification from './ResetNotification'
+import ErrorNotification from './ErrorNotification'
 
 const Renderer: React.FC = React.memo(() => {
   const { engine, engineDispatch } = useContext(EngineContext)
@@ -101,7 +101,7 @@ const Renderer: React.FC = React.memo(() => {
                     </div>
                   )}
 
-                  <ResetNotification />
+                  <ErrorNotification />
                 </>
               )}
             </>

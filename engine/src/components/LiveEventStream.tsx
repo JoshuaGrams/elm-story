@@ -233,7 +233,7 @@ const LiveEventStream: React.FC = React.memo(() => {
                 ))
 
               engineDispatch({
-                type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION,
+                type: ENGINE_ACTION_TYPE.SHOW_ERROR_NOTIFICATION,
                 message: 'On world start jump has changed.'
               })
             }
@@ -253,7 +253,7 @@ const LiveEventStream: React.FC = React.memo(() => {
                 initialLiveEvent.destination !== foundScene.children[0][1]
               ) {
                 engineDispatch({
-                  type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION,
+                  type: ENGINE_ACTION_TYPE.SHOW_ERROR_NOTIFICATION,
                   message: 'On world start jump has changed.'
                 })
               }
@@ -264,7 +264,7 @@ const LiveEventStream: React.FC = React.memo(() => {
 
       if (worldJumps.length === 0 && checkedJumpsOnQuery) {
         engineDispatch({
-          type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION,
+          type: ENGINE_ACTION_TYPE.SHOW_ERROR_NOTIFICATION,
           message: 'On world start jump has changed.'
         })
       }

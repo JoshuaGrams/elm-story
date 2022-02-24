@@ -380,10 +380,14 @@ const EventChoices: React.FC<{
         result: { value: ENGINE_LIVE_EVENT_LOOPBACK_RESULT_VALUE }
       })
     } else {
-      engineDispatch({
-        type: ENGINE_ACTION_TYPE.SHOW_RESET_NOTIFICATION,
-        message: 'Unable to return. Missing route.'
-      })
+      !engine.isComposer &&
+        console.error('[STORYTELLER] Unable to return. Missing path.')
+
+      engine.isComposer &&
+        engineDispatch({
+          type: ENGINE_ACTION_TYPE.SHOW_ERROR_NOTIFICATION,
+          message: 'Unable to return. Missing path.'
+        })
     }
   }, [liveEvent])
 

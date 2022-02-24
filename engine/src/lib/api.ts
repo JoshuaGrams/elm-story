@@ -548,7 +548,8 @@ export const findDestinationEvent = async (
         if (!foundJump.path[1]) {
           const foundScene = await getScene(studioId, foundJump.path[0])
 
-          if (foundScene?.children[0][1]) {
+          // elmstorygames/feedback#20
+          if (foundScene?.children[0]?.[1]) {
             foundLocation = foundScene.children[0][1]
           }
         }
@@ -562,7 +563,7 @@ export const findDestinationEvent = async (
   if (foundLocation) {
     return foundLocation
   } else {
-    throw 'Unable to find destination. Missing event.'
+    return null
   }
 }
 

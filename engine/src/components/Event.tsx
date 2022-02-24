@@ -106,14 +106,15 @@ export const Event: React.FC<{
         let foundEvent: EngineEventData | undefined
 
         if (path) {
-          foundEvent = await getEvent(
+          const foundDestinationEvent = await findDestinationEvent(
             studioId,
-            await findDestinationEvent(
-              studioId,
-              path.destinationId,
-              path.destinationType
-            )
+            path.destinationId,
+            path.destinationType
           )
+
+          if (foundDestinationEvent) {
+            foundEvent = await getEvent(studioId, foundDestinationEvent)
+          }
         }
 
         if (!path) {
@@ -146,7 +147,17 @@ export const Event: React.FC<{
             state
           })
         } else {
-          throw 'Unable to process path. Could not find event.'
+          !engine.isComposer &&
+            console.error(
+              '[STORYTELLER] Unable to process path. Could not find event.'
+            )
+
+          engine.isComposer &&
+            engineDispatch({
+              type: ENGINE_ACTION_TYPE.SHOW_ERROR_NOTIFICATION,
+              message:
+                'Unable to process path. This can happen when jumping to a scene that does not contain a child choice or input event.'
+            })
         }
       } catch (error) {
         throw error
