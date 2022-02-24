@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactChild, ReactElement, ReactNode } from 'react'
 
 import { EventContentLeaf as EventContentLeafType } from '../../../data/eventContentTypes'
 
@@ -35,7 +35,12 @@ const EventContentLeaf: React.FC<{
   }
 
   return (
-    <span {...attributes} className={classNames}>
+    <span
+      {...attributes}
+      className={classNames}
+      // elmstorygames/feedback#223
+      spellCheck={leaf.expression ? false : true}
+    >
       {children}
     </span>
   )
