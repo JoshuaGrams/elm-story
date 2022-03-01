@@ -146,6 +146,9 @@ const createWindow = async () => {
         : WINDOW_EVENT_TYPE.FLOAT
     )
 
+    // elmstorygames/feedback#284
+    mainWindow.webContents.setZoomFactor(mainWindow.webContents.getZoomFactor())
+
     mainWindow.webContents.send(WINDOW_EVENT_TYPE.PLATFORM, [os.platform()])
 
     if (!eventsReady) {
