@@ -3,7 +3,8 @@ import {
   Menu,
   shell,
   BrowserWindow,
-  MenuItemConstructorOptions
+  MenuItemConstructorOptions,
+  WebContents
 } from 'electron'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
@@ -11,6 +12,36 @@ import { WINDOW_EVENT_TYPE } from './lib/events'
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string
   submenu?: DarwinMenuItemConstructorOptions[] | Menu
+}
+
+// elmstorygames/feedback#284
+const ZOOM_UI_INCREMENT: number = 0.2
+
+enum ZOOM_TYPE {
+  IN = 'IN',
+  OUT = 'OUT',
+  RESET = 'RESET'
+}
+
+const zoomUI = (webContents: WebContents, zoomType: ZOOM_TYPE) => {
+  if (zoomType === ZOOM_TYPE.RESET) {
+    webContents.setZoomLevel(0)
+    return
+  }
+
+  const currentZoomLevel = webContents.getZoomLevel()
+
+  if (currentZoomLevel < 3 && zoomType === ZOOM_TYPE.IN) {
+    webContents.setZoomLevel(
+      parseFloat((currentZoomLevel + ZOOM_UI_INCREMENT).toFixed(2))
+    )
+  }
+
+  if (currentZoomLevel > -1 && zoomType === ZOOM_TYPE.OUT) {
+    webContents.setZoomLevel(
+      parseFloat((currentZoomLevel - ZOOM_UI_INCREMENT).toFixed(2))
+    )
+  }
 }
 
 export default class MenuBuilder {
@@ -39,19 +70,19 @@ export default class MenuBuilder {
       submenu: [
         {
           label: 'Hide Elm Story',
-          accelerator: 'Command+H',
+          accelerator: 'CmdOrCtrl+H',
           selector: 'hide:'
         },
         {
           label: 'Hide Others',
-          accelerator: 'Command+Shift+H',
+          accelerator: 'CmdOrCtrl+Shift+H',
           selector: 'hideOtherApplications:'
         },
         { label: 'Show All', selector: 'unhideAllApplications:' },
         { type: 'separator' },
         {
           label: 'Quit',
-          accelerator: 'Command+Q',
+          accelerator: 'CmdOrCtrl+Q',
           click: () => {
             app.quit()
           }
@@ -62,19 +93,19 @@ export default class MenuBuilder {
     const subMenuEdit: DarwinMenuItemConstructorOptions = {
       label: 'Edit',
       submenu: [
-        { label: 'Undo', accelerator: 'Command+Z', selector: 'undo:' },
-        { label: 'Redo', accelerator: 'Shift+Command+Z', selector: 'redo:' },
+        { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
+        { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
         { type: 'separator' },
         {
           label: 'Cut',
-          accelerator: 'Command+X',
+          accelerator: 'CmdOrCtrl+X',
           selector: 'cut:'
         },
-        { label: 'Copy', accelerator: 'Command+C', selector: 'copy:' },
-        { label: 'Paste', accelerator: 'Command+V', selector: 'paste:' },
+        { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
+        { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
         {
           label: 'Select All',
-          accelerator: 'Command+A',
+          accelerator: 'CmdOrCtrl+A',
           selector: 'selectAll:'
         }
       ]
@@ -84,8 +115,23 @@ export default class MenuBuilder {
       label: 'View',
       submenu: [
         {
+          label: 'Zoom UI In',
+          accelerator: 'CmdOrCtrl+Alt+=',
+          click: () => zoomUI(this.mainWindow.webContents, ZOOM_TYPE.IN)
+        },
+        {
+          label: 'Zoom UI Out',
+          accelerator: 'CmdOrCtrl+Alt+-',
+          click: () => zoomUI(this.mainWindow.webContents, ZOOM_TYPE.OUT)
+        },
+        {
+          label: 'Reset UI Zoom',
+          accelerator: 'CmdOrCtrl+Alt+0',
+          click: () => zoomUI(this.mainWindow.webContents, ZOOM_TYPE.RESET)
+        },
+        {
           label: 'Reload',
-          accelerator: 'Command+R',
+          accelerator: 'CmdOrCtrl+R',
           click: () => this.mainWindow.webContents.reload()
         },
         {
@@ -96,7 +142,7 @@ export default class MenuBuilder {
         },
         {
           label: 'Toggle Developer Tools',
-          accelerator: 'Alt+Command+I',
+          accelerator: 'Alt+CmdOrCtrl+I',
           click: () => {
             this.mainWindow.webContents.toggleDevTools()
           }
@@ -108,19 +154,35 @@ export default class MenuBuilder {
       label: 'View',
       submenu: [
         {
+          label: 'Zoom UI In',
+          accelerator: 'CmdOrCtrl+Alt+=',
+          click: () => zoomUI(this.mainWindow.webContents, ZOOM_TYPE.IN)
+        },
+
+        {
+          label: 'Zoom UI Out',
+          accelerator: 'CmdOrCtrl+Alt+-',
+          click: () => zoomUI(this.mainWindow.webContents, ZOOM_TYPE.OUT)
+        },
+        {
+          label: 'Reset UI Zoom',
+          accelerator: 'CmdOrCtrl+Alt+0',
+          click: () => zoomUI(this.mainWindow.webContents, ZOOM_TYPE.RESET)
+        },
+        {
           label: 'Reload',
-          accelerator: 'Command+R',
+          accelerator: 'CmdOrCtrl+R',
           click: () => this.mainWindow.webContents.reload()
         },
         {
           label: 'Toggle Full Screen',
-          accelerator: 'Ctrl+Command+F',
+          accelerator: 'Ctrl+CmdOrCtrl+F',
           click: () =>
             this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen())
         }
         // {
         //   label: 'Toggle Developer Tools',
-        //   accelerator: 'Alt+Command+I',
+        //   accelerator: 'Alt+CmdOrCtrl+I',
         //   click: () => this.mainWindow.webContents.toggleDevTools()
         // }
       ]
@@ -131,12 +193,12 @@ export default class MenuBuilder {
       submenu: [
         {
           label: 'Minimize',
-          accelerator: 'Command+M',
+          accelerator: 'CmdOrCtrl+M',
           selector: 'performMiniaturize:'
         },
         {
           label: 'Close',
-          accelerator: 'Command+W',
+          accelerator: 'CmdOrCtrl+W',
           click: () =>
             this.mainWindow.webContents.send(
               WINDOW_EVENT_TYPE.CLOSE_TAB_OR_WINDOW
@@ -153,19 +215,19 @@ export default class MenuBuilder {
         {
           label: 'Learn More',
           click() {
-            shell.openExternal('https://elmstorygames.itch.io/elm-story')
+            shell.openExternal('https://elmstorygames.itch.io/elm-story/')
           }
         },
         {
-          label: 'Support',
+          label: 'Help',
           click() {
-            shell.openExternal('https://elmstory.com/support')
+            shell.openExternal('https://elmstory.com/help/')
           }
         },
         {
           label: 'Community',
           click() {
-            shell.openExternal('https://reddit.com/r/ElmStoryGames')
+            shell.openExternal('https://elmstory.com/community/')
           }
         }
       ]
@@ -187,11 +249,11 @@ export default class MenuBuilder {
         submenu: [
           {
             label: '&Open',
-            accelerator: 'Ctrl+O'
+            accelerator: 'CmdOrCtrl+O'
           },
           {
             label: '&Close',
-            accelerator: 'Ctrl+W',
+            accelerator: 'CmdOrCtrl+W',
             click: () =>
               this.mainWindow.webContents.send(
                 WINDOW_EVENT_TYPE.CLOSE_TAB_OR_WINDOW
@@ -206,8 +268,26 @@ export default class MenuBuilder {
           process.env.DEBUG_PROD === 'true'
             ? [
                 {
+                  label: 'Zoom UI In',
+                  accelerator: 'CmdOrCtrl+Alt+=',
+                  click: () => zoomUI(this.mainWindow.webContents, ZOOM_TYPE.IN)
+                },
+
+                {
+                  label: 'Zoom UI Out',
+                  accelerator: 'CmdOrCtrl+Alt+-',
+                  click: () =>
+                    zoomUI(this.mainWindow.webContents, ZOOM_TYPE.OUT)
+                },
+                {
+                  label: 'Reset UI Zoom',
+                  accelerator: 'CmdOrCtrl+Alt+0',
+                  click: () =>
+                    zoomUI(this.mainWindow.webContents, ZOOM_TYPE.RESET)
+                },
+                {
                   label: '&Reload',
-                  accelerator: 'Ctrl+R',
+                  accelerator: 'CmdOrCtrl+R',
                   click: () => {
                     this.mainWindow.webContents.reload()
                   }
@@ -223,7 +303,7 @@ export default class MenuBuilder {
                 },
                 {
                   label: 'Toggle &Developer Tools',
-                  accelerator: 'Alt+Ctrl+I',
+                  accelerator: 'Alt+CmdOrCtrl+I',
                   click: () => {
                     this.mainWindow.webContents.toggleDevTools()
                   }
@@ -231,8 +311,25 @@ export default class MenuBuilder {
               ]
             : [
                 {
+                  label: 'Zoom UI In',
+                  accelerator: 'CmdOrCtrl+Alt+=',
+                  click: () => zoomUI(this.mainWindow.webContents, ZOOM_TYPE.IN)
+                },
+                {
+                  label: 'Zoom UI Out',
+                  accelerator: 'CmdOrCtrl+Alt+-',
+                  click: () =>
+                    zoomUI(this.mainWindow.webContents, ZOOM_TYPE.OUT)
+                },
+                {
+                  label: 'Reset UI Zoom',
+                  accelerator: 'CmdOrCtrl+Alt+0',
+                  click: () =>
+                    zoomUI(this.mainWindow.webContents, ZOOM_TYPE.RESET)
+                },
+                {
                   label: '&Reload',
-                  accelerator: 'Ctrl+R',
+                  accelerator: 'CmdOrCtrl+R',
                   click: () => {
                     this.mainWindow.webContents.reload()
                   }
@@ -248,7 +345,7 @@ export default class MenuBuilder {
                 }
                 // {
                 //   label: 'Toggle &Developer Tools',
-                //   accelerator: 'Alt+Ctrl+I',
+                //   accelerator: 'Alt+CmdOrCtrl+I',
                 //   click: () => {
                 //     this.mainWindow.webContents.toggleDevTools()
                 //   }
@@ -261,19 +358,19 @@ export default class MenuBuilder {
           {
             label: 'Learn More',
             click() {
-              shell.openExternal('https://elmstorygames.itch.io/elm-story')
+              shell.openExternal('https://elmstorygames.itch.io/elm-story/')
             }
           },
           {
-            label: 'Support',
+            label: 'Help',
             click() {
-              shell.openExternal('https://elmstory.com/support')
+              shell.openExternal('https://elmstory.com/help/')
             }
           },
           {
             label: 'Community',
             click() {
-              shell.openExternal('https://reddit.com/r/ElmStoryGames')
+              shell.openExternal('https://elmstory.com/community/')
             }
           }
         ]
