@@ -473,6 +473,9 @@ export const findStartingDestinationLiveEvent = async (
   const libraryDatabase = new LibraryDatabase(studioId),
     world = await libraryDatabase.worlds.get(worldId)
 
+  // elmstorygames/feedback#280
+  let firstEvent: string | undefined = undefined
+
   if (world) {
     try {
       if (world.jump) {
@@ -490,8 +493,20 @@ export const findStartingDestinationLiveEvent = async (
 
             if (!foundScene) return undefined
 
-            if (foundScene.children.length > 0 && foundScene.children[0][1]) {
-              return foundScene.children[0][1]
+            if (foundScene.children.length > 0) {
+              // elmstorygames/feedback#280
+              let firstEvent: string | undefined = undefined
+
+              for (let i = 0; i < foundScene.children.length; i++) {
+                if (foundScene.children[i][0] === ELEMENT_TYPE.EVENT) {
+                  firstEvent = foundScene.children[i][1]
+                  break
+                }
+              }
+
+              return firstEvent
+
+              // return foundScene.children[0][1]
             }
           }
         }
@@ -506,13 +521,29 @@ export const findStartingDestinationLiveEvent = async (
 
         if (!foundScene) return undefined
 
-        if (foundScene.children.length > 0 && foundScene.children[0][1]) {
-          // TODO: scenes may eventually have nested folders
-          return foundScene.children[0][1]
+        if (foundScene.children.length > 0) {
+          for (let i = 0; i < foundScene.children.length; i++) {
+            if (foundScene.children[i][0] === ELEMENT_TYPE.EVENT) {
+              firstEvent = foundScene.children[i][1]
+              break
+            }
+          }
+
+          if (firstEvent) return firstEvent
         }
       }
 
-      return undefined
+      if (!firstEvent) {
+        const foundEvent = await libraryDatabase.events
+          .where({ worldId })
+          .first()
+
+        if (foundEvent?.id) {
+          firstEvent = foundEvent.id
+        }
+      }
+
+      return firstEvent
     } catch (error) {
       throw error
     }

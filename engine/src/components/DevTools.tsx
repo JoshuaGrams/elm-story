@@ -20,6 +20,15 @@ const DevTools: React.FC = () => {
           type: ENGINE_ACTION_TYPE.SET_INSTALLED,
           installed: false
         })
+
+        setTimeout(
+          () =>
+            engineDispatch({
+              type: ENGINE_ACTION_TYPE.DEVTOOLS_RESET,
+              reset: true
+            }),
+          1
+        )
         return
       case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.TOGGLE_CHARACTERS:
         engineDispatch({

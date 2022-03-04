@@ -42,7 +42,7 @@ const serializeDescendantToText = async (
     case ELEMENT_FORMATS.LINK:
       return `<span title="${
         node.url ||
-        'Missing link URL. Text will display without link in production.'
+        'Missing link URL. Text will display without link in publication.'
       }" class="event-content-preview-link ${
         !node.url ? 'event-content-preview-link-missing' : ''
       }">${node.children[0].text}</span>`

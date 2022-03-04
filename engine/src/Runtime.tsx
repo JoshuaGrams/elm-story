@@ -50,17 +50,19 @@ const Runtime: React.FC<{
         {_studioId && (
           <>
             {isComposer && (
-              <StartingDestinationGate studioId={_studioId} worldId={id}>
-                <Installer
-                  studioId={_studioId}
-                  worldId={id}
-                  data={engineData}
-                  isComposer={isComposer}
-                >
-                  <DevTools />
-                  <Renderer />
-                </Installer>
-              </StartingDestinationGate>
+              <>
+                <DevTools />
+                <StartingDestinationGate studioId={_studioId} worldId={id}>
+                  <Installer
+                    studioId={_studioId}
+                    worldId={id}
+                    data={engineData}
+                    isComposer={isComposer}
+                  >
+                    <Renderer />
+                  </Installer>
+                </StartingDestinationGate>
+              </>
             )}
 
             {!isComposer && (

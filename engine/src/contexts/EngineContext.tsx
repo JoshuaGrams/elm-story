@@ -11,6 +11,7 @@ interface EngineState {
     highlightExpressions: boolean
     blockedChoicesVisible: boolean
     xrayVisible: boolean
+    reset: boolean
   }
   liveEventsInStream: EngineLiveEventData[]
   installed: boolean
@@ -53,6 +54,7 @@ export enum ENGINE_ACTION_TYPE {
   TOGGLE_DEVTOOLS_CHARACTERS = 'TOGGLE_DEVTOOLS_CHARACTERS',
   TOGGLE_DEVTOOLS_BLOCKED_CHOICES = 'TOGGLE_DEVTOOLS_BLOCKED_CHOICES',
   TOGGLE_DEVTOOLS_XRAY = 'TOGGLE_DEVTOOLS_XRAY',
+  DEVTOOLS_RESET = 'DEVTOOLS_RESET',
   UPDATE_LIVE_EVENT_IN_STREAM = 'UPDATE_EVENT_IN_STREAM'
 }
 
@@ -98,6 +100,10 @@ type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_CHARACTERS }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_EXPRESSIONS }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_XRAY }
+  | {
+      type: ENGINE_ACTION_TYPE.DEVTOOLS_RESET
+      reset: boolean
+    }
 
 const engineReducer = (
   state: EngineState,
@@ -222,6 +228,14 @@ const engineReducer = (
           xrayVisible: !state.devTools.xrayVisible
         }
       }
+    case ENGINE_ACTION_TYPE.DEVTOOLS_RESET:
+      return {
+        ...state,
+        devTools: {
+          ...state.devTools,
+          reset: action.reset
+        }
+      }
     default:
       return state
   }
@@ -238,7 +252,8 @@ const defaultEngineState: EngineState = {
     highlightCharacters: false,
     blockedChoicesVisible: false,
     highlightExpressions: false,
-    xrayVisible: false
+    xrayVisible: false,
+    reset: false
   },
   liveEventsInStream: [],
   installed: false,
