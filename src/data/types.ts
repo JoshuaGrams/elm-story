@@ -92,7 +92,7 @@ export interface Studio extends Element {
 export interface Editor extends Element {}
 
 // prettier-ignore
-// [drive (x), energy (y)]
+// [drive (x), agency (y)]
 export enum CHARACTER_MASK_TYPE {
                            // max(d,e)
       EXCITED = 'EXCITED', // [+1.00, +1.00]
@@ -119,7 +119,7 @@ export enum CHARACTER_MASK_TYPE {
 
 // prettier-ignore
 export const CHARACTER_MASK_VALUES: {
-  [maskType: string]: [number, number, number] // drive, energy, influence
+  [maskType: string]: [number, number, number] // drive, agency, influence
 } = {
     EXCITED: [1, 1, 4],
       TENSE: [-1, 1, 4],
@@ -165,11 +165,11 @@ export enum CHARACTER_PRONOUN_TYPES {
 export interface CharacterMakeup {
   aggregate: {
     drive: number
-    energy: number
+    agency: number
   }
   dominate: {
     drive: CHARACTER_MASK_TYPE
-    energy: CHARACTER_MASK_TYPE
+    agency: CHARACTER_MASK_TYPE
   }
 }
 

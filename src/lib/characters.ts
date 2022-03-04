@@ -14,15 +14,15 @@ import { names, uniqueNamesGenerator } from 'unique-names-generator'
 import api from '../api'
 
 export const getCharacterPersonalityMakeup = (activeMasks: CharacterMask[]) => {
-  let value = { drive: 0, energy: 0 }
+  let value = { drive: 0, agency: 0 }
 
   activeMasks.map((activeMask) => {
     value.drive += CHARACTER_MASK_VALUES[activeMask.type][0]
-    value.energy += CHARACTER_MASK_VALUES[activeMask.type][1]
+    value.agency += CHARACTER_MASK_VALUES[activeMask.type][1]
   })
 
   value.drive = ((value.drive / 5) * 100) | 0
-  value.energy = ((value.energy / 5) * 100) | 0
+  value.agency = ((value.agency / 5) * 100) | 0
 
   return value
 }
@@ -33,7 +33,7 @@ export const getCharacterDominateMakeup = (activeMasks: CharacterMask[]) => {
   const desireSearchArray: Array<[CHARACTER_MASK_TYPE, number]> = [
       [CHARACTER_MASK_TYPE.NEUTRAL, 0]
     ],
-    energySearchArray: Array<[CHARACTER_MASK_TYPE, number]> = [
+    agencySearchArray: Array<[CHARACTER_MASK_TYPE, number]> = [
       [CHARACTER_MASK_TYPE.NEUTRAL, 0]
     ]
 
@@ -43,13 +43,13 @@ export const getCharacterDominateMakeup = (activeMasks: CharacterMask[]) => {
       Math.round(CHARACTER_MASK_VALUES[activeMask.type][0] * 100)
     ])
 
-    energySearchArray.push([
+    agencySearchArray.push([
       activeMask.type,
       Math.round(CHARACTER_MASK_VALUES[activeMask.type][1] * 100)
     ])
   })
 
-  if (desireSearchArray.length > 0 && energySearchArray.length > 0) {
+  if (desireSearchArray.length > 0 && agencySearchArray.length > 0) {
     return {
       aggregate: makeup,
       dominate: {
@@ -58,8 +58,8 @@ export const getCharacterDominateMakeup = (activeMasks: CharacterMask[]) => {
             ? curr
             : prev
         )[0],
-        energy: energySearchArray.reduce((prev, curr) =>
-          Math.abs(curr[1] - makeup.energy) < Math.abs(prev[1] - makeup.energy)
+        agency: agencySearchArray.reduce((prev, curr) =>
+          Math.abs(curr[1] - makeup.agency) < Math.abs(prev[1] - makeup.agency)
             ? curr
             : prev
         )[0]
@@ -71,7 +71,7 @@ export const getCharacterDominateMakeup = (activeMasks: CharacterMask[]) => {
     aggregate: makeup,
     dominate: {
       drive: CHARACTER_MASK_TYPE.NEUTRAL,
-      energy: CHARACTER_MASK_TYPE.NEUTRAL
+      agency: CHARACTER_MASK_TYPE.NEUTRAL
     }
   }
 }

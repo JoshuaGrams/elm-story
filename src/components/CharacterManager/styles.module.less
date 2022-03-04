@@ -123,35 +123,35 @@
         }
       }
 
-      .energy {
+      .agency {
         width: 1px;
         height: 100%;
-        background: var(--energy-color-dark);
+        background: var(--agency-color-dark);
         justify-self: center;
         display: grid;
         display: grid;
 
         .value {
-          border: 1px solid var(--energy-color);
+          border: 1px solid var(--agency-color);
 
           span {
-            color: var(--energy-color) !important;
+            color: var(--agency-color) !important;
           }
         }
 
         .positive,
         .negative {
-          background: var(--energy-color);
+          background: var(--agency-color);
           transition: height 0.5s;
         }
 
         .positive {
-          box-shadow: 0 10px 50px 4px var(--energy-color);
+          box-shadow: 0 10px 50px 4px var(--agency-color);
           align-self: flex-end;
         }
 
         .negative {
-          box-shadow: 0 -10px 50px 4px var(--energy-color);
+          box-shadow: 0 -10px 50px 4px var(--agency-color);
           align-self: flex-start;
         }
       }
@@ -219,9 +219,9 @@
     border-right-color: var(--drive-color);
   }
 
-  &.dominateEnergy {
-    border-top-color: var(--energy-color);
-    border-bottom-color: var(--energy-color);
+  &.dominateAgency {
+    border-top-color: var(--agency-color);
+    border-bottom-color: var(--agency-color);
   }
 
   .wrapper {
@@ -314,8 +314,8 @@
             color: var(--drive-color);
           }
 
-          &.energy.active {
-            color: var(--energy-color);
+          &.agency.active {
+            color: var(--agency-color);
           }
 
           &.dominate {

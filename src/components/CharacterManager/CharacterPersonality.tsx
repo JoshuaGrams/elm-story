@@ -67,7 +67,7 @@ const MaskWrapper: React.FC<{
           }
           dominate={{
             drive: makeup.dominate.drive === type,
-            energy: makeup.dominate.energy === type
+            agency: makeup.dominate.agency === type
           }}
           contextMenu
           onChangeMaskImage={(type) => onChangeMaskImage(type)}
@@ -328,10 +328,10 @@ const CharacterPersonality: React.FC<{
   }>(null)
 
   const [makeup, setMakeup] = useState<CharacterMakeup>({
-    aggregate: { drive: 0, energy: 0 },
+    aggregate: { drive: 0, agency: 0 },
     dominate: {
       drive: CHARACTER_MASK_TYPE.NEUTRAL,
-      energy: CHARACTER_MASK_TYPE.NEUTRAL
+      agency: CHARACTER_MASK_TYPE.NEUTRAL
     }
   })
 
@@ -452,22 +452,22 @@ const CharacterPersonality: React.FC<{
           </div>
         </div>
 
-        {/* row 1 col 2; energy */}
+        {/* row 1 col 2; agency */}
         <div className={styles.bar}>
-          <div className={styles.energy}>
+          <div className={styles.agency}>
             <div
               className={`${styles.value} ${
-                makeup.aggregate.energy > 0 ? styles.active : ''
+                makeup.aggregate.agency > 0 ? styles.active : ''
               }`}
             >
-              {makeup.aggregate.energy}% <span>Energy</span>
+              {makeup.aggregate.agency}% <span>Agency</span>
             </div>
 
             <div
               className={styles.positive}
               style={{
                 height: `${
-                  makeup.aggregate.energy > 0 ? makeup.aggregate.energy : 0
+                  makeup.aggregate.agency > 0 ? makeup.aggregate.agency : 0
                 }%`
               }}
             />
@@ -584,22 +584,22 @@ const CharacterPersonality: React.FC<{
           </div>
         </div>
 
-        {/* row 3 col 2; energy */}
+        {/* row 3 col 2; agency */}
         <div className={styles.bar}>
-          <div className={styles.energy}>
+          <div className={styles.agency}>
             <div
               className={`${styles.value} ${
-                makeup.aggregate.energy < 0 ? styles.active : ''
+                makeup.aggregate.agency < 0 ? styles.active : ''
               }`}
             >
-              {makeup.aggregate.energy}% <span>Energy</span>
+              {makeup.aggregate.agency}% <span>Agency</span>
             </div>
 
             <div
               className={styles.negative}
               style={{
                 height: `${
-                  makeup.aggregate.energy < 0 ? makeup.aggregate.energy * -1 : 0
+                  makeup.aggregate.agency < 0 ? makeup.aggregate.agency * -1 : 0
                 }%`
               }}
             />
