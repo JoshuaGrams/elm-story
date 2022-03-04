@@ -39,6 +39,13 @@ const serializeDescendantToText = async (
     : ''
 
   switch (node.type) {
+    case ELEMENT_FORMATS.LINK:
+      return `<span title="${
+        node.url ||
+        'Missing link URL. Text will display without link in production.'
+      }" class="event-content-preview-link ${
+        !node.url ? 'event-content-preview-link-missing' : ''
+      }">${node.children[0].text}</span>`
     case ELEMENT_FORMATS.IMG:
       // TODO: show missing pic if doesn't exist
       const [path, exists]: [string, boolean] = await ipcRenderer.invoke(

@@ -48,7 +48,7 @@ const StartingDestinationGate: React.FC<{
     <>
       {passageCount === 0 && !engine.installed && (
         <div className="engine-warning-message" style={{ padding: '1.4rem' }}>
-          Scene and child choice or input event required to render world.
+          Scene and choice or input event child required to render world.
         </div>
       )}
 

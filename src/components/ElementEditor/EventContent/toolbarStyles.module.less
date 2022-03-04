@@ -22,27 +22,26 @@
   :local .elementTools {
   }
 
-  :local .leafTools {
-    .leafButton {
-      display: inline-block;
-      width: 24px;
-      text-align: center;
+  :local .leafTools .leafButton,
+  :local .linkButton {
+    display: inline-block;
+    width: 24px;
+    text-align: center;
 
-      &:hover {
-        cursor: pointer;
-      }
+    &:hover {
+      cursor: pointer;
+    }
 
-      &:hover span {
-        color: white;
-      }
+    &:hover span {
+      color: white;
+    }
 
-      span {
-        color: hsl(0, 0%, 40%);
-      }
+    span {
+      color: hsl(0, 0%, 40%);
+    }
 
-      &.active span {
-        color: var(--highlight-color);
-      }
+    &.active span {
+      color: var(--highlight-color);
     }
   }
 

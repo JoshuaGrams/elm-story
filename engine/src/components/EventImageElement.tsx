@@ -27,20 +27,20 @@ const missing = `<svg width="655" height="368" viewBox="0 0 655 368" fill="none"
 </svg>
 `
 
-const EventImage: React.FC<{
+const EventImageElement: React.FC<{
   eventId: ElementId
   assetId: string | undefined
 }> = ({ eventId, assetId }) => {
   const { engine } = useContext(EngineContext)
 
   // #DEV
-  // let imageUrl = assetId
-  //   ? `../../data/0-7-test_0.0.1/assets/${assetId}.webp`
-  //   : getSvgUrl(placeholder)
-  // #PWA
   let imageUrl = assetId
-    ? `assets/content/${assetId}.webp`
+    ? `../../data/0-7-test_0.0.1/assets/${assetId}.webp`
     : getSvgUrl(placeholder)
+  // #PWA
+  // let imageUrl = assetId
+  //   ? `assets/content/${assetId}.webp`
+  //   : getSvgUrl(placeholder)
 
   // testing
   // imageUrl =
@@ -164,6 +164,6 @@ const EventImage: React.FC<{
   )
 }
 
-EventImage.displayName = 'EventImage'
+EventImageElement.displayName = 'EventImageElement'
 
-export default EventImage
+export default EventImageElement

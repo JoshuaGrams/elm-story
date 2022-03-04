@@ -103,6 +103,13 @@ export type EmbedElement = {
   children: EmptyText[]
 }
 
+export type LinkElement = {
+  type: ELEMENT_FORMATS.LINK
+  url?: string
+  text?: string
+  children: [{ text: string }]
+}
+
 export type EventContentElement =
   | ParagraphElement
   | HeadingOneElement
@@ -116,6 +123,7 @@ export type EventContentElement =
   | CharacterElement
   | ImageElement
   | EmbedElement
+  | LinkElement
 
 export type EventContentLeaf = {
   text: string
@@ -149,7 +157,8 @@ export enum ELEMENT_FORMATS {
   LI = 'li',
   P = 'p',
   EMBED = 'embed',
-  CHARACTER = 'character'
+  CHARACTER = 'character',
+  LINK = 'link'
 }
 
 export type EventContentNode = EventContentElement & EventContentLeaf
@@ -174,7 +183,8 @@ export const SUPPORTED_ELEMENT_TYPES = [
   ...SUPPORTED_TEXT_BLOCK_NODE,
   ELEMENT_FORMATS.IMG,
   ELEMENT_FORMATS.EMBED,
-  ELEMENT_FORMATS.CHARACTER
+  ELEMENT_FORMATS.CHARACTER,
+  ELEMENT_FORMATS.LINK
 ]
 
 export enum ALIGN_TYPE {

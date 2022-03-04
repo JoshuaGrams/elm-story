@@ -1,4 +1,5 @@
 import logger from '../logger'
+
 import { capitalizeString } from '..'
 
 import { isEqual, uniq } from 'lodash'
@@ -32,6 +33,7 @@ import {
   EventContentLeaf,
   ImageElement,
   LEAF_FORMATS,
+  LinkElement,
   LIST_TYPES
 } from '../../data/eventContentTypes'
 
@@ -525,7 +527,7 @@ export const syncImagesFromEventContentToEventData = async (
   // elmstorygames/feedback#217
   const foundEvent = await api().events.getEvent(studioId, eventId)
 
-  if (!foundEvent.id) return
+  if (!foundEvent?.id) return
 
   const cachedEventImagesById = [...foundEvent.images]
 
@@ -571,4 +573,46 @@ export const syncImagesFromEventContentToEventData = async (
     foundEvent.worldId,
     imagesToRemoveById
   )
+}
+
+export const isLinkActive = (editor: EditorType) => {
+  const [link] = Editor.nodes(editor, {
+    match: (node) =>
+      !Editor.isEditor(node) &&
+      SlateElement.isElement(node) &&
+      node.type === ELEMENT_FORMATS.LINK
+  })
+
+  return !!link
+}
+
+export const wrapLink = (editor: EditorType, url?: string) => {
+  if (isLinkActive(editor)) {
+    unwrapLink(editor)
+    return
+  }
+
+  const { selection } = editor,
+    isCollapsed = selection && Range.isCollapsed(selection),
+    link: LinkElement = {
+      type: ELEMENT_FORMATS.LINK,
+      url,
+      children: [{ text: isCollapsed ? url || '' : '' }]
+    }
+
+  if (isCollapsed) {
+    Transforms.insertNodes(editor, link)
+  } else {
+    Transforms.wrapNodes(editor, link, { split: true })
+    Transforms.collapse(editor, { edge: 'end' })
+  }
+}
+
+export const unwrapLink = (editor: EditorType) => {
+  Transforms.unwrapNodes(editor, {
+    match: (node) =>
+      !Editor.isEditor(node) &&
+      SlateElement.isElement(node) &&
+      node.type === ELEMENT_FORMATS.LINK
+  })
 }

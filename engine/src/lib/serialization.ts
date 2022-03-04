@@ -29,6 +29,8 @@ const wrapNodeContent = (node: EventContentNode, text: string) => {
       return `<li>${text}</li>`
     case ELEMENT_FORMATS.BLOCKQUOTE:
       return `<blockquote>${text}</blockquote>`
+    case ELEMENT_FORMATS.LINK:
+      return text
     default:
       return `<p>${text || '&nbsp;'}</p>`
   }
@@ -82,6 +84,10 @@ const serializeDescendantToText = async (
     : ''
 
   switch (node.type) {
+    case ELEMENT_FORMATS.LINK:
+      if (!node.url) return `<span>${text}</span>`
+
+      return `<span data-type="link" data-url="${node.url}" data-text="${text}"></span>`
     case ELEMENT_FORMATS.IMG:
       // replaced with EventImage
       return `<div data-type="img" data-asset-id="${node.asset_id}"></div>`
@@ -120,9 +126,12 @@ export const eventContentToEventStreamContent = async (
 ) => {
   const missingContent =
     content[0].type !== ELEMENT_FORMATS.IMG &&
+    content[0].type !== ELEMENT_FORMATS.CHARACTER &&
+    content[0].type !== ELEMENT_FORMATS.LINK &&
     // @ts-ignore
     !content[0].children?.[0].text &&
-    content.length === 1
+    content.length === 1 &&
+    content[0].children.length === 1
 
   let startingElement: string | undefined, text: string | undefined
 

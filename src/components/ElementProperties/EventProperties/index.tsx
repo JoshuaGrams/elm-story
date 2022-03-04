@@ -316,8 +316,16 @@ const EventProperties: React.FC<{
               title={event.title}
               onUpdate={async (title) => {
                 if (event.id) {
+                  const foundEvent = await api().events.getEvent(
+                    studioId,
+                    event.id
+                  )
+
+                  if (!foundEvent)
+                    throw 'Unable to update element title. Missing event.'
+
                   await api().events.saveEvent(studioId, {
-                    ...(await api().events.getEvent(studioId, event.id)),
+                    ...foundEvent,
                     title
                   })
 

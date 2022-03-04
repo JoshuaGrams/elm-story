@@ -3,7 +3,10 @@ import {
   getElement,
   isElementActive,
   isLeafActive,
-  toggleLeaf
+  isLinkActive,
+  toggleLeaf,
+  unwrapLink,
+  wrapLink
 } from '../../../lib/contentEditor'
 
 import React, { useRef, useEffect, useState } from 'react'
@@ -16,6 +19,7 @@ import { ELEMENT_FORMATS, LEAF_FORMATS } from '../../../data/eventContentTypes'
 import {
   BoldOutlined,
   ItalicOutlined,
+  LinkOutlined,
   StrikethroughOutlined,
   UnderlineOutlined
 } from '@ant-design/icons'
@@ -47,6 +51,27 @@ const LeafButton: React.FC<{
       }}
     >
       {children || format}
+    </div>
+  )
+}
+
+const LinkButton: React.FC = () => {
+  const editor = useSlate()
+
+  const isActive = isLinkActive(editor)
+
+  return (
+    <div
+      className={`${styles.linkButton} ${isActive ? styles.active : ''}`}
+      onMouseDown={(event) => {
+        event.preventDefault()
+
+        if (editor.selection) {
+          isActive ? unwrapLink(editor) : wrapLink(editor)
+        }
+      }}
+    >
+      <LinkOutlined />
     </div>
   )
 }
@@ -119,6 +144,8 @@ const EventContentToolbar: React.FC = () => {
             <StrikethroughOutlined />
           </LeafButton>
         </div>
+
+        <LinkButton />
 
         {alignToolsSupported && (
           <div className={styles.alignTools}>

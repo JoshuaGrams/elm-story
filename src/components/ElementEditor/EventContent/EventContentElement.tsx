@@ -20,7 +20,8 @@ import {
   ELEMENT_FORMATS,
   EmbedElement as EmbedElementType,
   EventContentElement,
-  ImageElement as ImageElementType
+  ImageElement as ImageElementType,
+  LinkElement as LinkElementType
 } from '../../../data/eventContentTypes'
 
 import CharacterElementSelect, {
@@ -29,6 +30,7 @@ import CharacterElementSelect, {
 import ImageElementSelect, { OnImageSelect } from './Tools/ImageElementSelect'
 
 import styles from './styles.module.less'
+import LinkElementEditor from './Tools/LinkElementEditor'
 
 const CharacterElement: React.FC<{
   studioId: StudioId
@@ -126,6 +128,32 @@ const EmbedElement: React.FC<{ element: EmbedElementType; attributes: {} }> = ({
     </div>
   ) : (
     <div>missing embed</div>
+  )
+}
+
+// TODO: necessary?
+const InlineChromiumBugfix = () => (
+  <span contentEditable={false} style={{ fontSize: 0 }}>
+    ${String.fromCodePoint(160) /* Non-breaking space */}
+  </span>
+)
+
+const LinkElement: React.FC<{ element: LinkElementType; attributes: {} }> = ({
+  element,
+  attributes,
+  children
+}) => {
+  return (
+    <LinkElementEditor element={element}>
+      <span
+        {...attributes}
+        className={`${styles.link} ${!element.url ? styles.error : ''}`}
+      >
+        {/* <InlineChromiumBugfix /> */}
+        {children}
+        {/* <InlineChromiumBugfix /> */}
+      </span>
+    </LinkElementEditor>
   )
 }
 
@@ -339,6 +367,13 @@ export const Element: React.FC<{
         </EmbedElement>
       )
       break
+    case ELEMENT_FORMATS.LINK:
+      content = (
+        <LinkElement element={element} attributes={attributes}>
+          {children}
+        </LinkElement>
+      )
+      break
     default:
       content = (
         <p
@@ -354,7 +389,8 @@ export const Element: React.FC<{
   }
 
   return element.type === ELEMENT_FORMATS.LI ||
-    element.type === ELEMENT_FORMATS.CHARACTER ? (
+    element.type === ELEMENT_FORMATS.CHARACTER ||
+    element.type === ELEMENT_FORMATS.LINK ? (
     content
   ) : (
     <DraggableWrapper element={element}>{content}</DraggableWrapper>

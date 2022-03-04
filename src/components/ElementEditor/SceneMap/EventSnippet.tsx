@@ -19,12 +19,12 @@ import {
 
 import { useCharacters, useVariables } from '../../../hooks'
 
+import { Spin } from 'antd'
 import { FormOutlined, LoadingOutlined, UserOutlined } from '@ant-design/icons'
 
 import { eventContentToPreview } from '../../../lib/serialization'
 
 import styles from './styles.module.less'
-import { Spin } from 'antd'
 
 const processTemplateBlock = (
   template: string,

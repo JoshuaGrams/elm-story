@@ -70,11 +70,11 @@ import { withHistory } from 'slate-history'
 
 import {
   withCorrectVoidBehavior,
-  withEmbeds,
   withImages,
   withAlignReset,
   withElementReset,
-  withCharacters
+  withCharacters,
+  withLinks
 } from '../../../lib/contentEditor/plugins'
 
 import DragDropWrapper from '../../DragDropWrapper'
@@ -113,13 +113,15 @@ const EventContent: React.FC<{
   const [editor] = useState<ReactEditor>(() =>
     withCharacters(
       withImages(
-        withEmbeds(
+        // withEmbeds(
+        withLinks(
           withElementReset(
             withAlignReset(
               withCorrectVoidBehavior(withReact(withHistory(createEditor())))
             )
           )
         )
+        // )
       )
     )
   )

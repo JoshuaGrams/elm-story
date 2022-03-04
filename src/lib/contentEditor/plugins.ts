@@ -1,11 +1,14 @@
 import logger from '../logger'
 
+import isUrl from 'is-url'
+
 import {
   isElementActive,
   isElementEmpty,
   isEndOfLine,
   resetElementToParagraph,
-  toggleElement
+  toggleElement,
+  wrapLink
 } from '.'
 
 import { Editor, Node, Path, Range, Transforms, Element } from 'slate'
@@ -69,6 +72,7 @@ export const withElementReset = (editor: EditorType) => {
       Element.isElement(element) &&
       element.type !== ELEMENT_FORMATS.P &&
       element.type !== ELEMENT_FORMATS.CHARACTER &&
+      element.type !== ELEMENT_FORMATS.LINK &&
       isElementEmpty(element)
     ) {
       if (element.type === ELEMENT_FORMATS.LI) {
@@ -146,9 +150,29 @@ export const withAlignReset = (editor: EditorType) => {
   const { deleteBackward } = editor
 
   editor.deleteBackward = (unit) => {
+    // handling inlines like links and characters
+    // const nodeBeforePath = Editor.previous(editor)?.[1],
+    //   nodeBefore = nodeBeforePath
+    //     ? Node.get(editor, nodeBeforePath)
+    //     : undefined,
+    //   nodeIsInline = nodeBeforePath
+    //     ? Editor.isInline(
+    //         editor,
+    //         Element.isElement(nodeBefore) &&
+    //           nodeBefore.type === ELEMENT_FORMATS.CHARACTER
+    //           ? nodeBefore
+    //           : Editor.parent(editor, nodeBeforePath)?.[0]
+    //       )
+    //     : false
+
+    // if (nodeIsInline) return deleteBackward(unit)
+
     if (editor.selection && editor.selection.anchor.offset === 0) {
       const path = Path.parent(editor.selection.anchor.path),
         node = Node.get(editor, path)
+
+      if (Element.isElement(node) && !isElementEmpty(node))
+        return deleteBackward(unit)
 
       const isSupportedAlignType =
         Element.isElement(node) &&
@@ -214,47 +238,74 @@ export const withCharacters = (editor: EditorType) => {
   const { isInline, isVoid, deleteBackward } = editor
 
   // TODO: this doesn't do anything, but has some useful code
-  editor.deleteBackward = (unit) => {
-    logger.info(`contentEditor->plugins->withCharacters->deleteBackward`)
+  // editor.deleteBackward = (unit) => {
+  //   logger.info(`contentEditor->plugins->withCharacters->deleteBackward`)
 
-    if (!editor.selection) return deleteBackward(unit)
+  //   if (!editor.selection) return deleteBackward(unit)
 
-    const anchor = editor.selection.anchor
+  //   const anchor = editor.selection.anchor
 
-    // character is about to be deleted, but is not selected
-    if (Path.hasPrevious(anchor.path) && anchor.offset === 0) {
-      const previousNode = Node.get(editor, Path.previous(anchor.path))
+  //   // character is about to be deleted, but is not selected
+  //   if (Path.hasPrevious(anchor.path) && anchor.offset === 0) {
+  //     const previousNode = Node.get(editor, Path.previous(anchor.path))
 
-      if (
-        Element.isElement(previousNode) &&
-        previousNode.type === ELEMENT_FORMATS.CHARACTER &&
-        previousNode.character_id
-      ) {
-        logger.info(`delete character ${previousNode.character_id}`)
-      }
+  //     if (
+  //       Element.isElement(previousNode) &&
+  //       previousNode.type === ELEMENT_FORMATS.CHARACTER &&
+  //       previousNode.character_id
+  //     ) {
+  //       logger.info(`delete character ${previousNode.character_id}`)
+  //     }
 
-      return deleteBackward(unit)
-    }
+  //     return deleteBackward(unit)
+  //   }
 
-    const parentPath = Path.parent(editor.selection.anchor.path)
-    const parentNode = Node.get(editor, parentPath)
+  //   const parentPath = Path.parent(editor.selection.anchor.path)
+  //   const parentNode = Node.get(editor, parentPath)
 
-    if (
-      Element.isElement(parentNode) &&
-      parentNode.type === ELEMENT_FORMATS.CHARACTER &&
-      parentNode.character_id
-    ) {
-      logger.info(`delete character ${parentNode.character_id}`)
-    }
+  //   if (
+  //     Element.isElement(parentNode) &&
+  //     parentNode.type === ELEMENT_FORMATS.CHARACTER &&
+  //     parentNode.character_id
+  //   ) {
+  //     logger.info(`delete character ${parentNode.character_id}`)
+  //   }
 
-    deleteBackward(unit)
-  }
+  //   deleteBackward(unit)
+  // }
 
   editor.isInline = (element) =>
     element.type === ELEMENT_FORMATS.CHARACTER ? true : isInline(element)
 
   editor.isVoid = (element) =>
     element.type === ELEMENT_FORMATS.CHARACTER ? true : isVoid(element)
+
+  return editor
+}
+
+export const withLinks = (editor: EditorType) => {
+  const { isInline, insertText, insertData } = editor
+
+  editor.insertText = (text) => {
+    if (text && isUrl(text)) {
+      wrapLink(editor, text)
+    } else {
+      insertText(text)
+    }
+  }
+
+  editor.insertData = (data) => {
+    const text = data.getData('text/plain')
+
+    if (text && isUrl(text)) {
+      wrapLink(editor, text)
+    } else {
+      insertData(data)
+    }
+  }
+
+  editor.isInline = (element) =>
+    element.type === ELEMENT_FORMATS.LINK ? true : isInline(element)
 
   return editor
 }

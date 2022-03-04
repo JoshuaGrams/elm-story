@@ -875,6 +875,17 @@
         }
       }
 
+      :global .event-content-preview-link {
+        color: white;
+        text-decoration: underline;
+        text-decoration-color: var(--highlight-color);
+
+        &.event-content-preview-link-missing {
+          color: var(--warning-message-color);
+          text-decoration-color: var(--warning-message-color);
+        }
+      }
+
       :global .event-content-preview-image {
         width: 100%;
         aspect-ratio: 16/9;

@@ -221,6 +221,8 @@
       }
 
       blockquote {
+        line-height: 28px;
+
         &.empty:after {
           content: 'Quote';
           left: 20px;
@@ -244,6 +246,17 @@
 
         .icon {
           color: var(--highlight-color);
+        }
+      }
+
+      .link {
+        text-decoration: underline;
+        text-decoration-color: var(--highlight-color);
+
+        &.error {
+          color: var(--warning-message-color);
+          text-decoration-color: var(--warning-message-color);
+          text-decoration-style: dashed;
         }
       }
 
