@@ -67,6 +67,7 @@ const EventCharacterMask: React.FC<{
       case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RETURN_ASSET_URL:
         if (
           detail.asset?.id &&
+          detail.asset.id === mask?.assetId &&
           detail.asset.url &&
           detail.eventId === eventId
         ) {
@@ -130,7 +131,7 @@ const EventCharacterMask: React.FC<{
         processEvent
       )
     }
-  }, [])
+  }, [mask])
 
   useEffect(() => {
     if (maskUrl) api.start({ opacity: 1 })
