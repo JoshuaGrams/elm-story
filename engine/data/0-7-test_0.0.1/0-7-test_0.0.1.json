@@ -1,0 +1,685 @@
+{
+  "_": {
+    "children": [
+      [
+        "FOLDER",
+        "9553ee44-5623-4968-9b5a-bc2513306747"
+      ],
+      [
+        "FOLDER",
+        "024a7591-ca2b-4747-a9f5-9281e1c44b0a"
+      ]
+    ],
+    "description": "",
+    "designer": "Ritsuke",
+    "engine": "0.7.0",
+    "id": "9e6ab71c-3e3b-40ca-8f54-773c1a3b91e9",
+    "jump": "313b6a5c-a3b6-4489-9d15-896bb2bcb802",
+    "schema": "https://elmstory.com/schema/elm-story-0.7.0.json",
+    "studioId": "4b01668c-5b0c-495c-b0c6-8f80d2db8fdf",
+    "studioTitle": "Elm Story Games",
+    "tags": [],
+    "title": "0.7 Test",
+    "updated": 1645149097101,
+    "version": "0.0.1"
+  },
+  "characters": {
+    "1599159b-b0be-42f2-b19f-57aa4d13583a": {
+      "id": "1599159b-b0be-42f2-b19f-57aa4d13583a",
+      "masks": [
+        {
+          "type": "NEUTRAL",
+          "active": true,
+          "assetId": "f0ddd41e-b04c-4c79-8b1f-5216382ea4d6"
+        }
+      ],
+      "refs": [
+        [
+          "417b21ab-8d53-4727-9cbc-afae99f97e3c",
+          "ROSIE"
+        ]
+      ],
+      "tags": [],
+      "title": "Rosamund Aindrea",
+      "updated": 1644903396966
+    },
+    "5fb76893-e2ae-4d35-9667-207be1f11f91": {
+      "id": "5fb76893-e2ae-4d35-9667-207be1f11f91",
+      "masks": [
+        {
+          "type": "NEUTRAL",
+          "active": true,
+          "assetId": "a17eedc9-b954-4f9b-8edb-96d56571f61b"
+        },
+        {
+          "type": "HAPPY",
+          "active": true,
+          "assetId": "e5dec2c5-847d-4949-ac8f-cd51c01ba0bb"
+        }
+      ],
+      "refs": [
+        [
+          "7fd94970-5424-456c-9fd9-ed63933bb828",
+          "DIANE"
+        ]
+      ],
+      "tags": [],
+      "title": "Dianne Karissa",
+      "updated": 1645136354485
+    }
+  },
+  "choices": {
+    "0b3c1995-26fb-4ed7-8896-519ce72ae0e5": {
+      "id": "0b3c1995-26fb-4ed7-8896-519ce72ae0e5",
+      "eventId": "6e71ebee-bf09-40a4-b3c7-c7ce8413495c",
+      "tags": [],
+      "title": "Nam convallis nunc arcu.",
+      "updated": 1645136736837
+    },
+    "3bab3d20-928e-4658-a4cb-f2275b7d18cc": {
+      "id": "3bab3d20-928e-4658-a4cb-f2275b7d18cc",
+      "eventId": "6e71ebee-bf09-40a4-b3c7-c7ce8413495c",
+      "tags": [],
+      "title": "Proin rhoncus fermentum lobortis.",
+      "updated": 1645136727708
+    },
+    "9190e271-c629-4e03-9077-e96f539e0083": {
+      "id": "9190e271-c629-4e03-9077-e96f539e0083",
+      "eventId": "6144f173-a4ae-4d04-bd6b-34b5658e3d4f",
+      "tags": [],
+      "title": "Lorem ipsum dolor sit amet dsad chocolate, consectetur adipiscing elit. Sed vitae molestie massa. Praesent eu est porta, ullamcorper leo ut, fringilla ex. Morbi sed tincidunt enim, id eleifend mauris.",
+      "updated": 1644634362063
+    },
+    "cbc87fef-fec5-495a-9f0e-4b39559bddf2": {
+      "id": "cbc87fef-fec5-495a-9f0e-4b39559bddf2",
+      "eventId": "6144f173-a4ae-4d04-bd6b-34b5658e3d4f",
+      "tags": [],
+      "title": "Vestibulum vitae porta neque, cursus dapibus magna. Morbi congue aliquet leo eu consectetur.",
+      "updated": 1645134665292
+    },
+    "e39869be-ef48-45f3-a1cf-0702aa1bafe4": {
+      "id": "e39869be-ef48-45f3-a1cf-0702aa1bafe4",
+      "eventId": "6144f173-a4ae-4d04-bd6b-34b5658e3d4f",
+      "tags": [],
+      "title": "Proin rhoncus fermentum lobortis.",
+      "updated": 1645136559859
+    }
+  },
+  "conditions": {},
+  "effects": {},
+  "events": {
+    "6144f173-a4ae-4d04-bd6b-34b5658e3d4f": {
+      "characters": [
+        "1599159b-b0be-42f2-b19f-57aa4d13583a"
+      ],
+      "choices": [
+        "9190e271-c629-4e03-9077-e96f539e0083",
+        "e39869be-ef48-45f3-a1cf-0702aa1bafe4",
+        "cbc87fef-fec5-495a-9f0e-4b39559bddf2"
+      ],
+      "content": "[{\"type\":\"img\",\"children\":[{\"text\":\"\",\"em\":true}],\"align\":\"center\",\"asset_id\":\"cd5abb40-07e8-4cd3-a29e-65dbc0e109e2\"},{\"type\":\"h1\",\"align\":\"center\",\"children\":[{\"em\":true,\"text\":\"Duis At Porttitor Risus\"}]},{\"type\":\"h2\",\"children\":[{\"text\":\"Eget Iaculis (\",\"em\":true},{\"type\":\"character\",\"children\":[{\"text\":\"\"}],\"transform\":\"cap\",\"character_id\":\"1599159b-b0be-42f2-b19f-57aa4d13583a\",\"alias_id\":\"417b21ab-8d53-4727-9cbc-afae99f97e3c\",\"styles\":[\"em\"]},{\"text\":\")\"}],\"align\":\"center\"},{\"type\":\"p\",\"children\":[{\"text\":\"Lorem \"},{\"text\":\"ipsum\",\"u\":true},{\"text\":\" dolor sit amet, consectetur adipiscing elit. Duis at porttitor risus. Fusce eu venenatis nisl. Pellentesque nec suscipit eros. Sed tempus dapibus orci, eget iaculis massa.\"}]},{\"type\":\"ol\",\"children\":[{\"type\":\"li\",\"children\":[{\"text\":\"One...\"}]},{\"type\":\"li\",\"children\":[{\"text\":\"Two...\"}]},{\"type\":\"li\",\"children\":[{\"text\":\"Three...\"}]}]},{\"type\":\"blockquote\",\"children\":[{\"text\":\"Pellentesque \"},{\"text\":\"nec\",\"u\":true},{\"text\":\" \"},{\"text\":\"suscipit\",\"strong\":true,\"s\":true},{\"text\":\" eros.\"}]},{\"type\":\"ul\",\"children\":[{\"type\":\"li\",\"children\":[{\"text\":\"Bullet 1\"}]},{\"type\":\"li\",\"children\":[{\"text\":\"Bullet 2\"}]}]},{\"type\":\"img\",\"children\":[{\"text\":\"\"}],\"asset_id\":\"7f08c11b-45bb-401f-a076-7ed8cdf868e0\"},{\"type\":\"p\",\"children\":[{\"text\":\"Lorem \"},{\"text\":\"ipsum\",\"u\":true},{\"text\":\" dolor sit amet, consectetur adipiscing elit. Duis at porttitor risus. Fusce eu venenatis nisl. Pellentesque nec suscipit eros. Sed tempus dapibus orci, eget iaculis massa.\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"Lorem \"},{\"text\":\"ipsum\",\"u\":true},{\"text\":\" dolor sit amet, consectetur adipiscing elit. Duis at porttitor risus. Fusce eu venenatis nisl. Pellentesque nec suscipit eros. Sed tempus dapibus orci, eget iaculis massa.\"}]},{\"type\":\"img\",\"children\":[{\"text\":\"\"}],\"asset_id\":\"ec3b1c0b-144d-4e63-9a3f-430f7114fa22\"}]",
+      "composer": {
+        "sceneMapPosX": 504,
+        "sceneMapPosY": 532
+      },
+      "ending": false,
+      "id": "6144f173-a4ae-4d04-bd6b-34b5658e3d4f",
+      "images": [
+        "cd5abb40-07e8-4cd3-a29e-65dbc0e109e2",
+        "7f08c11b-45bb-401f-a076-7ed8cdf868e0",
+        "ec3b1c0b-144d-4e63-9a3f-430f7114fa22"
+      ],
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Plum Sticky",
+      "type": "CHOICE",
+      "updated": 1645136536821
+    },
+    "670031cf-6eed-4278-8589-5accccdf4874": {
+      "audio": [
+        "c8031fe2-4312-4f89-a260-b86ecfef327e",
+        false
+      ],
+      "characters": [
+        "1599159b-b0be-42f2-b19f-57aa4d13583a",
+        "5fb76893-e2ae-4d35-9667-207be1f11f91"
+      ],
+      "choices": [],
+      "content": "[{\"type\":\"h1\",\"children\":[{\"text\":\"Suspendisse Facilisis!\"}],\"align\":\"center\"},{\"type\":\"p\",\"children\":[{\"text\":\"\"},{\"type\":\"character\",\"children\":[{\"text\":\"\"}],\"transform\":\"upper\",\"character_id\":\"1599159b-b0be-42f2-b19f-57aa4d13583a\",\"alias_id\":\"417b21ab-8d53-4727-9cbc-afae99f97e3c\",\"styles\":[\"u\",\"em\"]},{\"text\":\" nulla et laoreet ultrices \"},{\"type\":\"character\",\"children\":[{\"text\":\"\"}],\"transform\":\"cap\",\"character_id\":\"1599159b-b0be-42f2-b19f-57aa4d13583a\",\"styles\":[\"strong\"]},{\"text\":\" imperdiet consequat enim { kittyName }.\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"\"},{\"type\":\"character\",\"children\":[{\"text\":\"\"}],\"transform\":\"cap\",\"character_id\":\"5fb76893-e2ae-4d35-9667-207be1f11f91\",\"styles\":[\"u\"]},{\"text\":\"!\"}]},{\"type\":\"img\",\"children\":[{\"text\":\"\"}],\"asset_id\":\"6f8a17a3-b062-45ce-9f93-2b1f5ab4232d\"},{\"type\":\"h2\",\"children\":[{\"text\":\"Fusce non ipsum vulputate, egestas ante id, vehicula purus, \"},{\"type\":\"character\",\"children\":[{\"text\":\"\"}],\"transform\":\"cap\",\"character_id\":\"5fb76893-e2ae-4d35-9667-207be1f11f91\",\"alias_id\":\"7fd94970-5424-456c-9fd9-ed63933bb828\",\"styles\":[\"s\"]},{\"text\":\"?\"}]}]",
+      "composer": {
+        "sceneMapPosX": 943.9999999999999,
+        "sceneMapPosY": 476.00000000000006
+      },
+      "ending": true,
+      "id": "670031cf-6eed-4278-8589-5accccdf4874",
+      "images": [
+        "6f8a17a3-b062-45ce-9f93-2b1f5ab4232d"
+      ],
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Yellow Special",
+      "type": "CHOICE",
+      "updated": 1645136834813
+    },
+    "6e71ebee-bf09-40a4-b3c7-c7ce8413495c": {
+      "audio": [
+        "6a62c533-d4c3-417e-8f34-3c33ba8c06d7",
+        false
+      ],
+      "characters": [],
+      "choices": [
+        "3bab3d20-928e-4658-a4cb-f2275b7d18cc",
+        "0b3c1995-26fb-4ed7-8896-519ce72ae0e5"
+      ],
+      "content": "[{\"type\":\"h1\",\"children\":[{\"text\":\"Lorem\",\"u\":true},{\"text\":\" Ipsum\"}]},{\"type\":\"h3\",\"children\":[{\"text\":\"by Lorem Ipsum\",\"em\":true}]},{\"type\":\"p\",\"children\":[{\"text\":\"Aliquam \"},{\"text\":\"erat volutpat\",\"em\":true},{\"text\":\". Nunc luctus tristique risus at consequat. In tristique justo at vulputate feugiat. Aenean eu ullamcorper ex. Duis elementum eget ipsum ac posuere. Aliquam erat volutpat.\"}]},{\"type\":\"img\",\"children\":[{\"text\":\"\"}],\"asset_id\":\"29c883d5-c7c4-4cd1-a3c8-073845b8e89a\"},{\"type\":\"blockquote\",\"children\":[{\"text\":\"Nullam\",\"s\":true},{\"text\":\" neque nulla, laoreet eu euismod non, viverra a dolor.\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"Pellentesque placerat fermentum metus, vitae commodo quam auctor quis. Praesent vitae ante et \"},{\"text\":\"mauris\",\"strong\":true},{\"text\":\" maximus molestie. Fusce a felis nec felis vehicula vulputate quis vel elit. Mauris faucibus enim eget maximus congue. Fusce dictum erat quis ante condimentum, nec feugiat mi tempus.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 504,
+        "sceneMapPosY": 104
+      },
+      "ending": false,
+      "id": "6e71ebee-bf09-40a4-b3c7-c7ce8413495c",
+      "images": [
+        "29c883d5-c7c4-4cd1-a3c8-073845b8e89a"
+      ],
+      "persona": [
+        "5fb76893-e2ae-4d35-9667-207be1f11f91",
+        "NEUTRAL",
+        "7fd94970-5424-456c-9fd9-ed63933bb828"
+      ],
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Fuchsia Cold",
+      "type": "CHOICE",
+      "updated": 1645136741597
+    },
+    "87d616cc-64c0-43f5-b30c-43e399906665": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"p\",\"children\":[{\"text\":\"This is an example of a loopback event.\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"To the audience, interaction is the same as a passthrough; the event that came before this. The storyteller simply continues.\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"When you tap the arrow, you will be returned to an input event as originally composed, even though the starting event you've seen at runtime is different based on storyworld jump on start configuration.\"}]},{\"type\":\"img\",\"children\":[{\"text\":\"\"}],\"asset_id\":\"c2c6feb5-5d8b-4ddd-a941-4a9943a689a7\"}]",
+      "composer": {
+        "sceneMapPosX": 1252,
+        "sceneMapPosY": 1228
+      },
+      "ending": false,
+      "id": "87d616cc-64c0-43f5-b30c-43e399906665",
+      "images": [
+        "c2c6feb5-5d8b-4ddd-a941-4a9943a689a7"
+      ],
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Turquoise Liberal",
+      "type": "CHOICE",
+      "updated": 1645136249012
+    },
+    "bbd3abac-7c9e-410c-b00a-c36920e981c6": {
+      "audio": [
+        "af11d035-6f5a-4cba-bcab-0e619e13bf9a",
+        false
+      ],
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"p\",\"children\":[{\"text\":\"Suspendisse malesuada, eros nec vehicula consequat, ipsum lorem egestas lectus, vel rutrum turpis ligula mollis sapien?\"}]},{\"type\":\"img\",\"children\":[{\"text\":\"\"}],\"asset_id\":\"b3191fd4-fc82-43f3-8321-21e7785d8c65\"}]",
+      "composer": {
+        "sceneMapPosX": 260,
+        "sceneMapPosY": 332
+      },
+      "ending": false,
+      "id": "bbd3abac-7c9e-410c-b00a-c36920e981c6",
+      "images": [
+        "b3191fd4-fc82-43f3-8321-21e7785d8c65"
+      ],
+      "persona": [
+        "5fb76893-e2ae-4d35-9667-207be1f11f91",
+        "HAPPY",
+        null
+      ],
+      "sceneId": "1074db2d-23c2-459e-bf16-fcb742c1a5cf",
+      "tags": [],
+      "title": "Harlequin Difficult",
+      "type": "CHOICE",
+      "updated": 1645136593996
+    },
+    "bc98742b-2c62-483e-9577-a45b92d46027": {
+      "audio": [
+        "3a563235-3551-41b6-878e-f065753e7e48",
+        false
+      ],
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"p\",\"children\":[{\"text\":\"Integer nec ornare ex, ut scelerisque dui!\"}]},{\"type\":\"img\",\"children\":[{\"text\":\"\"}],\"asset_id\":\"7771d636-0636-4ac7-a599-afef66adf6dd\"},{\"type\":\"p\",\"children\":[{\"text\":\"Donec ultricies auctor magna, sed vestibulum ligula euismod eget. Fusce eleifend maximus sem, a bibendum mauris. Donec faucibus metus sit amet facilisis tincidunt.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 524,
+        "sceneMapPosY": 332
+      },
+      "ending": false,
+      "id": "bc98742b-2c62-483e-9577-a45b92d46027",
+      "images": [
+        "7771d636-0636-4ac7-a599-afef66adf6dd"
+      ],
+      "persona": [
+        "1599159b-b0be-42f2-b19f-57aa4d13583a",
+        "NEUTRAL",
+        "417b21ab-8d53-4727-9cbc-afae99f97e3c"
+      ],
+      "sceneId": "1074db2d-23c2-459e-bf16-fcb742c1a5cf",
+      "tags": [],
+      "title": "Amethyst Fuzzy",
+      "type": "CHOICE",
+      "updated": 1645136617474
+    },
+    "ca3d70ae-b1af-4134-adf0-c3e1d23691e5": {
+      "audio": [
+        "1c79744b-689c-4b26-b600-e47c94676e29",
+        false
+      ],
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"p\",\"children\":[{\"text\":\"Lorem ipsum\",\"strong\":true,\"u\":true},{\"text\":\" dolor sit amet, consectetur adipiscing elit. Duis at porttitor risus. Fusce eu venenatis nisl. Pellentesque nec suscipit eros. Sed tempus dapibus orci, eget iaculis massa.\"}]},{\"type\":\"blockquote\",\"children\":[{\"text\":\"Aliquam erat volutpat. Nunc luctus tristique risus at consequat. In tristique justo at vulputate feugiat. Aenean eu ullamcorper ex. Duis elementum eget ipsum ac posuere. Aliquam erat volutpat. Nullam neque nulla, laoreet eu euismod non, viverra a dolor.\",\"em\":true}]},{\"type\":\"p\",\"children\":[{\"text\":\"Quisque imperdiet eros nec magna auctor efficitur. Donec ex purus, scelerisque posuere tortor non, mollis imperdiet turpis.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 191.99999999999997,
+        "sceneMapPosY": 236
+      },
+      "ending": false,
+      "id": "ca3d70ae-b1af-4134-adf0-c3e1d23691e5",
+      "input": "c59d1c7a-a169-4326-8078-3c593b19ac7e",
+      "images": [],
+      "persona": [
+        "5fb76893-e2ae-4d35-9667-207be1f11f91",
+        "NEUTRAL",
+        "7fd94970-5424-456c-9fd9-ed63933bb828"
+      ],
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Gold Toxic Really Really Really Really Really Long Name",
+      "type": "INPUT",
+      "updated": 1645136124163
+    },
+    "e499567b-624f-48d3-8620-94404e205da3": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"p\",\"children\":[{\"text\":\"\"}]}]",
+      "composer": {
+        "sceneMapPosX": 912,
+        "sceneMapPosY": 1272
+      },
+      "ending": false,
+      "id": "e499567b-624f-48d3-8620-94404e205da3",
+      "images": [],
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Lavender Fat",
+      "type": "CHOICE",
+      "updated": 1645135419727
+    }
+  },
+  "folders": {
+    "024a7591-ca2b-4747-a9f5-9281e1c44b0a": {
+      "children": [
+        [
+          "SCENE",
+          "1074db2d-23c2-459e-bf16-fcb742c1a5cf"
+        ]
+      ],
+      "id": "024a7591-ca2b-4747-a9f5-9281e1c44b0a",
+      "parent": [
+        "WORLD",
+        null
+      ],
+      "tags": [],
+      "title": "Gray Light",
+      "updated": 1644514878325
+    },
+    "9553ee44-5623-4968-9b5a-bc2513306747": {
+      "children": [
+        [
+          "SCENE",
+          "d206463c-3b73-4436-a771-531d9a41ae19"
+        ]
+      ],
+      "id": "9553ee44-5623-4968-9b5a-bc2513306747",
+      "parent": [
+        "WORLD",
+        null
+      ],
+      "tags": [],
+      "title": "Cyan Enthusiastic",
+      "updated": 1645132641522
+    }
+  },
+  "inputs": {
+    "c59d1c7a-a169-4326-8078-3c593b19ac7e": {
+      "id": "c59d1c7a-a169-4326-8078-3c593b19ac7e",
+      "eventId": "ca3d70ae-b1af-4134-adf0-c3e1d23691e5",
+      "tags": [],
+      "title": "Salmon Testy",
+      "updated": 1644518672452,
+      "variableId": "8d0f3c7c-86aa-489b-8ed8-9f68716f332b"
+    }
+  },
+  "jumps": {
+    "313b6a5c-a3b6-4489-9d15-896bb2bcb802": {
+      "id": "313b6a5c-a3b6-4489-9d15-896bb2bcb802",
+      "path": [
+        "d206463c-3b73-4436-a771-531d9a41ae19",
+        "6144f173-a4ae-4d04-bd6b-34b5658e3d4f"
+      ],
+      "tags": [],
+      "title": "On World Start Jump",
+      "updated": 1644601815298
+    },
+    "584c5647-6fa2-47ca-8448-77f77ed4aa42": {
+      "composer": {
+        "sceneMapPosX": 932,
+        "sceneMapPosY": 944
+      },
+      "id": "584c5647-6fa2-47ca-8448-77f77ed4aa42",
+      "path": [
+        "1074db2d-23c2-459e-bf16-fcb742c1a5cf",
+        "bbd3abac-7c9e-410c-b00a-c36920e981c6"
+      ],
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Turquoise Novel",
+      "updated": 1644643055875
+    },
+    "60b97225-2d80-41ad-a918-74245a50ddf3": {
+      "composer": {
+        "sceneMapPosX": 788,
+        "sceneMapPosY": 332
+      },
+      "id": "60b97225-2d80-41ad-a918-74245a50ddf3",
+      "path": [
+        "d206463c-3b73-4436-a771-531d9a41ae19"
+      ],
+      "sceneId": "1074db2d-23c2-459e-bf16-fcb742c1a5cf",
+      "tags": [],
+      "title": "Gray Hilarious",
+      "updated": 1644601868954
+    },
+    "b2d055e7-f3b9-40e1-8ac0-bcf2e783ae41": {
+      "composer": {
+        "sceneMapPosX": 943.9999999999999,
+        "sceneMapPosY": 301.5
+      },
+      "id": "b2d055e7-f3b9-40e1-8ac0-bcf2e783ae41",
+      "path": [
+        "1074db2d-23c2-459e-bf16-fcb742c1a5cf"
+      ],
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Bronze Successive",
+      "updated": 1644642906549
+    }
+  },
+  "paths": {
+    "057e7551-365c-4ba0-9a6b-2f6c0f622406": {
+      "choiceId": "3bab3d20-928e-4658-a4cb-f2275b7d18cc",
+      "conditionsType": "ALL",
+      "destinationId": "670031cf-6eed-4278-8589-5accccdf4874",
+      "destinationType": "EVENT",
+      "id": "057e7551-365c-4ba0-9a6b-2f6c0f622406",
+      "originId": "6e71ebee-bf09-40a4-b3c7-c7ce8413495c",
+      "originType": "CHOICE",
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Pink Smiling",
+      "updated": 1644512315744
+    },
+    "13c3cfc2-975b-4193-bd41-b4570e40cdbd": {
+      "conditionsType": "ALL",
+      "destinationId": "6144f173-a4ae-4d04-bd6b-34b5658e3d4f",
+      "destinationType": "EVENT",
+      "id": "13c3cfc2-975b-4193-bd41-b4570e40cdbd",
+      "inputId": "c59d1c7a-a169-4326-8078-3c593b19ac7e",
+      "originId": "ca3d70ae-b1af-4134-adf0-c3e1d23691e5",
+      "originType": "INPUT",
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Coral Wet",
+      "updated": 1644601826965
+    },
+    "2415abe5-1e24-472f-9cfe-aafed69fed19": {
+      "conditionsType": "ALL",
+      "destinationId": "60b97225-2d80-41ad-a918-74245a50ddf3",
+      "destinationType": "JUMP",
+      "id": "2415abe5-1e24-472f-9cfe-aafed69fed19",
+      "originId": "bc98742b-2c62-483e-9577-a45b92d46027",
+      "originType": "CHOICE",
+      "sceneId": "1074db2d-23c2-459e-bf16-fcb742c1a5cf",
+      "tags": [],
+      "title": "Red Physical",
+      "updated": 1644606408028
+    },
+    "5a41aff7-ee1e-4793-8b01-c5f60566e189": {
+      "conditionsType": "ALL",
+      "destinationId": "87d616cc-64c0-43f5-b30c-43e399906665",
+      "destinationType": "EVENT",
+      "id": "5a41aff7-ee1e-4793-8b01-c5f60566e189",
+      "originId": "e499567b-624f-48d3-8620-94404e205da3",
+      "originType": "CHOICE",
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Orange Useless",
+      "updated": 1645135988283
+    },
+    "83aa7b01-6fca-43c3-9d3c-6e1795c1241f": {
+      "conditionsType": "ALL",
+      "destinationId": "bc98742b-2c62-483e-9577-a45b92d46027",
+      "destinationType": "EVENT",
+      "id": "83aa7b01-6fca-43c3-9d3c-6e1795c1241f",
+      "originId": "bbd3abac-7c9e-410c-b00a-c36920e981c6",
+      "originType": "CHOICE",
+      "sceneId": "1074db2d-23c2-459e-bf16-fcb742c1a5cf",
+      "tags": [],
+      "title": "Lime Mad",
+      "updated": 1644516095161
+    },
+    "9f6e1bd1-8f50-4638-8db4-fba409ea491e": {
+      "choiceId": "0b3c1995-26fb-4ed7-8896-519ce72ae0e5",
+      "conditionsType": "ALL",
+      "destinationId": "b2d055e7-f3b9-40e1-8ac0-bcf2e783ae41",
+      "destinationType": "JUMP",
+      "id": "9f6e1bd1-8f50-4638-8db4-fba409ea491e",
+      "originId": "6e71ebee-bf09-40a4-b3c7-c7ce8413495c",
+      "originType": "CHOICE",
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Sapphire Confident",
+      "updated": 1644813856430
+    },
+    "dccb41cd-9651-481f-a77c-0fd1e1e8411f": {
+      "choiceId": "e39869be-ef48-45f3-a1cf-0702aa1bafe4",
+      "conditionsType": "ALL",
+      "destinationId": "670031cf-6eed-4278-8589-5accccdf4874",
+      "destinationType": "EVENT",
+      "id": "dccb41cd-9651-481f-a77c-0fd1e1e8411f",
+      "originId": "6144f173-a4ae-4d04-bd6b-34b5658e3d4f",
+      "originType": "CHOICE",
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Gray Metropolitan",
+      "updated": 1644601834898
+    },
+    "e1b631a5-17cc-403e-a45d-9f241fa261d3": {
+      "conditionsType": "ALL",
+      "destinationId": "6e71ebee-bf09-40a4-b3c7-c7ce8413495c",
+      "destinationType": "EVENT",
+      "id": "e1b631a5-17cc-403e-a45d-9f241fa261d3",
+      "inputId": "c59d1c7a-a169-4326-8078-3c593b19ac7e",
+      "originId": "ca3d70ae-b1af-4134-adf0-c3e1d23691e5",
+      "originType": "INPUT",
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Harlequin Total",
+      "updated": 1644518598399
+    },
+    "eb694f7e-aca2-4bf4-b5be-e4857a15e828": {
+      "choiceId": "9190e271-c629-4e03-9077-e96f539e0083",
+      "conditionsType": "ALL",
+      "destinationId": "b2d055e7-f3b9-40e1-8ac0-bcf2e783ae41",
+      "destinationType": "JUMP",
+      "id": "eb694f7e-aca2-4bf4-b5be-e4857a15e828",
+      "originId": "6144f173-a4ae-4d04-bd6b-34b5658e3d4f",
+      "originType": "CHOICE",
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Tomato Faithful",
+      "updated": 1644606416398
+    },
+    "f9cd9b68-ecef-4ea4-8097-82f586cfdff9": {
+      "choiceId": "cbc87fef-fec5-495a-9f0e-4b39559bddf2",
+      "conditionsType": "ALL",
+      "destinationId": "e499567b-624f-48d3-8620-94404e205da3",
+      "destinationType": "EVENT",
+      "id": "f9cd9b68-ecef-4ea4-8097-82f586cfdff9",
+      "originId": "6144f173-a4ae-4d04-bd6b-34b5658e3d4f",
+      "originType": "CHOICE",
+      "sceneId": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "tags": [],
+      "title": "Turquoise Calm",
+      "updated": 1645132663674
+    }
+  },
+  "scenes": {
+    "1074db2d-23c2-459e-bf16-fcb742c1a5cf": {
+      "children": [
+        [
+          "EVENT",
+          "bbd3abac-7c9e-410c-b00a-c36920e981c6"
+        ],
+        [
+          "EVENT",
+          "bc98742b-2c62-483e-9577-a45b92d46027"
+        ],
+        [
+          "JUMP",
+          "60b97225-2d80-41ad-a918-74245a50ddf3"
+        ]
+      ],
+      "composer": {
+        "sceneMapTransformX": -118,
+        "sceneMapTransformY": 236.5,
+        "sceneMapTransformZoom": 0.5
+      },
+      "id": "1074db2d-23c2-459e-bf16-fcb742c1a5cf",
+      "parent": [
+        "FOLDER",
+        "024a7591-ca2b-4747-a9f5-9281e1c44b0a"
+      ],
+      "tags": [],
+      "title": "Magenta Petite",
+      "updated": 1645136585706
+    },
+    "d206463c-3b73-4436-a771-531d9a41ae19": {
+      "audio": [
+        "85e615d2-f2ad-41b3-9ef1-e0da91a2f137",
+        false
+      ],
+      "children": [
+        [
+          "EVENT",
+          "ca3d70ae-b1af-4134-adf0-c3e1d23691e5"
+        ],
+        [
+          "EVENT",
+          "6e71ebee-bf09-40a4-b3c7-c7ce8413495c"
+        ],
+        [
+          "JUMP",
+          "b2d055e7-f3b9-40e1-8ac0-bcf2e783ae41"
+        ],
+        [
+          "EVENT",
+          "6144f173-a4ae-4d04-bd6b-34b5658e3d4f"
+        ],
+        [
+          "EVENT",
+          "670031cf-6eed-4278-8589-5accccdf4874"
+        ],
+        [
+          "JUMP",
+          "584c5647-6fa2-47ca-8448-77f77ed4aa42"
+        ],
+        [
+          "EVENT",
+          "e499567b-624f-48d3-8620-94404e205da3"
+        ],
+        [
+          "EVENT",
+          "87d616cc-64c0-43f5-b30c-43e399906665"
+        ]
+      ],
+      "composer": {
+        "sceneMapTransformX": -15.5,
+        "sceneMapTransformY": 73,
+        "sceneMapTransformZoom": 0.5
+      },
+      "id": "d206463c-3b73-4436-a771-531d9a41ae19",
+      "parent": [
+        "FOLDER",
+        "9553ee44-5623-4968-9b5a-bc2513306747"
+      ],
+      "tags": [],
+      "title": "Turquoise Royall",
+      "updated": 1645136440234
+    }
+  },
+  "variables": {
+    "210edee2-7d30-43e7-b90d-c830dd451e62": {
+      "id": "210edee2-7d30-43e7-b90d-c830dd451e62",
+      "initialValue": "false",
+      "tags": [],
+      "title": "humanOliveCricket",
+      "type": "BOOLEAN",
+      "updated": 1644691403692
+    },
+    "4ff55b4b-9fee-4af6-bb35-e765d71d9af4": {
+      "id": "4ff55b4b-9fee-4af6-bb35-e765d71d9af4",
+      "initialValue": "false",
+      "tags": [],
+      "title": "petiteAmberPheasant",
+      "type": "BOOLEAN",
+      "updated": 1644691404457
+    },
+    "8d0f3c7c-86aa-489b-8ed8-9f68716f332b": {
+      "id": "8d0f3c7c-86aa-489b-8ed8-9f68716f332b",
+      "initialValue": "Nermal",
+      "tags": [],
+      "title": "kittyName",
+      "type": "STRING",
+      "updated": 1644774913466
+    },
+    "b1aac80b-22d6-431e-932f-370d6f03782e": {
+      "id": "b1aac80b-22d6-431e-932f-370d6f03782e",
+      "initialValue": "false",
+      "tags": [],
+      "title": "activeAzureFrog",
+      "type": "BOOLEAN",
+      "updated": 1644691401613
+    },
+    "beb59a89-3dff-4f24-91ce-3013dc5cbb33": {
+      "id": "beb59a89-3dff-4f24-91ce-3013dc5cbb33",
+      "initialValue": "false",
+      "tags": [],
+      "title": "preciousCoffeeCrab",
+      "type": "BOOLEAN",
+      "updated": 1644691402449
+    },
+    "d23be9d8-8a9f-41ad-93a3-ff559149d77f": {
+      "id": "d23be9d8-8a9f-41ad-93a3-ff559149d77f",
+      "initialValue": "false",
+      "tags": [],
+      "title": "increasingBrownFinch",
+      "type": "BOOLEAN",
+      "updated": 1644690746351
+    },
+    "e51f9afc-91d4-494f-a43f-f1688ffc34a1": {
+      "id": "e51f9afc-91d4-494f-a43f-f1688ffc34a1",
+      "initialValue": "false",
+      "tags": [],
+      "title": "legislativePurpleReptile",
+      "type": "BOOLEAN",
+      "updated": 1644691403042
+    }
+  }
+}

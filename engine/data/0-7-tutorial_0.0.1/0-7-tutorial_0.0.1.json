@@ -1,0 +1,240 @@
+{
+  "_": {
+    "children": [
+      [
+        "SCENE",
+        "9569243d-b61a-42ea-87e0-4287ba580415"
+      ]
+    ],
+    "designer": "ritsuke",
+    "engine": "0.7.0",
+    "id": "f6db6e41-8175-41d4-82ee-06735b810f89",
+    "jump": "71e027f7-cd97-4d8f-807f-a34151607475",
+    "schema": "https://elmstory.com/schema/elm-story-0.7.0.json",
+    "studioId": "dca84443-aaa7-4563-a60d-7454cd96cc64",
+    "studioTitle": "Elm Story Games",
+    "tags": [],
+    "title": "0.7 Tutorial",
+    "updated": 1646360723625,
+    "version": "0.0.1",
+    "website": ""
+  },
+  "characters": {
+    "ef9fe9f1-014a-4eba-a859-04b568ab977b": {
+      "id": "ef9fe9f1-014a-4eba-a859-04b568ab977b",
+      "masks": [
+        {
+          "type": "NEUTRAL",
+          "active": true,
+          "assetId": "a87a627c-0a55-4cca-a755-824c3a0dceed"
+        }
+      ],
+      "refs": [
+        [
+          "e29472b8-9f93-4361-bc52-989ad1063a73",
+          "ESRE"
+        ],
+        [
+          "ba521c08-c874-4374-a94f-d52cfee8eced",
+          "VIOLET"
+        ]
+      ],
+      "tags": [],
+      "title": "The Storyteller",
+      "updated": 1646353285614
+    }
+  },
+  "choices": {
+    "7a6fe9ba-eae0-4de4-ab0b-bad7f2d54483": {
+      "id": "7a6fe9ba-eae0-4de4-ab0b-bad7f2d54483",
+      "eventId": "536046a0-8c96-4f6b-8050-b980d4f57adb",
+      "tags": [],
+      "title": "Choice 1",
+      "updated": 1646196580189
+    },
+    "910f24b3-df50-4cdc-a06e-7854f75c57ee": {
+      "id": "910f24b3-df50-4cdc-a06e-7854f75c57ee",
+      "eventId": "42a26636-b185-4aa3-a7c9-786d8508052e",
+      "tags": [],
+      "title": "I want to learn more!",
+      "updated": 1646074840830
+    },
+    "fb6e82c9-06fa-4656-bbf0-15167364f3c1": {
+      "id": "fb6e82c9-06fa-4656-bbf0-15167364f3c1",
+      "eventId": "42a26636-b185-4aa3-a7c9-786d8508052e",
+      "tags": [],
+      "title": "Got it!",
+      "updated": 1646074773756
+    }
+  },
+  "conditions": {},
+  "effects": {},
+  "events": {
+    "42a26636-b185-4aa3-a7c9-786d8508052e": {
+      "characters": [],
+      "choices": [
+        "fb6e82c9-06fa-4656-bbf0-15167364f3c1",
+        "910f24b3-df50-4cdc-a06e-7854f75c57ee"
+      ],
+      "content": "[{\"type\":\"h1\",\"children\":[{\"text\":\"Events\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"Scene content is organized by \"},{\"text\":\"events\",\"u\":true},{\"text\":\", for which three types exist:\"}]},{\"type\":\"ul\",\"children\":[{\"type\":\"li\",\"children\":[{\"text\":\"Choice\",\"em\":true,\"u\":true}]},{\"type\":\"li\",\"children\":[{\"text\":\"Input\",\"em\":true,\"u\":true}]},{\"type\":\"li\",\"children\":[{\"text\":\"Jump\",\"em\":true,\"u\":true}]}]},{\"type\":\"h2\",\"children\":[{\"text\":\"Blocked Choices\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"Looking at both the storyworld preview and this event, you may notice that both choices are not represented.\"}]},{\"type\":\"h2\",\"children\":[{\"text\":\"Special Types\"}]},{\"type\":\"h3\",\"children\":[{\"text\":\"Passthrough\",\"em\":true,\"u\":true}]},{\"type\":\"p\",\"children\":[{\"text\":\"Choice events without choices. The storyteller will render a continue button if the event has an available path forward.\"}]},{\"type\":\"h3\",\"children\":[{\"text\":\"Loopback\",\"em\":true,\"u\":true}]},{\"type\":\"p\",\"children\":[{\"text\":\"Choice or input events that dead-end e.g. a conversation branch. The storyteller will return the audience to the path-specific root event in the scene.\"}]},{\"type\":\"h3\",\"children\":[{\"text\":\"Ending\",\"em\":true,\"u\":true}]},{\"type\":\"p\",\"children\":[{\"text\":\"Choice or input events that completes the storyworld playthrough.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 272,
+        "sceneMapPosY": 0
+      },
+      "ending": false,
+      "id": "42a26636-b185-4aa3-a7c9-786d8508052e",
+      "images": [],
+      "sceneId": "9569243d-b61a-42ea-87e0-4287ba580415",
+      "tags": [],
+      "title": "Events",
+      "type": "CHOICE",
+      "updated": 1646353632068
+    },
+    "536046a0-8c96-4f6b-8050-b980d4f57adb": {
+      "characters": [
+        "ef9fe9f1-014a-4eba-a859-04b568ab977b"
+      ],
+      "choices": [
+        "7a6fe9ba-eae0-4de4-ab0b-bad7f2d54483"
+      ],
+      "content": "[{\"type\":\"p\",\"children\":[{\"text\":\" \"},{\"type\":\"character\",\"children\":[{\"text\":\"\"}],\"transform\":\"cap\",\"character_id\":\"ef9fe9f1-014a-4eba-a859-04b568ab977b\"},{\"text\":\"... \"},{\"type\":\"link\",\"url\":\"https://stackoverflow.com/questions/31749625/make-a-link-from-electron-open-in-browser\",\"children\":[{\"text\":\"and\"}]},{\"text\":\" link... \"},{\"type\":\"link\",\"children\":[{\"text\":\"this\"}],\"url\":\"\"},{\"text\":\" is a \"},{\"type\":\"link\",\"url\":\"https://elmstory.com\",\"children\":[{\"text\":\"link\"}]},{\"text\":\".\"}]}]",
+      "composer": {
+        "sceneMapPosX": 28,
+        "sceneMapPosY": -288
+      },
+      "ending": false,
+      "id": "536046a0-8c96-4f6b-8050-b980d4f57adb",
+      "images": [],
+      "sceneId": "9569243d-b61a-42ea-87e0-4287ba580415",
+      "tags": [],
+      "title": "Gold Overall",
+      "type": "CHOICE",
+      "updated": 1646360824788
+    },
+    "6505b5f5-c1ce-4846-a2d1-a8e95890f5e9": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"p\",\"children\":[{\"text\":\"That's great! \"},{\"type\":\"link\",\"children\":[{\"text\":\"\"}],\"text\":\"hi\",\"url\":\"https://elmstory.com\"},{\"text\":\"\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"There are several online resources available to you.\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"Throughout the user interface are help (❔) buttons that will lead you to specific information via Elm Story's documentation app.\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"We also post tutorial videos to our YouTube channel.\"}]},{\"type\":\"blockquote\",\"children\":[{\"text\":\"Elm Story is currently in early access. Major features, enhancements and fixes are still underway and documentation is under active development. If you need additional help, join our Discord server.\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"For updates, follow @elmstorygames on Twitter.\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"Join our community on Discord to submit feedback, get help and share your work.\"}]},{\"type\":\"h1\",\"children\":[{\"text\":\"Support Elm Story\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"If you find Elm Story useful, consider supporting continued development by donating via Itch and becoming a monthly patron.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 540,
+        "sceneMapPosY": 228
+      },
+      "ending": true,
+      "id": "6505b5f5-c1ce-4846-a2d1-a8e95890f5e9",
+      "images": [],
+      "sceneId": "9569243d-b61a-42ea-87e0-4287ba580415",
+      "tags": [],
+      "title": "Next steps",
+      "type": "CHOICE",
+      "updated": 1646187554575
+    },
+    "ad5da778-2252-493f-ad83-9c4609a75b9a": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"h1\",\"children\":[{\"text\":\"Welcome to Elm Story...\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"...and your new \"},{\"text\":\"storyworld\",\"u\":true,\"em\":true},{\"text\":\"!\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"I've created an example \"},{\"text\":\"scene\",\"u\":true,\"em\":true},{\"text\":\" to get you started.\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"To the top-left is the \"},{\"text\":\"World Outline\",\"em\":true,\"u\":true},{\"text\":\".\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"Click \"},{\"text\":\"Getting Started with Elm Story\",\"u\":true,\"em\":true},{\"text\":\" to select and expand the scene's contents. The scene will also open in the \"},{\"text\":\"Scene Map\",\"em\":true,\"u\":true},{\"text\":\".\"}]},{\"type\":\"blockquote\",\"children\":[{\"text\":\"Drag and drop the scene map tab to the right to work with the map and \"},{\"text\":\"Storyworld Preview\",\"u\":true},{\"text\":\" (this tab), side-by-side.\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"If you'd like to start from an empty world, right-click the example scene and select \"},{\"text\":\"Remove\",\"em\":true,\"u\":true},{\"text\":\". Otherwise\"},{\"em\":true,\"text\":\", \"},{\"text\":\"click the arrow below to continue.\"}]}]",
+      "ending": false,
+      "id": "ad5da778-2252-493f-ad83-9c4609a75b9a",
+      "images": [],
+      "persona": [
+        "ef9fe9f1-014a-4eba-a859-04b568ab977b",
+        "NEUTRAL",
+        "ba521c08-c874-4374-a94f-d52cfee8eced"
+      ],
+      "sceneId": "9569243d-b61a-42ea-87e0-4287ba580415",
+      "tags": [],
+      "title": "Introduction",
+      "type": "CHOICE",
+      "updated": 1646353612690
+    }
+  },
+  "folders": {},
+  "inputs": {},
+  "jumps": {
+    "71e027f7-cd97-4d8f-807f-a34151607475": {
+      "id": "71e027f7-cd97-4d8f-807f-a34151607475",
+      "path": [
+        "9569243d-b61a-42ea-87e0-4287ba580415",
+        "536046a0-8c96-4f6b-8050-b980d4f57adb"
+      ],
+      "tags": [],
+      "title": "On World Start Jump",
+      "updated": 1646360727233
+    }
+  },
+  "paths": {
+    "2c23b07b-4149-4e09-9ad0-eb771e84905e": {
+      "choiceId": "7a6fe9ba-eae0-4de4-ab0b-bad7f2d54483",
+      "conditionsType": "ALL",
+      "destinationId": "ad5da778-2252-493f-ad83-9c4609a75b9a",
+      "destinationType": "EVENT",
+      "id": "2c23b07b-4149-4e09-9ad0-eb771e84905e",
+      "originId": "536046a0-8c96-4f6b-8050-b980d4f57adb",
+      "originType": "CHOICE",
+      "sceneId": "9569243d-b61a-42ea-87e0-4287ba580415",
+      "tags": [],
+      "title": "Jade Diverse",
+      "updated": 1646360743563
+    },
+    "843297e7-6fe1-473c-80ad-d31f192b3a11": {
+      "conditionsType": "ALL",
+      "destinationId": "42a26636-b185-4aa3-a7c9-786d8508052e",
+      "destinationType": "EVENT",
+      "id": "843297e7-6fe1-473c-80ad-d31f192b3a11",
+      "originId": "ad5da778-2252-493f-ad83-9c4609a75b9a",
+      "originType": "CHOICE",
+      "sceneId": "9569243d-b61a-42ea-87e0-4287ba580415",
+      "tags": [],
+      "title": "Apricot Democratic",
+      "updated": 1646174976685
+    },
+    "f7c4e4fb-7999-498e-93f1-3a6d06123c81": {
+      "choiceId": "910f24b3-df50-4cdc-a06e-7854f75c57ee",
+      "conditionsType": "ALL",
+      "destinationId": "6505b5f5-c1ce-4846-a2d1-a8e95890f5e9",
+      "destinationType": "EVENT",
+      "id": "f7c4e4fb-7999-498e-93f1-3a6d06123c81",
+      "originId": "42a26636-b185-4aa3-a7c9-786d8508052e",
+      "originType": "CHOICE",
+      "sceneId": "9569243d-b61a-42ea-87e0-4287ba580415",
+      "tags": [],
+      "title": "Turquoise Delighted",
+      "updated": 1646074403517
+    }
+  },
+  "scenes": {
+    "9569243d-b61a-42ea-87e0-4287ba580415": {
+      "children": [
+        [
+          "EVENT",
+          "ad5da778-2252-493f-ad83-9c4609a75b9a"
+        ],
+        [
+          "EVENT",
+          "42a26636-b185-4aa3-a7c9-786d8508052e"
+        ],
+        [
+          "EVENT",
+          "536046a0-8c96-4f6b-8050-b980d4f57adb"
+        ],
+        [
+          "EVENT",
+          "6505b5f5-c1ce-4846-a2d1-a8e95890f5e9"
+        ]
+      ],
+      "composer": {
+        "sceneMapTransformX": 74.72978129555213,
+        "sceneMapTransformY": 294.1441943978442,
+        "sceneMapTransformZoom": 0.757858283255199
+      },
+      "id": "9569243d-b61a-42ea-87e0-4287ba580415",
+      "parent": [
+        "WORLD",
+        null
+      ],
+      "tags": [],
+      "title": "Getting Started with Elm Story",
+      "updated": 1646360741564
+    }
+  },
+  "variables": {}
+}
