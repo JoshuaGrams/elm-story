@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import {
@@ -13,10 +13,8 @@ import {
 import { EngineContext } from '../contexts/EngineContext'
 
 import { getCharacterMask } from '../lib/api'
-import { useQuery } from 'react-query'
-import { LibraryDatabase, LIBRARY_TABLE } from '../lib/db'
 
-import { useSpring, config, animated } from 'react-spring'
+import { useSpring, config } from 'react-spring'
 import AcceleratedDiv from './AcceleratedDiv'
 import { SettingsContext } from '../contexts/SettingsContext'
 
@@ -44,13 +42,6 @@ const EventCharacterMask: React.FC<{
 
   const { studioId } = engine.worldInfo
 
-  const [maskUrl, setMaskUrl] = useState<string | undefined>(undefined)
-
-  const character = useLiveQuery(
-    () => new LibraryDatabase(studioId).characters.get(persona[0]),
-    [persona[0]]
-  )
-
   const [styles, api] = useSpring(() => ({
     immediate: settings.motion === ENGINE_MOTION.REDUCED,
     from: {
@@ -59,34 +50,27 @@ const EventCharacterMask: React.FC<{
     config: config.gentle
   }))
 
-  const { data: mask, isLoading: isMaskLoading } = useQuery(
-    [`character-mask-${eventId}`, persona, character],
-    async () => {
-      if (persona && character) {
-        const mask = await getCharacterMask(
-          studioId,
-          persona?.[0],
-          persona?.[1]
-        )
-
-        return mask || null
-      }
-
-      return undefined
-    }
+  const [maskUrl, setMaskUrl] = useState<string>(
+    `data:image/svg+xml;base64,${btoa(placeholder)}`
   )
 
-  const processEvent = (event: Event) => {
+  const mask = useLiveQuery(
+    async () =>
+      persona && (await getCharacterMask(studioId, persona?.[0], persona?.[1])),
+    [persona]
+  )
+
+  const processEvent: (event: Event) => void = (event) => {
     const { detail } = event as CustomEvent<EngineDevToolsLiveEvent>
 
     switch (detail.eventType) {
       case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RETURN_ASSET_URL:
         if (
-          detail.asset?.url &&
-          detail.eventId === eventId &&
-          detail.asset.id === mask?.assetId
+          detail.asset?.id &&
+          detail.asset.url &&
+          detail.eventId === eventId
         ) {
-          setMaskUrl(detail.asset.url.replaceAll('"', ''))
+          setMaskUrl(detail.asset.url.replaceAll('"', "'"))
         }
         break
       default:
@@ -96,23 +80,14 @@ const EventCharacterMask: React.FC<{
 
   useEffect(() => {
     async function getMaskUrl() {
-      if (isMaskLoading) return
-
-      if (mask === null || (mask && !mask.assetId)) {
-        setMaskUrl(`data:image/svg+xml;base64,${btoa(placeholder)}`)
-
-        return
-      }
-
       if (mask?.assetId) {
         if (!engine.isComposer) {
           // local development
           // to see mask images, uncomment... but remember to re-comment out when done!
-          // #DEV:
-          // setMaskUrl(`../../data/0-7-test_0.0.1/assets/${mask.assetId}.jpeg`)
+          // setMaskUrl(`../../data//0-7-tutorial_0.0.1/assets/${mask.assetId}.jpeg`)
 
-          // #PWA
-          setMaskUrl(`assets/content/${mask.assetId}.jpeg`)
+          // PWA
+          setMaskUrl(`./assets/content/${mask.assetId}.jpeg`)
         }
 
         if (engine.isComposer) {
@@ -134,28 +109,28 @@ const EventCharacterMask: React.FC<{
           )
         }
       }
+
+      if (!mask?.assetId) {
+        setMaskUrl(`data:image/svg+xml;base64,${btoa(placeholder)}`)
+      }
     }
 
     getMaskUrl()
   }, [mask?.assetId])
 
   useEffect(() => {
-    if (engine.isComposer) {
-      window.addEventListener(
+    window.addEventListener(
+      ENGINE_DEVTOOLS_LIVE_EVENTS.COMPOSER_TO_ENGINE,
+      processEvent
+    )
+
+    return () => {
+      window.removeEventListener(
         ENGINE_DEVTOOLS_LIVE_EVENTS.COMPOSER_TO_ENGINE,
         processEvent
       )
     }
-
-    return () => {
-      if (engine.isComposer) {
-        window.removeEventListener(
-          ENGINE_DEVTOOLS_LIVE_EVENTS.COMPOSER_TO_ENGINE,
-          processEvent
-        )
-      }
-    }
-  }, [mask])
+  }, [])
 
   useEffect(() => {
     if (maskUrl) api.start({ opacity: 1 })

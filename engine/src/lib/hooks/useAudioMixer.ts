@@ -132,13 +132,13 @@ export const useAudioMixer = ({
   const sceneTrack = useAudioTrack({
       type: 'SCENE',
       // #DEV
-      source: profiles.scene?.[0]
-        ? `../../data/0-7-test_0.0.1/assets/${profiles.scene[0]}.mp3`
-        : undefined,
-      // #PWA
       // source: profiles.scene?.[0]
-      //   ? `assets/content/${profiles.scene[0]}.mp3`
+      //   ? `../../data/0-7-test_0.0.1/assets/${profiles.scene[0]}.mp3`
       //   : undefined,
+      // #PWA
+      source: profiles.scene?.[0]
+        ? `assets/content/${profiles.scene[0]}.mp3`
+        : undefined,
       muted,
       loop: profiles.scene?.[1],
       volume: muted ? -1 : profiles.event ? 0.3 : 1
@@ -146,13 +146,13 @@ export const useAudioMixer = ({
     eventTrack = useAudioTrack({
       type: 'EVENT',
       // #DEV
-      source: profiles.event?.[0]
-        ? `../../data/0-7-test_0.0.1/assets/${profiles.event[0]}.mp3`
-        : undefined,
-      // #PWA
       // source: profiles.event?.[0]
-      //   ? `assets/content/${profiles.event[0]}.mp3`
+      //   ? `../../data/0-7-test_0.0.1/assets/${profiles.event[0]}.mp3`
       //   : undefined,
+      // #PWA
+      source: profiles.event?.[0]
+        ? `assets/content/${profiles.event[0]}.mp3`
+        : undefined,
       muted,
       loop: profiles.event?.[1],
       volume: muted ? -1 : 1

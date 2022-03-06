@@ -34,13 +34,13 @@ const EventImageElement: React.FC<{
   const { engine } = useContext(EngineContext)
 
   // #DEV
-  let imageUrl = assetId
-    ? `../../data/0-7-test_0.0.1/assets/${assetId}.webp`
-    : getSvgUrl(placeholder)
-  // #PWA
   // let imageUrl = assetId
-  //   ? `assets/content/${assetId}.webp`
+  //   ? `../../data/0-7-test_0.0.1/assets/${assetId}.webp`
   //   : getSvgUrl(placeholder)
+  // #PWA
+  let imageUrl = assetId
+    ? `assets/content/${assetId}.webp`
+    : getSvgUrl(placeholder)
 
   // testing
   // imageUrl =
@@ -64,15 +64,16 @@ const EventImageElement: React.FC<{
     if (detail.eventType === ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.RETURN_ASSET_URL) {
       if (
         detail?.asset?.url &&
+        detail.asset.id &&
         detail.asset.id === assetId &&
         eventId === detail.eventId
       ) {
         setResolvedBackgroundImage(
-          `url(${detail.asset.url.replaceAll('"', '')})`
+          `url(${detail.asset.url.replaceAll('"', "'")})`
         )
       }
 
-      if (!detail?.asset?.url) {
+      if (!detail?.asset?.id || !detail?.asset?.url) {
         setResolvedBackgroundImage(`url(${getSvgUrl(placeholder)}`)
       }
     }

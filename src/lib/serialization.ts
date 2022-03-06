@@ -59,7 +59,7 @@ const serializeDescendantToText = async (
       )
 
       return `<div class="event-content-preview-image" style="background-image: url(${
-        exists ? path.replaceAll('"', '') : getSvgUrl(ImageSelectPlaceholder)
+        exists ? path.replaceAll('"', "'") : getSvgUrl(ImageSelectPlaceholder)
       });"></div>`
     case ELEMENT_FORMATS.CHARACTER:
       const character = node.character_id

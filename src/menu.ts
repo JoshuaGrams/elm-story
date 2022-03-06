@@ -180,6 +180,7 @@ export default class MenuBuilder {
           click: () =>
             this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen())
         }
+        // #DEV - test prod builds
         // {
         //   label: 'Toggle Developer Tools',
         //   accelerator: 'Alt+CmdOrCtrl+I',
@@ -343,6 +344,7 @@ export default class MenuBuilder {
                     )
                   }
                 }
+                // #DEV - test prod builds
                 // {
                 //   label: 'Toggle &Developer Tools',
                 //   accelerator: 'Alt+CmdOrCtrl+I',

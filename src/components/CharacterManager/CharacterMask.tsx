@@ -24,7 +24,7 @@ const CharacterMask: React.FC<{
   type: CHARACTER_MASK_TYPE
   assetId?: string
   active?: boolean
-  dominate?: { drive: boolean; energy: boolean }
+  dominate?: { drive: boolean; agency: boolean }
   width?: string | number
   height?: string | number
   aspectRatio?: string
@@ -61,7 +61,7 @@ const CharacterMask: React.FC<{
       <div
         className={`${styles.CharacterMask} ${
           dominate?.drive ? styles.dominateDrive : ''
-        } ${dominate?.energy ? styles.dominateEnergy : ''} ${
+        } ${dominate?.agency ? styles.dominateAgency : ''} ${
           contextMenu ? styles.interactive : ''
         } ${active ? styles.active : ''} ${fill ? styles.fill : ''}`}
         style={{
@@ -176,12 +176,12 @@ const CharacterMask: React.FC<{
                         DRIVE
                       </span>{' '}
                       <span
-                        className={`${styles.energy} ${
+                        className={`${styles.agency} ${
                           active ? styles.active : ''
-                        } ${dominate?.energy ? styles.dominate : ''}`}
+                        } ${dominate?.agency ? styles.dominate : ''}`}
                       >
                         {`${CHARACTER_MASK_VALUES[type][1] > 0 ? '+' : '-'}`}
-                        ENERGY
+                        AGENCY
                       </span>{' '}
                       <span>|</span>{' '}
                       <span className={`${active ? styles.active : ''}`}>
