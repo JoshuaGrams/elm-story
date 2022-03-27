@@ -35,6 +35,7 @@ interface EngineState {
     showing: boolean
   }
   updating: boolean
+  visible: boolean
 }
 
 export enum ENGINE_ACTION_TYPE {
@@ -48,6 +49,7 @@ export enum ENGINE_ACTION_TYPE {
   SET_IS_COMPOSER = 'SET_COMPOSER',
   SET_CURRENT_LIVE_EVENT = 'SET_CURRENT_EVENT',
   SET_UPDATE_WORLD = 'SET_UPDATE_WORLD',
+  SET_VISIBLE = 'SET_VISIBLE',
   STOP = 'STOP',
   SHOW_ERROR_NOTIFICATION = 'SHOW_ERROR_NOTIFICATION',
   TOGGLE_DEVTOOLS_EXPRESSIONS = 'TOGGLE_DEVTOOLS_EXPRESSIONS',
@@ -92,6 +94,7 @@ type EngineActionType =
       }
     }
   | { type: ENGINE_ACTION_TYPE.SET_UPDATE_WORLD; updating: boolean }
+  | { type: ENGINE_ACTION_TYPE.SET_VISIBLE; visible: boolean }
   | { type: ENGINE_ACTION_TYPE.PLAY; fromEvent: ElementId | undefined }
   | { type: ENGINE_ACTION_TYPE.STOP }
   | { type: ENGINE_ACTION_TYPE.HIDE_ERROR_NOTIFICATION }
@@ -196,6 +199,11 @@ const engineReducer = (
         ...state,
         updating: action.updating
       }
+    case ENGINE_ACTION_TYPE.SET_VISIBLE:
+      return {
+        ...state,
+        visible: action.visible
+      }
     case ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_BLOCKED_CHOICES:
       return {
         ...state,
@@ -265,7 +273,8 @@ const defaultEngineState: EngineState = {
     message: undefined,
     showing: false
   },
-  updating: false
+  updating: false,
+  visible: false
 }
 
 export const EngineContext = createContext<EngineContextType>({

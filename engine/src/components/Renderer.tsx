@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useEffect } from 'react'
+import { usePageVisibility } from 'react-page-visibility'
 import { useQuery } from 'react-query'
 
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
@@ -24,6 +25,9 @@ import ErrorNotification from './ErrorNotification'
 
 const Renderer: React.FC = React.memo(() => {
   const { engine, engineDispatch } = useContext(EngineContext)
+
+  // elmstorygames/feedback#268
+  const visible = usePageVisibility()
 
   const { data: autoBookmark } = useQuery(
     'autoBookmark',
@@ -67,6 +71,10 @@ const Renderer: React.FC = React.memo(() => {
       autoBookmark?.liveEventId ? continueWorld() : startWorld()
     }
   }, [engine.worldInfo, engine.isComposer])
+
+  useEffect(() => {
+    engineDispatch({ type: ENGINE_ACTION_TYPE.SET_VISIBLE, visible })
+  }, [visible])
 
   return (
     <div id="renderer">
