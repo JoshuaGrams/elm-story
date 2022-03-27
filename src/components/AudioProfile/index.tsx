@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 
 import { AudioProfile as AudioProfileType } from '../../data/types'
+
+import { AppContext } from '../../contexts/AppContext'
 
 import { Button, Collapse, Slider, Spin } from 'antd'
 import {
@@ -40,6 +42,8 @@ const AudioProfile: React.FC<{
   onRequestAudioPath: (assetId: string) => Promise<[string, boolean]>
   onRemove?: () => void
 }> = ({ profile, info, onImport, onSelect, onRequestAudioPath, onRemove }) => {
+  const { app } = useContext(AppContext)
+
   const importAudioInputRef = useRef<HTMLInputElement>(null),
     playerRef = useRef<HTMLMediaElement>(null)
 
@@ -156,6 +160,12 @@ const AudioProfile: React.FC<{
 
     removeAudioProfile()
   }, [removeProfile, player.duration])
+
+  useEffect(() => {
+    if (playerRef.current && !app.visible) {
+      playerRef.current.pause()
+    }
+  }, [app.visible, playerRef.current])
 
   useEffect(() => {
     return () => {

@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron'
 import React, { useContext, useEffect } from 'react'
+import { usePageVisibility } from 'react-page-visibility'
 
 import { WINDOW_EVENT_TYPE } from './lib/events'
 
@@ -15,11 +16,18 @@ import './App.global.less'
 const App: React.FC = () => {
   const { app, appDispatch } = useContext(AppContext)
 
+  const visible = usePageVisibility()
+
+  useEffect(() => {
+    appDispatch({ type: APP_ACTION_TYPE.SET_VISIBLE, visible })
+  }, [visible])
+
   useEffect(() => {
     ipcRenderer.on(WINDOW_EVENT_TYPE.PLATFORM, (_, [platform]) =>
       appDispatch({ type: APP_ACTION_TYPE.PLATFORM, platform })
     )
   }, [])
+
   return (
     <>
       {app.platform && (

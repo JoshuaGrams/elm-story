@@ -13,12 +13,14 @@ const useAudioTrack = ({
   source,
   muted,
   loop,
+  paused,
   volume
 }: {
   type: AudioTrackType
   source?: string
   muted: boolean
   loop?: boolean
+  paused: boolean
   volume?: number
 }) => {
   const [track, setTrack] = useState<AudioTrack>([
@@ -115,6 +117,19 @@ const useAudioTrack = ({
       )
   }, [volume])
 
+  // elmstorygames/feedback#268
+  useEffect(() => {
+    if (paused) {
+      track[0].audio?.pause()
+      track[1].audio?.pause()
+    }
+
+    if (!paused) {
+      track[0].audio?.play()
+      track[1].audio?.play()
+    }
+  }, [paused])
+
   return [
     { source: track[0].source, primary: track[0].primary },
     { source: track[1].source, primary: track[1].primary }
@@ -123,10 +138,12 @@ const useAudioTrack = ({
 export const useAudioMixer = ({
   profiles,
   muted,
+  paused,
   onEnd
 }: {
   profiles: AudioMixerProfiles
   muted: boolean
+  paused: boolean
   onEnd?: (type: 'SCENE' | 'EVENT', source: string) => void
 }) => {
   const sceneTrack = useAudioTrack({
@@ -141,6 +158,7 @@ export const useAudioMixer = ({
         : undefined,
       muted,
       loop: profiles.scene?.[1],
+      paused,
       volume: muted ? -1 : profiles.event ? 0.3 : 1
     }),
     eventTrack = useAudioTrack({
@@ -155,6 +173,7 @@ export const useAudioMixer = ({
         : undefined,
       muted,
       loop: profiles.event?.[1],
+      paused,
       volume: muted ? -1 : 1
     })
 
