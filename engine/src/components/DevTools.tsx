@@ -9,7 +9,7 @@ import {
 import { EngineContext, ENGINE_ACTION_TYPE } from '../contexts/EngineContext'
 
 const DevTools: React.FC = () => {
-  const { engineDispatch } = useContext(EngineContext)
+  const { engine, engineDispatch } = useContext(EngineContext)
 
   const processEvent = (event: Event) => {
     const { detail } = event as CustomEvent<EngineDevToolsLiveEvent>
@@ -50,10 +50,48 @@ const DevTools: React.FC = () => {
           type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_XRAY
         })
         return
+      case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.TOGGLE_MUTED:
+        engineDispatch({
+          type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_MUTED
+        })
+        return
+      case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.MUTE:
+        engineDispatch({
+          type: ENGINE_ACTION_TYPE.DEVTOOLS_MUTE
+        })
+
+        window.dispatchEvent(
+          new CustomEvent<EngineDevToolsLiveEvent>(
+            ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_COMPOSER,
+            {
+              detail: {
+                eventType: ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.MUTE,
+                muteFrom: 'AUDIO_PROFILE'
+              }
+            }
+          )
+        )
+        return
       default:
         return
     }
   }
+
+  useEffect(() => {
+    if (!engine.devTools.muted) {
+      window.dispatchEvent(
+        new CustomEvent<EngineDevToolsLiveEvent>(
+          ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_COMPOSER,
+          {
+            detail: {
+              eventType: ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.MUTE,
+              muteFrom: 'DEVTOOLS'
+            }
+          }
+        )
+      )
+    }
+  }, [engine.devTools.muted])
 
   useEffect(() => {
     window.addEventListener(

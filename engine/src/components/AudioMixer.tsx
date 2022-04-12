@@ -33,7 +33,7 @@ const AudioMixer: React.FC = React.memo(() => {
   const audioMixer = useAudioMixer({
     profiles,
     paused: !engine.visible,
-    muted: settings.muted
+    muted: engine.isComposer ? engine.devTools.muted : settings.muted
   })
 
   const currentLiveEventData = useLiveQuery(

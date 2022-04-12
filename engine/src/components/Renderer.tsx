@@ -80,6 +80,8 @@ const Renderer: React.FC = React.memo(() => {
     <div id="renderer">
       {engine.worldInfo && (
         <>
+          <AudioMixer />
+
           {!engine.playing && !engine.isComposer && (
             <TitleCard
               onStartWorld={startWorld}
@@ -89,8 +91,6 @@ const Renderer: React.FC = React.memo(() => {
 
           {engine.playing && (
             <>
-              <AudioMixer />
-
               {!engine.isComposer && <EventStreamTitleBar />}
               <LiveEventStream />
 

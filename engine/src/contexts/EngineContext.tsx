@@ -10,8 +10,9 @@ interface EngineState {
     highlightCharacters: boolean
     highlightExpressions: boolean
     blockedChoicesVisible: boolean
-    xrayVisible: boolean
+    muted: boolean
     reset: boolean
+    xrayVisible: boolean
   }
   liveEventsInStream: EngineLiveEventData[]
   installed: boolean
@@ -55,6 +56,8 @@ export enum ENGINE_ACTION_TYPE {
   TOGGLE_DEVTOOLS_EXPRESSIONS = 'TOGGLE_DEVTOOLS_EXPRESSIONS',
   TOGGLE_DEVTOOLS_CHARACTERS = 'TOGGLE_DEVTOOLS_CHARACTERS',
   TOGGLE_DEVTOOLS_BLOCKED_CHOICES = 'TOGGLE_DEVTOOLS_BLOCKED_CHOICES',
+  TOGGLE_DEVTOOLS_MUTED = 'TOGGLE_DEVTOOLS_MUTED',
+  DEVTOOLS_MUTE = 'DEVTOOLS_MUTE',
   TOGGLE_DEVTOOLS_XRAY = 'TOGGLE_DEVTOOLS_XRAY',
   DEVTOOLS_RESET = 'DEVTOOLS_RESET',
   UPDATE_LIVE_EVENT_IN_STREAM = 'UPDATE_EVENT_IN_STREAM'
@@ -103,6 +106,8 @@ type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_CHARACTERS }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_EXPRESSIONS }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_XRAY }
+  | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_MUTED }
+  | { type: ENGINE_ACTION_TYPE.DEVTOOLS_MUTE }
   | {
       type: ENGINE_ACTION_TYPE.DEVTOOLS_RESET
       reset: boolean
@@ -236,6 +241,22 @@ const engineReducer = (
           xrayVisible: !state.devTools.xrayVisible
         }
       }
+    case ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_MUTED:
+      return {
+        ...state,
+        devTools: {
+          ...state.devTools,
+          muted: !state.devTools.muted
+        }
+      }
+    case ENGINE_ACTION_TYPE.DEVTOOLS_MUTE:
+      return {
+        ...state,
+        devTools: {
+          ...state.devTools,
+          muted: true
+        }
+      }
     case ENGINE_ACTION_TYPE.DEVTOOLS_RESET:
       return {
         ...state,
@@ -260,6 +281,7 @@ const defaultEngineState: EngineState = {
     highlightCharacters: false,
     blockedChoicesVisible: false,
     highlightExpressions: false,
+    muted: true,
     xrayVisible: false,
     reset: false
   },
