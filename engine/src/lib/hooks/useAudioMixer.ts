@@ -1,6 +1,7 @@
 import { Howl } from 'howler'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
+import { EngineContext } from '../../contexts/EngineContext'
 import { AudioProfile } from '../../types'
 
 export type AudioMixerProfiles = { scene?: AudioProfile; event?: AudioProfile }
@@ -23,6 +24,8 @@ const useAudioTrack = ({
   paused: boolean
   volume?: number
 }) => {
+  const { engine } = useContext(EngineContext)
+
   const [track, setTrack] = useState<AudioTrack>([
     { source: undefined, audio: undefined, primary: true },
     { source: undefined, audio: undefined, primary: false }
@@ -66,6 +69,22 @@ const useAudioTrack = ({
   )
 
   const updateVolume = useCallback(() => {}, [])
+
+  const pause = useCallback(() => {
+    track[0].audio?.pause()
+    track[1].audio?.pause()
+  }, [track])
+
+  const stop = useCallback(() => {
+    track[0].audio?.stop()
+    track[1].audio?.stop()
+  }, [track])
+
+  const play = useCallback(() => {
+    // elmstorygames/feedback#268
+    track[0].primary && track[0].audio?.play()
+    track[1].primary && track[1].audio?.play()
+  }, [track])
 
   useEffect(() => updateTrack(source), [source])
 
@@ -120,21 +139,31 @@ const useAudioTrack = ({
   // elmstorygames/feedback#268
   useEffect(() => {
     if (paused) {
-      track[0].audio?.pause()
-      track[1].audio?.pause()
+      pause()
     }
 
     if (!paused) {
-      track[0].audio?.play()
-      track[1].audio?.play()
+      play()
     }
   }, [paused])
+
+  // elmstorygames/feedback#289
+  useEffect(() => {
+    if (!engine.playing) {
+      stop()
+    }
+
+    if (engine.playing) {
+      play()
+    }
+  }, [engine.playing])
 
   return [
     { source: track[0].source, primary: track[0].primary },
     { source: track[1].source, primary: track[1].primary }
   ]
 }
+
 export const useAudioMixer = ({
   profiles,
   muted,
