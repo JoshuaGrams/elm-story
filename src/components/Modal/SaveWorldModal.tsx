@@ -1,25 +1,13 @@
-import { getRandomElementName } from '../../lib'
-
-import { v4 as uuid } from 'uuid'
-
 import React, { useContext, useEffect } from 'react'
 
-import {
-  ElementId,
-  ELEMENT_TYPE,
-  Event,
-  EVENT_TYPE,
-  StudioId,
-  World,
-  WORLD_TEMPLATE
-} from '../../data/types'
-import { DEFAULT_EVENT_CONTENT } from '../../data/eventContentTypes'
+import { StudioId, World } from '../../data/types'
 
 import { AppContext } from '../../contexts/AppContext'
 
 import { Modal, ModalProps, Form, Input, Button } from 'antd'
 
 import api from '../../api'
+import saveStarterContent from '../../lib/saveStarterContent'
 
 interface SaveWorldModalProps extends ModalProps {
   studioId: StudioId
@@ -96,7 +84,7 @@ const SaveWorldModal: React.FC<SaveWorldModalProps> = ({
         }) => {
           try {
             if (game && edit) {
-              api().worlds.saveWorld(studioId, {
+              await api().worlds.saveWorld(studioId, {
                 ...game,
                 title,
                 designer,
@@ -106,70 +94,13 @@ const SaveWorldModal: React.FC<SaveWorldModalProps> = ({
               return
             }
 
-            const worldId = uuid(),
-              sceneId = uuid(),
-              eventId = uuid()
-
-            const promises: [
-              Promise<World>,
-              Promise<ElementId>,
-              Promise<Event>
-            ] = [
-              api().worlds.saveWorld(studioId, {
-                children: [[ELEMENT_TYPE.SCENE, sceneId]],
-                designer,
-                engine: app.version,
-                id: worldId,
-                jump: null,
-                // TODO: Enable user-defined once more templates are supported.
-                template: WORLD_TEMPLATE.ADVENTURE,
-                title,
-                tags: [],
-                // TODO: Move to defines/types.
-                version: '0.0.1'
-              }),
-              api().scenes.saveScene(studioId, {
-                id: sceneId,
-                children: [[ELEMENT_TYPE.EVENT, eventId]],
-                parent: [ELEMENT_TYPE.WORLD, null],
-                tags: [],
-                title: getRandomElementName(2),
-                worldId
-              }),
-              api().events.saveEvent(studioId, {
-                id: eventId,
-                characters: [],
-                choices: [],
-                content: JSON.stringify([...DEFAULT_EVENT_CONTENT]),
-                ending: false,
-                images: [],
-                sceneId,
-                tags: [],
-                title: getRandomElementName(2),
-                type: EVENT_TYPE.CHOICE,
-                worldId
-              })
-            ]
-
-            const [savedWorld] = await Promise.all(promises)
-
-            // const savedWorld = await api().worlds.saveWorld(
-            //   studioId,
-            //   game && edit
-            //     ? { ...game, title, designer, version }
-            //     : {
-            //         children: [],
-            //         designer,
-            //         engine: app.version,
-            //         jump: null,
-            //         // TODO: Enable user-defined once more templates are supported.
-            //         template: WORLD_TEMPLATE.ADVENTURE,
-            //         title,
-            //         tags: [],
-            //         // TODO: Move to defines/types.
-            //         version: '0.0.1'
-            //       }
-            // )
+            // elmstorygames/feedback#283
+            const savedWorld = await saveStarterContent({
+              appVersion: app.version,
+              studioId,
+              worldTitle: title,
+              worldDesigner: designer
+            })
 
             if (onSave) onSave(savedWorld)
             if (afterClose) afterClose()
