@@ -131,7 +131,7 @@ const ESGModal: React.FC<{ visible: boolean; onCancel: () => void }> = ({
           >
             elmstory.com
           </span>{' '}
-          | &copy; 2021 Elm Story Games LLC |{' '}
+          | &copy; 2022 Elm Story Games LLC |{' '}
           <span
             className={styles.siteLink}
             onClick={() =>
