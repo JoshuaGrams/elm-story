@@ -71,7 +71,7 @@
         "properties": {
           "compare": {
             "type": "array",
-            "items": [
+            "prefixItems": [
               { "type": "string" },
               { "type": "string" },
               { "type": "string" }
@@ -107,7 +107,7 @@
           "routeId": { "type": "string" },
           "set": {
             "type": "array",
-            "items": [
+            "prefixItems": [
               { "type": "string" },
               { "type": "string" },
               { "type": "string" }
@@ -148,7 +148,7 @@
           "id": { "type": "string" },
           "route": {
             "type": "array",
-            "items": [
+            "prefixItems": [
               { "type": "string" },
               { "type": "string" },
               { "type": "string" }

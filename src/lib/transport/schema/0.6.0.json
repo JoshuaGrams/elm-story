@@ -8,7 +8,7 @@
           "type": "array",
           "items": {
             "type": "array",
-            "items": [
+            "prefixItems": [
               {
                 "type": "string"
               },
@@ -17,7 +17,8 @@
               }
             ],
             "minItems": 2,
-            "additionalItems": false
+            "maxItems": 2,
+            "items": false
           }
         },
         "copyright": { "type": "string" },
@@ -75,7 +76,7 @@
             "type": "array",
             "items": {
               "type": "array",
-              "items": [
+              "prefixItems": [
                 {
                   "type": "string"
                 },
@@ -84,7 +85,8 @@
                 }
               ],
               "minItems": 2,
-              "additionalItems": false
+              "maxItems": 2,
+              "items": false
             }
           },
           "tags": { "type": "array", "items": { "type": "string" } },
@@ -117,13 +119,14 @@
         "properties": {
           "compare": {
             "type": "array",
-            "items": [
+            "prefixItems": [
               { "type": "string" },
               { "type": "string" },
               { "type": "string" }
             ],
             "minItems": 3,
-            "additionalItems": false
+            "maxItems": 3,
+            "items": false
           },
           "id": { "type": "string" },
           "pathId": { "type": "string" },
@@ -153,13 +156,14 @@
           "pathId": { "type": "string" },
           "set": {
             "type": "array",
-            "items": [
+            "prefixItems": [
               { "type": "string" },
               { "type": "string" },
               { "type": "string" }
             ],
             "minItems": 3,
-            "additionalItems": false
+            "maxItems": 3,
+            "items": false
           },
           "tags": { "type": "array", "items": { "type": "string" } },
           "title": { "type": "string" },
@@ -198,13 +202,14 @@
           "input": { "type": "string" },
           "persona": {
             "type": "array",
-            "items": [
+            "prefixItems": [
               { "type": "string" },
               { "type": "string" },
               { "type": ["string", "null"] }
             ],
-            "minItems": 2,
-            "additionalItems": false
+            "minItems": 3,
+            "maxItems": 3,
+            "items": false
           },
           "sceneId": { "type": "string" },
           "tags": { "type": "array", "items": { "type": "string" } },
@@ -234,7 +239,7 @@
             "type": "array",
             "items": {
               "type": "array",
-              "items": [
+              "prefixItems": [
                 {
                   "type": "string"
                 },
@@ -243,15 +248,20 @@
                 }
               ],
               "minItems": 2,
-              "additionalItems": false
+              "maxItems": 2,
+              "items": false
             }
           },
           "id": { "type": "string" },
           "parent": {
             "type": "array",
-            "items": [{ "type": "string" }, { "type": ["string", "null"] }],
+            "prefixItems": [
+              { "type": "string" },
+              { "type": ["string", "null"] }
+            ],
             "minItems": 2,
-            "additionalItems": false
+            "maxItems": 2,
+            "items": false
           },
           "tags": { "type": "array", "items": { "type": "string" } },
           "title": { "type": "string" },
@@ -347,7 +357,7 @@
             "type": "array",
             "items": {
               "type": "array",
-              "items": [
+              "prefixItems": [
                 {
                   "type": "string"
                 },
@@ -356,7 +366,8 @@
                 }
               ],
               "minItems": 2,
-              "additionalItems": false
+              "maxItems": 2,
+              "items": false
             }
           },
           "composer": {
@@ -372,9 +383,13 @@
           "jumps": { "type": "array", "items": { "type": "string" } },
           "parent": {
             "type": "array",
-            "items": [{ "type": "string" }, { "type": ["string", "null"] }],
+            "prefixItems": [
+              { "type": "string" },
+              { "type": ["string", "null"] }
+            ],
             "minItems": 2,
-            "additionalItems": false
+            "maxItems": 2,
+            "items": false
           },
           "tags": { "type": "array", "items": { "type": "string" } },
           "title": { "type": "string" },
