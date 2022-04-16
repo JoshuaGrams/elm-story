@@ -58,7 +58,11 @@ const WorldBox: React.FC<WorldBoxProps> = ({ studioId, world }) => {
       {/* CONTENT */}
       <Card
         className={styles.WorldBox}
-        title={world?.title || undefined}
+        title={
+          world?.title ? (
+            <span title={world.title}>{world.title}</span>
+          ) : undefined
+        }
         hoverable
         actions={
           !world
