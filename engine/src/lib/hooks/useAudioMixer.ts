@@ -302,7 +302,7 @@ export const useAudioMixer = ({
       type: 'SCENE',
       // #DEV
       // source: profiles.scene?.[0]
-      //   ? `../../data/0-7-test_0.0.1/assets/${profiles.scene[0]}.mp3`
+      //   ? `../../data/0-7-test/assets/${profiles.scene[0]}.mp3`
       //   : undefined,
       // #PWA
       source: !engine.isComposer
@@ -319,7 +319,7 @@ export const useAudioMixer = ({
       type: 'EVENT',
       // #DEV
       // source: profiles.event?.[0]
-      //   ? `../../data/0-7-test_0.0.1/assets/${profiles.event[0]}.mp3`
+      //   ? `../../data/0-7-test/assets/${profiles.event[0]}.mp3`
       //   : undefined,
       // #PWA
       source: !engine.isComposer

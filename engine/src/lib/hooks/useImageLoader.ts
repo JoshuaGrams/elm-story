@@ -88,8 +88,8 @@ const useImageLoader = ({
         let imageSrc
 
         // local development
-        // imageSrc = `../../data/0-7-test_0.0.1/assets/${assetId}.${ext}`
-        // PWA
+        // imageSrc = `../../data/0-7-test/assets/${assetId}.${ext}`
+        // #PWA
         imageSrc = `./assets/content/${assetId}.${ext}`
 
         try {

@@ -1,0 +1,1893 @@
+{
+  "_": {
+    "children": [
+      [
+        "SCENE",
+        "8771ff95-1dea-47aa-a52d-2cfc3159ad64"
+      ],
+      [
+        "FOLDER",
+        "bf9d8ab6-709f-40c5-a67f-a41cd5d5ddf9"
+      ]
+    ],
+    "designer": "ritsuke",
+    "engine": "0.7.0",
+    "id": "b8c473c0-a5f1-4f08-a4ae-04341fdb4947",
+    "jump": null,
+    "schema": "https://elmstory.com/schema/elm-story-0.7.0.json",
+    "studioId": "e986dfaf-3cf6-4f3f-966a-2c893f1d8be6",
+    "studioTitle": "Elm Story Games",
+    "tags": [],
+    "title": "The Wolf, Goat and Cabbage",
+    "updated": 1650070379150,
+    "version": "0.0.2"
+  },
+  "characters": {
+    "1db9d525-3e8f-417f-aece-1402468d2363": {
+      "id": "1db9d525-3e8f-417f-aece-1402468d2363",
+      "masks": [
+        {
+          "type": "NEUTRAL",
+          "active": true,
+          "assetId": "1922cb4d-e6c4-4ce0-a815-c3bbc96140a0"
+        },
+        {
+          "active": true,
+          "type": "SAD",
+          "assetId": "e4661169-6643-40b6-9855-fc7d0246e08d"
+        },
+        {
+          "active": true,
+          "type": "NERVOUS",
+          "assetId": "a7a0f34c-9cc5-4e07-bcdd-9e991ca861bd"
+        }
+      ],
+      "refs": [
+        [
+          "c029740e-d22c-414c-9e5d-e644518e2ce2",
+          "YOU"
+        ],
+        [
+          "cffd9931-6e00-474d-9eb3-8858bde1b4f5",
+          "PETE"
+        ],
+        [
+          "5e0d8ebe-0423-4f05-bce0-9d00271b6eba",
+          "HUSBAND"
+        ]
+      ],
+      "tags": [],
+      "title": "Farmer Pete",
+      "updated": 1649967261297
+    },
+    "b01a445f-b64a-4d2a-81b7-348d1c30b3f3": {
+      "id": "b01a445f-b64a-4d2a-81b7-348d1c30b3f3",
+      "masks": [
+        {
+          "type": "NEUTRAL",
+          "active": true,
+          "assetId": "55dc7911-d395-4be1-9b21-e754692e6b3b"
+        },
+        {
+          "active": true,
+          "type": "CHEERFUL",
+          "assetId": "5dd58c47-f51a-4d57-ab3e-0a07bcacdcba"
+        }
+      ],
+      "refs": [
+        [
+          "0226bef2-877c-4d9c-9709-cc75d823091e",
+          "HER"
+        ],
+        [
+          "6aa1963f-de1e-452c-ad43-f69688a23126",
+          "WIFE"
+        ]
+      ],
+      "tags": [],
+      "title": "Beth",
+      "updated": 1649966780891
+    }
+  },
+  "choices": {
+    "06fbb6cb-e709-4c0d-9591-3a475bd0d983": {
+      "id": "06fbb6cb-e709-4c0d-9591-3a475bd0d983",
+      "eventId": "2f078df6-ffcd-4ce9-a53a-24ef7c613026",
+      "tags": [],
+      "title": "ferry east with the cabbage.",
+      "updated": 1649962218872
+    },
+    "100a3b7a-00dc-41fb-837f-2392d1ca4dbb": {
+      "id": "100a3b7a-00dc-41fb-837f-2392d1ca4dbb",
+      "eventId": "2f078df6-ffcd-4ce9-a53a-24ef7c613026",
+      "tags": [],
+      "title": "ferry east with the goat.",
+      "updated": 1649962213005
+    },
+    "268e1df3-7cd9-4040-8aea-f20989073e9d": {
+      "id": "268e1df3-7cd9-4040-8aea-f20989073e9d",
+      "eventId": "2f078df6-ffcd-4ce9-a53a-24ef7c613026",
+      "tags": [],
+      "title": "ferry east with the wolf.",
+      "updated": 1649962204270
+    },
+    "2894390f-1d3a-4795-b148-268e43440cdf": {
+      "id": "2894390f-1d3a-4795-b148-268e43440cdf",
+      "eventId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "tags": [],
+      "title": "ferry west with the goat.",
+      "updated": 1649962262637
+    },
+    "694dabf7-694c-4af7-be88-0cb683d3a9d5": {
+      "id": "694dabf7-694c-4af7-be88-0cb683d3a9d5",
+      "eventId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "tags": [],
+      "title": "ferry west with the cabbage.",
+      "updated": 1649962267192
+    },
+    "9265f8bb-eaaa-47fc-a54d-a82048ee4e7c": {
+      "id": "9265f8bb-eaaa-47fc-a54d-a82048ee4e7c",
+      "eventId": "2f078df6-ffcd-4ce9-a53a-24ef7c613026",
+      "tags": [],
+      "title": "ferry east, alone.",
+      "updated": 1649962200384
+    },
+    "a5bb3000-e8a9-4c7b-9eca-ae2864d81b94": {
+      "id": "a5bb3000-e8a9-4c7b-9eca-ae2864d81b94",
+      "eventId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "tags": [],
+      "title": "ferry west with the wolf.",
+      "updated": 1649962258751
+    },
+    "b7db59dd-9855-4c45-afe2-d6222fc7d962": {
+      "id": "b7db59dd-9855-4c45-afe2-d6222fc7d962",
+      "eventId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "tags": [],
+      "title": "walk to the farm.",
+      "updated": 1649965538170
+    },
+    "fd50405f-17a9-4c81-ae5e-59913299f03b": {
+      "id": "fd50405f-17a9-4c81-ae5e-59913299f03b",
+      "eventId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "tags": [],
+      "title": "ferry west, alone.",
+      "updated": 1649962228778
+    }
+  },
+  "conditions": {
+    "016846d9-d5d4-4ff9-b94e-f3ab2154453c": {
+      "compare": [
+        "1c99bba4-25d7-4ae8-88c3-7409beeb289d",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "016846d9-d5d4-4ff9-b94e-f3ab2154453c",
+      "pathId": "672d7e84-93c5-490c-b09a-a1c794f67418",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964373539,
+      "variableId": "1c99bba4-25d7-4ae8-88c3-7409beeb289d"
+    },
+    "017a7174-585c-4493-bf22-6a889a1a7390": {
+      "compare": [
+        "28f64e9d-5e72-485f-aae9-9dbebd394d7c",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "017a7174-585c-4493-bf22-6a889a1a7390",
+      "pathId": "c7fbda61-b348-4f31-a89f-21b5bce1602f",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964544833,
+      "variableId": "28f64e9d-5e72-485f-aae9-9dbebd394d7c"
+    },
+    "01ba45e1-24eb-4ad0-ab29-25af90b46c82": {
+      "compare": [
+        "1c99bba4-25d7-4ae8-88c3-7409beeb289d",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "01ba45e1-24eb-4ad0-ab29-25af90b46c82",
+      "pathId": "6f89531c-9d23-4201-b374-59e05a6f113b",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964998873,
+      "variableId": "1c99bba4-25d7-4ae8-88c3-7409beeb289d"
+    },
+    "04e67b3e-8e02-453d-bf68-bdf70c04b0c6": {
+      "compare": [
+        "28f64e9d-5e72-485f-aae9-9dbebd394d7c",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "04e67b3e-8e02-453d-bf68-bdf70c04b0c6",
+      "pathId": "b8a61127-5b75-4606-962c-939bffae7348",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964552551,
+      "variableId": "28f64e9d-5e72-485f-aae9-9dbebd394d7c"
+    },
+    "1763922a-8089-4589-8db0-a0c644e847b2": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "1763922a-8089-4589-8db0-a0c644e847b2",
+      "pathId": "672d7e84-93c5-490c-b09a-a1c794f67418",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964370282,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "1f68fc08-7103-4eeb-81c7-21f09906664b": {
+      "compare": [
+        "1c99bba4-25d7-4ae8-88c3-7409beeb289d",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "1f68fc08-7103-4eeb-81c7-21f09906664b",
+      "pathId": "86bdb4dd-9769-4a3a-9288-a890a564a578",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964988353,
+      "variableId": "1c99bba4-25d7-4ae8-88c3-7409beeb289d"
+    },
+    "313a5c88-a5e6-4584-b6e4-60d2e54232c2": {
+      "compare": [
+        "28f64e9d-5e72-485f-aae9-9dbebd394d7c",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "313a5c88-a5e6-4584-b6e4-60d2e54232c2",
+      "pathId": "27b48af7-5fc4-4bed-bfe8-e0a17ba23243",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649963527141,
+      "variableId": "28f64e9d-5e72-485f-aae9-9dbebd394d7c"
+    },
+    "45641527-7d06-4630-906b-97aaa5fb57e1": {
+      "compare": [
+        "28f64e9d-5e72-485f-aae9-9dbebd394d7c",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "45641527-7d06-4630-906b-97aaa5fb57e1",
+      "pathId": "3d20355d-d13f-446c-81b0-fac5bda266d5",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649963536668,
+      "variableId": "28f64e9d-5e72-485f-aae9-9dbebd394d7c"
+    },
+    "47d52941-9e4e-4ea7-8587-5df2f2e76374": {
+      "compare": [
+        "1c99bba4-25d7-4ae8-88c3-7409beeb289d",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "47d52941-9e4e-4ea7-8587-5df2f2e76374",
+      "pathId": "c7fbda61-b348-4f31-a89f-21b5bce1602f",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964541660,
+      "variableId": "1c99bba4-25d7-4ae8-88c3-7409beeb289d"
+    },
+    "59135b12-82e6-40ae-8a3a-a40d11e4ccab": {
+      "compare": [
+        "28f64e9d-5e72-485f-aae9-9dbebd394d7c",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "59135b12-82e6-40ae-8a3a-a40d11e4ccab",
+      "pathId": "c1bc9fac-b9a3-4b0e-9f12-cadeaf92ee18",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964320460,
+      "variableId": "28f64e9d-5e72-485f-aae9-9dbebd394d7c"
+    },
+    "73780352-40b9-48b3-9800-30f9080df289": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "73780352-40b9-48b3-9800-30f9080df289",
+      "pathId": "f3c97f21-49bf-4d2e-91d6-2c6ea680d0dd",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964561657,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "811cad22-d863-45d6-b55a-bfbeddeb742b": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "811cad22-d863-45d6-b55a-bfbeddeb742b",
+      "pathId": "86bdb4dd-9769-4a3a-9288-a890a564a578",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964976952,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "8411a02a-f076-412b-99ce-e6e6609b65d0": {
+      "compare": [
+        "28f64e9d-5e72-485f-aae9-9dbebd394d7c",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "8411a02a-f076-412b-99ce-e6e6609b65d0",
+      "pathId": "8411083d-3e89-4c4e-86b4-2420f9bd83ba",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964392676,
+      "variableId": "28f64e9d-5e72-485f-aae9-9dbebd394d7c"
+    },
+    "866371da-3514-453e-a27f-1a49b92947e1": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "866371da-3514-453e-a27f-1a49b92947e1",
+      "pathId": "27b48af7-5fc4-4bed-bfe8-e0a17ba23243",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649963523749,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "8b14df11-3f76-453a-abc2-75c5d6d0e142": {
+      "compare": [
+        "1c99bba4-25d7-4ae8-88c3-7409beeb289d",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "8b14df11-3f76-453a-abc2-75c5d6d0e142",
+      "pathId": "bb34d3ba-3c93-4980-bbf7-49eb66dfed1d",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964570234,
+      "variableId": "1c99bba4-25d7-4ae8-88c3-7409beeb289d"
+    },
+    "8f0199b3-5278-4344-b61c-4416142850f3": {
+      "compare": [
+        "1c99bba4-25d7-4ae8-88c3-7409beeb289d",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "8f0199b3-5278-4344-b61c-4416142850f3",
+      "pathId": "27b48af7-5fc4-4bed-bfe8-e0a17ba23243",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649963520145,
+      "variableId": "1c99bba4-25d7-4ae8-88c3-7409beeb289d"
+    },
+    "909498f4-5afb-499c-8c4f-0e8c7a26f66f": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "909498f4-5afb-499c-8c4f-0e8c7a26f66f",
+      "pathId": "6445db4b-48a3-486f-8faf-35bceecf93a2",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649965553047,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "96c6d8e3-caa4-4caf-bbdc-8818130537aa": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "96c6d8e3-caa4-4caf-bbdc-8818130537aa",
+      "pathId": "8411083d-3e89-4c4e-86b4-2420f9bd83ba",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964388719,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "a96a5dd1-97c3-41f5-9871-65aa329f6cfa": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "a96a5dd1-97c3-41f5-9871-65aa329f6cfa",
+      "pathId": "ea5f8443-4df3-41d5-bf75-b115b57c3c4c",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649965005501,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "b63ffbce-20d2-4d02-8faa-a06f5cb34adc": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "b63ffbce-20d2-4d02-8faa-a06f5cb34adc",
+      "pathId": "6c0ee35e-1bff-422e-b7b3-9e263255a2b4",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649963546053,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "c7a78507-eaff-479c-832b-e9ac41ddfe7a": {
+      "compare": [
+        "1c99bba4-25d7-4ae8-88c3-7409beeb289d",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "c7a78507-eaff-479c-832b-e9ac41ddfe7a",
+      "pathId": "b909ce78-2603-4b88-a495-d6c538ad70c0",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964310411,
+      "variableId": "1c99bba4-25d7-4ae8-88c3-7409beeb289d"
+    },
+    "c8c4218e-37e0-4995-8f77-31db4ed824a7": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "c8c4218e-37e0-4995-8f77-31db4ed824a7",
+      "pathId": "0f707227-978a-47f9-9445-b01bc3258223",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964955441,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "ca4804df-9be4-483b-91b6-745ce332fa27": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "ca4804df-9be4-483b-91b6-745ce332fa27",
+      "pathId": "b909ce78-2603-4b88-a495-d6c538ad70c0",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649965866612,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "cbe2de49-11da-474c-8b5c-97754cb9b98e": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "cbe2de49-11da-474c-8b5c-97754cb9b98e",
+      "pathId": "c7fbda61-b348-4f31-a89f-21b5bce1602f",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964543611,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "d0f5b97b-bee7-4f82-b575-581a259842b8": {
+      "compare": [
+        "1c99bba4-25d7-4ae8-88c3-7409beeb289d",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "d0f5b97b-bee7-4f82-b575-581a259842b8",
+      "pathId": "de332aca-c119-4917-aa14-37dc84116e71",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649963551358,
+      "variableId": "1c99bba4-25d7-4ae8-88c3-7409beeb289d"
+    },
+    "d498c215-3c4c-4214-a938-78f8fd16fbca": {
+      "compare": [
+        "1c99bba4-25d7-4ae8-88c3-7409beeb289d",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "d498c215-3c4c-4214-a938-78f8fd16fbca",
+      "pathId": "6445db4b-48a3-486f-8faf-35bceecf93a2",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649965549524,
+      "variableId": "1c99bba4-25d7-4ae8-88c3-7409beeb289d"
+    },
+    "d63109cb-9091-43e7-add5-0a36af7ec29a": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "d63109cb-9091-43e7-add5-0a36af7ec29a",
+      "pathId": "6f89531c-9d23-4201-b374-59e05a6f113b",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964995204,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "e205cff8-47af-4597-988b-fd236a31e16a": {
+      "compare": [
+        "28f64e9d-5e72-485f-aae9-9dbebd394d7c",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "e205cff8-47af-4597-988b-fd236a31e16a",
+      "pathId": "6445db4b-48a3-486f-8faf-35bceecf93a2",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649965559188,
+      "variableId": "28f64e9d-5e72-485f-aae9-9dbebd394d7c"
+    },
+    "f80ee57e-f48e-4d90-ac81-7251128a7ca5": {
+      "compare": [
+        "28f64e9d-5e72-485f-aae9-9dbebd394d7c",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "f80ee57e-f48e-4d90-ac81-7251128a7ca5",
+      "pathId": "0f707227-978a-47f9-9445-b01bc3258223",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964959756,
+      "variableId": "28f64e9d-5e72-485f-aae9-9dbebd394d7c"
+    },
+    "fa6f16f3-0853-4a7a-9e06-ee66641279e3": {
+      "compare": [
+        "28f64e9d-5e72-485f-aae9-9dbebd394d7c",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "id": "fa6f16f3-0853-4a7a-9e06-ee66641279e3",
+      "pathId": "ea5f8443-4df3-41d5-bf75-b115b57c3c4c",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649965007552,
+      "variableId": "28f64e9d-5e72-485f-aae9-9dbebd394d7c"
+    },
+    "fc00bea8-bf2b-44ea-83ae-81a0f3332a55": {
+      "compare": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "id": "fc00bea8-bf2b-44ea-83ae-81a0f3332a55",
+      "pathId": "c1bc9fac-b9a3-4b0e-9f12-cadeaf92ee18",
+      "tags": [],
+      "title": "Untitled Condition",
+      "updated": 1649964321714,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    }
+  },
+  "effects": {
+    "0db6662c-49d4-4081-ae4e-fd83d9316f56": {
+      "id": "0db6662c-49d4-4081-ae4e-fd83d9316f56",
+      "pathId": "f86f4212-b350-4f80-9769-ae31fe9c868b",
+      "set": [
+        "1c99bba4-25d7-4ae8-88c3-7409beeb289d",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1649965089553,
+      "variableId": "1c99bba4-25d7-4ae8-88c3-7409beeb289d"
+    },
+    "133f505c-4c65-45f7-87d2-1ef13f9904c5": {
+      "id": "133f505c-4c65-45f7-87d2-1ef13f9904c5",
+      "pathId": "2228c0e7-cc63-44a6-8fca-d62df56b04d7",
+      "set": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1649965104315,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "3c1e9fd2-2f6e-4d10-9fc3-907dbd6e2275": {
+      "id": "3c1e9fd2-2f6e-4d10-9fc3-907dbd6e2275",
+      "pathId": "e97445b1-d626-45cf-8cc4-b452f9a15b41",
+      "set": [
+        "28f64e9d-5e72-485f-aae9-9dbebd394d7c",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1649965101005,
+      "variableId": "28f64e9d-5e72-485f-aae9-9dbebd394d7c"
+    },
+    "5e106105-ea21-40b2-a4d9-9cc63bc8aac2": {
+      "id": "5e106105-ea21-40b2-a4d9-9cc63bc8aac2",
+      "pathId": "732daf9e-2283-43a2-82a0-7288bfeddd63",
+      "set": [
+        "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1649965082943,
+      "variableId": "8e48d4e8-3314-40ec-93e2-d35a62b717ee"
+    },
+    "92bdad72-47b8-4823-9586-fedcecb19ac9": {
+      "id": "92bdad72-47b8-4823-9586-fedcecb19ac9",
+      "pathId": "3d137d75-7759-4ba8-8fdd-c094926f4c73",
+      "set": [
+        "b2805815-95f9-4ffe-95f8-91ef86037d83",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1649966122416,
+      "variableId": "b2805815-95f9-4ffe-95f8-91ef86037d83"
+    },
+    "9e37426f-dd07-414f-b7a7-73ae9cc7ca14": {
+      "id": "9e37426f-dd07-414f-b7a7-73ae9cc7ca14",
+      "pathId": "97519866-76d2-4f3d-bdfa-0bf4d0e42d5f",
+      "set": [
+        "b2805815-95f9-4ffe-95f8-91ef86037d83",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1649966125536,
+      "variableId": "b2805815-95f9-4ffe-95f8-91ef86037d83"
+    },
+    "d48e0e72-f6da-402a-8820-73019733c4ca": {
+      "id": "d48e0e72-f6da-402a-8820-73019733c4ca",
+      "pathId": "46280694-f5ba-4e83-93c7-ed703cf8c9b0",
+      "set": [
+        "1c99bba4-25d7-4ae8-88c3-7409beeb289d",
+        "=",
+        "true",
+        "BOOLEAN"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1649965108524,
+      "variableId": "1c99bba4-25d7-4ae8-88c3-7409beeb289d"
+    },
+    "fc99907b-923c-40b5-8e48-b9d9df835b9c": {
+      "id": "fc99907b-923c-40b5-8e48-b9d9df835b9c",
+      "pathId": "29eff5d9-c60e-446f-b1b9-003083227037",
+      "set": [
+        "28f64e9d-5e72-485f-aae9-9dbebd394d7c",
+        "=",
+        "false",
+        "BOOLEAN"
+      ],
+      "tags": [],
+      "title": "Untitled Effect",
+      "updated": 1649965075925,
+      "variableId": "28f64e9d-5e72-485f-aae9-9dbebd394d7c"
+    }
+  },
+  "events": {
+    "04b59882-a7f8-4c65-bb20-86c9f9402ccd": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Another productive day at the market!\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Let's see. I've procured a wolf, goat and cabbage.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"An odd combination to be sure!\"}]}]",
+      "composer": {
+        "sceneMapPosX": 192,
+        "sceneMapPosY": 356
+      },
+      "ending": false,
+      "id": "04b59882-a7f8-4c65-bb20-86c9f9402ccd",
+      "images": [],
+      "persona": [
+        "1db9d525-3e8f-417f-aece-1402468d2363",
+        "NEUTRAL",
+        "c029740e-d22c-414c-9e5d-e644518e2ce2"
+      ],
+      "sceneId": "69396d45-ec61-4d9d-9330-8a4ec76ea0ce",
+      "tags": [],
+      "title": "The journey begins",
+      "type": "CHOICE",
+      "updated": 1649899948424
+    },
+    "085a72ad-ddab-4ccd-bc18-75efb732c926": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry to the east bank, with the cabbage.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1208.253890077124,
+        "sceneMapPosY": 477.0408776582978
+      },
+      "ending": false,
+      "id": "085a72ad-ddab-4ccd-bc18-75efb732c926",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Ferried cabbage to the east bank",
+      "type": "CHOICE",
+      "updated": 1650044662573
+    },
+    "0c28d302-6566-4f53-849d-b91a0057b706": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Well... That didn't go as planned.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Tomorrow is another day!\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"*hic*\"}]}]",
+      "composer": {
+        "sceneMapPosX": 2669,
+        "sceneMapPosY": 517.5
+      },
+      "ending": true,
+      "id": "0c28d302-6566-4f53-849d-b91a0057b706",
+      "images": [],
+      "persona": [
+        "1db9d525-3e8f-417f-aece-1402468d2363",
+        "SAD",
+        "c029740e-d22c-414c-9e5d-e644518e2ce2"
+      ],
+      "sceneId": "e2f182ca-ab2b-43ed-a5de-ae771979cf61",
+      "tags": [],
+      "title": "Bad ending",
+      "type": "CHOICE",
+      "updated": 1649967665996
+    },
+    "1e15c353-8594-4ba5-835b-85471c1c453a": {
+      "characters": [],
+      "choices": [
+        "b7db59dd-9855-4c45-afe2-d6222fc7d962",
+        "fd50405f-17a9-4c81-ae5e-59913299f03b",
+        "a5bb3000-e8a9-4c7b-9eca-ae2864d81b94",
+        "2894390f-1d3a-4795-b148-268e43440cdf",
+        "694dabf7-694c-4af7-be88-0cb683d3a9d5"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You're standing at the east bank, closest to the farmhouse. The market is to the east.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"You decide to...\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1516.7562986267164,
+        "sceneMapPosY": -90.21078216685592
+      },
+      "ending": false,
+      "id": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Choices | East bank",
+      "type": "CHOICE",
+      "updated": 1650044667812
+    },
+    "2f078df6-ffcd-4ce9-a53a-24ef7c613026": {
+      "characters": [],
+      "choices": [
+        "9265f8bb-eaaa-47fc-a54d-a82048ee4e7c",
+        "268e1df3-7cd9-4040-8aea-f20989073e9d",
+        "100a3b7a-00dc-41fb-837f-2392d1ca4dbb",
+        "06fbb6cb-e709-4c0d-9591-3a475bd0d983"
+      ],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You're standing at the west bank, closest to the market. The farmhouse is to the east.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"You decide to...\"}]}]",
+      "composer": {
+        "sceneMapPosX": 939.0753428256598,
+        "sceneMapPosY": 87.99999999999997
+      },
+      "ending": false,
+      "id": "2f078df6-ffcd-4ce9-a53a-24ef7c613026",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Choices (west bank)",
+      "type": "CHOICE",
+      "updated": 1650044429818
+    },
+    "51681526-484d-4c07-825d-96f0f8b9a466": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Arriving at the east bank, you find the the wolf covered in blood.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Not the brightest of ideas leaving a goat alone with a carnivorous predator.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1515.666147859458,
+        "sceneMapPosY": 475.2932820204818
+      },
+      "ending": false,
+      "id": "51681526-484d-4c07-825d-96f0f8b9a466",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Wolf eats the goat at the east bank",
+      "type": "CHOICE",
+      "updated": 1650044672780
+    },
+    "58c46834-e0db-4c28-bbdf-25588a0e2073": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry to the west bank, alone.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1797.2007316970403,
+        "sceneMapPosY": -155.63939705957551
+      },
+      "ending": false,
+      "id": "58c46834-e0db-4c28-bbdf-25588a0e2073",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Ferried alone to the west bank",
+      "type": "CHOICE",
+      "updated": 1650044668412
+    },
+    "662fa827-7d12-4f04-87a5-d911d2c805f9": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Arriving at the east bank, you find the goat passed out, surrounded by heads of half eaten cabbage.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"With the market closed for the day, Beth won't be able to make her stew!\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1515.666147859458,
+        "sceneMapPosY": 715.2932820204821
+      },
+      "ending": false,
+      "id": "662fa827-7d12-4f04-87a5-d911d2c805f9",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Goat eats the cabbage at the east bank",
+      "type": "CHOICE",
+      "updated": 1650044673214
+    },
+    "74475ff3-3023-456e-80df-51383de3c029": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry to the west bank, with the goat.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1797.2007316970403,
+        "sceneMapPosY": 108.36060294042454
+      },
+      "ending": false,
+      "id": "74475ff3-3023-456e-80df-51383de3c029",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Ferried goat to the west bank",
+      "type": "CHOICE",
+      "updated": 1650044668486
+    },
+    "79c0c213-8ba7-49b5-9408-224d56363ea6": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Well, supposing I take one at a time... With return trips!\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Yes. This could work...\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"But, how do I keep these animals from fulfilling their ravenous desires?\"}]}]",
+      "composer": {
+        "sceneMapPosX": 684.4276162297461,
+        "sceneMapPosY": 89.01489013783792
+      },
+      "ending": false,
+      "id": "79c0c213-8ba7-49b5-9408-224d56363ea6",
+      "images": [],
+      "persona": [
+        "1db9d525-3e8f-417f-aece-1402468d2363",
+        "NEUTRAL",
+        "c029740e-d22c-414c-9e5d-e644518e2ce2"
+      ],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Idea",
+      "type": "CHOICE",
+      "updated": 1649962467391
+    },
+    "7d649a3a-ef73-46a8-a0b8-dcc660259254": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Welcome home, Pete!\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"I see everything went well at the market today.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Let's get the stew on!\"}]}]",
+      "composer": {
+        "sceneMapPosX": 2668,
+        "sceneMapPosY": 152
+      },
+      "ending": true,
+      "id": "7d649a3a-ef73-46a8-a0b8-dcc660259254",
+      "images": [],
+      "persona": [
+        "b01a445f-b64a-4d2a-81b7-348d1c30b3f3",
+        "CHEERFUL",
+        null
+      ],
+      "sceneId": "e2f182ca-ab2b-43ed-a5de-ae771979cf61",
+      "tags": [],
+      "title": "Good ending",
+      "type": "CHOICE",
+      "updated": 1649966731162
+    },
+    "81125de7-f8f0-44ca-90a4-e8070c43e4d9": {
+      "characters": [
+        "b01a445f-b64a-4d2a-81b7-348d1c30b3f3"
+      ],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"As to not worry \"},{\"type\":\"character\",\"children\":[{\"text\":\"\"}],\"transform\":\"cap\",\"character_id\":\"b01a445f-b64a-4d2a-81b7-348d1c30b3f3\"},{\"text\":\", we should return to the farm before the sun sets.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"*hic*\"}]}]",
+      "composer": {
+        "sceneMapPosX": 704,
+        "sceneMapPosY": 356
+      },
+      "ending": false,
+      "id": "81125de7-f8f0-44ca-90a4-e8070c43e4d9",
+      "images": [],
+      "persona": [
+        "1db9d525-3e8f-417f-aece-1402468d2363",
+        "NERVOUS",
+        "c029740e-d22c-414c-9e5d-e644518e2ce2"
+      ],
+      "sceneId": "69396d45-ec61-4d9d-9330-8a4ec76ea0ce",
+      "tags": [],
+      "title": "Setting off",
+      "type": "CHOICE",
+      "updated": 1650045066319
+    },
+    "8a91b8e7-4b5a-4b50-8159-fa35921a6948": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry to the east bank, alone.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1208.089129416333,
+        "sceneMapPosY": 91.2296477651285
+      },
+      "ending": false,
+      "id": "8a91b8e7-4b5a-4b50-8159-fa35921a6948",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Ferried alone to the east bank",
+      "type": "CHOICE",
+      "updated": 1650044662618
+    },
+    "8d45479e-fbf3-46ce-bb32-7cad150524a8": {
+      "characters": [
+        "b01a445f-b64a-4d2a-81b7-348d1c30b3f3"
+      ],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Examining the eclectic assortments, you wonder if your \"},{\"type\":\"character\",\"children\":[{\"text\":\"\"}],\"transform\":\"lower\",\"character_id\":\"b01a445f-b64a-4d2a-81b7-348d1c30b3f3\",\"alias_id\":\"6aa1963f-de1e-452c-ad43-f69688a23126\"},{\"text\":\" will smell the whiskey on your breath.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"You straighten yourself out, thinking on the many warm days of delicious cabbage stew!\"}]}]",
+      "composer": {
+        "sceneMapPosX": 448,
+        "sceneMapPosY": 356
+      },
+      "ending": false,
+      "id": "8d45479e-fbf3-46ce-bb32-7cad150524a8",
+      "images": [],
+      "sceneId": "69396d45-ec61-4d9d-9330-8a4ec76ea0ce",
+      "tags": [],
+      "title": "Introspection",
+      "type": "CHOICE",
+      "updated": 1650045091025
+    },
+    "9bd2c4b8-9b56-467e-922c-081b0d9cf9f7": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Arriving at the west bank, you find the goat passed out, surrounded by heads of half eaten cabbage.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"With the market closed for the day, Beth won't be able to make her stew!\"}]}]",
+      "composer": {
+        "sceneMapPosX": 2070.5722878639954,
+        "sceneMapPosY": 367.9866123076666
+      },
+      "ending": false,
+      "id": "9bd2c4b8-9b56-467e-922c-081b0d9cf9f7",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Goat eats cabbage at the west bank",
+      "type": "CHOICE",
+      "updated": 1650044734381
+    },
+    "9d591e38-a522-4bcc-b773-5ad9fc598f85": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry to the east bank, with the wolf.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1208.1342163570423,
+        "sceneMapPosY": 220.50943827259283
+      },
+      "ending": false,
+      "id": "9d591e38-a522-4bcc-b773-5ad9fc598f85",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Ferried wolf to the east bank",
+      "type": "CHOICE",
+      "updated": 1650044662657
+    },
+    "aad83514-1b05-4228-9767-9a85a59af9c7": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry to the west bank, with the cabbage.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1795.129540709778,
+        "sceneMapPosY": 239.13089532098883
+      },
+      "ending": false,
+      "id": "aad83514-1b05-4228-9767-9a85a59af9c7",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Ferried cabbage to the west bank",
+      "type": "CHOICE",
+      "updated": 1650044668531
+    },
+    "bb5676a6-1857-4fc1-8b29-40142eba387f": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry to the west bank, with the wolf.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1797.2007316970403,
+        "sceneMapPosY": -23.639397059575572
+      },
+      "ending": false,
+      "id": "bb5676a6-1857-4fc1-8b29-40142eba387f",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Ferried wolf to the west bank",
+      "type": "CHOICE",
+      "updated": 1650044668563
+    },
+    "bc7dbb1c-5e79-4e74-8b2f-caa71fb56435": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"You ferry to the east bank, with the goat.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 1208.253890077124,
+        "sceneMapPosY": 349.0408776582978
+      },
+      "ending": false,
+      "id": "bc7dbb1c-5e79-4e74-8b2f-caa71fb56435",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Ferried goat to the east bank",
+      "type": "CHOICE",
+      "updated": 1650044662690
+    },
+    "bdab713d-74f2-458d-a361-1f7deed12cf9": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"With purchases in tow, you reach the west bank. Your farmhouse is across the river, due east.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"You realize your rickety rowboat will only fit two passengers: yourself and either the goat, wolf or cabbage.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"You also notice the wolf salivating over the goat and the goat eyeing the cabbage.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 433.42761622974473,
+        "sceneMapPosY": 90.51489013783811
+      },
+      "ending": false,
+      "id": "bdab713d-74f2-458d-a361-1f7deed12cf9",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Dilemma",
+      "type": "CHOICE",
+      "updated": 1650044424804
+    },
+    "dcc3ff5a-a7c4-4115-927c-e517e29a0b1d": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"This short story demonstrates Elm Story's Storyteller logic capabilities.\"}]},{\"type\":\"img\",\"children\":[{\"text\":\"\"}],\"asset_id\":\"55521bdd-2478-40a6-ab28-bcb7ca813af2\"},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Character portraits (we call them masks) were generated using the \"},{\"type\":\"link\",\"url\":\"https://www.wombo.art/\",\"children\":[{\"text\":\"Dream app\"}]},{\"text\":\".\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Enjoy!\"}]}]",
+      "composer": {
+        "sceneMapPosX": 480,
+        "sceneMapPosY": 300
+      },
+      "ending": false,
+      "id": "dcc3ff5a-a7c4-4115-927c-e517e29a0b1d",
+      "images": [
+        "55521bdd-2478-40a6-ab28-bcb7ca813af2"
+      ],
+      "sceneId": "8771ff95-1dea-47aa-a52d-2cfc3159ad64",
+      "tags": [],
+      "title": "About",
+      "type": "CHOICE",
+      "updated": 1650070743927
+    },
+    "e83aa1db-aede-456c-bb8c-3df2d00fbfd3": {
+      "characters": [],
+      "choices": [],
+      "content": "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Arriving at the west bank, you find the the wolf covered in blood.\"}]},{\"type\":\"paragraph\",\"children\":[{\"text\":\"Not the brightest of ideas leaving a goat alone with a carnivorous predator.\"}]}]",
+      "composer": {
+        "sceneMapPosX": 2078.5722878639954,
+        "sceneMapPosY": 59.98661230766629
+      },
+      "ending": false,
+      "id": "e83aa1db-aede-456c-bb8c-3df2d00fbfd3",
+      "images": [],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Wolf eats goat at the west bank",
+      "type": "CHOICE",
+      "updated": 1650044714658
+    }
+  },
+  "folders": {
+    "bf9d8ab6-709f-40c5-a67f-a41cd5d5ddf9": {
+      "children": [
+        [
+          "SCENE",
+          "69396d45-ec61-4d9d-9330-8a4ec76ea0ce"
+        ],
+        [
+          "SCENE",
+          "cedebcd0-5ba3-43e5-8aa2-625964634942"
+        ],
+        [
+          "SCENE",
+          "e2f182ca-ab2b-43ed-a5de-ae771979cf61"
+        ]
+      ],
+      "id": "bf9d8ab6-709f-40c5-a67f-a41cd5d5ddf9",
+      "parent": [
+        "WORLD",
+        null
+      ],
+      "tags": [],
+      "title": "Story",
+      "updated": 1649885004379
+    }
+  },
+  "inputs": {},
+  "jumps": {
+    "5183cb20-4993-4f0a-80d8-4c1b64e35c65": {
+      "composer": {
+        "sceneMapPosX": 1796.2047457379367,
+        "sceneMapPosY": -344.3566526926079
+      },
+      "id": "5183cb20-4993-4f0a-80d8-4c1b64e35c65",
+      "path": [
+        "e2f182ca-ab2b-43ed-a5de-ae771979cf61",
+        "7d649a3a-ef73-46a8-a0b8-dcc660259254"
+      ],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Jump to good ending",
+      "updated": 1650044793028
+    },
+    "7c74e2f6-6709-49c5-aadb-a2531766007f": {
+      "composer": {
+        "sceneMapPosX": 744,
+        "sceneMapPosY": 300
+      },
+      "id": "7c74e2f6-6709-49c5-aadb-a2531766007f",
+      "path": [
+        "69396d45-ec61-4d9d-9330-8a4ec76ea0ce"
+      ],
+      "sceneId": "8771ff95-1dea-47aa-a52d-2cfc3159ad64",
+      "tags": [],
+      "title": "Start",
+      "updated": 1650044380046
+    },
+    "82b69f0b-cd9f-4279-a4a2-b4ff0b89ec83": {
+      "composer": {
+        "sceneMapPosX": 1798.0437525135035,
+        "sceneMapPosY": 474.0637035655649
+      },
+      "id": "82b69f0b-cd9f-4279-a4a2-b4ff0b89ec83",
+      "path": [
+        "e2f182ca-ab2b-43ed-a5de-ae771979cf61",
+        "0c28d302-6566-4f53-849d-b91a0057b706"
+      ],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Jump to bad ending from the east bank",
+      "updated": 1650044804545
+    },
+    "929c06a0-8043-4d84-a570-5ea5ded43c9e": {
+      "composer": {
+        "sceneMapPosX": 2078.7352692686777,
+        "sceneMapPosY": -153.69577521497052
+      },
+      "id": "929c06a0-8043-4d84-a570-5ea5ded43c9e",
+      "path": [
+        "cedebcd0-5ba3-43e5-8aa2-625964634942",
+        "2f078df6-ffcd-4ce9-a53a-24ef7c613026"
+      ],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Jump to choices at the west bank",
+      "updated": 1650044689341
+    },
+    "bf1e9aef-b52d-45da-8f0a-6b9ba6a24a22": {
+      "composer": {
+        "sceneMapPosX": 960,
+        "sceneMapPosY": 356
+      },
+      "id": "bf1e9aef-b52d-45da-8f0a-6b9ba6a24a22",
+      "path": [
+        "cedebcd0-5ba3-43e5-8aa2-625964634942"
+      ],
+      "sceneId": "69396d45-ec61-4d9d-9330-8a4ec76ea0ce",
+      "tags": [],
+      "title": "Jump to...",
+      "updated": 1650044363389
+    },
+    "cf3ffb31-a913-48ac-8a56-e2a1aca3737d": {
+      "composer": {
+        "sceneMapPosX": 2339.297006215934,
+        "sceneMapPosY": 369.68238752263693
+      },
+      "id": "cf3ffb31-a913-48ac-8a56-e2a1aca3737d",
+      "path": [
+        "e2f182ca-ab2b-43ed-a5de-ae771979cf61",
+        "0c28d302-6566-4f53-849d-b91a0057b706"
+      ],
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Jump to bad ending from west bank",
+      "updated": 1650044734329
+    }
+  },
+  "paths": {
+    "024d62c3-e04a-464e-9d3a-2a6e37dfe391": {
+      "conditionsType": "ALL",
+      "destinationId": "cf3ffb31-a913-48ac-8a56-e2a1aca3737d",
+      "destinationType": "JUMP",
+      "id": "024d62c3-e04a-464e-9d3a-2a6e37dfe391",
+      "originId": "e83aa1db-aede-456c-bb8c-3df2d00fbfd3",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964899154
+    },
+    "0f707227-978a-47f9-9445-b01bc3258223": {
+      "conditionsType": "ALL",
+      "destinationId": "e83aa1db-aede-456c-bb8c-3df2d00fbfd3",
+      "destinationType": "EVENT",
+      "id": "0f707227-978a-47f9-9445-b01bc3258223",
+      "originId": "58c46834-e0db-4c28-bbdf-25588a0e2073",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964771163
+    },
+    "18e60526-f9d9-4f75-8598-08f1686c7787": {
+      "conditionsType": "ALL",
+      "destinationId": "7c74e2f6-6709-49c5-aadb-a2531766007f",
+      "destinationType": "JUMP",
+      "id": "18e60526-f9d9-4f75-8598-08f1686c7787",
+      "originId": "dcc3ff5a-a7c4-4115-927c-e517e29a0b1d",
+      "originType": "CHOICE",
+      "sceneId": "8771ff95-1dea-47aa-a52d-2cfc3159ad64",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649885378722
+    },
+    "2228c0e7-cc63-44a6-8fca-d62df56b04d7": {
+      "conditionsType": "ALL",
+      "destinationId": "929c06a0-8043-4d84-a570-5ea5ded43c9e",
+      "destinationType": "JUMP",
+      "id": "2228c0e7-cc63-44a6-8fca-d62df56b04d7",
+      "originId": "74475ff3-3023-456e-80df-51383de3c029",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964758236
+    },
+    "27b48af7-5fc4-4bed-bfe8-e0a17ba23243": {
+      "choiceId": "9265f8bb-eaaa-47fc-a54d-a82048ee4e7c",
+      "conditionsType": "ANY",
+      "destinationId": "8a91b8e7-4b5a-4b50-8159-fa35921a6948",
+      "destinationType": "EVENT",
+      "id": "27b48af7-5fc4-4bed-bfe8-e0a17ba23243",
+      "originId": "2f078df6-ffcd-4ce9-a53a-24ef7c613026",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649963516493
+    },
+    "29eff5d9-c60e-446f-b1b9-003083227037": {
+      "conditionsType": "ALL",
+      "destinationId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "destinationType": "EVENT",
+      "id": "29eff5d9-c60e-446f-b1b9-003083227037",
+      "originId": "9d591e38-a522-4bcc-b773-5ad9fc598f85",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964078891
+    },
+    "34a5b40d-ce2b-4032-a9fe-850ba8ed3dc2": {
+      "conditionsType": "ALL",
+      "destinationId": "79c0c213-8ba7-49b5-9408-224d56363ea6",
+      "destinationType": "EVENT",
+      "id": "34a5b40d-ce2b-4032-a9fe-850ba8ed3dc2",
+      "originId": "bdab713d-74f2-458d-a361-1f7deed12cf9",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649887694041
+    },
+    "3d137d75-7759-4ba8-8fdd-c094926f4c73": {
+      "conditionsType": "ALL",
+      "destinationId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "destinationType": "EVENT",
+      "id": "3d137d75-7759-4ba8-8fdd-c094926f4c73",
+      "originId": "8a91b8e7-4b5a-4b50-8159-fa35921a6948",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964187784
+    },
+    "3d20355d-d13f-446c-81b0-fac5bda266d5": {
+      "choiceId": "268e1df3-7cd9-4040-8aea-f20989073e9d",
+      "conditionsType": "ALL",
+      "destinationId": "9d591e38-a522-4bcc-b773-5ad9fc598f85",
+      "destinationType": "EVENT",
+      "id": "3d20355d-d13f-446c-81b0-fac5bda266d5",
+      "originId": "2f078df6-ffcd-4ce9-a53a-24ef7c613026",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649962845981
+    },
+    "46280694-f5ba-4e83-93c7-ed703cf8c9b0": {
+      "conditionsType": "ALL",
+      "destinationId": "929c06a0-8043-4d84-a570-5ea5ded43c9e",
+      "destinationType": "JUMP",
+      "id": "46280694-f5ba-4e83-93c7-ed703cf8c9b0",
+      "originId": "aad83514-1b05-4228-9767-9a85a59af9c7",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964760507
+    },
+    "6445db4b-48a3-486f-8faf-35bceecf93a2": {
+      "choiceId": "b7db59dd-9855-4c45-afe2-d6222fc7d962",
+      "conditionsType": "ALL",
+      "destinationId": "5183cb20-4993-4f0a-80d8-4c1b64e35c65",
+      "destinationType": "JUMP",
+      "id": "6445db4b-48a3-486f-8faf-35bceecf93a2",
+      "originId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649965517585
+    },
+    "672d7e84-93c5-490c-b09a-a1c794f67418": {
+      "conditionsType": "ALL",
+      "destinationId": "662fa827-7d12-4f04-87a5-d911d2c805f9",
+      "destinationType": "EVENT",
+      "id": "672d7e84-93c5-490c-b09a-a1c794f67418",
+      "originId": "9d591e38-a522-4bcc-b773-5ad9fc598f85",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964106597
+    },
+    "6c0ee35e-1bff-422e-b7b3-9e263255a2b4": {
+      "choiceId": "100a3b7a-00dc-41fb-837f-2392d1ca4dbb",
+      "conditionsType": "ALL",
+      "destinationId": "bc7dbb1c-5e79-4e74-8b2f-caa71fb56435",
+      "destinationType": "EVENT",
+      "id": "6c0ee35e-1bff-422e-b7b3-9e263255a2b4",
+      "originId": "2f078df6-ffcd-4ce9-a53a-24ef7c613026",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649962847832
+    },
+    "6e4f2571-3054-411f-a15a-741d29c35d02": {
+      "conditionsType": "ALL",
+      "destinationId": "82b69f0b-cd9f-4279-a4a2-b4ff0b89ec83",
+      "destinationType": "JUMP",
+      "id": "6e4f2571-3054-411f-a15a-741d29c35d02",
+      "originId": "51681526-484d-4c07-825d-96f0f8b9a466",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964891159
+    },
+    "6f89531c-9d23-4201-b374-59e05a6f113b": {
+      "conditionsType": "ALL",
+      "destinationId": "9bd2c4b8-9b56-467e-922c-081b0d9cf9f7",
+      "destinationType": "EVENT",
+      "id": "6f89531c-9d23-4201-b374-59e05a6f113b",
+      "originId": "bb5676a6-1857-4fc1-8b29-40142eba387f",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964782982
+    },
+    "732daf9e-2283-43a2-82a0-7288bfeddd63": {
+      "conditionsType": "ALL",
+      "destinationId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "destinationType": "EVENT",
+      "id": "732daf9e-2283-43a2-82a0-7288bfeddd63",
+      "originId": "bc7dbb1c-5e79-4e74-8b2f-caa71fb56435",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964154704
+    },
+    "8316b801-f6aa-471d-b53e-4812b8541ad2": {
+      "conditionsType": "ALL",
+      "destinationId": "8d45479e-fbf3-46ce-bb32-7cad150524a8",
+      "destinationType": "EVENT",
+      "id": "8316b801-f6aa-471d-b53e-4812b8541ad2",
+      "originId": "04b59882-a7f8-4c65-bb20-86c9f9402ccd",
+      "originType": "CHOICE",
+      "sceneId": "69396d45-ec61-4d9d-9330-8a4ec76ea0ce",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649885901570
+    },
+    "8411083d-3e89-4c4e-86b4-2420f9bd83ba": {
+      "conditionsType": "ALL",
+      "destinationId": "51681526-484d-4c07-825d-96f0f8b9a466",
+      "destinationType": "EVENT",
+      "id": "8411083d-3e89-4c4e-86b4-2420f9bd83ba",
+      "originId": "085a72ad-ddab-4ccd-bc18-75efb732c926",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964173011
+    },
+    "86bdb4dd-9769-4a3a-9288-a890a564a578": {
+      "conditionsType": "ALL",
+      "destinationId": "9bd2c4b8-9b56-467e-922c-081b0d9cf9f7",
+      "destinationType": "EVENT",
+      "id": "86bdb4dd-9769-4a3a-9288-a890a564a578",
+      "originId": "58c46834-e0db-4c28-bbdf-25588a0e2073",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964773558
+    },
+    "8b1b2646-dda7-4970-9d26-332d1e887358": {
+      "conditionsType": "ALL",
+      "destinationId": "81125de7-f8f0-44ca-90a4-e8070c43e4d9",
+      "destinationType": "EVENT",
+      "id": "8b1b2646-dda7-4970-9d26-332d1e887358",
+      "originId": "8d45479e-fbf3-46ce-bb32-7cad150524a8",
+      "originType": "CHOICE",
+      "sceneId": "69396d45-ec61-4d9d-9330-8a4ec76ea0ce",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649886323671
+    },
+    "97519866-76d2-4f3d-bdfa-0bf4d0e42d5f": {
+      "conditionsType": "ALL",
+      "destinationId": "929c06a0-8043-4d84-a570-5ea5ded43c9e",
+      "destinationType": "JUMP",
+      "id": "97519866-76d2-4f3d-bdfa-0bf4d0e42d5f",
+      "originId": "58c46834-e0db-4c28-bbdf-25588a0e2073",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964753680
+    },
+    "98702f46-dee6-4af1-83a4-3cf1a612e3b1": {
+      "conditionsType": "ALL",
+      "destinationId": "2f078df6-ffcd-4ce9-a53a-24ef7c613026",
+      "destinationType": "EVENT",
+      "id": "98702f46-dee6-4af1-83a4-3cf1a612e3b1",
+      "originId": "79c0c213-8ba7-49b5-9408-224d56363ea6",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649962469381
+    },
+    "b8a61127-5b75-4606-962c-939bffae7348": {
+      "choiceId": "a5bb3000-e8a9-4c7b-9eca-ae2864d81b94",
+      "conditionsType": "ALL",
+      "destinationId": "bb5676a6-1857-4fc1-8b29-40142eba387f",
+      "destinationType": "EVENT",
+      "id": "b8a61127-5b75-4606-962c-939bffae7348",
+      "originId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649963248888
+    },
+    "b909ce78-2603-4b88-a495-d6c538ad70c0": {
+      "conditionsType": "ALL",
+      "destinationId": "662fa827-7d12-4f04-87a5-d911d2c805f9",
+      "destinationType": "EVENT",
+      "id": "b909ce78-2603-4b88-a495-d6c538ad70c0",
+      "originId": "8a91b8e7-4b5a-4b50-8159-fa35921a6948",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964191729
+    },
+    "bb34d3ba-3c93-4980-bbf7-49eb66dfed1d": {
+      "choiceId": "694dabf7-694c-4af7-be88-0cb683d3a9d5",
+      "conditionsType": "ALL",
+      "destinationId": "aad83514-1b05-4228-9767-9a85a59af9c7",
+      "destinationType": "EVENT",
+      "id": "bb34d3ba-3c93-4980-bbf7-49eb66dfed1d",
+      "originId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649963253515
+    },
+    "bdbe244f-1fe2-44cd-a66a-d00c486866ad": {
+      "conditionsType": "ALL",
+      "destinationId": "cf3ffb31-a913-48ac-8a56-e2a1aca3737d",
+      "destinationType": "JUMP",
+      "id": "bdbe244f-1fe2-44cd-a66a-d00c486866ad",
+      "originId": "9bd2c4b8-9b56-467e-922c-081b0d9cf9f7",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964900747
+    },
+    "c1bc9fac-b9a3-4b0e-9f12-cadeaf92ee18": {
+      "conditionsType": "ALL",
+      "destinationId": "51681526-484d-4c07-825d-96f0f8b9a466",
+      "destinationType": "EVENT",
+      "id": "c1bc9fac-b9a3-4b0e-9f12-cadeaf92ee18",
+      "originId": "8a91b8e7-4b5a-4b50-8159-fa35921a6948",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964189806
+    },
+    "c7fbda61-b348-4f31-a89f-21b5bce1602f": {
+      "choiceId": "fd50405f-17a9-4c81-ae5e-59913299f03b",
+      "conditionsType": "ANY",
+      "destinationId": "58c46834-e0db-4c28-bbdf-25588a0e2073",
+      "destinationType": "EVENT",
+      "id": "c7fbda61-b348-4f31-a89f-21b5bce1602f",
+      "originId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964540043
+    },
+    "dc3654b2-cc76-46bc-b279-7db2c03ad6ce": {
+      "conditionsType": "ALL",
+      "destinationId": "bf1e9aef-b52d-45da-8f0a-6b9ba6a24a22",
+      "destinationType": "JUMP",
+      "id": "dc3654b2-cc76-46bc-b279-7db2c03ad6ce",
+      "originId": "81125de7-f8f0-44ca-90a4-e8070c43e4d9",
+      "originType": "CHOICE",
+      "sceneId": "69396d45-ec61-4d9d-9330-8a4ec76ea0ce",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649886772441
+    },
+    "de332aca-c119-4917-aa14-37dc84116e71": {
+      "choiceId": "06fbb6cb-e709-4c0d-9591-3a475bd0d983",
+      "conditionsType": "ALL",
+      "destinationId": "085a72ad-ddab-4ccd-bc18-75efb732c926",
+      "destinationType": "EVENT",
+      "id": "de332aca-c119-4917-aa14-37dc84116e71",
+      "originId": "2f078df6-ffcd-4ce9-a53a-24ef7c613026",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649962849273
+    },
+    "e3d4e831-5ae1-4ac5-a0f3-3d700b2d6631": {
+      "conditionsType": "ALL",
+      "destinationId": "82b69f0b-cd9f-4279-a4a2-b4ff0b89ec83",
+      "destinationType": "JUMP",
+      "id": "e3d4e831-5ae1-4ac5-a0f3-3d700b2d6631",
+      "originId": "662fa827-7d12-4f04-87a5-d911d2c805f9",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964893006
+    },
+    "e97445b1-d626-45cf-8cc4-b452f9a15b41": {
+      "conditionsType": "ALL",
+      "destinationId": "929c06a0-8043-4d84-a570-5ea5ded43c9e",
+      "destinationType": "JUMP",
+      "id": "e97445b1-d626-45cf-8cc4-b452f9a15b41",
+      "originId": "bb5676a6-1857-4fc1-8b29-40142eba387f",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964755579
+    },
+    "ea5f8443-4df3-41d5-bf75-b115b57c3c4c": {
+      "conditionsType": "ALL",
+      "destinationId": "e83aa1db-aede-456c-bb8c-3df2d00fbfd3",
+      "destinationType": "EVENT",
+      "id": "ea5f8443-4df3-41d5-bf75-b115b57c3c4c",
+      "originId": "aad83514-1b05-4228-9767-9a85a59af9c7",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964795937
+    },
+    "f3c97f21-49bf-4d2e-91d6-2c6ea680d0dd": {
+      "choiceId": "2894390f-1d3a-4795-b148-268e43440cdf",
+      "conditionsType": "ALL",
+      "destinationId": "74475ff3-3023-456e-80df-51383de3c029",
+      "destinationType": "EVENT",
+      "id": "f3c97f21-49bf-4d2e-91d6-2c6ea680d0dd",
+      "originId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649963251575
+    },
+    "f86f4212-b350-4f80-9769-ae31fe9c868b": {
+      "conditionsType": "ALL",
+      "destinationId": "1e15c353-8594-4ba5-835b-85471c1c453a",
+      "destinationType": "EVENT",
+      "id": "f86f4212-b350-4f80-9769-ae31fe9c868b",
+      "originId": "085a72ad-ddab-4ccd-bc18-75efb732c926",
+      "originType": "CHOICE",
+      "sceneId": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "tags": [],
+      "title": "Untitled Path",
+      "updated": 1649964170699
+    }
+  },
+  "scenes": {
+    "69396d45-ec61-4d9d-9330-8a4ec76ea0ce": {
+      "children": [
+        [
+          "EVENT",
+          "04b59882-a7f8-4c65-bb20-86c9f9402ccd"
+        ],
+        [
+          "EVENT",
+          "8d45479e-fbf3-46ce-bb32-7cad150524a8"
+        ],
+        [
+          "EVENT",
+          "81125de7-f8f0-44ca-90a4-e8070c43e4d9"
+        ],
+        [
+          "JUMP",
+          "bf1e9aef-b52d-45da-8f0a-6b9ba6a24a22"
+        ]
+      ],
+      "composer": {
+        "sceneMapTransformX": -176.18088097469536,
+        "sceneMapTransformY": -148.51452671040295,
+        "sceneMapTransformZoom": 1.2277413308341143
+      },
+      "id": "69396d45-ec61-4d9d-9330-8a4ec76ea0ce",
+      "parent": [
+        "FOLDER",
+        "bf9d8ab6-709f-40c5-a67f-a41cd5d5ddf9"
+      ],
+      "tags": [],
+      "title": "The Market",
+      "updated": 1650070651183
+    },
+    "8771ff95-1dea-47aa-a52d-2cfc3159ad64": {
+      "children": [
+        [
+          "EVENT",
+          "dcc3ff5a-a7c4-4115-927c-e517e29a0b1d"
+        ],
+        [
+          "JUMP",
+          "7c74e2f6-6709-49c5-aadb-a2531766007f"
+        ]
+      ],
+      "composer": {
+        "sceneMapTransformX": -432.7269274899853,
+        "sceneMapTransformY": 102.44384748283443,
+        "sceneMapTransformZoom": 0.9142975591860911
+      },
+      "id": "8771ff95-1dea-47aa-a52d-2cfc3159ad64",
+      "parent": [
+        "WORLD",
+        null
+      ],
+      "tags": [],
+      "title": "Introduction",
+      "updated": 1650070608676
+    },
+    "cedebcd0-5ba3-43e5-8aa2-625964634942": {
+      "audio": [
+        "b604aaa6-b84f-4339-b4f4-6f71cfe15f8b",
+        false
+      ],
+      "children": [
+        [
+          "EVENT",
+          "bdab713d-74f2-458d-a361-1f7deed12cf9"
+        ],
+        [
+          "EVENT",
+          "79c0c213-8ba7-49b5-9408-224d56363ea6"
+        ],
+        [
+          "EVENT",
+          "2f078df6-ffcd-4ce9-a53a-24ef7c613026"
+        ],
+        [
+          "EVENT",
+          "8a91b8e7-4b5a-4b50-8159-fa35921a6948"
+        ],
+        [
+          "EVENT",
+          "9d591e38-a522-4bcc-b773-5ad9fc598f85"
+        ],
+        [
+          "EVENT",
+          "bc7dbb1c-5e79-4e74-8b2f-caa71fb56435"
+        ],
+        [
+          "EVENT",
+          "085a72ad-ddab-4ccd-bc18-75efb732c926"
+        ],
+        [
+          "EVENT",
+          "51681526-484d-4c07-825d-96f0f8b9a466"
+        ],
+        [
+          "EVENT",
+          "662fa827-7d12-4f04-87a5-d911d2c805f9"
+        ],
+        [
+          "JUMP",
+          "82b69f0b-cd9f-4279-a4a2-b4ff0b89ec83"
+        ],
+        [
+          "EVENT",
+          "1e15c353-8594-4ba5-835b-85471c1c453a"
+        ],
+        [
+          "JUMP",
+          "5183cb20-4993-4f0a-80d8-4c1b64e35c65"
+        ],
+        [
+          "EVENT",
+          "bb5676a6-1857-4fc1-8b29-40142eba387f"
+        ],
+        [
+          "EVENT",
+          "74475ff3-3023-456e-80df-51383de3c029"
+        ],
+        [
+          "EVENT",
+          "aad83514-1b05-4228-9767-9a85a59af9c7"
+        ],
+        [
+          "EVENT",
+          "58c46834-e0db-4c28-bbdf-25588a0e2073"
+        ],
+        [
+          "EVENT",
+          "e83aa1db-aede-456c-bb8c-3df2d00fbfd3"
+        ],
+        [
+          "EVENT",
+          "9bd2c4b8-9b56-467e-922c-081b0d9cf9f7"
+        ],
+        [
+          "JUMP",
+          "929c06a0-8043-4d84-a570-5ea5ded43c9e"
+        ],
+        [
+          "JUMP",
+          "cf3ffb31-a913-48ac-8a56-e2a1aca3737d"
+        ]
+      ],
+      "composer": {
+        "sceneMapTransformX": 40.84202750870895,
+        "sceneMapTransformY": 378.3704153521154,
+        "sceneMapTransformZoom": 0.9232168666169477
+      },
+      "id": "cedebcd0-5ba3-43e5-8aa2-625964634942",
+      "parent": [
+        "FOLDER",
+        "bf9d8ab6-709f-40c5-a67f-a41cd5d5ddf9"
+      ],
+      "tags": [],
+      "title": "The Riverbank",
+      "updated": 1650070662406
+    },
+    "e2f182ca-ab2b-43ed-a5de-ae771979cf61": {
+      "children": [
+        [
+          "EVENT",
+          "0c28d302-6566-4f53-849d-b91a0057b706"
+        ],
+        [
+          "EVENT",
+          "7d649a3a-ef73-46a8-a0b8-dcc660259254"
+        ]
+      ],
+      "composer": {
+        "sceneMapTransformX": -3295.1352549889125,
+        "sceneMapTransformY": -195.68736141906857,
+        "sceneMapTransformZoom": 1.6851441241685141
+      },
+      "id": "e2f182ca-ab2b-43ed-a5de-ae771979cf61",
+      "parent": [
+        "FOLDER",
+        "bf9d8ab6-709f-40c5-a67f-a41cd5d5ddf9"
+      ],
+      "tags": [],
+      "title": "The Farmhouse",
+      "updated": 1649967668310
+    }
+  },
+  "variables": {
+    "1c99bba4-25d7-4ae8-88c3-7409beeb289d": {
+      "id": "1c99bba4-25d7-4ae8-88c3-7409beeb289d",
+      "initialValue": "true",
+      "tags": [],
+      "title": "cabbageWest",
+      "type": "BOOLEAN",
+      "updated": 1649890883045
+    },
+    "28f64e9d-5e72-485f-aae9-9dbebd394d7c": {
+      "id": "28f64e9d-5e72-485f-aae9-9dbebd394d7c",
+      "initialValue": "true",
+      "tags": [],
+      "title": "wolfWest",
+      "type": "BOOLEAN",
+      "updated": 1649890888489
+    },
+    "8e48d4e8-3314-40ec-93e2-d35a62b717ee": {
+      "id": "8e48d4e8-3314-40ec-93e2-d35a62b717ee",
+      "initialValue": "true",
+      "tags": [],
+      "title": "goatWest",
+      "type": "BOOLEAN",
+      "updated": 1649890885752
+    },
+    "b2805815-95f9-4ffe-95f8-91ef86037d83": {
+      "id": "b2805815-95f9-4ffe-95f8-91ef86037d83",
+      "initialValue": "true",
+      "tags": [],
+      "title": "playerWest",
+      "type": "BOOLEAN",
+      "updated": 1649966114750
+    }
+  }
+}
