@@ -1,6 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 
 import { AudioProfile as AudioProfileType } from '../../data/types'
+import {
+  EngineDevToolsLiveEvent,
+  ENGINE_DEVTOOLS_LIVE_EVENTS,
+  ENGINE_DEVTOOLS_LIVE_EVENT_TYPE
+} from '../../lib/transport/types/0.7.0'
+
+import { AppContext } from '../../contexts/AppContext'
 
 import { Button, Collapse, Slider, Spin } from 'antd'
 import {
@@ -40,6 +47,8 @@ const AudioProfile: React.FC<{
   onRequestAudioPath: (assetId: string) => Promise<[string, boolean]>
   onRemove?: () => void
 }> = ({ profile, info, onImport, onSelect, onRequestAudioPath, onRemove }) => {
+  const { app } = useContext(AppContext)
+
   const importAudioInputRef = useRef<HTMLInputElement>(null),
     playerRef = useRef<HTMLMediaElement>(null)
 
@@ -93,6 +102,18 @@ const AudioProfile: React.FC<{
     })
 
     setRemoveProfile(false)
+  }
+
+  const processEvent = (event: Event) => {
+    const { detail } = event as CustomEvent<EngineDevToolsLiveEvent>
+
+    switch (detail.eventType) {
+      case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.MUTE:
+        if (detail.muteFrom === 'DEVTOOLS') playerRef.current?.pause()
+        return
+      default:
+        return
+    }
   }
 
   useEffect(() => {
@@ -158,8 +179,24 @@ const AudioProfile: React.FC<{
   }, [removeProfile, player.duration])
 
   useEffect(() => {
+    if (playerRef.current && !app.visible) {
+      playerRef.current.pause()
+    }
+  }, [app.visible, playerRef.current])
+
+  useEffect(() => {
+    window.addEventListener(
+      ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_COMPOSER,
+      processEvent
+    )
+
     return () => {
       setAudioPath(dummyAudio)
+
+      window.removeEventListener(
+        ENGINE_DEVTOOLS_LIVE_EVENTS.ENGINE_TO_COMPOSER,
+        processEvent
+      )
     }
   }, [])
 
@@ -207,11 +244,26 @@ const AudioProfile: React.FC<{
               <div
                 className={`${styles.button} ${styles.play}`}
                 title={player.playing ? 'Pause track' : 'Play track'}
-                onClick={() =>
-                  player.playing
-                    ? playerRef.current?.pause()
-                    : playerRef.current?.play()
-                }
+                onClick={() => {
+                  if (player.playing) {
+                    playerRef.current?.pause()
+                  }
+
+                  if (!player.playing) {
+                    window.dispatchEvent(
+                      new CustomEvent<EngineDevToolsLiveEvent>(
+                        ENGINE_DEVTOOLS_LIVE_EVENTS.COMPOSER_TO_ENGINE,
+                        {
+                          detail: {
+                            eventType: ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.MUTE
+                          }
+                        }
+                      )
+                    )
+
+                    playerRef.current?.play()
+                  }
+                }}
               >
                 {!player.playing ? <PlayCircleFilled /> : <PauseOutlined />}
               </div>

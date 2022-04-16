@@ -11,6 +11,7 @@ interface AppState {
   modalOpen: boolean
   selectedStudioId?: StudioId
   selectedWorldId?: WorldId
+  visible: boolean
 }
 
 export enum APP_ACTION_TYPE {
@@ -23,7 +24,8 @@ export enum APP_ACTION_TYPE {
   MODAL_OPEN = 'MODAL_OPEN',
   MODAL_CLOSE = 'MODAL_CLOSE',
   STUDIO_SELECT = 'STUDIO_SELECT',
-  GAME_SELECT = 'GAME_SELECT'
+  GAME_SELECT = 'GAME_SELECT',
+  SET_VISIBLE = 'SET_VISIBLE'
 }
 
 export enum APP_LOCATION {
@@ -42,6 +44,7 @@ type AppActionType =
   | { type: APP_ACTION_TYPE.MODAL_CLOSE }
   | { type: APP_ACTION_TYPE.STUDIO_SELECT; selectedStudioId?: StudioId }
   | { type: APP_ACTION_TYPE.GAME_SELECT; selectedGameId?: WorldId }
+  | { type: APP_ACTION_TYPE.SET_VISIBLE; visible: boolean }
 
 const appReducer = (state: AppState, action: AppActionType): AppState => {
   switch (action.type) {
@@ -68,6 +71,8 @@ const appReducer = (state: AppState, action: AppActionType): AppState => {
       return { ...state, selectedStudioId: action.selectedStudioId }
     case APP_ACTION_TYPE.GAME_SELECT:
       return { ...state, selectedWorldId: action.selectedGameId }
+    case APP_ACTION_TYPE.SET_VISIBLE:
+      return { ...state, visible: action.visible }
     default:
       return state
   }
@@ -80,14 +85,15 @@ interface AppContextType {
 
 const defaultAppState: AppState = {
   version: '0.7.0',
-  build: '--',
+  build: 'd6f6b568',
   platform: undefined,
   fullscreen: false,
   location: APP_LOCATION.DASHBOARD,
   menuOpen: false,
   modalOpen: false,
   selectedStudioId: undefined,
-  selectedWorldId: undefined
+  selectedWorldId: undefined,
+  visible: false
 }
 
 export const AppContext = createContext<AppContextType>({

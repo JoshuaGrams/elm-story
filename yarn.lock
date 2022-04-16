@@ -2280,6 +2280,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-page-visibility@^6.4.1":
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/@types/react-page-visibility/-/react-page-visibility-6.4.1.tgz#21c3bc4a3f310d38d188916cadc55f2bde65f27d"
+  integrity sha512-vNlYAqKhB2SU1HmF9ARFTFZN0NSPzWn8HSjBpFqYuQlJhsb/aSYeIZdygeqfSjAg0PZ70id2IFWHGULJwe59Aw==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-redux@^7.1.16", "@types/react-redux@^7.1.20":
   version "7.1.21"
   resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-7.1.21.tgz#f32bbaf7cbc4b93f51e10d340aa54035c084b186"
@@ -11227,6 +11234,13 @@ react-is@^16.12.0, react-is@^16.13.1, react-is@^16.6.0, react-is@^16.7.0, react-
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
+
+react-page-visibility@^6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/react-page-visibility/-/react-page-visibility-6.4.0.tgz#0684fe80338e716c9ed2d34169fa3cbb3882096b"
+  integrity sha512-5vQ0zQU2DvKCQAxle9l5V6uxw2m180Lk7Jem+obmTeQ503fvMJLSUzFgWtTEgUVynhUx2pd+RzafnuMAG8uD6A==
+  dependencies:
+    prop-types "^15.7.2"
 
 react-property@2.0.0:
   version "2.0.0"

@@ -8,14 +8,17 @@
           "type": "array",
           "items": {
             "type": "array",
-            "items": [
+            "prefixItems": [
               {
                 "type": "string"
               },
               {
                 "type": "string"
               }
-            ]
+            ],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
           }
         },
         "designer": { "type": "string" },
@@ -68,13 +71,14 @@
         "properties": {
           "compare": {
             "type": "array",
-            "items": [
+            "prefixItems": [
               { "type": "string" },
               { "type": "string" },
               { "type": "string" }
             ],
             "minItems": 3,
-            "additionalItems": false
+            "maxItems": 3,
+            "items": false
           },
           "id": { "type": "string" },
           "routeId": { "type": "string" },
@@ -104,13 +108,14 @@
           "routeId": { "type": "string" },
           "set": {
             "type": "array",
-            "items": [
+            "prefixItems": [
               { "type": "string" },
               { "type": "string" },
               { "type": "string" }
             ],
             "minItems": 3,
-            "additionalItems": false
+            "maxItems": 3,
+            "items": false
           },
           "tags": { "type": "array", "items": { "type": "string" } },
           "title": { "type": "string" },
@@ -138,20 +143,29 @@
             "type": "array",
             "items": {
               "type": "array",
-              "items": [
+              "prefixItems": [
                 {
                   "type": "string"
                 },
                 {
                   "type": ["string"]
                 }
-              ]
+              ],
+              "minItems": 2,
+              "maxItems": 2,
+              "items": false
             }
           },
           "id": { "type": "string" },
           "parent": {
             "type": "array",
-            "items": [{ "type": "string" }, { "type": ["string", "null"] }]
+            "prefixItems": [
+              { "type": "string" },
+              { "type": ["string", "null"] }
+            ],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
           },
           "tags": { "type": "array", "items": { "type": "string" } },
           "title": { "type": "string" },
@@ -262,14 +276,17 @@
             "type": "array",
             "items": {
               "type": "array",
-              "items": [
+              "prefixItems": [
                 {
                   "type": "string"
                 },
                 {
                   "type": "string"
                 }
-              ]
+              ],
+              "minItems": 2,
+              "maxItems": 2,
+              "items": false
             }
           },
           "editor": {
@@ -285,7 +302,13 @@
           "jumps": { "type": "array", "items": { "type": "string" } },
           "parent": {
             "type": "array",
-            "items": [{ "type": "string" }, { "type": ["string", "null"] }]
+            "prefixItems": [
+              { "type": "string" },
+              { "type": ["string", "null"] }
+            ],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
           },
           "tags": { "type": "array", "items": { "type": "string" } },
           "title": { "type": "string" },

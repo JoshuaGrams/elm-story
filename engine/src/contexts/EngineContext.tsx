@@ -10,8 +10,9 @@ interface EngineState {
     highlightCharacters: boolean
     highlightExpressions: boolean
     blockedChoicesVisible: boolean
-    xrayVisible: boolean
+    muted: boolean
     reset: boolean
+    xrayVisible: boolean
   }
   liveEventsInStream: EngineLiveEventData[]
   installed: boolean
@@ -35,6 +36,7 @@ interface EngineState {
     showing: boolean
   }
   updating: boolean
+  visible: boolean
 }
 
 export enum ENGINE_ACTION_TYPE {
@@ -48,11 +50,14 @@ export enum ENGINE_ACTION_TYPE {
   SET_IS_COMPOSER = 'SET_COMPOSER',
   SET_CURRENT_LIVE_EVENT = 'SET_CURRENT_EVENT',
   SET_UPDATE_WORLD = 'SET_UPDATE_WORLD',
+  SET_VISIBLE = 'SET_VISIBLE',
   STOP = 'STOP',
   SHOW_ERROR_NOTIFICATION = 'SHOW_ERROR_NOTIFICATION',
   TOGGLE_DEVTOOLS_EXPRESSIONS = 'TOGGLE_DEVTOOLS_EXPRESSIONS',
   TOGGLE_DEVTOOLS_CHARACTERS = 'TOGGLE_DEVTOOLS_CHARACTERS',
   TOGGLE_DEVTOOLS_BLOCKED_CHOICES = 'TOGGLE_DEVTOOLS_BLOCKED_CHOICES',
+  TOGGLE_DEVTOOLS_MUTED = 'TOGGLE_DEVTOOLS_MUTED',
+  DEVTOOLS_MUTE = 'DEVTOOLS_MUTE',
   TOGGLE_DEVTOOLS_XRAY = 'TOGGLE_DEVTOOLS_XRAY',
   DEVTOOLS_RESET = 'DEVTOOLS_RESET',
   UPDATE_LIVE_EVENT_IN_STREAM = 'UPDATE_EVENT_IN_STREAM'
@@ -92,6 +97,7 @@ type EngineActionType =
       }
     }
   | { type: ENGINE_ACTION_TYPE.SET_UPDATE_WORLD; updating: boolean }
+  | { type: ENGINE_ACTION_TYPE.SET_VISIBLE; visible: boolean }
   | { type: ENGINE_ACTION_TYPE.PLAY; fromEvent: ElementId | undefined }
   | { type: ENGINE_ACTION_TYPE.STOP }
   | { type: ENGINE_ACTION_TYPE.HIDE_ERROR_NOTIFICATION }
@@ -100,6 +106,8 @@ type EngineActionType =
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_CHARACTERS }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_EXPRESSIONS }
   | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_XRAY }
+  | { type: ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_MUTED }
+  | { type: ENGINE_ACTION_TYPE.DEVTOOLS_MUTE }
   | {
       type: ENGINE_ACTION_TYPE.DEVTOOLS_RESET
       reset: boolean
@@ -196,6 +204,11 @@ const engineReducer = (
         ...state,
         updating: action.updating
       }
+    case ENGINE_ACTION_TYPE.SET_VISIBLE:
+      return {
+        ...state,
+        visible: action.visible
+      }
     case ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_BLOCKED_CHOICES:
       return {
         ...state,
@@ -228,6 +241,22 @@ const engineReducer = (
           xrayVisible: !state.devTools.xrayVisible
         }
       }
+    case ENGINE_ACTION_TYPE.TOGGLE_DEVTOOLS_MUTED:
+      return {
+        ...state,
+        devTools: {
+          ...state.devTools,
+          muted: !state.devTools.muted
+        }
+      }
+    case ENGINE_ACTION_TYPE.DEVTOOLS_MUTE:
+      return {
+        ...state,
+        devTools: {
+          ...state.devTools,
+          muted: true
+        }
+      }
     case ENGINE_ACTION_TYPE.DEVTOOLS_RESET:
       return {
         ...state,
@@ -252,6 +281,7 @@ const defaultEngineState: EngineState = {
     highlightCharacters: false,
     blockedChoicesVisible: false,
     highlightExpressions: false,
+    muted: true,
     xrayVisible: false,
     reset: false
   },
@@ -265,7 +295,8 @@ const defaultEngineState: EngineState = {
     message: undefined,
     showing: false
   },
-  updating: false
+  updating: false,
+  visible: false
 }
 
 export const EngineContext = createContext<EngineContextType>({

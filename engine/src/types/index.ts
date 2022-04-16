@@ -375,6 +375,8 @@ export enum ENGINE_DEVTOOLS_LIVE_EVENT_TYPE {
   TOGGLE_EXPRESSIONS = 'TOGGLE_EXPRESSIONS',
   TOGGLE_BLOCKED_CHOICES = 'TOGGLE_BLOCKED_CHOICES',
   TOGGLE_XRAY = 'TOGGLE_XRAY',
+  TOGGLE_MUTED = 'TOGGLE_MUTED',
+  MUTE = 'MUTE',
   GET_ASSET_URL = 'GET_ASSET_URL',
   RETURN_ASSET_URL = 'RETURN_ASSET_URL',
   GET_EVENT_DATA = 'GET_EVENT_DATA',
@@ -398,8 +400,10 @@ export interface EngineDevToolsLiveEvent {
     sceneId?: ElementId
     sceneTitle?: string
   }
+  muteFrom?: 'DEVTOOLS' | 'AUDIO_PROFILE'
   asset?: {
     id?: string
+    for?: 'SCENE' | 'EVENT'
     url?: string
     exists?: boolean
     ext?: 'jpeg' | 'webp' | 'mp3'

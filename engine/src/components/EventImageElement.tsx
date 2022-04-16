@@ -35,7 +35,7 @@ const EventImageElement: React.FC<{
 
   // #DEV
   // let imageUrl = assetId
-  //   ? `../../data/0-7-test_0.0.1/assets/${assetId}.webp`
+  //   ? `../../data/0-7-test/assets/${assetId}.webp`
   //   : getSvgUrl(placeholder)
   // #PWA
   let imageUrl = assetId

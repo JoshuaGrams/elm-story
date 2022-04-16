@@ -42,6 +42,8 @@ const wrapNodeContent = (node: EventContentNode, text: string) => {
       return `<li>${text}</li>`
     case ELEMENT_FORMATS.BLOCKQUOTE:
       return `<blockquote>${text}</blockquote>`
+    case ELEMENT_FORMATS.LINK:
+      return text
     default:
       return `<p>${text || '&nbsp;'}</p>`
   }
@@ -93,6 +95,11 @@ const serializeDescendantToText = async (
     : ''
 
   switch (node.type) {
+    case ELEMENT_FORMATS.LINK:
+      if (!node.url) return `<span>${text}</span>`
+
+      // prettier-ignore
+      return `<a className="event-content-link" href="${node.url}" target="_blank" title="${`Open '${node.url}' in a new tab`}">${text}</a>`
     case ELEMENT_FORMATS.IMG:
       // prettier-ignore
       return `<div className="event-content-image" title="${!node.asset_id ? 'Image not set...' : ''}" style="backgroundImage:url(${node.asset_id ? `assets/content/${node.asset_id}.webp` : getSvgUrl(imgPlaceholder)})"></div>`

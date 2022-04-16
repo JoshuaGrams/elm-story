@@ -28,6 +28,7 @@ import {
 import Runtime from './embedded/Runtime'
 
 import styles from './styles.module.less'
+import logger from '../../lib/logger'
 
 const Storyteller: React.FC<{
   studioId: StudioId
@@ -125,6 +126,7 @@ const Storyteller: React.FC<{
                 eventId: detail.eventId,
                 asset: {
                   id: detail.asset?.id,
+                  for: detail.asset?.for,
                   url,
                   exists,
                   ext
@@ -164,8 +166,18 @@ const Storyteller: React.FC<{
         )
 
         break
+      case ENGINE_DEVTOOLS_LIVE_EVENT_TYPE.MUTE:
+        logger.info(
+          `[STORYTELLER] Muting ${
+            detail.muteFrom === 'AUDIO_PROFILE'
+              ? 'storyteller'
+              : 'audio profile'
+          } audio preview.`
+        )
+        break
       default:
-        throw 'Unknown engine event type.'
+        logger.error('Unknown engine event type.')
+        break
     }
   }
 

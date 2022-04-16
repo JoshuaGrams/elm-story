@@ -30,7 +30,11 @@ const AudioMixer: React.FC = React.memo(() => {
     event: undefined
   })
 
-  const audioMixer = useAudioMixer({ profiles, muted: settings.muted })
+  const audioMixer = useAudioMixer({
+    profiles,
+    paused: !engine.visible,
+    muted: engine.isComposer ? engine.devTools.muted : settings.muted
+  })
 
   const currentLiveEventData = useLiveQuery(
     async () => {

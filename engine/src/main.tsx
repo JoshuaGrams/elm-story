@@ -32,7 +32,7 @@ function main() {
   }
 
   if (import.meta.env.DEV) {
-    import('../data/0-7-tutorial_0.0.1/0-7-tutorial_0.0.1.json').then((data) =>
+    import('../data/0-7-test/0-7-test.json').then((data) =>
       render(
         <>
           <ServiceWorker />
