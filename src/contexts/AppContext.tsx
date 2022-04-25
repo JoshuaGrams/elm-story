@@ -7,8 +7,6 @@ interface AppState {
   platform?: PLATFORM_TYPE
   fullscreen: boolean
   location: APP_LOCATION
-  menuOpen: boolean
-  modalOpen: boolean
   selectedStudioId?: StudioId
   selectedWorldId?: WorldId
   visible: boolean
@@ -19,10 +17,6 @@ export enum APP_ACTION_TYPE {
   FULLSCREEN = 'FULLSCREEN',
   FLOATING = 'FLOATING',
   SET_LOCATION = 'SET_LOCATION',
-  MENU_OPEN = 'MENU_OPEN',
-  MENU_CLOSE = 'MENU_CLOSE',
-  MODAL_OPEN = 'MODAL_OPEN',
-  MODAL_CLOSE = 'MODAL_CLOSE',
   STUDIO_SELECT = 'STUDIO_SELECT',
   GAME_SELECT = 'GAME_SELECT',
   SET_VISIBLE = 'SET_VISIBLE'
@@ -38,10 +32,6 @@ type AppActionType =
   | { type: APP_ACTION_TYPE.FULLSCREEN }
   | { type: APP_ACTION_TYPE.FLOATING }
   | { type: APP_ACTION_TYPE.SET_LOCATION; location: APP_LOCATION }
-  | { type: APP_ACTION_TYPE.MENU_OPEN }
-  | { type: APP_ACTION_TYPE.MENU_CLOSE }
-  | { type: APP_ACTION_TYPE.MODAL_OPEN }
-  | { type: APP_ACTION_TYPE.MODAL_CLOSE }
   | { type: APP_ACTION_TYPE.STUDIO_SELECT; selectedStudioId?: StudioId }
   | { type: APP_ACTION_TYPE.GAME_SELECT; selectedGameId?: WorldId }
   | { type: APP_ACTION_TYPE.SET_VISIBLE; visible: boolean }
@@ -59,14 +49,6 @@ const appReducer = (state: AppState, action: AppActionType): AppState => {
       return { ...state, fullscreen: false }
     case APP_ACTION_TYPE.SET_LOCATION:
       return { ...state, location: action.location }
-    case APP_ACTION_TYPE.MENU_OPEN:
-      return { ...state, menuOpen: true }
-    case APP_ACTION_TYPE.MENU_CLOSE:
-      return { ...state, menuOpen: false }
-    case APP_ACTION_TYPE.MODAL_OPEN:
-      return { ...state, modalOpen: true }
-    case APP_ACTION_TYPE.MODAL_CLOSE:
-      return { ...state, modalOpen: false }
     case APP_ACTION_TYPE.STUDIO_SELECT:
       return { ...state, selectedStudioId: action.selectedStudioId }
     case APP_ACTION_TYPE.GAME_SELECT:
@@ -89,8 +71,6 @@ const defaultAppState: AppState = {
   platform: undefined,
   fullscreen: false,
   location: APP_LOCATION.DASHBOARD,
-  menuOpen: false,
-  modalOpen: false,
   selectedStudioId: undefined,
   selectedWorldId: undefined,
   visible: false

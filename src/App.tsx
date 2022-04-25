@@ -9,7 +9,6 @@ import { AppContext, APP_ACTION_TYPE } from './contexts/AppContext'
 import Routes from './routes'
 
 import TitleBar from './components/TitleBar'
-import AppMenu from './components/AppMenu'
 
 import './App.global.less'
 
@@ -35,7 +34,6 @@ const App: React.FC = () => {
           <Routes />
 
           <TitleBar />
-          <AppMenu />
         </>
       )}
     </>

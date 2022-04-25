@@ -232,18 +232,6 @@ const TitleBar: React.FC = () => {
                     />
                   )
               )}
-
-          {/* #137 */}
-          {/* <TitleBarButton
-          type={TITLE_BAR_BUTTON_TYPE.MENU}
-          onClick={() =>
-            appDispatch({
-              type: app.menuOpen
-                ? APP_ACTION_TYPE.MENU_CLOSE
-                : APP_ACTION_TYPE.MENU_OPEN
-            })
-          }
-        /> */}
         </div>
 
         <header>ELM STORY : {appLocationTitle}</header>
