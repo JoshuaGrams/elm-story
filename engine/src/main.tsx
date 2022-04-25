@@ -10,7 +10,7 @@ function main() {
   console.info(
     `[STORYTELLER] made with Elm Story ${String.fromCodePoint(
       0x1f4da
-    )} 0.7.0 | https://elmstory.com`
+    )} 0.7.1 | https://elmstory.com`
   )
 
   const rendererContainer = document.getElementById('runtime') || document.body

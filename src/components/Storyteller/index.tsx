@@ -17,7 +17,7 @@ import {
   EngineDevToolsLiveEvent,
   ENGINE_DEVTOOLS_LIVE_EVENTS,
   ENGINE_DEVTOOLS_LIVE_EVENT_TYPE
-} from '../../lib/transport/types/0.7.0'
+} from '../../lib/transport/types/0.7.1'
 
 import {
   ComposerContext,

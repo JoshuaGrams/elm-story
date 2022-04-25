@@ -11,6 +11,7 @@ import { GameDataJSON as GameDataJSON_050 } from '../types/0.5.0'
 import { GameDataJSON as GameDataJSON_051 } from '../types/0.5.1'
 import { WorldDataJSON as WorldDataJSON_060 } from '../types/0.6.0'
 import { WorldDataJSON as WorldDataJSON_070 } from '../types/0.7.0'
+import { WorldDataJSON as WorldDataJSON_071 } from '../types/0.7.1'
 
 export type ValidationError = {
   path?: string
@@ -46,7 +47,8 @@ export default (
     | GameDataJSON_050
     | GameDataJSON_051
     | WorldDataJSON_060
-    | WorldDataJSON_070,
+    | WorldDataJSON_070
+    | WorldDataJSON_071,
   version: string
 ): [boolean, ValidationError[]] => {
   try {

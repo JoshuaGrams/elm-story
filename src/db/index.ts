@@ -37,7 +37,7 @@ import {
   EngineBookmarkData,
   EngineEventData,
   EngineSettingsData
-} from '../lib/transport/types/0.5.1'
+} from '../lib/transport/types/0.7.1'
 import { WINDOW_EVENT_TYPE } from '../lib/events'
 
 // DATABASE VERSIONS / UPGRADES
@@ -51,6 +51,7 @@ import v7 from './v7'
 import v8 from './v8'
 import v9 from './v9'
 import v10 from './v10' // 0.7.0
+import v11 from './v11' // 0.7.1
 
 import api from '../api'
 
@@ -201,6 +202,7 @@ export class LibraryDatabase extends Dexie {
     v8(this)
     v9(this)
     v10(this)
+    v11(this)
 
     this.tables.map((table) => table.name)
 

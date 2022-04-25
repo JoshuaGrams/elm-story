@@ -31,7 +31,7 @@ import {
   WORLD_EXPORT_TYPE,
   PLATFORM_TYPE
 } from './data/types'
-import { WorldDataJSON } from './lib/transport/types/0.7.0'
+import { WorldDataJSON } from './lib/transport/types/0.7.1'
 
 export default class AppUpdater {
   constructor() {

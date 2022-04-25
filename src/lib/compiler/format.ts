@@ -6,7 +6,7 @@ import {
   ELEMENT_TYPE,
   WorldDataJSON,
   ESGEngineCollectionData
-} from '../transport/types/0.7.0'
+} from '../transport/types/0.7.1'
 
 function filterCollectionChildProps<T extends object, U extends keyof T>(
   collectionToFilter: { [ElementId: string]: T },

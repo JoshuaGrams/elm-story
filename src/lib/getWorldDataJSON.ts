@@ -12,7 +12,7 @@ import {
   EVENT_TYPE,
   SceneChildRefs,
   SceneParentRef
-} from './transport/types/0.7.0'
+} from './transport/types/0.7.1'
 
 import api from '../api'
 

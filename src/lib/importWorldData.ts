@@ -14,12 +14,14 @@ import { GameDataJSON as GameDataJSON_050 } from './transport/types/0.5.0'
 import { GameDataJSON as GameDataJSON_051 } from './transport/types/0.5.1'
 import { WorldDataJSON as WorldDataJSON_060 } from './transport/types/0.6.0'
 import { WorldDataJSON as WorldDataJSON_070 } from './transport/types/0.7.0'
+import { WorldDataJSON as WorldDataJSON_071 } from './transport/types/0.7.1'
 
 import v020Upgrade from './transport/upgrade/0.2.0'
 import v040Upgrade from './transport/upgrade/0.4.0'
 import v050Upgrade from './transport/upgrade/0.5.0'
 import v060Upgrade from './transport/upgrade/0.6.0'
 import v070Upgrade from './transport/upgrade/0.7.0'
+import v071Upgrade from './transport/upgrade/0.7.1'
 
 import { WINDOW_EVENT_TYPE } from './events'
 
@@ -79,10 +81,10 @@ export default (
         }
 
         // #288
-        // Upgrade from 0.2.0+ to 0.6.0
+        // Upgrade from 0.2.0+ to 0.7.0
         if (
           semver.gte(engineVersion, '0.2.0') &&
-          semver.lt(engineVersion, '0.7.0')
+          semver.lt(engineVersion, '0.7.1')
         ) {
           upgradedWorldData = cloneDeep(worldData)
 
@@ -104,16 +106,18 @@ export default (
 
           // @ts-ignore
           upgradedWorldData = v070Upgrade(cloneDeep(upgradedWorldData))
+          // @ts-ignore
+          upgradedWorldData = v071Upgrade(cloneDeep(upgradedWorldData))
         }
 
         // #411
-        if (semver.gte(engineVersion, '0.7.0')) upgradedWorldData = worldData
+        if (semver.gte(engineVersion, '0.7.1')) upgradedWorldData = worldData
 
         if (!upgradedWorldData)
           throw new Error('Unable to import game data. Version conflict.')
 
         // #411: always set to most recent version of app
-        upgradedWorldData._.engine = '0.7.0'
+        upgradedWorldData._.engine = '0.7.1'
 
         const {
           _,

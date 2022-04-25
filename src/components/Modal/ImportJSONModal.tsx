@@ -7,7 +7,7 @@ import { WINDOW_EVENT_TYPE } from '../../lib/events'
 import { ValidationError } from '../../lib/transport/validate'
 
 import { ElementId, StudioId } from '../../data/types'
-import { WorldDataJSON } from '../../lib/transport/types/0.7.0'
+import { WorldDataJSON } from '../../lib/transport/types/0.7.1'
 
 import { AppContext, APP_ACTION_TYPE } from '../../contexts/AppContext'
 

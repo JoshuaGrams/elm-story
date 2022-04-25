@@ -1,0 +1,453 @@
+{
+  "type": "object",
+  "properties": {
+    "_": {
+      "type": "object",
+      "properties": {
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
+          }
+        },
+        "copyright": { "type": "string" },
+        "description": { "type": "string" },
+        "designer": { "type": "string" },
+        "engine": { "type": "string" },
+        "id": { "type": "string" },
+        "jump": { "type": ["string", "null"] },
+        "schema": { "type": "string" },
+        "studioId": { "type": "string" },
+        "studioTitle": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "title": { "type": "string" },
+        "updated": { "type": "number" },
+        "version": { "type": "string" },
+        "website": { "type": "string" }
+      },
+      "required": [
+        "children",
+        "designer",
+        "engine",
+        "id",
+        "jump",
+        "schema",
+        "studioId",
+        "studioTitle",
+        "tags",
+        "title",
+        "updated",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "characters": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "id": { "type": "string" },
+          "masks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "active": { "type": "boolean" },
+                "assetId": { "type": "string" },
+                "type": { "type": "string" }
+              },
+              "required": ["active", "type"],
+              "additionalProperties": false
+            }
+          },
+          "refs": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "minItems": 2,
+              "maxItems": 2,
+              "items": false
+            }
+          },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "updated": { "type": "number" }
+        },
+        "required": ["id", "masks", "refs", "tags", "title", "updated"],
+        "additionalProperties": false
+      }
+    },
+    "choices": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "eventId": { "type": "string" },
+          "id": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "updated": { "type": "number" }
+        },
+        "required": ["eventId", "id", "tags", "title", "updated"],
+        "additionalProperties": false
+      }
+    },
+    "conditions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "compare": {
+            "type": "array",
+            "prefixItems": [
+              { "type": "string" },
+              { "type": "string" },
+              { "type": "string" },
+              { "type": "string" }
+            ],
+            "minItems": 4,
+            "maxItems": 4,
+            "items": false
+          },
+          "id": { "type": "string" },
+          "pathId": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "updated": { "type": "number" },
+          "variableId": { "type": "string" }
+        },
+        "required": [
+          "compare",
+          "id",
+          "pathId",
+          "tags",
+          "title",
+          "updated",
+          "variableId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "pathId": { "type": "string" },
+          "set": {
+            "type": "array",
+            "prefixItems": [
+              { "type": "string" },
+              { "type": "string" },
+              { "type": "string" },
+              { "type": "string" }
+            ],
+            "minItems": 4,
+            "maxItems": 4,
+            "items": false
+          },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "updated": { "type": "number" },
+          "variableId": { "type": "string" }
+        },
+        "required": [
+          "id",
+          "pathId",
+          "set",
+          "tags",
+          "title",
+          "updated",
+          "variableId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "events": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "audio": {
+            "type": "array",
+            "prefixItems": [{ "type": "string" }, { "type": "boolean" }],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
+          },
+          "characters": { "type": "array", "items": { "type": "string" } },
+          "choices": { "type": "array", "items": { "type": "string" } },
+          "content": { "type": "string" },
+          "composer": {
+            "type": "object",
+            "properties": {
+              "sceneMapPosX": { "type": "number" },
+              "sceneMapPosY": { "type": "number" }
+            },
+            "additionalProperties": false
+          },
+          "ending": { "type": "boolean" },
+          "id": { "type": "string" },
+          "images": { "type": "array", "items": { "type": "string" } },
+          "input": { "type": "string" },
+          "persona": {
+            "type": "array",
+            "prefixItems": [
+              { "type": "string" },
+              { "type": "string" },
+              { "type": ["string", "null"] }
+            ],
+            "minItems": 3,
+            "maxItems": 3,
+            "items": false
+          },
+          "sceneId": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "type": { "type": "string" },
+          "updated": { "type": "number" }
+        },
+        "required": [
+          "characters",
+          "content",
+          "ending",
+          "id",
+          "images",
+          "sceneId",
+          "tags",
+          "title",
+          "type",
+          "updated"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "folders": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "children": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "minItems": 2,
+              "maxItems": 2,
+              "items": false
+            }
+          },
+          "id": { "type": "string" },
+          "parent": {
+            "type": "array",
+            "prefixItems": [
+              { "type": "string" },
+              { "type": ["string", "null"] }
+            ],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
+          },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "updated": { "type": "number" }
+        },
+        "required": ["children", "id", "parent", "tags", "title", "updated"],
+        "additionalProperties": false
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "eventId": { "type": "string" },
+          "id": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "updated": { "type": "number" },
+          "variableId": { "type": "string" }
+        },
+        "required": ["eventId", "id", "tags", "title", "updated"],
+        "additionalProperties": false
+      }
+    },
+    "jumps": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "composer": {
+            "type": "object",
+            "properties": {
+              "sceneMapPosX": { "type": "number" },
+              "sceneMapPosY": { "type": "number" }
+            },
+            "additionalProperties": false
+          },
+          "id": { "type": "string" },
+          "path": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 2
+          },
+          "sceneId": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "updated": { "type": "number" }
+        },
+        "required": ["id", "path", "tags", "title", "updated"],
+        "additionalProperties": false
+      }
+    },
+    "paths": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "choiceId": { "type": "string" },
+          "conditionsType": { "type": "string" },
+          "destinationId": { "type": "string" },
+          "destinationType": { "type": "string" },
+          "id": { "type": "string" },
+          "inputId": { "type": "string" },
+          "originId": { "type": "string" },
+          "originType": { "type": "string" },
+          "sceneId": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "updated": { "type": "number" }
+        },
+        "required": [
+          "conditionsType",
+          "destinationId",
+          "destinationType",
+          "id",
+          "originId",
+          "originType",
+          "sceneId",
+          "tags",
+          "title",
+          "updated"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "scenes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "audio": {
+            "type": "array",
+            "prefixItems": [{ "type": "string" }, { "type": "boolean" }],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "minItems": 2,
+              "maxItems": 2,
+              "items": false
+            }
+          },
+          "composer": {
+            "type": "object",
+            "properties": {
+              "sceneMapTransformX": { "type": "number" },
+              "sceneMapTransformY": { "type": "number" },
+              "sceneMapTransformZoom": { "type": "number" }
+            },
+            "additionalProperties": false
+          },
+          "id": { "type": "string" },
+          "parent": {
+            "type": "array",
+            "prefixItems": [
+              { "type": "string" },
+              { "type": ["string", "null"] }
+            ],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
+          },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "updated": { "type": "number" }
+        },
+        "required": ["children", "id", "parent", "tags", "title", "updated"],
+        "additionalProperties": false
+      }
+    },
+    "variables": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "initialValue": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "type": { "type": "string" },
+          "updated": { "type": "number" }
+        },
+        "required": ["initialValue", "id", "tags", "title", "type", "updated"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "_",
+    "characters",
+    "choices",
+    "conditions",
+    "effects",
+    "events",
+    "folders",
+    "inputs",
+    "jumps",
+    "paths",
+    "scenes",
+    "variables"
+  ],
+  "additionalProperties": false
+}
