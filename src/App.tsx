@@ -6,6 +6,8 @@ import { WINDOW_EVENT_TYPE } from './lib/events'
 
 import { AppContext, APP_ACTION_TYPE } from './contexts/AppContext'
 
+import { ErrorModal } from './components/Modal'
+
 import Routes from './routes'
 
 import TitleBar from './components/TitleBar'
@@ -31,6 +33,13 @@ const App: React.FC = () => {
     <>
       {app.platform && (
         <>
+          {app.errorModal.visible && (
+            <ErrorModal
+              message={app.errorModal.message}
+              code={app.errorModal.code}
+            />
+          )}
+
           <Routes />
 
           <TitleBar />

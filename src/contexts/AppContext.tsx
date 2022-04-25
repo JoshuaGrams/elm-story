@@ -10,6 +10,11 @@ interface AppState {
   selectedStudioId?: StudioId
   selectedWorldId?: WorldId
   visible: boolean
+  errorModal: {
+    visible: boolean
+    message: string | null
+    code: string | null
+  }
 }
 
 export enum APP_ACTION_TYPE {
@@ -19,7 +24,9 @@ export enum APP_ACTION_TYPE {
   SET_LOCATION = 'SET_LOCATION',
   STUDIO_SELECT = 'STUDIO_SELECT',
   GAME_SELECT = 'GAME_SELECT',
-  SET_VISIBLE = 'SET_VISIBLE'
+  SET_VISIBLE = 'SET_VISIBLE',
+  SHOW_ERROR_MODAL = 'SHOW_ERROR_MODAL',
+  HIDE_ERROR_MODAL = 'HIDE_ERROR_MODAL'
 }
 
 export enum APP_LOCATION {
@@ -35,6 +42,11 @@ type AppActionType =
   | { type: APP_ACTION_TYPE.STUDIO_SELECT; selectedStudioId?: StudioId }
   | { type: APP_ACTION_TYPE.GAME_SELECT; selectedGameId?: WorldId }
   | { type: APP_ACTION_TYPE.SET_VISIBLE; visible: boolean }
+  | {
+      type: APP_ACTION_TYPE.SHOW_ERROR_MODAL
+      details: { message: string; code: string }
+    }
+  | { type: APP_ACTION_TYPE.HIDE_ERROR_MODAL }
 
 const appReducer = (state: AppState, action: AppActionType): AppState => {
   switch (action.type) {
@@ -55,6 +67,21 @@ const appReducer = (state: AppState, action: AppActionType): AppState => {
       return { ...state, selectedWorldId: action.selectedGameId }
     case APP_ACTION_TYPE.SET_VISIBLE:
       return { ...state, visible: action.visible }
+    case APP_ACTION_TYPE.SHOW_ERROR_MODAL:
+      return {
+        ...state,
+        errorModal: {
+          visible: true,
+          message: action.details.message,
+          code: action.details.code
+        }
+      }
+    case APP_ACTION_TYPE.HIDE_ERROR_MODAL: {
+      return {
+        ...state,
+        errorModal: { visible: false, message: null, code: null }
+      }
+    }
     default:
       return state
   }
@@ -73,7 +100,12 @@ const defaultAppState: AppState = {
   location: APP_LOCATION.DASHBOARD,
   selectedStudioId: undefined,
   selectedWorldId: undefined,
-  visible: false
+  visible: false,
+  errorModal: {
+    visible: false,
+    message: null,
+    code: null
+  }
 }
 
 export const AppContext = createContext<AppContextType>({

@@ -1,7 +1,18 @@
 import React from 'React'
 
-const ErrorModal: React.FC = () => {
-  return <div>error modal</div>
+import { Modal } from 'antd'
+
+const ErrorModal: React.FC<{ message: string | null; code: string | null }> = ({
+  message,
+  code
+}) => {
+  return (
+    <Modal title="Error" visible={true}>
+      <div>Elm Story has encountered and error.</div>
+      <div>Message: {message}</div>
+      <div>Code: {code}</div>
+    </Modal>
+  )
 }
 
 export default ErrorModal

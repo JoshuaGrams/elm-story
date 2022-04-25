@@ -6,6 +6,7 @@ import SaveWorldModal from './SaveWorldModal'
 import RemoveWorldModal from './RemoveWorldModal'
 import ExportWorldModal from './ExportWorldModal'
 import ImportJSONModal from './ImportJSONModal'
+import ErrorModal from './ErrorModal'
 
 export {
   CharacterModal,
@@ -15,5 +16,6 @@ export {
   SaveWorldModal,
   RemoveWorldModal,
   ExportWorldModal,
-  ImportJSONModal
+  ImportJSONModal,
+  ErrorModal
 }
