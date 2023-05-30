@@ -14,10 +14,4 @@ Thank you to all who have supported this project.
 
 ---
 
-**discord:** https://discord.gg/v897evyc4Q
-**itch:** https://elmstorygames.itch.io/elm-story
-**twitter:** https://twitter.com/elmstorygames
-
----
-
 Copyright (c) 2022 Elm Story Worlds
